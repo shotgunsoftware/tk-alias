@@ -1,2 +1,3 @@
 # tk-alias
-TK Alias
+
+Alias integration for Shotgun.
