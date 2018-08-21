@@ -85,9 +85,11 @@ class AliasPublishFilePlugin(HookBaseClass):
         return True
 
     def publish(self, settings, item):
-        super(AliasPublishFilePlugin, self).publish(settings, item)
         publisher = self.parent
         engine = publisher.engine
+
+        engine.save_before_publish(item.properties["path"])
+        super(AliasPublishFilePlugin, self).publish(settings, item)
         self.logger.info("Saving new version")
         engine.save_after_publish(item.properties["next_version_path"])
 
