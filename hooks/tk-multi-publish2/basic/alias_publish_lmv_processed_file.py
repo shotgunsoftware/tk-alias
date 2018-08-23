@@ -278,7 +278,11 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         self.parent.engine.shotgun.upload(entity_type="PublishedFile",
                                           entity_id=publish_id,
                                           path=zip_path,
-                                          field_name="sg_lmv_files")
+                                          field_name="sg_translation_files")
+
+        self.parent.engine.shotgun.update(entity_type="PublishedFile",
+                                          entity_id=publish_id,
+                                          data=dict(sg_translation_type="LMV"))
 
         self.logger.info("Cleaning...")
         shutil.rmtree(tmpdir)
@@ -401,7 +405,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         publish_type = self.get_publish_type(settings, item)
         item.local_properties.publish_type = publish_type
         self._copy_work_to_publish(settings, item)
-        # super(AliasPublishLMVProcessedFilePlugin, self).publish(settings, item)
 
     @property
     def item_filters(self):
