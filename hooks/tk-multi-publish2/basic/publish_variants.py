@@ -84,7 +84,11 @@ class PublishVariantsPlugin(HookBaseClass):
             return
 
         for variant in variants.get("files"):
-            variant_name, variant_path = variant.split(";")
+            try:
+                variant_name, variant_path = variant.split(";")
+            except Exception as e:
+                engine.logger.exception(e)
+                continue
 
             note_data = {
                 "project": item.context.project,

@@ -691,7 +691,8 @@ class AliasEngine(tank.platform.Engine):
             results = self.send_and_wait(message=ExportVariantsCommand(file_name_prefix, temp_dir),
                                          timeout=120,
                                          command="CurrentVariants")
-        except Exception as es:
+        except Exception as e:
+            self.logger.exception(e)
             results = None
 
         return {
@@ -705,6 +706,7 @@ class AliasEngine(tank.platform.Engine):
                                          timeout=120,
                                          command="CurrentAnnotations")
         except Exception as e:
+            self.logger.exception(e)
             results = None
 
         return {
@@ -712,11 +714,12 @@ class AliasEngine(tank.platform.Engine):
         }
 
     def save_after_publish(self, path):
-        """
-        Save the scene after publish in order to get a new version in the workfiles folder
-        """
+        """Save the scene after publish in order to get a new version in the workfiles folder."""
         self.send_and_wait(FileSaveCommand(path))
 
+    def save_before_publish(self, path):
+        """Save the scene before publish the file."""
+        self.send_and_wait(FileSaveCommand(path))
 
 class AppCommand(object):
     """
