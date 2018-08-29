@@ -715,11 +715,11 @@ class AliasEngine(tank.platform.Engine):
 
     def save_after_publish(self, path):
         """Save the scene after publish in order to get a new version in the workfiles folder."""
-        self.send_and_wait(FileSaveCommand(path))
+        self.send_and_wait(FileSaveCommand(path), timeout=120)
 
     def save_before_publish(self, path):
         """Save the scene before publish the file."""
-        self.send_and_wait(FileSaveCommand(path))
+        self.send_and_wait(FileSaveCommand(path), timeout=120)
 
 class AppCommand(object):
     """
