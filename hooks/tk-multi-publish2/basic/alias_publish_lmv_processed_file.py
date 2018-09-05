@@ -122,7 +122,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         return False
 
     def accept(self, settings, item):
-        
         """
         Method called by the publisher to determine if an item is of any
         interest to this plugin. Only items matching the filters defined via the
