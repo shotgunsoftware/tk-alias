@@ -14,8 +14,6 @@ import shutil
 import base64
 import tempfile
 import traceback
-from subprocess import check_call
-from subprocess import CalledProcessError
 from subprocess import Popen, PIPE, STDOUT
 
 import sgtk
@@ -122,7 +120,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         return False
 
     def accept(self, settings, item):
-        
         """
         Method called by the publisher to determine if an item is of any
         interest to this plugin. Only items matching the filters defined via the
@@ -149,6 +146,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         """
         base_accept = super(AliasPublishLMVProcessedFilePlugin, self).accept(settings, item)
         base_accept.update({
+            "accepted": True,
+            "visible": True,
             "checked": True,
             "enabled": False
         })
@@ -405,6 +404,13 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         publish_type = self.get_publish_type(settings, item)
         item.local_properties.publish_type = publish_type
         self._copy_work_to_publish(settings, item)
+        
+        # Create version
+        path = item.properties['path']
+        file_name = os.path.basename(path)
+        name, extension = os.path.splitext(file_name)
+        item.properties['publish_name'] = name
+        super(AliasPublishLMVProcessedFilePlugin, self).publish(settings, item)
 
     @property
     def item_filters(self):
