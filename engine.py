@@ -517,7 +517,7 @@ class AliasEngine(tank.platform.Engine):
                 raise TankError("Can't save file: a lock for this path already exists")
             self.last_opened_file = path
         if parent in self.SYNC_APPS:
-            self.send_and_wait(message=FileSaveCommand(path))
+            self.send_and_wait(message=FileSaveCommand(path), timeout=120)
         else:
             self.send_and_wait_async(message=FileSaveCommand(path), timeout=120, cb=check_lock)
 
