@@ -178,6 +178,9 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         # PublishedFile id
         publish_id = item.properties.sg_publish_data["id"]
+        
+        # Version id
+        version_id = item.properties.sg_version_data["id"]
 
         # Get translator
         translator = self._get_translator()
@@ -220,14 +223,14 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             # Rename svf file
             name, _ = os.path.splitext(file_name)
             svf_file_old_name = "{}.svf".format(name)
-            svf_file_new_name = "{}.svf".format(publish_id)
+            svf_file_new_name = "{}.svf".format(version_id)
             source_file = os.path.join(output_directory, "1", svf_file_old_name)
             target_file = os.path.join(output_directory, "1", svf_file_new_name)
             os.rename(source_file, target_file)
 
             shutil.copytree(output_directory, target_path)
 
-            base_name = os.path.join(self.TMPDIR, "{}".format(publish_id))
+            base_name = os.path.join(self.TMPDIR, "{}".format(version_id))
 
             self.logger.info("LMV files copied.")
         else:
@@ -245,8 +248,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             if not os.path.exists(images_path_temporal):
                 self.makedirs(images_path_temporal)
 
-            thumb_big_filename = "{}.jpg".format(publish_id)
-            thumb_small_filename = "{}_thumb.jpg".format(publish_id)
+            thumb_big_filename = "{}.jpg".format(version_id)
+            thumb_small_filename = "{}_thumb.jpg".format(version_id)
             thumb_big_path = os.path.join(images_path_temporal, thumb_big_filename)
             thumb_small_path = os.path.join(images_path_temporal, thumb_small_filename)
 
@@ -278,20 +281,20 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
                                            root_dir=output_directory)
 
         self.logger.info("Uploading lmv files")
-        self.parent.engine.shotgun.upload(entity_type="PublishedFile",
-                                          entity_id=publish_id,
+        self.parent.engine.shotgun.upload(entity_type="Version",
+                                          entity_id=version_id,
                                           path=zip_path,
                                           field_name="sg_translation_files")
 
-        self.parent.engine.shotgun.update(entity_type="PublishedFile",
-                                          entity_id=publish_id,
+        self.parent.engine.shotgun.update(entity_type="Version",
+                                          entity_id=version_id,
                                           data=dict(sg_translation_type="LMV"))
 
         self.logger.info("Updating translation status.")
         self.parent.engine.shotgun.update("PublishedFile", publish_id, dict(sg_translation_status="Completed"))
 
         self.logger.info("LMV processing finished successfully.")
-        self.logger.info('Translate VRED file to LMV file locally (DONE).')
+        self.logger.info('Translate Alias file to LMV file locally (DONE).')
 
     def _get_thumbnail_data(self, item, source_temporal_path):
         path = item.get_thumbnail_as_path()
@@ -337,8 +340,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
     def _get_lmv_target_path(self, item):
         root_path = item.properties.publish_template.root_path
-        publish_id = str(item.properties.sg_publish_data['id'])
-        target_path = os.path.join(root_path, 'translations', 'lmv', publish_id)
+        version_id = str(item.properties.sg_version_data['id'])
+        target_path = os.path.join(root_path, 'translations', 'lmv', version_id)
         images_path = os.path.join(root_path, 'translations', 'images')
         self.makedirs(images_path)
 
@@ -404,7 +407,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         publish_type = self.get_publish_type(settings, item)
         item.local_properties.publish_type = publish_type
-        self._copy_work_to_publish(settings, item)
         
         # Create version
         path = item.properties['path']
@@ -412,6 +414,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         name, extension = os.path.splitext(file_name)
         item.properties['publish_name'] = name
         super(AliasPublishLMVProcessedFilePlugin, self).publish(settings, item)
+        
+        self._copy_work_to_publish(settings, item)
 
         thumbnail_path = item.get_thumbnail_as_path()
         if not thumbnail_path and "thumb_small_path" in item.properties:
