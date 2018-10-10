@@ -13,6 +13,9 @@ import traceback
 from subprocess import check_call
 from subprocess import CalledProcessError
 
+import tempfile
+import shutil
+
 import sgtk
 from sgtk.util.filesystem import ensure_folder_exists
 
@@ -174,8 +177,9 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
             return
 
         fields = work_template.get_fields(source_path)
+        publish_path = publish_template.apply_fields(fields)
 
-        return publish_template.apply_fields(fields)
+        return os.path.join(self.tmpdir, os.path.basename(publish_path))
 
     def _copy_work_to_publish(self, settings, item):
         # Validate templates
@@ -232,6 +236,8 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
                 return publish_type
 
     def publish(self, settings, item):
+        self.tmpdir = tempfile.mkdtemp(prefix='translations_')
+        
         item.properties["publish_template"] = item.properties[self.publish_template_key]
         item.properties["work_template"] = item.properties[self.work_template_key]
 
@@ -244,6 +250,8 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
         self.parent.engine.shotgun.update('PublishedFile', int(item.properties.sg_publish_data['id']), {
             'sg_translation_status': 'Completed'
         })
+        
+        shutil.rmtree(self.tmpdir)
 
     @property
     def item_filters(self):
