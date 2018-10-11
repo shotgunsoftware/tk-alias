@@ -124,3 +124,14 @@ class AliasPublishFilePlugin(HookBaseClass):
             "visible": True,
             "enabled": False
         }
+    
+    @property
+    def item_filters(self):
+        """
+        List of item types that this plugin is interested in.
+
+        Only items matching entries in this list will be presented to the
+        accept() method. Strings can contain glob patters such as *, for example
+        ["maya.*", "file.maya"]
+        """
+        return ["*"]
