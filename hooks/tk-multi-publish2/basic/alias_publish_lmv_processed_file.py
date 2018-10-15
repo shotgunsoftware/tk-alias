@@ -14,8 +14,6 @@ import shutil
 import base64
 import tempfile
 import traceback
-from subprocess import check_call
-from subprocess import CalledProcessError
 from subprocess import Popen, PIPE, STDOUT
 
 import sgtk
@@ -25,6 +23,8 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
+    TMPDIR = None
+
     @property
     def codename(self):
         return self.parent.engine.alias_codename
@@ -122,7 +122,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         return False
 
     def accept(self, settings, item):
-        
         """
         Method called by the publisher to determine if an item is of any
         interest to this plugin. Only items matching the filters defined via the
@@ -149,6 +148,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         """
         base_accept = super(AliasPublishLMVProcessedFilePlugin, self).accept(settings, item)
         base_accept.update({
+            "accepted": True,
+            "visible": True,
             "checked": True,
             "enabled": False
         })
@@ -177,25 +178,28 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         # PublishedFile id
         publish_id = item.properties.sg_publish_data["id"]
+        
+        # Version id
+        version_id = item.properties.sg_version_data["id"]
 
         # Get translator
         translator = self._get_translator()
 
         # Temporal dir
-        tmpdir = tempfile.mkdtemp(prefix='sgtk_')
+        self.TMPDIR = tempfile.mkdtemp(prefix='sgtk_')
 
         # Alias file name
         file_name = os.path.basename(source_path)
 
         # JSON file
         self.logger.info("Creating JSON file")
-        index_path = os.path.join(tmpdir, 'index.json')
+        index_path = os.path.join(self.TMPDIR, 'index.json')
         with open(index_path, 'w') as _:
             pass
 
         # Copy source file locally
         self.logger.info("Copy file {} locally.".format(source_path))
-        source_path_temporal = os.path.join(tmpdir, file_name)
+        source_path_temporal = os.path.join(self.TMPDIR, file_name)
         shutil.copyfile(source_path, source_path_temporal)
 
         # Execute translation command
@@ -214,19 +218,19 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             if not os.path.exists(target_path_parent):
                 self.makedirs(target_path_parent)
 
-            output_directory = os.path.join(tmpdir, "output")
+            output_directory = os.path.join(self.TMPDIR, "output")
 
             # Rename svf file
             name, _ = os.path.splitext(file_name)
             svf_file_old_name = "{}.svf".format(name)
-            svf_file_new_name = "{}.svf".format(publish_id)
+            svf_file_new_name = "{}.svf".format(version_id)
             source_file = os.path.join(output_directory, "1", svf_file_old_name)
             target_file = os.path.join(output_directory, "1", svf_file_new_name)
             os.rename(source_file, target_file)
 
             shutil.copytree(output_directory, target_path)
 
-            base_name = os.path.join(tmpdir, "{}".format(publish_id))
+            base_name = os.path.join(self.TMPDIR, "{}".format(version_id))
 
             self.logger.info("LMV files copied.")
         else:
@@ -244,8 +248,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             if not os.path.exists(images_path_temporal):
                 self.makedirs(images_path_temporal)
 
-            thumb_big_filename = "{}.jpg".format(publish_id)
-            thumb_small_filename = "{}_thumb.jpg".format(publish_id)
+            thumb_big_filename = "{}.jpg".format(version_id)
+            thumb_small_filename = "{}_thumb.jpg".format(version_id)
             thumb_big_path = os.path.join(images_path_temporal, thumb_big_filename)
             thumb_small_path = os.path.join(images_path_temporal, thumb_small_filename)
 
@@ -266,8 +270,10 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
                                            root_dir=output_directory)
 
             self.logger.info("Moving images")
-            shutil.move(thumb_small_path, images_path)
-            shutil.move(thumb_big_path, images_path)
+            shutil.copy(thumb_small_path, images_path)
+            shutil.copy(thumb_big_path, images_path)
+
+            item.properties["thumb_small_path"] = thumb_small_path
         else:
             self.logger.info("ZIP package without images")
             zip_path = shutil.make_archive(base_name=base_name,
@@ -275,23 +281,20 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
                                            root_dir=output_directory)
 
         self.logger.info("Uploading lmv files")
-        self.parent.engine.shotgun.upload(entity_type="PublishedFile",
-                                          entity_id=publish_id,
+        self.parent.engine.shotgun.upload(entity_type="Version",
+                                          entity_id=version_id,
                                           path=zip_path,
                                           field_name="sg_translation_files")
 
-        self.parent.engine.shotgun.update(entity_type="PublishedFile",
-                                          entity_id=publish_id,
+        self.parent.engine.shotgun.update(entity_type="Version",
+                                          entity_id=version_id,
                                           data=dict(sg_translation_type="LMV"))
-
-        self.logger.info("Cleaning...")
-        shutil.rmtree(tmpdir)
 
         self.logger.info("Updating translation status.")
         self.parent.engine.shotgun.update("PublishedFile", publish_id, dict(sg_translation_status="Completed"))
 
         self.logger.info("LMV processing finished successfully.")
-        self.logger.info('Translate VRED file to LMV file locally (DONE).')
+        self.logger.info('Translate Alias file to LMV file locally (DONE).')
 
     def _get_thumbnail_data(self, item, source_temporal_path):
         path = item.get_thumbnail_as_path()
@@ -337,8 +340,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
     def _get_lmv_target_path(self, item):
         root_path = item.properties.publish_template.root_path
-        publish_id = str(item.properties.sg_publish_data['id'])
-        target_path = os.path.join(root_path, 'translations', 'lmv', publish_id)
+        version_id = str(item.properties.sg_version_data['id'])
+        target_path = os.path.join(root_path, 'translations', 'lmv', version_id)
         images_path = os.path.join(root_path, 'translations', 'images')
         self.makedirs(images_path)
 
@@ -404,7 +407,27 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         publish_type = self.get_publish_type(settings, item)
         item.local_properties.publish_type = publish_type
+        
+        # Create version
+        path = item.properties['path']
+        file_name = os.path.basename(path)
+        name, extension = os.path.splitext(file_name)
+        item.properties['publish_name'] = name
+        super(AliasPublishLMVProcessedFilePlugin, self).publish(settings, item)
+        
         self._copy_work_to_publish(settings, item)
+
+        thumbnail_path = item.get_thumbnail_as_path()
+        if not thumbnail_path and "thumb_small_path" in item.properties:
+            self.parent.engine.shotgun.upload_thumbnail(entity_type="Version",
+                                                        entity_id=item.properties["sg_version_data"]["id"],
+                                                        path=item.properties["thumb_small_path"])
+
+        try:
+            shutil.rmtree(self.TMPDIR)
+        except Exception as e:
+            pass
+
 
     @property
     def item_filters(self):

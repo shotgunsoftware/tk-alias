@@ -517,7 +517,7 @@ class AliasEngine(tank.platform.Engine):
                 raise TankError("Can't save file: a lock for this path already exists")
             self.last_opened_file = path
         if parent in self.SYNC_APPS:
-            self.send_and_wait(message=FileSaveCommand(path))
+            self.send_and_wait(message=FileSaveCommand(path), timeout=120)
         else:
             self.send_and_wait_async(message=FileSaveCommand(path), timeout=120, cb=check_lock)
 
@@ -715,11 +715,11 @@ class AliasEngine(tank.platform.Engine):
 
     def save_after_publish(self, path):
         """Save the scene after publish in order to get a new version in the workfiles folder."""
-        self.send_and_wait(FileSaveCommand(path))
+        self.send_and_wait(FileSaveCommand(path), timeout=120)
 
     def save_before_publish(self, path):
         """Save the scene before publish the file."""
-        self.send_and_wait(FileSaveCommand(path))
+        self.send_and_wait(FileSaveCommand(path), timeout=120)
 
 class AppCommand(object):
     """

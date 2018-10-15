@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
+import os
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -64,3 +65,10 @@ class PublishVersionPlugin(HookBaseClass):
             "checked": True,
             "enabled": False
         }
+    
+    def publish(self, settings, item):
+        path = item.properties['path']
+        file_name = os.path.basename(path)
+        name, extension = os.path.splitext(file_name)
+        item.properties['publish_name'] = name
+        super(PublishVersionPlugin, self).publish(settings, item)
