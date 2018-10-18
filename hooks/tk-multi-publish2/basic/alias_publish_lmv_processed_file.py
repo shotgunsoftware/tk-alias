@@ -290,9 +290,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
                                           entity_id=version_id,
                                           data=dict(sg_translation_type="LMV"))
 
-        self.logger.info("Updating translation status.")
-        self.parent.engine.shotgun.update("PublishedFile", publish_id, dict(sg_translation_status="Completed"))
-
         self.logger.info("LMV processing finished successfully.")
         self.logger.info('Translate Alias file to LMV file locally (DONE).')
 
