@@ -246,11 +246,6 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
 
         super(AliasPublishTranslatedFilePlugin, self).publish(settings, item)
 
-        self.logger.info("Updating translation status.")
-        self.parent.engine.shotgun.update('PublishedFile', int(item.properties.sg_publish_data['id']), {
-            'sg_translation_status': 'Completed'
-        })
-        
         shutil.rmtree(self.tmpdir)
 
     @property
