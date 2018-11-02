@@ -52,7 +52,6 @@ class AliasEngine(tank.platform.Engine):
 
     async_callbacks = {}
     alias_codename = "autostudio"
-    SYNC_APPS = ['tk-multi-snapshot']
 
     def pre_app_init(self):
         """
@@ -516,10 +515,7 @@ class AliasEngine(tank.platform.Engine):
             if not allowed_to_open:
                 raise TankError("Can't save file: a lock for this path already exists")
             self.last_opened_file = path
-        if parent in self.SYNC_APPS:
-            self.send_and_wait(message=FileSaveCommand(path), timeout=120)
-        else:
-            self.send_and_wait_async(message=FileSaveCommand(path), timeout=120, cb=check_lock)
+        self.send_and_wait(message=FileSaveCommand(path), timeout=120)
 
     def reset_scene(self, current_file=None):
         """
@@ -564,7 +560,7 @@ class AliasEngine(tank.platform.Engine):
         Query Alias for the path of the current .wire file. Returns the empty
         string if no file is open.
         """
-        message = self.send_and_wait(message=CurrentFileCommand(), command="CurrentFileAck", timeout=3)
+        message = self.send_and_wait(message=CurrentFileCommand(), command="CurrentFileAck", timeout=5)
         if message and "openedFile" in message:
             self.current_file = message["openedFile"]
             return self.current_file
