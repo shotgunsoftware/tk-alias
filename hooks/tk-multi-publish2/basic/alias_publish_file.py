@@ -11,6 +11,7 @@
 import os
 
 import sgtk
+from commands import SceneBreakdownCommand, CurrentFileCommand
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -85,9 +86,13 @@ class AliasPublishFilePlugin(HookBaseClass):
         return True
 
     def publish(self, settings, item):
-        super(AliasPublishFilePlugin, self).publish(settings, item)
         publisher = self.parent
         engine = publisher.engine
+        # add dependencies for the base class to register when publishing
+        item.properties["publish_dependencies"] = self._obtain_references()
+
+        engine.save_before_publish(item.properties["path"])
+        super(AliasPublishFilePlugin, self).publish(settings, item)
         self.logger.info("Saving new version")
         engine.save_after_publish(item.properties["next_version_path"])
 
@@ -123,3 +128,27 @@ class AliasPublishFilePlugin(HookBaseClass):
             "visible": True,
             "enabled": False
         }
+
+    @property
+    def item_filters(self):
+        """
+        List of item types that this plugin is interested in.
+
+        Only items matching entries in this list will be presented to the
+        accept() method. Strings can contain glob patters such as *, for example
+        ["maya.*", "file.maya"]
+        """
+        return ["*"]
+
+    def _obtain_references(self):
+        engine = self.parent.engine
+        ref_paths = set()
+        message = engine.send_and_wait(message=SceneBreakdownCommand(), command="RefFileList")
+
+        if message:
+            for msg in message["refs"]:
+                ref_path = msg['path'].replace("/", os.path.sep)
+                if ref_path:
+                    ref_paths.add(ref_path)
+
+        return list(ref_paths)

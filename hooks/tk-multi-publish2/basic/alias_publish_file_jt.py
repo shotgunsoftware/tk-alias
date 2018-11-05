@@ -44,9 +44,23 @@ class AliasPublishJTFilePlugin(HookBaseClass):
 
     @property
     def description(self):
+        format_name = "JT"
+
         return """
-        Publishes the file to Shotgun in JT format.
-        """
+        <p>
+            This plugin exports the alias file to the <b>{format_name}</b> format. 
+        </p> 
+
+        <p>
+            Any saved data will be exported to the path defined by this plugin's configured <b>Publish Template</b> 
+            setting. 
+        </p> 
+
+        <p>
+            Publishing this format will allow <b>{format_name}</b> files to be loaded and managed in an Alias scene by 
+            Shotgun.
+        </p> 
+        """.format(format_name=format_name)
 
     def _translate_file(self, source_path, target_path, item):
         file_extension = item.properties.get(self.translator_key).value

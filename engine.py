@@ -23,6 +23,7 @@ import webbrowser
 import unicodedata
 import tempfile
 from datetime import datetime
+import uuid
 
 import tank
 from PySide import QtCore, QtGui
@@ -99,6 +100,7 @@ class AliasEngine(tank.platform.Engine):
         """
         logging.basicConfig()
         self.__logger = self.logger
+        self.current_file = ""
 
         self.log_info("Initializing tk-alias engine")
 
@@ -210,7 +212,7 @@ class AliasEngine(tank.platform.Engine):
                 message = message.replace("\\", "/")
                 decoded = json.loads(message)
                 if decoded["command"] == "CommandCompleted":
-                    if decoded["status"] == u'ok' and self.async_callbacks[decoded["initialCommand"]]:
+                    if decoded["status"] == u'ok' and decoded["initialCommand"] in self.async_callbacks:
                         self.log_info('\n* Execute async for {0}\n'.format(decoded))
                         self.async_callbacks[decoded["initialCommand"]]()
                 elif decoded["command"] == "PidResponse":
@@ -373,7 +375,7 @@ class AliasEngine(tank.platform.Engine):
         self._add_app_menu(self.commands_by_app, buttons, globals.callbacks)
 
         self.log_info(buttons)
-        self.send_and_wait_async(message=MenuRebuildCommand(buttons))
+        self.send_and_wait(message=MenuRebuildCommand(buttons))
 
         self.available_callbacks = ",".join(globals.callbacks.keys())
         self.log_info("Available callbacks: {}".format(self.available_callbacks))
@@ -515,9 +517,9 @@ class AliasEngine(tank.platform.Engine):
                 raise TankError("Can't save file: a lock for this path already exists")
             self.last_opened_file = path
         if parent in self.SYNC_APPS:
-            self.send_and_wait(message=FileSaveCommand(path), timeout=15)
+            self.send_and_wait(message=FileSaveCommand(path), timeout=120)
         else:
-            self.send_and_wait_async(message=FileSaveCommand(path), timeout=120, cb=check_lock)
+            self.send_and_wait(message=FileSaveCommand(path))
 
     def reset_scene(self, current_file=None):
         """
@@ -526,7 +528,7 @@ class AliasEngine(tank.platform.Engine):
         """
         if current_file:
             self.log_info("Resetting scene")
-            self.send_and_wait(message=ResetCommand(), timeout=5)
+            self.send_and_wait(message=ResetCommand())
 
             # Notify the file usage hook that the file was closed
             self.current_file_closed(current_file=current_file)
@@ -562,11 +564,12 @@ class AliasEngine(tank.platform.Engine):
         Query Alias for the path of the current .wire file. Returns the empty
         string if no file is open.
         """
-        message = self.send_and_wait(message=CurrentFileCommand(), command="CurrentFileAck", timeout=2)
-        if message and message.has_key("openedFile"):
-            return message["openedFile"]
+        message = self.send_and_wait(message=CurrentFileCommand(), command="CurrentFileAck", timeout=5)
+        if message and "openedFile" in message:
+            self.current_file = message["openedFile"]
+            return self.current_file
         else:
-            return ""
+            return self.current_file
 
     def current_file_closed(self, current_file=None):
         """
@@ -671,26 +674,25 @@ class AliasEngine(tank.platform.Engine):
         globals.session.send(command)
 
     def export_variants(self):
-        if not hasattr(self, "current_file"):
+        if not hasattr(self, "current_file") or not self.current_file:
             current_file = self.get_current_file()
         else:
-            if self.current_file is not None:
-                current_file = self.current_file
-            else:
-                current_file = self.get_current_file()
+            current_file = self.current_file
 
-        # file_name_prefix = str(uuid.uuid4()).replace("-", "")
-        current_file_name, current_file_extension = os.path.splitext(os.path.basename(current_file))
-        file_name_prefix = "{}-variant-".format(current_file_name)
+        if not current_file:
+            file_name_prefix = str(uuid.uuid4()).replace("-", "")
+        else:
+            current_file_name, current_file_extension = os.path.splitext(os.path.basename(current_file))
+            file_name_prefix = "{}-variant-".format(current_file_name)
+
         temp_dir = tempfile.mkdtemp()
 
         try:
-            results = self.send_and_wait(
-                message=ExportVariantsCommand(file_name_prefix, temp_dir),
-                timeout=120,
-                command="CurrentVariants"
-            )
-        except:
+            results = self.send_and_wait(message=ExportVariantsCommand(file_name_prefix, temp_dir),
+                                         timeout=120,
+                                         command="CurrentVariants")
+        except Exception as e:
+            self.logger.exception(e)
             results = None
 
         return {
@@ -700,12 +702,11 @@ class AliasEngine(tank.platform.Engine):
 
     def export_annotations(self):
         try:
-            results = self.send_and_wait(
-                message=ExportAnnotationsCommand(),
-                timeout=120,
-                command="CurrentAnnotations"
-            )
-        except:
+            results = self.send_and_wait(message=ExportAnnotationsCommand(),
+                                         timeout=120,
+                                         command="CurrentAnnotations")
+        except Exception as e:
+            self.logger.exception(e)
             results = None
 
         return {
@@ -713,11 +714,12 @@ class AliasEngine(tank.platform.Engine):
         }
 
     def save_after_publish(self, path):
-        """
-        Save the scene after publish in order to get a new version in the workfiles folder
-        """
-        self.send_and_wait(FileSaveCommand(path), timeout=1)
+        """Save the scene after publish in order to get a new version in the workfiles folder."""
+        self.send_and_wait(FileSaveCommand(path), timeout=120)
 
+    def save_before_publish(self, path):
+        """Save the scene before publish the file."""
+        self.send_and_wait(FileSaveCommand(path), timeout=60)
 
 class AppCommand(object):
     """

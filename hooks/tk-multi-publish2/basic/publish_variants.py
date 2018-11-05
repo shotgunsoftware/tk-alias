@@ -84,7 +84,11 @@ class PublishVariantsPlugin(HookBaseClass):
             return
 
         for variant in variants.get("files"):
-            variant_name, variant_path = variant.split(";")
+            try:
+                variant_name, variant_path = variant.split(";")
+            except Exception as e:
+                engine.logger.exception(e)
+                continue
 
             note_data = {
                 "project": item.context.project,
@@ -110,3 +114,17 @@ class PublishVariantsPlugin(HookBaseClass):
         :param item: Item to process
         """
         self.logger.info("Variants published successfully")
+
+    @property
+    def description(self):
+        return """
+        <p>
+            This plugin exports all Variant images created in Alias and makes a Note in Shotgun for each one. 
+        </p>
+        <p>  
+            All Notes are linked this version & file. Use this to sync all review notes made in Alias with Shotgun. 
+        </p>
+        <p>
+            To see the Variant images that will be exported, check the Alias Variant Lister.
+        </p> 
+        """
