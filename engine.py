@@ -519,7 +519,7 @@ class AliasEngine(tank.platform.Engine):
         if parent in self.SYNC_APPS:
             self.send_and_wait(message=FileSaveCommand(path), timeout=120)
         else:
-            self.send_and_wait_async(message=FileSaveCommand(path), timeout=120, cb=check_lock)
+            self.send_and_wait(message=FileSaveCommand(path))
 
     def reset_scene(self, current_file=None):
         """
@@ -564,7 +564,7 @@ class AliasEngine(tank.platform.Engine):
         Query Alias for the path of the current .wire file. Returns the empty
         string if no file is open.
         """
-        message = self.send_and_wait(message=CurrentFileCommand(), command="CurrentFileAck", timeout=3)
+        message = self.send_and_wait(message=CurrentFileCommand(), command="CurrentFileAck", timeout=5)
         if message and "openedFile" in message:
             self.current_file = message["openedFile"]
             return self.current_file
@@ -719,7 +719,7 @@ class AliasEngine(tank.platform.Engine):
 
     def save_before_publish(self, path):
         """Save the scene before publish the file."""
-        self.send_and_wait(FileSaveCommand(path), timeout=120)
+        self.send_and_wait(FileSaveCommand(path), timeout=60)
 
 class AppCommand(object):
     """
