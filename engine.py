@@ -52,6 +52,7 @@ class AliasEngine(tank.platform.Engine):
 
     async_callbacks = {}
     alias_codename = "autostudio"
+    SYNC_APPS = ['tk-multi-snapshot']
 
     def pre_app_init(self):
         """
@@ -515,7 +516,10 @@ class AliasEngine(tank.platform.Engine):
             if not allowed_to_open:
                 raise TankError("Can't save file: a lock for this path already exists")
             self.last_opened_file = path
-        self.send_and_wait(message=FileSaveCommand(path), timeout=120)
+        if parent in self.SYNC_APPS:
+            self.send_and_wait(message=FileSaveCommand(path), timeout=120)
+        else:
+            self.send_and_wait(message=FileSaveCommand(path))
 
     def reset_scene(self, current_file=None):
         """
@@ -715,7 +719,7 @@ class AliasEngine(tank.platform.Engine):
 
     def save_before_publish(self, path):
         """Save the scene before publish the file."""
-        self.send_and_wait(FileSaveCommand(path), timeout=120)
+        self.send_and_wait(FileSaveCommand(path), timeout=60)
 
 class AppCommand(object):
     """
