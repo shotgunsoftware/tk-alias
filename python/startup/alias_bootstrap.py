@@ -14,7 +14,7 @@ from os.path import dirname, abspath, join
 from sgtk.util import prepend_path_to_env_var
 
 
-def compute_environment(extra_args, engine_name=None, context=None):
+def compute_environment(extra_args, engine_name=None, context=None, file_to_open=None):
     env = {}
     
     startup_path = dirname(abspath(sys.modules[compute_environment.__module__].__file__))
@@ -60,6 +60,10 @@ def compute_environment(extra_args, engine_name=None, context=None):
         os.environ['TANK_CONTEXT'] = context
         env['TANK_CONTEXT'] = os.environ['TANK_CONTEXT']
     
+    if file_to_open:
+        os.environ['SGTK_FILE_TO_OPEN'] = file_to_open
+        env['SGTK_FILE_TO_OPEN'] = os.environ['SGTK_FILE_TO_OPEN']
+        
     subprocess.Popen(args, close_fds=True)
     
     return env
