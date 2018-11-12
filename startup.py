@@ -81,7 +81,8 @@ class AliasLauncher(SoftwareLauncher):
 
         # determine all environment variables
         required_env = alias_bootstrap.compute_environment(extra_args, self.engine_name,
-                                                           sgtk.context.serialize(self.context))
+                                                           sgtk.context.serialize(self.context),
+                                                           file_to_open)
         # copy the extension across to the deploy folder
         args = alias_bootstrap.compute_args(args)
 
