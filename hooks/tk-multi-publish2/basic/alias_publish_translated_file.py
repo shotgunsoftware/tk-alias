@@ -203,7 +203,7 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
             publish_folder = os.path.dirname(target_path)
             ensure_folder_exists(publish_folder)
             self._translate_file(source_path, target_path, item)
-        except Exception, e:
+        except Exception as e:
             raise Exception(
                 "Failed to copy work file from '%s' to '%s'.\n%s" %
                 (source_path, target_path, traceback.format_exc())
@@ -237,6 +237,7 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
 
         publish_type = self.get_publish_type(settings, item)
         item.local_properties.publish_type = publish_type
+
         super(AliasPublishTranslatedFilePlugin, self).publish(settings, item)
 
     @property

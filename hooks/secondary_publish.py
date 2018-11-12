@@ -220,19 +220,11 @@ class PublishHook(Hook):
                     for variant_file in exported_variants.get("files"):
                         name, path = variant_file.split(";")
 
-                        new_path = path.replace(".tif", ".png").replace("/", "\\")
-
-                        self.parent.engine.convert_variant(path, new_path)
-
                         data = {
                             "project": self.parent.context.project,
                             "user": tank.util.get_current_user(self.parent.tank),
-                            # "sg_status_list": "opn",
                             "subject": "Alias Variant",
                             "content": name,
-                            # "sg_metadata": "",
-                            # "sg_annotations": "",
-                            # "sg_additional_info": "",
                             "note_links": []
                         }
 
@@ -240,12 +232,10 @@ class PublishHook(Hook):
                             data["note_links"].append(self._primary_created_version)
 
                         note = self.parent.shotgun.create("Note", data)
-                        attachment_id = self.parent.shotgun.upload(
-                            entity_type="Note",
-                            entity_id=note.get("id"),
-                            path=new_path,
-                            field_name="sg_thumbnail"
-                        )
+                        self.parent.shotgun.upload(entity_type="Note",
+                                                   entity_id=note.get("id"),
+                                                   path=path,
+                                                   field_name="sg_thumbnail")
 
                     continue
             elif output["name"] == "export_annotations":
