@@ -232,6 +232,8 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
                 return publish_type
 
     def publish(self, settings, item):
+        publish_id = item.properties['sg_publish_data']['id']
+        
         item.properties["publish_template"] = item.properties[self.publish_template_key]
         item.properties["work_template"] = item.properties[self.work_template_key]
 
@@ -239,6 +241,18 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
         item.local_properties.publish_type = publish_type
 
         super(AliasPublishTranslatedFilePlugin, self).publish(settings, item)
+        
+        entities = [
+            {
+                'type': 'PublishedFile',
+                'id': item.properties['sg_publish_data']['id']
+            }
+        ]
+        source_entity = {
+            'type': 'PublishedFile',
+            'id': publish_id
+        }
+        self.parent.engine.shotgun.share_thumbnail(entities=entities, source_entity=source_entity)
 
     @property
     def item_filters(self):
