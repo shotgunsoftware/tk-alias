@@ -99,7 +99,7 @@ class AliasActions(HookBaseClass):
             action_instances.append({
                 "name": "import_new",
                 "params": None,
-                "caption": "Import into New Scene",
+                "caption": "Import into New Stage",
                 "description": "This will import the item into a new scene."
             })
 
