@@ -244,7 +244,10 @@ class AliasActions(HookBaseClass):
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
 
-        command = commands.FileLoadCommand(path, False, create_stage=create_stage)
+        if create_stage:
+            command = commands.StageOpenCommand(path)
+        else:
+            command = commands.FileLoadCommand(path, False, create_stage=create_stage)
         message = self.parent.engine.send_and_wait(command)
         if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
             if message.has_key("status"):
