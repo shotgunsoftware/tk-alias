@@ -231,6 +231,14 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
                 # found a matching type in settings. use it!
                 return publish_type
 
+    def get_publish_name(self, settings, item):
+        target_path = self._get_target_path(item)
+        publisher = self.parent
+        return publisher.util.get_publish_name(
+            target_path,
+            sequence=False
+        )
+
     def publish(self, settings, item):
         publish_id = item.properties['sg_publish_data']['id']
         
