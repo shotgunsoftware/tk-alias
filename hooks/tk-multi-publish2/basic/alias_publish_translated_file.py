@@ -9,9 +9,11 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
-import traceback
+import shutil
 from subprocess import check_call
 from subprocess import CalledProcessError
+import tempfile
+import traceback
 
 import sgtk
 from sgtk.util.filesystem import ensure_folder_exists
@@ -140,6 +142,8 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
 
         translation_command = [os.path.join(alias_translator_dir, executable)]
 
+        temporal_target_path = os.path.join(tempfile.gettempdir(), os.path.basename(target_path))
+
         if licensed:
             translation_command += ["-productKey",
                                     alias_translator_license_prod_key,
@@ -153,10 +157,11 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
         translation_command += ["-i",
                                 source_path,
                                 "-o",
-                                target_path]
+                                temporal_target_path]
 
         try:
             check_call(translation_command)
+            shutil.move(temporal_target_path, target_path)
         except CalledProcessError as e:
             self.logger.error("Error ocurred {!r}".format(e))
             raise Exception("Error ocurred {!r}".format(e))
