@@ -235,7 +235,7 @@ class AliasEngine(tank.platform.Engine):
                     path = decoded["path"]
                     if path:
                         self.log_info("Changing current file")
-                        self.load_file(path, lambda: None)
+                        self.load_file_as_new_stage(path, lambda: None)
                     else:
                         self.log_info("Context did not specify a new file path")
 
@@ -502,6 +502,16 @@ class AliasEngine(tank.platform.Engine):
                 self.log_info("Opening file {!r}".format(path))
                 self.send_async(FileOpenCommand(path), callback)
             self.last_opened_file = path
+
+    def load_file_as_new_stage(self, path, callback):
+        """
+        Load a file as new stage.
+        """
+        # and construct the new context for this path:
+        ctx = self.sgtk.context_from_path(path, self.context)
+
+        if ctx != tank.platform.current_engine().context:
+            self.change_context(ctx)
 
     def save_file(self, path, parent=None):
         """
