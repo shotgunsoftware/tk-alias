@@ -228,7 +228,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             target_file = os.path.join(output_directory, "1", svf_file_new_name)
             os.rename(source_file, target_file)
 
-            shutil.copytree(output_directory, target_path)
+            # shutil.copytree(output_directory, target_path)
 
             base_name = os.path.join(self.TMPDIR, "{}".format(version_id))
 
@@ -270,8 +270,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
                                            root_dir=output_directory)
 
             self.logger.info("Moving images")
-            shutil.copy(thumb_small_path, images_path)
-            shutil.copy(thumb_big_path, images_path)
+            # shutil.copy(thumb_small_path, images_path)
+            # shutil.copy(thumb_big_path, images_path)
 
             item.properties["thumb_small_path"] = thumb_small_path
         else:

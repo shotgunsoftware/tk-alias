@@ -9,9 +9,11 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
-import traceback
+import shutil
 from subprocess import check_call
 from subprocess import CalledProcessError
+import tempfile
+import traceback
 
 import sgtk
 from sgtk.util.filesystem import ensure_folder_exists
@@ -140,6 +142,8 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
 
         translation_command = [os.path.join(alias_translator_dir, executable)]
 
+        temporal_target_path = os.path.join(tempfile.gettempdir(), os.path.basename(target_path))
+
         if licensed:
             translation_command += ["-productKey",
                                     alias_translator_license_prod_key,
@@ -153,10 +157,11 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
         translation_command += ["-i",
                                 source_path,
                                 "-o",
-                                target_path]
+                                temporal_target_path]
 
         try:
             check_call(translation_command)
+            shutil.move(temporal_target_path, target_path)
         except CalledProcessError as e:
             self.logger.error("Error ocurred {!r}".format(e))
             raise Exception("Error ocurred {!r}".format(e))
@@ -231,7 +236,17 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
                 # found a matching type in settings. use it!
                 return publish_type
 
+    def get_publish_name(self, settings, item):
+        target_path = self._get_target_path(item)
+        publisher = self.parent
+        return publisher.util.get_publish_name(
+            target_path,
+            sequence=False
+        )
+
     def publish(self, settings, item):
+        publish_id = item.properties['sg_publish_data']['id']
+        
         item.properties["publish_template"] = item.properties[self.publish_template_key]
         item.properties["work_template"] = item.properties[self.work_template_key]
 
@@ -239,6 +254,18 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
         item.local_properties.publish_type = publish_type
 
         super(AliasPublishTranslatedFilePlugin, self).publish(settings, item)
+        
+        entities = [
+            {
+                'type': 'PublishedFile',
+                'id': item.properties['sg_publish_data']['id']
+            }
+        ]
+        source_entity = {
+            'type': 'PublishedFile',
+            'id': publish_id
+        }
+        self.parent.engine.shotgun.share_thumbnail(entities=entities, source_entity=source_entity)
 
     @property
     def item_filters(self):
