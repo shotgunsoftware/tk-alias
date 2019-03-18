@@ -128,20 +128,64 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
 
         return base_accept
 
+    def _fix_year_in_path(self, path, year=2019, is_license=False):
+        new_path = path if not is_license else os.path.dirname(path)
+        max_iteration = 10
+        current_iteration = 0
+        year_to_test = year
+
+        while not os.path.exists(new_path):
+            current_iteration += 1
+            year_to_test = year + current_iteration
+
+            if current_iteration > max_iteration:
+                raise Exception("Translator not found for {}".format(path))
+
+            new_path = new_path.replace(str(year), str(year_to_test))
+
+        if is_license:
+            file_name = os.path.basename(path)
+            new_path = os.path.join(new_path, file_name)
+
+        return new_path, year_to_test
+
+    def _get_translator_exe(self, path):
+        if os.path.exists(path):
+            return path
+
+        file_name = os.path.basename(path)
+        dir_path = os.path.dirname(path)
+
+        path = os.path.join(dir_path, "translators", file_name)
+
+        if not os.path.exists(path):
+            raise Exception("Translator not found")
+
+        return path
+
     def _translate_file(self, source_path, target_path, item):
         file_extension = item.properties.get(self.translator_key).value
         engine_translator_info = self.engine_translator_info
         translator_info = engine_translator_info.get("alias_translators").get(file_extension)
         executable = translator_info.get("alias_translator_exe")
         licensed = translator_info.get("alias_translator_is_licensed")
-        alias_translator_dir = engine_translator_info.get("alias_translator_dir")
-        alias_translator_license_path = engine_translator_info.get("alias_translator_license_path")
+        alias_translator_dir, new_year = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
+        alias_translator_license_path, new_year = self._fix_year_in_path(
+            engine_translator_info.get("alias_translator_license_path"), is_license=True)
+
         alias_translator_license_prod_key = engine_translator_info.get("alias_translator_license_prod_key")
         alias_translator_license_prod_version = engine_translator_info.get("alias_translator_license_prod_version")
+
+        if new_year > 2019:
+            source = "K"
+            target = chr(ord(source) + (new_year - 2019))
+            alias_translator_license_prod_key = alias_translator_license_prod_key.replace(source, target)
+            alias_translator_license_prod_version = alias_translator_license_prod_version.replace("2019", str(new_year))
+
         alias_translator_license_type = engine_translator_info.get("alias_translator_license_type")
 
-        translation_command = [os.path.join(alias_translator_dir, executable)]
-
+        translator_path = self._get_translator_exe(os.path.join(alias_translator_dir, executable))
+        translation_command = [translator_path]
         temporal_target_path = os.path.join(tempfile.gettempdir(), os.path.basename(target_path))
 
         if licensed:
@@ -162,9 +206,9 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
         try:
             check_call(translation_command)
             shutil.move(temporal_target_path, target_path)
-        except CalledProcessError as e:
+        except Exception as e:
             self.logger.error("Error ocurred {!r}".format(e))
-            raise Exception("Error ocurred {!r}".format(e))
+            raise
 
     def _get_target_path(self, item):
         source_path = item.properties["path"]
