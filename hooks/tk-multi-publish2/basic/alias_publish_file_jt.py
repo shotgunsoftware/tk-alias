@@ -62,19 +62,40 @@ class AliasPublishJTFilePlugin(HookBaseClass):
         </p> 
         """.format(format_name=format_name)
 
+    def _get_translator_exe(self, path):
+        if os.path.exists(path):
+            return path
+
+        file_name = os.path.basename(path)
+        dir_path = os.path.dirname(path)
+
+        path = os.path.join(dir_path, "translators", file_name)
+
+        if not os.path.exists(path):
+            raise Exception("Translator not found")
+
+        return path
+
     def _translate_file(self, source_path, target_path, item):
         file_extension = item.properties.get(self.translator_key).value
         engine_translator_info = self.engine_translator_info
         translator_info = engine_translator_info.get("alias_translators").get(file_extension)
         executable = translator_info.get("alias_translator_exe")
         licensed = translator_info.get("alias_translator_is_licensed")
-        alias_translator_dir = engine_translator_info.get("alias_translator_dir")
-        alias_translator_license_path = engine_translator_info.get("alias_translator_license_path")
+        alias_translator_dir, new_year = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
+        alias_translator_license_path, new_year = self._fix_year_in_path(engine_translator_info.get(
+            "alias_translator_license_path"), is_license=True)
         alias_translator_license_prod_key = engine_translator_info.get("alias_translator_license_prod_key")
         alias_translator_license_prod_version = engine_translator_info.get("alias_translator_license_prod_version")
         alias_translator_license_type = engine_translator_info.get("alias_translator_license_type")
 
-        translation_command = [os.path.join(alias_translator_dir, executable)]
+        translation_command = [self._get_translator_exe(os.path.join(alias_translator_dir, executable))]
+
+        if new_year > 2019:
+            source = "K"
+            target = chr(ord(source) + (new_year - 2019))
+            alias_translator_license_prod_key = alias_translator_license_prod_key.replace(source, target)
+            alias_translator_license_prod_version = alias_translator_license_prod_version.replace("2019", str(new_year))
 
         if licensed:
             translation_command += ["-productKey",

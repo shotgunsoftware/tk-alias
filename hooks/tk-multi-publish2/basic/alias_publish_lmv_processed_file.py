@@ -102,13 +102,33 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         return base_settings
 
+    def _fix_year_in_path(self, path, year=2019, is_license=False):
+        new_path = path if not is_license else os.path.dirname(path)
+        max_iteration = 10
+        current_iteration = 0
+
+        while not os.path.exists(new_path):
+            current_iteration += 1
+            year_to_test = year + current_iteration
+
+            if current_iteration > max_iteration:
+                raise Exception("Translator not found for {}".format(path))
+
+            new_path = new_path.replace(str(year), str(year_to_test))
+
+        if is_license:
+            file_name = os.path.basename(path)
+            new_path = os.path.join(new_path, file_name)
+
+        return new_path
+
     def validate(self, settings, item):
         try:
             engine_translator_info = self.engine_translator_info
             translator_info = engine_translator_info.get("alias_translators")
             lmv_translator = translator_info.get('lmv')
             lmv_translator_executable = lmv_translator.get('alias_translator_exe')
-            alias_translator_dir = engine_translator_info.get("alias_translator_dir")
+            alias_translator_dir = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
             lmv_executable_fullpath = os.path.join(alias_translator_dir, 'LMVExtractor', lmv_translator_executable)
             if os.path.isfile(lmv_executable_fullpath):
                 self.logger.info("LMV validation finished.")
@@ -169,7 +189,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         alias_translators = engine_translator_info.get("alias_translators")
         lmv_translator = alias_translators.get("lmv")
         lmv_translator_exe = lmv_translator.get("alias_translator_exe")
-        alias_translator_dir = engine_translator_info.get("alias_translator_dir")
+        alias_translator_dir = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
 
         return os.path.join(alias_translator_dir, "LMVExtractor", lmv_translator_exe)
 
