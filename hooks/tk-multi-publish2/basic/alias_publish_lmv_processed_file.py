@@ -15,6 +15,7 @@ import base64
 import tempfile
 import traceback
 from subprocess import Popen, PIPE, STDOUT
+import subprocess
 
 import sgtk
 from sgtk.util.filesystem import ensure_folder_exists
@@ -314,30 +315,9 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         self.logger.info('Translate Alias file to LMV file locally (DONE).')
 
     def _get_thumbnail_data(self, item, source_temporal_path):
-        path = item.get_thumbnail_as_path()
-        data = None
+        framework_atf = self.load_framework("tk-framework-atf_v0.x.x")
 
-        if not path:
-            with open(source_temporal_path) as src_file:
-                line = src_file.readline()
-
-                while line != "thumbnail JPEG\n":
-                    line = src_file.readline()
-
-                line = src_file.readline()
-
-                data = []
-                while line != "thumbnail end\n":
-                    data.append(line.replace('Th ', ''))
-                    line = src_file.readline()
-
-                return base64.b64decode(''.join(data))
-
-        if path:
-            with open(path, "rb") as fh:
-                data = fh.read()
-
-        return data
+        return framework_atf.get_thumbnail_data("alias", source_temporal_path)
 
     def _get_target_path(self, item):
         source_path = item.properties["path"]
