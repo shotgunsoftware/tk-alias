@@ -56,4 +56,9 @@ class AliasPublishWREFFilePlugin(HookBaseClass):
             Publishing this format will allow <b>{format_name}</b> files to be loaded and managed in an Alias scene by 
             Shotgun.
         </p> 
+        
+        <p>
+            <b>NOTE:</b> If the current scene contains a WREF file, this WREF Publish will not complete successfully.
+        </p>
+        
         """.format(format_name=format_name)
