@@ -320,6 +320,9 @@ class AliasEngine(tank.platform.Engine):
         # now enumerate all items and create menu objects for them
         self.panel_items = []
         for (cmd_name, cmd_details) in self.commands.items():
+            if 'Screening Room' in cmd_name:
+                continue
+
             if cmd_name != 'Upload Files':
                 self.panel_items.append(AppCommand(cmd_name, cmd_details, self.__logger))
 
@@ -335,6 +338,7 @@ class AliasEngine(tank.platform.Engine):
         for fav in self.get_setting("menu_favourites"):
             app_instance_name = fav["app_instance"]
             menu_name = fav["name"]
+
             # scan through all menu items
             for cmd in self.panel_items:
                  if cmd.get_app_instance_name() == app_instance_name and cmd.name == menu_name:
