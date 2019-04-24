@@ -17,11 +17,8 @@ import commands
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
+
 class AliasActions(HookBaseClass):
-
-    ##############################################################################################################
-    # public interface - to be overridden by deriving classes
-
     def generate_actions(self, sg_data, actions, ui_area):
         """
         Returns a list of action instances for a particular publish.
@@ -138,10 +135,13 @@ class AliasActions(HookBaseClass):
             assignees = data["task_assignees"] or []
             assignees.append(app.context.user)
             app.shotgun.update("Task", sg_data["id"], {"task_assignees": assignees})
+
         elif name == "task_to_ip":
             app.shotgun.update("Task", sg_data["id"], {"sg_status_list": "ip"})
+
         elif name == "publish_clipboard":
             self._copy_to_clipboard(sg_data["path"]["local_path"])
+
         else:
             # resolve path
             path = self.get_publish_path(sg_data)
@@ -155,10 +155,6 @@ class AliasActions(HookBaseClass):
             if name == "texture_node":
                 self._create_texture_node(path, sg_data)
 
-
-    ##############################################################################################################
-    # helper methods which can be subclassed in custom hooks to fine tune the behaviour of things
-
     def _create_reference(self, path, sg_data):
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
@@ -169,16 +165,12 @@ class AliasActions(HookBaseClass):
         self.parent.engine.send_to_alias(commands.FileLoadCommand(path, True, namespace).to_string())
 
     def _do_import(self, path, sg_data):
-        """
-        """
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
 
         self.parent.engine.send_to_alias(commands.FileLoadCommand(path, False).to_string())
 
     def _create_texture_node(self, path, sg_data):
-        """
-        """
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
 
@@ -191,5 +183,6 @@ class AliasActions(HookBaseClass):
         :param text: content to copy
         """
         from sgtk.platform.qt import QtCore, QtGui
+
         app = QtCore.QCoreApplication.instance()
         app.clipboard().setText(text)
