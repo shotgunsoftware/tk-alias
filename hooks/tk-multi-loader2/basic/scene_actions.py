@@ -11,6 +11,7 @@
 """
 Hook that loads defines all the available actions, broken down by publish type.
 """
+
 import sgtk
 import os
 import commands
@@ -20,9 +21,6 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasActions(HookBaseClass):
-    ##############################################################################################################
-    # public interface - to be overridden by deriving classes
-
     def generate_actions(self, sg_publish_data, actions, ui_area):
         """
         Returns a list of action instances for a particular publish.

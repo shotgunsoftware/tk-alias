@@ -99,7 +99,7 @@ class AliasEngine(tank.platform.Engine):
         Set up everything.
         """
         logging.basicConfig()
-        self.__logger = self.logger
+        # self.__logger = self.logger
         self.current_file = ""
 
         self.log_info("Initializing tk-alias engine")
@@ -107,7 +107,7 @@ class AliasEngine(tank.platform.Engine):
         # Initial values
         globals.run_threads = True
         globals.callbacks = {}
-        globals.callback_runner = CallbackRunner(self.__logger)
+        globals.callback_runner = CallbackRunner(self.logger)
         globals.parent_pid = -1
         globals.current_file = None
         self.message_callbacks = MessageCallbackStore()
@@ -324,7 +324,7 @@ class AliasEngine(tank.platform.Engine):
                 continue
 
             if cmd_name != 'Upload Files':
-                self.panel_items.append(AppCommand(cmd_name, cmd_details, self.__logger))
+                self.panel_items.append(AppCommand(cmd_name, cmd_details, self.logger))
 
         # sort list of commands in name order
         self.panel_items.sort(key=lambda x: x.name)
@@ -463,7 +463,7 @@ class AliasEngine(tank.platform.Engine):
         """
         Log debugging information.
         """
-        self.__logger.info(message)
+        self.logger.info(message)
 
     def load_file(self, path, callback):
         """
@@ -745,7 +745,7 @@ class AppCommand(object):
         self.properties = command_dict["properties"]
         self.callback = command_dict["callback"]
         self.favourite = False
-        self.__logger = logger
+        self.logger = logger
 
     def get_app_name(self):
         """
@@ -797,7 +797,7 @@ class AppCommand(object):
         Adds an app to the callbacks dictionary.
         """
         callbacks[self.name] = self.callback
-        self.__logger.info("Adding {!r} to the callback list".format(self.name))
+        self.logger.info("Adding {!r} to the callback list".format(self.name))
 
 
 # Callback management code
