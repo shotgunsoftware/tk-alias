@@ -14,6 +14,7 @@ Hook that loads defines all the available actions, broken down by publish type.
 import sgtk
 import os
 import commands
+from sgtk.platform.qt import QtGui
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -59,23 +60,14 @@ class AliasActions(HookBaseClass):
         app = self.parent
         app.log_debug("Generate actions called for UI element %s. "
                       "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_data))
+
         action_instances = []
-
-        if "assign_task" in actions:
-            action_instances.append({
-                "name": "assign_task",
-                "params": None,
-                "caption": "Assign Task to yourself",
-                "description": "Assign this task to yourself."
-            })
-
-        if "task_to_ip" in actions:
-            action_instances.append({
-                "name": "task_to_ip",
-                "params": None,
-                "caption": "Set to In Progress",
-                "description": "Set the task status to In Progress."
-            })
+        try:
+            # call base class first
+            action_instances += HookBaseClass.generate_actions(self, sg_data, actions, ui_area)
+        except AttributeError:
+            # base class doesn't have the method, so ignore and continue
+            pass
 
         if "reference" in actions:
             action_instances.append({
@@ -92,6 +84,12 @@ class AliasActions(HookBaseClass):
                 "caption": "Import into Scene",
                 "description": "This will import the item into the current universe."
             })
+            action_instances.append({
+                "name": "import_new",
+                "params": None,
+                "caption": "Import into New Stage",
+                "description": "This will import the item into a new scene."
+            })
 
         if "texture_node" in actions:
             action_instances.append({
@@ -101,17 +99,41 @@ class AliasActions(HookBaseClass):
                 "description": "This will import the item into the current universe."
             })
 
-        if "publish_clipboard" in actions:
-            if "path" in sg_data and sg_data["path"].get("local_path"):
-                # path field exists and the local path is populated
-                action_instances.append({
-                    "name": "publish_clipboard",
-                    "params": None,
-                    "caption": "Copy path to clipboard",
-                    "description": "Copy the path associated with this publish to the clipboard."
-                })
-
         return action_instances
+
+
+    def execute_multiple_actions(self, actions):
+        """
+        Executes the specified action on a list of items.
+
+        The default implementation dispatches each item from ``actions`` to
+        the ``execute_action`` method.
+
+        The ``actions`` is a list of dictionaries holding all the actions to
+        execute.
+        Each entry will have the following values:
+
+            name: Name of the action to execute
+            sg_data: Publish information coming from Shotgun
+            params: Parameters passed down from the generate_actions hook.
+
+        .. note::
+            This is the default entry point for the hook. It reuses the
+            ``execute_action`` method for backward compatibility with hooks
+            written for the previous version of the loader.
+
+        .. note::
+            The hook will stop applying the actions on the selection if an error
+            is raised midway through.
+
+        :param list actions: Action dictionaries.
+        """
+        for single_action in actions:
+            name = single_action["name"]
+            sg_data = single_action["sg_data"]
+            params = single_action["params"]
+            self.execute
+
 
     def execute_action(self, name, params, sg_data):
         """
@@ -127,33 +149,29 @@ class AliasActions(HookBaseClass):
         app.log_debug("Execute action called for action %s. "
                       "Parameters: %s. Publish Data: %s" % (name, params, sg_data))
 
-        if name == "assign_task":
-            if app.context.user is None:
-                raise Exception("Cannot establish current user!")
+        if name == "reference":
+            path = self.get_publish_path(sg_data)
+            self._create_reference(path, sg_data)
 
-            data = app.shotgun.find_one("Task", [["id", "is", sg_data["id"]]], ["task_assignees"] )
-            assignees = data["task_assignees"] or []
-            assignees.append(app.context.user)
-            app.shotgun.update("Task", sg_data["id"], {"task_assignees": assignees})
+        elif name == "import":
+            path = self.get_publish_path(sg_data)
+            self._do_import(path, sg_data, create_stage=False)
 
-        elif name == "task_to_ip":
-            app.shotgun.update("Task", sg_data["id"], {"sg_status_list": "ip"})
+        elif name == "import_new":
+            path = self.get_publish_path(sg_data)
+            self._do_import(path, sg_data, create_stage=True)
 
-        elif name == "publish_clipboard":
-            self._copy_to_clipboard(sg_data["path"]["local_path"])
+        elif name == "texture_node":
+            path = self.get_publish_path(sg_data)
+            self._create_texture_node(path, sg_data)
 
         else:
-            # resolve path
-            path = self.get_publish_path(sg_data)
+            try:
+                HookBaseClass.execute_action(self, name, params, sg_data)
+            except AttributeError, e:
+                # base class doesn't have the method, so ignore and continue
+                pass
 
-            if name == "reference":
-                self._create_reference(path, sg_data)
-
-            if name == "import":
-                self._do_import(path, sg_data)
-
-            if name == "texture_node":
-                self._create_texture_node(path, sg_data)
 
     def _create_reference(self, path, sg_data):
         if not os.path.exists(path):
@@ -162,27 +180,115 @@ class AliasActions(HookBaseClass):
         namespace = "%s %s" % (sg_data.get("entity").get("name"), sg_data.get("name"))
         namespace = namespace.replace(" ", "_")
 
-        self.parent.engine.send_to_alias(commands.FileLoadCommand(path, True, namespace).to_string())
+        command = commands.FileLoadCommand(path, True, namespace)
+        message = self.parent.engine.send_and_wait(command)
+        if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
+            if message.has_key("status"):
+                if (message["status"] == "ok"):
+                    QtGui.QMessageBox.information(
+                        QtGui.QApplication.activeWindow(),
+                        "Create Reference",
+                        "File '{!r}' referenced successfully.".format(
+                            sg_data.get("name","NO NAME")
+                        )
+                    )
+                elif (message["status"] == "already referenced"):
+                    QtGui.QMessageBox.warning(
+                        QtGui.QApplication.activeWindow(),
+                        "Create Reference",
+                        "The selected file {!r} is already referenced. Different versions are treated as the same file".format(
+                          sg_data.get("name", "NO NAME")
+                        )
+                    )
+                elif (message["status"] == "invalid json"):
+                    QtGui.QMessageBox.warning(
+                        QtGui.QApplication.activeWindow(),
+                        "Create Reference",
+                        "Unexpected JSON structure or JSON field value with the file {!r}".format(
+                            sg_data.get("name", "NO NAME")
+                        )
+                    )
+                else:
+                    QtGui.QMessageBox.warning(
+                        QtGui.QApplication.activeWindow(),
+                        "Create Reference",
+                        "An error occurred when referencing the file {!r}.".format(
+                            sg_data.get("name","NO NAME")
+                        )
+                    )
 
-    def _do_import(self, path, sg_data):
+    def _do_import(self, path, sg_data, create_stage):
+        """
+        Import a file into the current scene.
+        """
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
 
-        self.parent.engine.send_to_alias(commands.FileLoadCommand(path, False).to_string())
+        if create_stage:
+            command = commands.StageOpenCommand(path)
+        else:
+            command = commands.FileLoadCommand(path, False, create_stage=create_stage)
+        message = self.parent.engine.send_and_wait(command)
+        if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
+            if message.has_key("status"):
+                if message["status"] == "ok":
+                    QtGui.QMessageBox.information(
+                        QtGui.QApplication.activeWindow(),
+                        "Import File",
+                        "File '{!r}' imported successfully.".format(
+                            sg_data.get("name","NO NAME")
+                        )
+                    )
+                elif message["status"] == "invalid json":
+                    QtGui.QMessageBox.warning(
+                        QtGui.QApplication.activeWindow(),
+                        "Import File",
+                        "Unexpected JSON structure or JSON field value with the file {!r}".format(
+                            sg_data.get("name", "NO NAME")
+                        )
+                    )
+                else:
+                    QtGui.QMessageBox.warning(
+                        QtGui.QApplication.activeWindow(),
+                        "Import File",
+                        "The selected file {!r} could not be imported ({}).".format(
+                            sg_data.get("name","NO NAME"),
+                            message["status"]
+                        )
+                    )
 
     def _create_texture_node(self, path, sg_data):
+        """
+        """
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
 
-        self.parent.engine.send_to_alias(commands.LoadImageCommand(path).to_string())
-
-    def _copy_to_clipboard(self, text):
-        """
-        Helper method - copies the given text to the clipboard
-
-        :param text: content to copy
-        """
-        from sgtk.platform.qt import QtCore, QtGui
-
-        app = QtCore.QCoreApplication.instance()
-        app.clipboard().setText(text)
+        command = commands.LoadImageCommand(path)
+        message = self.parent.engine.send_and_wait(command)
+        if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
+            if message.has_key("status"):
+                if message["status"] == "ok":
+                    QtGui.QMessageBox.information(
+                        QtGui.QApplication.activeWindow(),
+                        "Import Image",
+                        "File '{!r}' imported successfully.".format(
+                            sg_data.get("name","NO NAME")
+                        )
+                    )
+                elif message["status"] == "invalid json":
+                    QtGui.QMessageBox.warning(
+                        QtGui.QApplication.activeWindow(),
+                        "Import Image",
+                        "Unexpected JSON structure or JSON field value with the file {!r}".format(
+                            sg_data.get("name", "NO NAME")
+                        )
+                    )
+                else:
+                    QtGui.QMessageBox.warning(
+                        QtGui.QApplication.activeWindow(),
+                        "Import Image",
+                        "An error occurred when creating the canvas with the file {!r}.".format(
+                            sg_data.get("name","NO NAME"),
+                            message["status"]
+                        )
+                    )
