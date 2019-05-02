@@ -133,7 +133,7 @@ class AliasActions(HookBaseClass):
             sg_data = single_action["sg_data"]
             params = single_action["params"]
             self.execute
-
+            self.execute_action(name, params, sg_data)
 
     def execute_action(self, name, params, sg_data):
         """
