@@ -130,10 +130,10 @@ class AliasActions(HookBaseClass):
         """
         for single_action in actions:
             name = single_action["name"]
-            sg_data = single_action["sg_data"]
+            sg_publish_data = single_action["sg_publish_data"]
             params = single_action["params"]
-            self.execute
-            self.execute_action(name, params, sg_data)
+
+            self.execute_action(name, params, sg_publish_data)
 
     def execute_action(self, name, params, sg_data):
         """
