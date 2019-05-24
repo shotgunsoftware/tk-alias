@@ -11,7 +11,6 @@
 import os
 import shutil
 from subprocess import check_call
-from subprocess import CalledProcessError
 import tempfile
 import traceback
 

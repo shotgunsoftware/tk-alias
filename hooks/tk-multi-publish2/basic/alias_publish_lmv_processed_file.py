@@ -11,14 +11,10 @@
 import os
 import errno
 import shutil
-import base64
 import tempfile
-import traceback
 from subprocess import Popen, PIPE, STDOUT
-import subprocess
 
 import sgtk
-from sgtk.util.filesystem import ensure_folder_exists
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -194,7 +190,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         return os.path.join(alias_translator_dir, "LMVExtractor", lmv_translator_exe)
 
-    def _translate_file(self, source_path, target_path, item):
+    def _translate_file(self, source_path, item):
         self.logger.info("Starting the translation")
 
         # PublishedFile id
@@ -231,14 +227,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             self.logger.debug("LMV processing ... [{}]".format(lmv_subprocess.stdout.next().replace('\n', '')))
 
         if lmv_subprocess.returncode == 0:
-            target_path_parent = os.path.dirname(target_path)
-
-            if os.path.exists(target_path):
-                shutil.rmtree(target_path)
-
-            if not os.path.exists(target_path_parent):
-                self.makedirs(target_path_parent)
-
             output_directory = os.path.join(self.TMPDIR, "output")
 
             # Rename svf file
@@ -249,22 +237,15 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             target_file = os.path.join(output_directory, "1", svf_file_new_name)
             os.rename(source_file, target_file)
 
-            # shutil.copytree(output_directory, target_path)
-
             base_name = os.path.join(self.TMPDIR, "{}".format(version_id))
 
             self.logger.info("LMV files copied.")
         else:
-            self.logger.error("LMV processing fail.")
-            return
+            raise Exception("LMV processing fail.")
 
         thumbnail_data = self._get_thumbnail_data(item, source_path_temporal)
         if thumbnail_data:
             images_path_temporal = os.path.join(output_directory, "images")
-            images_path = os.path.join(os.path.dirname(target_path_parent), "images")
-
-            if not os.path.exists(images_path):
-                self.makedirs(images_path)
 
             if not os.path.exists(images_path_temporal):
                 self.makedirs(images_path_temporal)
@@ -289,10 +270,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             zip_path = shutil.make_archive(base_name=base_name,
                                            format="zip",
                                            root_dir=output_directory)
-
-            self.logger.info("Moving images")
-            # shutil.copy(thumb_small_path, images_path)
-            # shutil.copy(thumb_big_path, images_path)
 
             item.properties["thumb_small_path"] = thumb_small_path
         else:
@@ -335,15 +312,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         return publish_template.apply_fields(fields)
 
-    def _get_lmv_target_path(self, item):
-        root_path = item.properties.publish_template.root_path
-        version_id = str(item.properties.sg_version_data['id'])
-        target_path = os.path.join(root_path, 'translations', 'lmv', version_id)
-        images_path = os.path.join(root_path, 'translations', 'images')
-        self.makedirs(images_path)
-
-        return target_path
-
     def _copy_work_to_publish(self, settings, item):
         # Validate templates
         work_template = item.properties.get("work_template")
@@ -362,21 +330,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             )
             return
 
-        # Source path
-        source_path = item.properties["path"]
-        target_path = self._get_lmv_target_path(item)
-
-        try:
-            publish_folder = os.path.dirname(target_path)
-            ensure_folder_exists(publish_folder)
-            self._translate_file(source_path, target_path, item)
-        except Exception as e:
-            raise Exception(
-                "Failed to copy work file from '%s' to '%s'.\n%s" %
-                (source_path, target_path, traceback.format_exc())
-            )
-
-        self.logger.debug("Copied work file '%s' to publish file '%s'." % (source_path, target_path))
+        self._translate_file(item.properties["path"], item)
 
     def get_publish_type(self, settings, item):
         publisher = self.parent
