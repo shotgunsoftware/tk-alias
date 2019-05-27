@@ -12,15 +12,44 @@
 Hook that loads defines all the available actions, broken down by publish type.
 """
 
-import sgtk
 import os
-import commands
+
+import sgtk
 from sgtk.platform.qt import QtGui
+
+import commands
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasActions(HookBaseClass):
+    MESSAGES = {
+        "reference": {
+            "success": "referenced successfully",
+            "error": {
+                "already_referenced": "Already referenced. Different versions are treated as the same file",
+                "invalid_json": "Unexpected JSON structure or JSON field value with the file",
+                "unknown": "Unknown error occurred when referencing the file",
+            },
+        },
+
+        "import": {
+            "success": "imported successfully",
+            "error": {
+                "invalid_json": "Unexpected JSON structure or JSON field value",
+                "unknown": "Unknown error occurred when importing the file",
+            },
+        },
+
+        "texture_node": {
+            "success": "imported successfully",
+            "error": {
+                "invalid_json": "Unexpected JSON structure or JSON field value",
+                "unknown": "An error occurred when creating the canvas",
+            },
+        }
+    }
+
     def generate_actions(self, sg_publish_data, actions, ui_area):
         """
         Returns a list of action instances for a particular publish.
@@ -94,6 +123,7 @@ class AliasActions(HookBaseClass):
                 "caption": "Import into Scene",
                 "description": "This will import the item into the current universe."
             })
+
             action_instances.append({
                 "name": "import_new",
                 "params": None,
@@ -108,6 +138,7 @@ class AliasActions(HookBaseClass):
                 "caption": "Import into Scene",
                 "description": "This will import the item into the current universe."
             })
+
             action_instances.append({
                 "name": "import_new",
                 "params": None,
@@ -128,34 +159,36 @@ class AliasActions(HookBaseClass):
         :returns: No return value expected.
         """
         app = self.parent
-        app.log_debug("Execute action called for action %s. "
-                      "Parameters: %s. Publish Data: %s" % (name, params, sg_publish_data))
+        app.log_debug("Execute action called for action %s. Parameters: %s. Publish Data: %s" % (name, params,
+                                                                                                 sg_publish_data))
 
         if name == "assign_task":
             if app.context.user is None:
                 raise Exception("Cannot establish current user!")
 
-            data = app.shotgun.find_one("Task", [["id", "is", sg_publish_data["id"]]], ["task_assignees"] )
+            data = app.shotgun.find_one("Task", [["id", "is", sg_publish_data["id"]]], ["task_assignees"])
             assignees = data["task_assignees"] or []
             assignees.append(app.context.user)
             app.shotgun.update("Task", sg_publish_data["id"], {"task_assignees": assignees})
+
         elif name == "task_to_ip":
             app.shotgun.update("Task", sg_publish_data["id"], {"sg_status_list": "ip"})
+
         else:
             # resolve path
             path = self.get_publish_path(sg_publish_data)
 
             if name == "reference":
-                self._create_reference(path, sg_publish_data)
+                return self._create_reference(path, sg_publish_data)
 
             if name == "import":
-                self._do_import(path, sg_publish_data, create_stage=False)
+                return self._do_import(path, sg_publish_data, create_stage=False)
 
             if name == "import_new":
-                self._do_import(path, sg_publish_data, create_stage=True)
+                return self._do_import(path, sg_publish_data, create_stage=True)
 
             if name == "texture_node":
-                self._create_texture_node(path, sg_publish_data)
+                return self._create_texture_node(path, sg_publish_data)
 
     def execute_multiple_actions(self, actions):
         """
@@ -182,11 +215,50 @@ class AliasActions(HookBaseClass):
 
         :param list actions: Action dictionaries.
         """
+        messages = {}
+
         for single_action in actions:
             name = single_action["name"]
+
             sg_publish_data = single_action["sg_publish_data"]
             params = single_action["params"]
-            self.execute_action(name, params, sg_publish_data)
+            message = self.execute_action(name, params, sg_publish_data)
+
+            if not isinstance(message, dict):
+                continue
+
+            message_type = message.get("message_type")
+            message_code = message.get("message_code")
+            publish_path = message.get("publish_path")
+            is_error = message.get("is_error")
+
+            if message_type not in messages:
+                messages[message_type] = {}
+
+            if message_code not in messages[message_type]:
+                messages[message_type][message_code] = dict(is_error=is_error, paths=[])
+
+            messages[message_type][message_code]["paths"].append(publish_path)
+
+        active_window = QtGui.QApplication.activeWindow()
+        for message_type, message_type_details in messages.items():
+            content = ""
+            for message_code, message_code_details in message_type_details.items():
+                if content:
+                    content += "\n\n"
+
+                is_error = message_code_details.get("is_error")
+                paths = message_code_details.get("paths")
+
+                if is_error:
+                    content += "{}: {}".format(message_code, ", ".format(paths))
+                else:
+                    if len(paths) == 1:
+                        content += "File {} {}".format(paths[0], message_code)
+                    else:
+                        content += "{} files {}".format(len(paths), message_code)
+
+            getattr(QtGui.QMessageBox, message_type)(active_window, message_type.title(), content)
 
     ##############################################################################################################
     # helper methods which can be subclassed in custom hooks to fine tune the behaviour of things
@@ -197,43 +269,32 @@ class AliasActions(HookBaseClass):
 
         namespace = "%s %s" % (sg_publish_data.get("entity").get("name"), sg_publish_data.get("name"))
         namespace = namespace.replace(" ", "_")
-
         command = commands.FileLoadCommand(path, True, namespace)
         message = self.parent.engine.send_and_wait(command)
+
         if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
             if message.has_key("status"):
-                if (message["status"] == "ok"):
-                    QtGui.QMessageBox.information(
-                        QtGui.QApplication.activeWindow(),
-                        "Create Reference",
-                        "File '{!r}' referenced successfully.".format(
-                            sg_publish_data.get("name","NO NAME")
-                        )
-                    )
-                elif (message["status"] == "already referenced"):
-                    QtGui.QMessageBox.warning(
-                        QtGui.QApplication.activeWindow(),
-                        "Create Reference",
-                        "The selected file {!r} is already referenced. Different versions are treated as the same file".format(
-                          sg_publish_data.get("name", "NO NAME")
-                        )
-                    )
-                elif (message["status"] == "invalid json"):
-                    QtGui.QMessageBox.warning(
-                        QtGui.QApplication.activeWindow(),
-                        "Create Reference",
-                        "Unexpected JSON structure or JSON field value with the file {!r}".format(
-                            sg_publish_data.get("name", "NO NAME")
-                        )
-                    )
+                publish_path = sg_publish_data.get("name", "NO NAME")
+
+                if message["status"] == "ok":
+                    message_type = "information"
+                    message_code = self.MESSAGES["reference"]["success"]
+                    is_error = False
+                elif message["status"] == "already referenced":
+                    message_type = "warning"
+                    message_code = self.MESSAGES["reference"]["error"]["already_referenced"]
+                    is_error = True
+                elif message["status"] == "invalid json":
+                    message_type = "warning"
+                    message_code = self.MESSAGES["reference"]["error"]["invalid_json"]
+                    is_error = True
                 else:
-                    QtGui.QMessageBox.warning(
-                        QtGui.QApplication.activeWindow(),
-                        "Create Reference",
-                        "An error occurred when referencing the file {!r}.".format(
-                            sg_publish_data.get("name","NO NAME")
-                        )
-                    )
+                    message_type = "warning"
+                    message_code = self.MESSAGES["reference"]["error"]["unknown"]
+                    is_error = True
+
+                return dict(message_type=message_type, message_code=message_code, publish_path=publish_path,
+                            is_error=is_error)
 
     def _do_import(self, path, sg_publish_data, create_stage):
         """
@@ -246,34 +307,27 @@ class AliasActions(HookBaseClass):
             command = commands.StageOpenCommand(path)
         else:
             command = commands.FileLoadCommand(path, False, create_stage=create_stage)
+
         message = self.parent.engine.send_and_wait(command)
         if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
             if message.has_key("status"):
+                publish_path = sg_publish_data.get("name", "NO NAME")
+
                 if message["status"] == "ok":
-                    QtGui.QMessageBox.information(
-                        QtGui.QApplication.activeWindow(),
-                        "Import File",
-                        "File '{!r}' imported successfully.".format(
-                            sg_publish_data.get("name","NO NAME")
-                        )
-                    )
+                    message_type = "information"
+                    message_code = self.MESSAGES["import"]["success"]
+                    is_error = False
                 elif message["status"] == "invalid json":
-                    QtGui.QMessageBox.warning(
-                        QtGui.QApplication.activeWindow(),
-                        "Import File",
-                        "Unexpected JSON structure or JSON field value with the file {!r}".format(
-                            sg_publish_data.get("name", "NO NAME")
-                        )
-                    )
+                    message_type = "warning"
+                    message_code = self.MESSAGES["import"]["error"]["invalid_json"]
+                    is_error = True
                 else:
-                    QtGui.QMessageBox.warning(
-                        QtGui.QApplication.activeWindow(),
-                        "Import File",
-                        "The selected file {!r} could not be imported ({}).".format(
-                            sg_publish_data.get("name","NO NAME"),
-                            message["status"]
-                        )
-                    )
+                    message_type = "warning"
+                    message_code = self.MESSAGES["import"]["error"]["unknown"]
+                    is_error = True
+
+                return dict(message_type=message_type, message_code=message_code, publish_path=publish_path,
+                            is_error=is_error)
 
     def _create_texture_node(self, path, sg_publish_data):
         """
@@ -282,31 +336,24 @@ class AliasActions(HookBaseClass):
             raise Exception("File not found on disk - '%s'" % path)
 
         command = commands.LoadImageCommand(path)
+
         message = self.parent.engine.send_and_wait(command)
         if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
             if message.has_key("status"):
+                publish_path = sg_publish_data.get("name", "NO NAME")
+
                 if message["status"] == "ok":
-                    QtGui.QMessageBox.information(
-                        QtGui.QApplication.activeWindow(),
-                        "Import Image",
-                        "File '{!r}' imported successfully.".format(
-                            sg_publish_data.get("name","NO NAME")
-                        )
-                    )
+                    message_type = "information"
+                    message_code = self.MESSAGES["texture_node"]["success"]
+                    is_error = False
                 elif message["status"] == "invalid json":
-                    QtGui.QMessageBox.warning(
-                        QtGui.QApplication.activeWindow(),
-                        "Import Image",
-                        "Unexpected JSON structure or JSON field value with the file {!r}".format(
-                            sg_publish_data.get("name", "NO NAME")
-                        )
-                    )
+                    message_type = "warning"
+                    message_code = self.MESSAGES["texture_node"]["error"]["invalid_json"]
+                    is_error = True
                 else:
-                    QtGui.QMessageBox.warning(
-                        QtGui.QApplication.activeWindow(),
-                        "Import Image",
-                        "An error occurred when creating the canvas with the file {!r}.".format(
-                            sg_publish_data.get("name","NO NAME"),
-                            message["status"]
-                        )
-                    )
+                    message_type = "warning"
+                    message_code = self.MESSAGES["texture_node"]["error"]["unknown"]
+                    is_error = True
+
+                return dict(message_type=message_type, message_code=message_code, publish_path=publish_path,
+                            is_error=is_error)
