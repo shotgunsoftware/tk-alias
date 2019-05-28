@@ -12,7 +12,7 @@ import os
 import errno
 import shutil
 import tempfile
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import check_call
 
 import sgtk
 
@@ -222,26 +222,26 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         # Execute translation command
         command = [translator, index_path, source_path_temporal]
         self.logger.info("LMV execution: {}".format(" ".join(command)))
-        lmv_subprocess = Popen('"'+'" "'.join(command)+'"', stdout=PIPE, stderr=STDOUT, shell=True)
-        while lmv_subprocess.poll() is None:
-            self.logger.debug("LMV processing ... [{}]".format(lmv_subprocess.stdout.next().replace('\n', '')))
 
-        if lmv_subprocess.returncode == 0:
-            output_directory = os.path.join(self.TMPDIR, "output")
+        try:
+            check_call(command)
+        except Exception as e:
+            self.logger.error("Error ocurred {!r}".format(e))
+            raise
 
-            # Rename svf file
-            name, _ = os.path.splitext(file_name)
-            svf_file_old_name = "{}.svf".format(name)
-            svf_file_new_name = "{}.svf".format(version_id)
-            source_file = os.path.join(output_directory, "1", svf_file_old_name)
-            target_file = os.path.join(output_directory, "1", svf_file_new_name)
-            os.rename(source_file, target_file)
+        output_directory = os.path.join(self.TMPDIR, "output")
 
-            base_name = os.path.join(self.TMPDIR, "{}".format(version_id))
+        # Rename svf file
+        name, _ = os.path.splitext(file_name)
+        svf_file_old_name = "{}.svf".format(name)
+        svf_file_new_name = "{}.svf".format(version_id)
+        source_file = os.path.join(output_directory, "1", svf_file_old_name)
+        target_file = os.path.join(output_directory, "1", svf_file_new_name)
+        os.rename(source_file, target_file)
 
-            self.logger.info("LMV files copied.")
-        else:
-            raise Exception("LMV processing fail.")
+        base_name = os.path.join(self.TMPDIR, "{}".format(version_id))
+
+        self.logger.info("LMV files copied.")
 
         thumbnail_data = self._get_thumbnail_data(item, source_path_temporal)
         if thumbnail_data:
@@ -378,7 +378,6 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             shutil.rmtree(self.TMPDIR)
         except Exception as e:
             pass
-
 
     @property
     def item_filters(self):
