@@ -266,6 +266,12 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             self.logger.info("Updating thumbnail.")
             self.parent.engine.shotgun.upload_thumbnail("PublishedFile", publish_id, thumb_small_path)
 
+            self.logger.info("Uploading sg_uploaded_movie")
+            self.parent.engine.shotgun.upload(entity_type="Version",
+                                              entity_id=version_id,
+                                              path=thumb_small_path,
+                                              field_name="sg_uploaded_movie")
+
             self.logger.info("ZIP package")
             zip_path = shutil.make_archive(base_name=base_name,
                                            format="zip",
