@@ -163,14 +163,12 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         :returns: dictionary with boolean keys accepted, required and enabled
         """
-        base_accept = super(AliasPublishLMVProcessedFilePlugin, self).accept(settings, item)
-        base_accept.update({
+        return {
             "accepted": True,
             "visible": True,
             "checked": True,
             "enabled": False
-        })
-        return base_accept
+        }
 
     def makedirs(self, path):
         try:
