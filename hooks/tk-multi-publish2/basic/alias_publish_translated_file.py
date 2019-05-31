@@ -122,10 +122,12 @@ class AliasPublishTranslatedFilePlugin(HookBaseClass):
         return True
 
     def accept(self, settings, item):
-        base_accept = super(AliasPublishTranslatedFilePlugin, self).accept(settings, item)
-        base_accept.update({"checked": False})
-
-        return base_accept
+        return {
+            "accepted": True,
+            "visible": True,
+            "checked": False,
+            "enabled": True
+        }
 
     def _fix_year_in_path(self, path, year=2019, is_license=False):
         new_path = path if not is_license else os.path.dirname(path)
