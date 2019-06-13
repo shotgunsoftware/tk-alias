@@ -1,3 +1,1 @@
-# tk-alias
-
-Alias integration for Shotgun.
+Autodesk Alias integration for Shotgun
