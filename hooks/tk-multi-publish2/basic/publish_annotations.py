@@ -89,7 +89,8 @@ class PublishAnnotationsPlugin(HookBaseClass):
                 "user": item.context.user,
                 "subject": "Alias Annotation",
                 "content": annotation,
-                "note_links": [version_data]
+                "note_links": [version_data],
+                "tasks": [item.context.task],
             }
             note = publisher.shotgun.create("Note", note_data)
 

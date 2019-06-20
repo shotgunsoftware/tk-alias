@@ -95,7 +95,8 @@ class PublishVariantsPlugin(HookBaseClass):
                 "user": item.context.user,
                 "subject": "Alias Variant",
                 "content": variant_name,
-                "note_links": [version_data]
+                "note_links": [version_data],
+                "tasks": [item.context.task],
             }
             note = publisher.shotgun.create("Note", note_data)
             publisher.shotgun.upload(entity_type="Note",
