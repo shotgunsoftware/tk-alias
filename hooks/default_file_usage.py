@@ -17,11 +17,11 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 class DefaultFileUsageHook(HookBaseClass):
 
-    def file_opened(self, path):
+    def file_attempt_open(self, path):
         """
         Called when a file is opened.
         """
-        pass
+        return True
 
     def file_closed(self, path):
         """
