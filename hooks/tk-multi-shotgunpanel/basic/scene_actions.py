@@ -84,12 +84,12 @@ class AliasActions(HookBaseClass):
                 "caption": "Import into Scene",
                 "description": "This will import the item into the current universe."
             })
-            action_instances.append({
-                "name": "import_new",
-                "params": None,
-                "caption": "Import into New Stage",
-                "description": "This will import the item into a new scene."
-            })
+            # action_instances.append({
+            #     "name": "import_new",
+            #     "params": None,
+            #     "caption": "Import into New Stage",
+            #     "description": "This will import the item into a new scene."
+            # })
 
         if "texture_node" in actions:
             action_instances.append({

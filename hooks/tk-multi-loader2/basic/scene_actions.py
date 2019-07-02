@@ -139,12 +139,12 @@ class AliasActions(HookBaseClass):
                 "description": "This will import the item into the current universe."
             })
 
-            action_instances.append({
-                "name": "import_new",
-                "params": None,
-                "caption": "Import into New Scene",
-                "description": "This will import the item into a new scene."
-            })
+            # action_instances.append({
+            #     "name": "import_new",
+            #     "params": None,
+            #     "caption": "Import into New Scene",
+            #     "description": "This will import the item into a new scene."
+            # })
 
         return action_instances
 
