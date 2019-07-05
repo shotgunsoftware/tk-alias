@@ -251,7 +251,7 @@ class AliasActions(HookBaseClass):
                 paths = message_code_details.get("paths")
 
                 if is_error:
-                    content += "{}: {}".format(message_code, ", ".format(paths))
+                    content += "{}: {}".format(message_code, ", ".join(paths))
                 else:
                     if len(paths) == 1:
                         content += "File {} {}".format(paths[0], message_code)
