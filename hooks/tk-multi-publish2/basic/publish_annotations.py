@@ -58,8 +58,18 @@ class PublishAnnotationsPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
+        publisher = self.parent
+        engine = publisher.engine
+        operations = engine.operations
+        annotations = operations.get_annotations()
+        accepted = True
+
+        if not annotations:
+            engine.logger.debug("There are not annotations to export")
+            accepted = False
+
         return {
-            "accepted": True,
+            "accepted": accepted,
             "visible": True,
             "checked": False,
             "enabled": True
@@ -76,14 +86,11 @@ class PublishAnnotationsPlugin(HookBaseClass):
         """
         publisher = self.parent
         engine = publisher.engine
+        operations = engine.operations
         version_data = item.properties["sg_version_data"]
-        annotations = engine.export_annotations()
+        annotations = operations.get_annotations()
 
-        if not annotations or not annotations.get("strings"):
-            self.logger.info("There are not annotations to export")
-            return
-
-        for annotation in annotations.get("strings"):
+        for annotation in annotations:
             note_data = {
                 "project": item.context.project,
                 "user": item.context.user,

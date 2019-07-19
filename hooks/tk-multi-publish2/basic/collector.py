@@ -47,19 +47,14 @@ class AliasSessionCollector(HookBaseClass):
         :param dict settings: Configured settings for this collector
         :param parent_item: Root item instance
         """
-
         publisher = self.parent
         engine = publisher.engine
-        path = engine.get_current_file()
+        operations = engine.operations
+        path = operations.get_current_path()
 
         item = super(AliasSessionCollector, self)._collect_file(parent_item, path, frame_sequence=True)
 
         # get the icon path to display for this item
-        icon_path = os.path.join(
-            self.disk_location,
-            os.pardir,
-            "icons",
-            "alias.png"
-        )
+        icon_path = os.path.join(self.disk_location, os.pardir, "icons", "alias.png")
         item.set_icon_from_path(icon_path)
 

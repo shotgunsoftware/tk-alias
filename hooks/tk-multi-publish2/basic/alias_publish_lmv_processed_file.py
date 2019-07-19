@@ -8,11 +8,12 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import os
+import base64
 import errno
+import os
 import shutil
+import subprocess
 import tempfile
-from subprocess import check_call
 
 import sgtk
 
@@ -163,6 +164,14 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         :returns: dictionary with boolean keys accepted, required and enabled
         """
+        # base_accept = super(AliasPublishLMVProcessedFilePlugin, self).accept(settings, item)
+        # base_accept.update({
+        #     "accepted": True,
+        #     "visible": True,
+        #     "checked": True,
+        #     "enabled": False
+        # })
+        # return base_accept
         return {
             "accepted": True,
             "visible": True,
@@ -190,6 +199,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
     def _translate_file(self, source_path, item):
         self.logger.info("Starting the translation")
+        engine_logger = self.parent.engine.logger
 
         # PublishedFile id
         publish_id = item.properties.sg_publish_data["id"]
@@ -219,13 +229,16 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         # Execute translation command
         command = [translator, index_path, source_path_temporal]
-        self.logger.info("LMV execution: {}".format(" ".join(command)))
 
         try:
-            check_call(command)
+            engine_logger.debug("Command for translation: {}".format(" ".join(command)))
+            subprocess.check_call(command, stderr=subprocess.STDOUT, shell=True)
         except Exception as e:
+            engine_logger.debug("Command for translation failed: {}".format(e))
             self.logger.error("Error ocurred {!r}".format(e))
             raise
+        else:
+            engine_logger.debug("Translation ran sucessfully")
 
         output_directory = os.path.join(self.TMPDIR, "output")
 
@@ -296,9 +309,30 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         self.logger.info('Translate Alias file to LMV file locally (DONE).')
 
     def _get_thumbnail_data(self, item, source_temporal_path):
-        framework_atf = self.load_framework("tk-framework-atf_v0.x.x")
+        data = None
 
-        return framework_atf.get_thumbnail_data("alias", source_temporal_path)
+        if os.path.splitext(source_temporal_path)[1][1:] != "wire":
+            return data
+
+        with open(source_temporal_path) as src_file:
+            line = src_file.readline()
+
+            while line and line != "thumbnail JPEG\n":
+                line = src_file.readline()
+
+            if not line:
+                return data
+
+            line = src_file.readline()
+
+            thumbnail_data = []
+            while line != "thumbnail end\n":
+                thumbnail_data.append(line.replace('Th ', ''))
+                line = src_file.readline()
+
+            data = base64.b64decode(''.join(thumbnail_data))
+
+        return data
 
     def _get_target_path(self, item):
         source_path = item.properties["path"]
@@ -315,6 +349,15 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         fields = work_template.get_fields(source_path)
 
         return publish_template.apply_fields(fields)
+
+    def _get_lmv_target_path(self, item):
+        root_path = item.properties.publish_template.root_path
+        version_id = str(item.properties.sg_version_data['id'])
+        target_path = os.path.join(root_path, 'translations', 'lmv', version_id)
+        images_path = os.path.join(root_path, 'translations', 'images')
+        self.makedirs(images_path)
+
+        return target_path
 
     def _copy_work_to_publish(self, settings, item):
         # Validate templates

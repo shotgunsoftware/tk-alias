@@ -7,33 +7,38 @@ class SceneOperation(HookClass):
     def execute(self, operation, file_path, context=None, parent_action=None, file_version=None, read_only=None,
                 **kwargs):
 
+        engine = self.parent.engine
+        operations = engine.operations
+
+        engine.logger.debug("tk-multi-workfiles2 scene_operation, "
+                            "operation: {}, "
+                            "file_path: {}, "
+                            "context: {}, "
+                            "parent_action: {}, "
+                            "file_version: {}, "
+                            "read_only: {}".format(operation,
+                                                   file_path,
+                                                   context,
+                                                   parent_action,
+                                                   file_version,
+                                                   read_only))
+
         if operation == "current_path":
-            return self.parent.engine.get_current_file()
+            return operations.get_current_path()
 
         elif operation == "open":
-            self.parent.engine.load_file(file_path, lambda: None)
+            operations.open_file(file_path)
 
         elif operation == "save":
-            if file_path:
-                self.parent.engine.save_file(file_path, parent=self.parent.instance_name)
-            else:
-                current_path = self.parent.engine.get_current_file()
-                if current_path:
-                    self.parent.engine.save_file(current_path, parent=self.parent.instance_name)
+            operations.save_file()
 
         elif operation == "save_as":
-            self.parent.engine.save_file(file_path, parent=self.parent.instance_name)
+            operations.save_file_as(file_path)
 
         elif operation == "reset":
-            self.parent.engine.current_file = None
-            current_file = self.parent.engine.get_current_file()
-
-            if current_file is not None:
-                self.parent.engine.current_file = current_file
-
-            if parent_action == "open_file":
-                return True
-
-            self.parent.engine.reset_scene(current_file=current_file)
+            if parent_action == "new_file":
+                operations.create_new_file()
+            elif parent_action != "open_file":
+                operations.reset_scene()
 
             return True
