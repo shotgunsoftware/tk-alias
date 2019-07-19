@@ -58,8 +58,18 @@ class PublishVariantsPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
+        publisher = self.parent
+        engine = publisher.engine
+        operations = engine.operations
+        variants = operations.get_variants()
+        accepted = True
+
+        if not variants:
+            engine.logger.debug("There are not variants to export")
+            accepted = False
+
         return {
-            "accepted": True,
+            "accepted": accepted,
             "visible": True,
             "checked": False,
             "enabled": True
@@ -76,20 +86,11 @@ class PublishVariantsPlugin(HookBaseClass):
         """
         publisher = self.parent
         engine = publisher.engine
+        operations = engine.operations
         version_data = item.properties["sg_version_data"]
-        variants = engine.export_variants()
+        variants = operations.get_variants()
 
-        if not variants or not variants.get("files"):
-            self.logger.info("There are not variants to export")
-            return
-
-        for variant in variants.get("files"):
-            try:
-                variant_name, variant_path = variant.split(";")
-            except Exception as e:
-                engine.logger.exception(e)
-                continue
-
+        for variant_name, variant_path in variants:
             note_data = {
                 "project": item.context.project,
                 "user": item.context.user,

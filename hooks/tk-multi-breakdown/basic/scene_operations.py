@@ -1,9 +1,4 @@
-import os
-
 import sgtk
-from sgtk.platform.qt import QtGui
-
-from commands import SceneBreakdownCommand, UpdateSceneCommand
 
 HookClass = sgtk.get_hook_baseclass()
 
@@ -26,15 +21,10 @@ class SceneOperation(HookClass):
         any templates and try to determine if there is a more recent version
         available. Any such versions are then displayed in the UI as out of date.
         """
-        app = self.parent.engine
-        message = app.send_and_wait(message=SceneBreakdownCommand(), command= "RefFileList")
+        engine = self.parent.engine
+        operations = engine.operations
 
-        if message:
-            for msg in message["refs"]:
-                msg['path'] = msg['path'].replace("/", os.path.sep)
-
-            return message["refs"]
-        return []
+        return operations.get_references()
 
     def update(self, items):
         """
@@ -46,21 +36,7 @@ class SceneOperation(HookClass):
         the that each node should be updated *to* rather than the current path.
         """
         engine = self.parent.engine
-        engine.log_info("update scene")
-        engine.log_info(items)
-        for msg in items:
-            msg['path'] = msg['path'].replace("/", os.path.sep)
-        refs_to_return = UpdateSceneCommand(items)
-        command_result = engine.send_and_wait(refs_to_return)
+        operations = engine.operations
 
-        if command_result and command_result.has_key("initialCommand") and (command_result["initialCommand"] == refs_to_return.command):
-            if command_result.has_key("status"):
-                if command_result["status"] != "ok":
-                    warning = "One or more selected file can not be updated./nIf there is another version of this file referenced, please check the Alias Reference Manager and remove its reference to enable the update."
-
-                    if command_result.has_key("data"):
-                        # We have a list of paths we can inform the user about
-                        paths = command_result["data"]
-                        warning += "/nFiles:/n" + "/n".join(paths)
-
-                    QtGui.QMessageBox.warning(None, "Update Reference", warning)
+        engine.logger.debug("Updating scene {}".format(items))
+        operations.update_scene(items)

@@ -11,7 +11,6 @@
 import os
 
 import sgtk
-from commands import SceneBreakdownCommand, CurrentFileCommand
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -86,15 +85,16 @@ class AliasPublishFilePlugin(HookBaseClass):
         return True
 
     def publish(self, settings, item):
-        publisher = self.parent
-        engine = publisher.engine
+        engine = self.parent.engine
+        operations = engine.operations
+
         # add dependencies for the base class to register when publishing
         item.properties["publish_dependencies"] = self._obtain_references()
 
-        engine.save_before_publish(item.properties["path"])
+        operations.save_file()
         super(AliasPublishFilePlugin, self).publish(settings, item)
         self.logger.info("Saving new version")
-        engine.save_after_publish(item.properties["next_version_path"])
+        operations.save_file_as(item.properties["next_version_path"])
 
     def accept(self, settings, item):
         """
@@ -142,13 +142,13 @@ class AliasPublishFilePlugin(HookBaseClass):
 
     def _obtain_references(self):
         engine = self.parent.engine
-        ref_paths = set()
-        message = engine.send_and_wait(message=SceneBreakdownCommand(), command="RefFileList")
+        operations = engine.operations
+        references = []
 
-        if message:
-            for msg in message["refs"]:
-                ref_path = msg['path'].replace("/", os.path.sep)
-                if ref_path:
-                    ref_paths.add(ref_path)
+        for reference in operations.get_references():
+            path = reference.get("path")
 
-        return list(ref_paths)
+            if path not in references:
+                references.append(path)
+
+        return references
