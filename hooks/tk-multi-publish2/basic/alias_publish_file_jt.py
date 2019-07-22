@@ -9,8 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
-from subprocess import check_call
-from subprocess import CalledProcessError
+import subprocess
 
 import sgtk
 
@@ -77,25 +76,23 @@ class AliasPublishJTFilePlugin(HookBaseClass):
         return path
 
     def _translate_file(self, source_path, target_path, item):
+        engine = self.parent.engine
+        operations = engine.operations
+        info = operations.get_info()
+
         file_extension = item.properties.get(self.translator_key).value
         engine_translator_info = self.engine_translator_info
         translator_info = engine_translator_info.get("alias_translators").get(file_extension)
         executable = translator_info.get("alias_translator_exe")
         licensed = translator_info.get("alias_translator_is_licensed")
         alias_translator_dir, new_year = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
-        alias_translator_license_path, new_year = self._fix_year_in_path(engine_translator_info.get(
-            "alias_translator_license_path"), is_license=True)
-        alias_translator_license_prod_key = engine_translator_info.get("alias_translator_license_prod_key")
-        alias_translator_license_prod_version = engine_translator_info.get("alias_translator_license_prod_version")
-        alias_translator_license_type = engine_translator_info.get("alias_translator_license_type")
+
+        alias_translator_license_path = info.get("product_license_path")
+        alias_translator_license_prod_key = info.get("product_key")
+        alias_translator_license_prod_version = info.get("product_version")
+        alias_translator_license_type = info.get("product_license_type")
 
         translation_command = [self._get_translator_exe(os.path.join(alias_translator_dir, executable))]
-
-        if new_year > 2019:
-            source = "K"
-            target = chr(ord(source) + (new_year - 2019))
-            alias_translator_license_prod_key = alias_translator_license_prod_key.replace(source, target)
-            alias_translator_license_prod_version = alias_translator_license_prod_version.replace("2019", str(new_year))
 
         if licensed:
             translation_command += ["-productKey",
@@ -131,8 +128,14 @@ class AliasPublishJTFilePlugin(HookBaseClass):
                                 "-tl",
                                 "1"]
 
+        engine_logger = self.parent.engine.logger
+
         try:
-            check_call(translation_command)
-        except CalledProcessError as e:
+            engine_logger.debug("Command for translation: {}".format(" ".join(translation_command)))
+            subprocess.check_call(translation_command, stderr=subprocess.STDOUT, shell=True)
+        except Exception as e:
+            engine_logger.debug("Command for translation failed: {}".format(e))
             self.logger.error("Error ocurred {!r}".format(e))
-            raise Exception("Error ocurred {!r}".format(e))
+            raise
+        else:
+            engine_logger.debug("Translation ran sucessfully")

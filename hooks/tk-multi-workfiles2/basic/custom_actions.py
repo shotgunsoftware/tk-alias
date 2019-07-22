@@ -12,7 +12,6 @@
 Hook that defines and executes custom actions that can operate on a file (and it's versions).
 """
 import sgtk
-import commands
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -66,14 +65,9 @@ class CustomActions(HookBaseClass):
         """
         
         engine = self.parent.engine
+        open_stage_action = dict(name="open_stage", caption="Open as New Stage")
 
-        open_stage_action = {
-            "name": "open_stage",
-            "caption": "Open as New Stage",
-        }
-
-        return [
-        ]
+        return []
 
     def execute_action(self, action, file, work_versions, publish_versions, context, **kwargs):
         """
@@ -111,9 +105,15 @@ class CustomActions(HookBaseClass):
         :returns:                   True if the action should close the main UI, otherwise False to keep it open.
         """
         engine = self.parent.engine
+        operations = engine.operations
 
         if action == "open_stage":
-            engine.log_debug(file["path"])
-            command = commands.StageOpenCommand(file["path"])
-            message = engine.send_to_alias(command.to_string())
+            path = file["path"]
+
+            allowed_to_open = operations.can_open_file(path)
+            if not allowed_to_open:
+                return False
+
+            operations.open_file_as_new_stage(path)
+
             return True

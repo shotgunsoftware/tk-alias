@@ -12,44 +12,13 @@
 Hook that loads defines all the available actions, broken down by publish type.
 """
 
-import os
-
 import sgtk
 from sgtk.platform.qt import QtGui
-
-import commands
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasActions(HookBaseClass):
-    MESSAGES = {
-        "reference": {
-            "success": "referenced successfully",
-            "error": {
-                "already_referenced": "Already referenced. Different versions are treated as the same file",
-                "invalid_json": "Unexpected JSON structure or JSON field value with the file",
-                "unknown": "Unknown error occurred when referencing the file",
-            },
-        },
-
-        "import": {
-            "success": "imported successfully",
-            "error": {
-                "invalid_json": "Unexpected JSON structure or JSON field value",
-                "unknown": "Unknown error occurred when importing the file",
-            },
-        },
-
-        "texture_node": {
-            "success": "imported successfully",
-            "error": {
-                "invalid_json": "Unexpected JSON structure or JSON field value",
-                "unknown": "An error occurred when creating the canvas",
-            },
-        }
-    }
-
     def generate_actions(self, sg_publish_data, actions, ui_area):
         """
         Returns a list of action instances for a particular publish.
@@ -124,13 +93,6 @@ class AliasActions(HookBaseClass):
                 "description": "This will import the item into the current universe."
             })
 
-            # action_instances.append({
-            #     "name": "import_new",
-            #     "params": None,
-            #     "caption": "Import into New Stage",
-            #     "description": "This will import the item into a new scene."
-            # })
-
         if "texture_node" in actions:
             action_instances.append({
                 "name": "texture_node",
@@ -138,13 +100,6 @@ class AliasActions(HookBaseClass):
                 "caption": "Import into Scene",
                 "description": "This will import the item into the current universe."
             })
-
-            # action_instances.append({
-            #     "name": "import_new",
-            #     "params": None,
-            #     "caption": "Import into New Scene",
-            #     "description": "This will import the item into a new scene."
-            # })
 
         return action_instances
 
@@ -159,8 +114,11 @@ class AliasActions(HookBaseClass):
         :returns: No return value expected.
         """
         app = self.parent
-        app.log_debug("Execute action called for action %s. Parameters: %s. Publish Data: %s" % (name, params,
-                                                                                                 sg_publish_data))
+        engine = app.engine
+        operations = engine.operations
+
+        app.log_debug("Execute action called for action %s. "
+                      "Parameters: %s. Publish Data: %s" % (name, params, sg_publish_data))
 
         if name == "assign_task":
             if app.context.user is None:
@@ -179,16 +137,13 @@ class AliasActions(HookBaseClass):
             path = self.get_publish_path(sg_publish_data)
 
             if name == "reference":
-                return self._create_reference(path, sg_publish_data)
+                return operations.create_reference(path, standalone=False)
 
-            if name == "import":
-                return self._do_import(path, sg_publish_data, create_stage=False)
+            elif name == "import":
+                return operations.import_file(path, create_stage=False, standalone=False)
 
-            if name == "import_new":
-                return self._do_import(path, sg_publish_data, create_stage=True)
-
-            if name == "texture_node":
-                return self._create_texture_node(path, sg_publish_data)
+            elif name == "texture_node":
+                return operations.create_texture_node(path, standalone=False)
 
     def execute_multiple_actions(self, actions):
         """
@@ -216,6 +171,7 @@ class AliasActions(HookBaseClass):
         :param list actions: Action dictionaries.
         """
         messages = {}
+        logger = self.parent.engine.logger
 
         for single_action in actions:
             name = single_action["name"]
@@ -254,106 +210,8 @@ class AliasActions(HookBaseClass):
                     content += "{}: {}".format(message_code, ", ".join(paths))
                 else:
                     if len(paths) == 1:
-                        content += "File {} {}".format(paths[0], message_code)
+                        content += "{}: {}".format(message_code, paths[0])
                     else:
-                        content += "{} files {}".format(len(paths), message_code)
+                        content += "{} ({})".format(message_code, len(paths))
 
             getattr(QtGui.QMessageBox, message_type)(active_window, message_type.title(), content)
-
-    ##############################################################################################################
-    # helper methods which can be subclassed in custom hooks to fine tune the behaviour of things
-
-    def _create_reference(self, path, sg_publish_data):
-        if not os.path.exists(path):
-            raise Exception("File not found on disk - '%s'" % path)
-
-        namespace = "%s %s" % (sg_publish_data.get("entity").get("name"), sg_publish_data.get("name"))
-        namespace = namespace.replace(" ", "_")
-        command = commands.FileLoadCommand(path, True, namespace)
-        message = self.parent.engine.send_and_wait(command)
-
-        if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
-            if message.has_key("status"):
-                publish_path = sg_publish_data.get("name", "NO NAME")
-
-                if message["status"] == "ok":
-                    message_type = "information"
-                    message_code = self.MESSAGES["reference"]["success"]
-                    is_error = False
-                elif message["status"] == "already referenced":
-                    message_type = "warning"
-                    message_code = self.MESSAGES["reference"]["error"]["already_referenced"]
-                    is_error = True
-                elif message["status"] == "invalid json":
-                    message_type = "warning"
-                    message_code = self.MESSAGES["reference"]["error"]["invalid_json"]
-                    is_error = True
-                else:
-                    message_type = "warning"
-                    message_code = self.MESSAGES["reference"]["error"]["unknown"]
-                    is_error = True
-
-                return dict(message_type=message_type, message_code=message_code, publish_path=publish_path,
-                            is_error=is_error)
-
-    def _do_import(self, path, sg_publish_data, create_stage):
-        """
-        Import a file into the current scene.
-        """
-        if not os.path.exists(path):
-            raise Exception("File not found on disk - '%s'" % path)
-
-        if create_stage:
-            command = commands.StageOpenCommand(path)
-        else:
-            command = commands.FileLoadCommand(path, False, create_stage=create_stage)
-
-        message = self.parent.engine.send_and_wait(command)
-        if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
-            if message.has_key("status"):
-                publish_path = sg_publish_data.get("name", "NO NAME")
-
-                if message["status"] == "ok":
-                    message_type = "information"
-                    message_code = self.MESSAGES["import"]["success"]
-                    is_error = False
-                elif message["status"] == "invalid json":
-                    message_type = "warning"
-                    message_code = self.MESSAGES["import"]["error"]["invalid_json"]
-                    is_error = True
-                else:
-                    message_type = "warning"
-                    message_code = self.MESSAGES["import"]["error"]["unknown"]
-                    is_error = True
-
-                return dict(message_type=message_type, message_code=message_code, publish_path=publish_path,
-                            is_error=is_error)
-
-    def _create_texture_node(self, path, sg_publish_data):
-        """
-        """
-        if not os.path.exists(path):
-            raise Exception("File not found on disk - '%s'" % path)
-
-        command = commands.LoadImageCommand(path)
-
-        message = self.parent.engine.send_and_wait(command)
-        if message and message.has_key("initialCommand") and (message["initialCommand"] == command.command):
-            if message.has_key("status"):
-                publish_path = sg_publish_data.get("name", "NO NAME")
-
-                if message["status"] == "ok":
-                    message_type = "information"
-                    message_code = self.MESSAGES["texture_node"]["success"]
-                    is_error = False
-                elif message["status"] == "invalid json":
-                    message_type = "warning"
-                    message_code = self.MESSAGES["texture_node"]["error"]["invalid_json"]
-                    is_error = True
-                else:
-                    message_type = "warning"
-                    message_code = self.MESSAGES["texture_node"]["error"]["unknown"]
-                    is_error = True
-
-                return dict(message_type=message_type, message_code=message_code, publish_path=publish_path,
-                            is_error=is_error)
