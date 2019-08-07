@@ -85,15 +85,20 @@ class AliasLauncher(SoftwareLauncher):
         if plugins_list_file:
             args += " -P {0}".format(plugins_list_file)
 
+        # Append executable folder to PATH environment variable
+        sgtk.util.append_path_to_env_var("PATH", os.path.dirname(sys.executable))
+
         # Make the engine startup module to be available when Alias starts up
         # by appending it to the env PYTHONPATH.
         startup_path = os.path.join(self.disk_location, "startup")
         sgtk.util.append_path_to_env_var("PYTHONPATH", startup_path)
 
-        # Add site packages to PYTHONPATH
-        site_packages = os.path.join(os.path.dirname(sys.executable), "Lib", "site-packages")
-        if os.path.exists(site_packages):
-            sgtk.util.append_path_to_env_var("PYTHONPATH", site_packages)
+        # We're going to append all of this Python process's sys.path to the
+        # PYTHONPATH environment variable. This will ensure that we have access
+        # to all libraries available in this process. We're appending instead of
+        # setting because we don't want to stomp on any PYTHONPATH that might already
+        # exist that we want to persist
+        sgtk.util.append_path_to_env_var("PYTHONPATH", os.pathsep.join(sys.path))
 
         required_env["PYTHONPATH"] = os.environ["PYTHONPATH"]
 

@@ -15,6 +15,7 @@ Menu handling for Alias
 from collections import OrderedDict
 import os
 import sys
+import uuid
 
 from sgtk.platform.qt import QtGui
 from sgtk.platform.qt import QtCore
@@ -56,6 +57,10 @@ class AliasMenu(object):
             short_name = data.get("properties").get("short_name")
             callback = data.get("callback")
             is_context_submenu_option = data.get("properties").get("type") == "context_menu"
+
+            if not short_name:
+                short_name = uuid.uuid4().hex
+
             callback_invoker, callback_invoker_name = self._build_callback_invoker(callback=callback,
                                                                                    short_name=short_name)
             if 'app' in data.get("properties"):
@@ -244,7 +249,8 @@ class MenuOption(object):
     @property
     def as_string(self):
         if self.option_type == "item":
-            return "<{}, {}, {}>".format(self.option_type, self.caption, self.has_separator)
+            return "<{}, {}, {}, {}>".format(self.option_type, self.caption, self.has_separator,
+                                             self.callback_invoker_name)
         elif self.option_type == "submenu":
             return "<{}, {}, {}, [{}]>".format(self.option_type, self.caption, self.has_separator, self.options)
 
