@@ -105,6 +105,34 @@ class AliasOperations(object):
         if not success:
             raise Exception("Error opening the file {}".format(path))
 
+    def open_save_as_dialog(self):
+        """
+        Launch a Qt file browser to select a file, then save the supplied
+        project to that path.
+        """
+
+        # Alias doesn't appear to have a "save as" dialog accessible via
+        # python. so open our own Qt file dialog.
+        file_dialog = QtGui.QFileDialog(
+            parent=self.get_parent_window(),
+            caption="Save As",
+            directory=os.path.expanduser("~"),
+            filter="Alias file (*.wire)"
+        )
+        file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
+        file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
+        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
+        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
+        if not file_dialog.exec_():
+            return
+        path = file_dialog.selectedFiles()[0]
+
+        if os.path.splitext(path)[-1] != ".wire":
+            path = "{0}.wire".format(path)
+
+        if path:
+            self.save_file_as(path)
+
     def save_file(self):
         """Save current file."""
         self.logger.debug("Saving current_file")

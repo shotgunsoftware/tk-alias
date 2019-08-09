@@ -177,6 +177,10 @@ class AliasEngine(sgtk.platform.Engine):
         if path:
             self.logger.debug("Stage with path {} selected".format(path))
             ctx = self.sgtk.context_from_path(path, self.context)
+
+            if not ctx.project:
+                self.logger.debug("The context is not valid with this path, project context selected".format(path))
+                ctx = self.sgtk.context_from_entity(self.context.project["type"], self.context.project["id"])
         else:
             self.logger.debug("Empty Stage selected")
             ctx = self.sgtk.context_from_entity(self.context.project["type"], self.context.project["id"])

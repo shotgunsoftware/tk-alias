@@ -48,13 +48,50 @@ class AliasSessionCollector(HookBaseClass):
         :param parent_item: Root item instance
         """
         publisher = self.parent
-        engine = publisher.engine
-        operations = engine.operations
+        operations = publisher.engine.operations
+
+        # get the path to the current file
         path = operations.get_current_path()
 
-        item = super(AliasSessionCollector, self)._collect_file(parent_item, path, frame_sequence=True)
+        # determine the display name for the item
+        if path:
+            file_info = publisher.util.get_file_path_components(path)
+            display_name = file_info["filename"]
+        else:
+            display_name = "Current Alias Session"
+
+        # create the session item for the publish hierarchy
+        session_item = parent_item.create_item(
+            "alias.session",
+            "Alias Session",
+            display_name
+        )
 
         # get the icon path to display for this item
-        icon_path = os.path.join(self.disk_location, os.pardir, "icons", "alias.png")
-        item.set_icon_from_path(icon_path)
+        icon_path = os.path.join(
+            self.disk_location,
+            os.pardir,
+            "icons",
+            "alias.png"
+        )
+        session_item.set_icon_from_path(icon_path)
+
+        # if a work template is defined, add it to the item properties so
+        # that it can be used by attached publish plugins
+        work_template_setting = settings.get("Work Template")
+        if work_template_setting:
+
+            work_template = publisher.engine.get_template_by_name(
+                work_template_setting.value)
+
+            # store the template on the item for use by publish plugins. we
+            # can't evaluate the fields here because there's no guarantee the
+            # current session path won't change once the item has been created.
+            # the attached publish plugins will need to resolve the fields at
+            # execution time.
+            session_item.properties["work_template"] = work_template
+            self.logger.debug("Work template defined for Alias collection.")
+
+        self.logger.info("Collected current Alias file")
+
 
