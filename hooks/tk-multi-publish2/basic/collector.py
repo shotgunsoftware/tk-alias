@@ -92,9 +92,6 @@ class AliasSessionCollector(HookBaseClass):
             session_item.properties["work_template"] = work_template
             self.logger.debug("Work template defined for Alias collection.")
 
-        # TODO: remove the path properties from the item object
-        session_item.properties["path"] = path
-
         self.logger.info("Collected current Alias file")
 
 
