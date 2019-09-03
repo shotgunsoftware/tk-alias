@@ -19,6 +19,7 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasActions(HookBaseClass):
+
     def generate_actions(self, sg_publish_data, actions, ui_area):
         """
         Returns a list of action instances for a particular publish.
@@ -59,23 +60,14 @@ class AliasActions(HookBaseClass):
         app = self.parent
         app.log_debug("Generate actions called for UI element %s. "
                       "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_publish_data))
+
         action_instances = []
-
-        if "assign_task" in actions:
-            action_instances.append({
-                "name": "assign_task",
-                "params": None,
-                "caption": "Assign Task to yourself",
-                "description": "Assign this task to yourself."
-            })
-
-        if "task_to_ip" in actions:
-            action_instances.append({
-                "name": "task_to_ip",
-                "params": None,
-                "caption": "Set to In Progress",
-                "description": "Set the task status to In Progress."
-            })
+        try:
+            # call base class first
+            action_instances += HookBaseClass.generate_actions(self, sg_publish_data, actions, ui_area)
+        except AttributeError:
+            # base class doesn't have the method, so ignore and continue
+            pass
 
         if "reference" in actions:
             action_instances.append({
@@ -120,30 +112,17 @@ class AliasActions(HookBaseClass):
         app.log_debug("Execute action called for action %s. "
                       "Parameters: %s. Publish Data: %s" % (name, params, sg_publish_data))
 
-        if name == "assign_task":
-            if app.context.user is None:
-                raise Exception("Cannot establish current user!")
+        # resolve path
+        path = self.get_publish_path(sg_publish_data)
 
-            data = app.shotgun.find_one("Task", [["id", "is", sg_publish_data["id"]]], ["task_assignees"])
-            assignees = data["task_assignees"] or []
-            assignees.append(app.context.user)
-            app.shotgun.update("Task", sg_publish_data["id"], {"task_assignees": assignees})
+        if name == "reference":
+            return operations.create_reference(path, standalone=False)
 
-        elif name == "task_to_ip":
-            app.shotgun.update("Task", sg_publish_data["id"], {"sg_status_list": "ip"})
+        elif name == "import":
+            return operations.import_file(path, create_stage=False, standalone=False)
 
-        else:
-            # resolve path
-            path = self.get_publish_path(sg_publish_data)
-
-            if name == "reference":
-                return operations.create_reference(path, standalone=False)
-
-            elif name == "import":
-                return operations.import_file(path, create_stage=False, standalone=False)
-
-            elif name == "texture_node":
-                return operations.create_texture_node(path, standalone=False)
+        elif name == "texture_node":
+            return operations.create_texture_node(path, standalone=False)
 
     def execute_multiple_actions(self, actions):
         """
