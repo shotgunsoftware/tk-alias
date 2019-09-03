@@ -18,7 +18,7 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasActions(HookBaseClass):
-    def generate_actions(self, sg_publish_data, actions, ui_area):
+    def generate_actions(self, sg_data, actions, ui_area):
         """
         Returns a list of action instances for a particular publish.
         This method is called each time a user clicks a publish somewhere in the UI.
@@ -50,15 +50,22 @@ class AliasActions(HookBaseClass):
         one object is returned for an action, use the params key to pass additional
         data into the run_action hook.
 
-        :param sg_publish_data: Shotgun data dictionary with all the standard publish fields.
+        :param sg_data: Shotgun data dictionary with all the standard publish fields.
         :param actions: List of action strings which have been defined in the app configuration.
         :param ui_area: String denoting the UI Area (see above).
         :returns List of dictionaries, each with keys name, params, caption and description
         """
         app = self.parent
         app.log_debug("Generate actions called for UI element %s. "
-                      "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_publish_data))
+                      "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_data))
+
         action_instances = []
+        try:
+            # call base class first
+            action_instances += HookBaseClass.generate_actions(self, sg_data, actions, ui_area)
+        except AttributeError:
+            # base class doesn't have the method, so ignore and continue
+            pass
 
         if "reference" in actions:
             action_instances.append({
@@ -75,12 +82,6 @@ class AliasActions(HookBaseClass):
                 "caption": "Import into Scene",
                 "description": "This will import the item into the current universe."
             })
-            action_instances.append({
-                "name": "import_new",
-                "params": None,
-                "caption": "Import into New Stage",
-                "description": "This will import the item into a new stage."
-            })
 
         if "texture_node" in actions:
             action_instances.append({
@@ -92,40 +93,39 @@ class AliasActions(HookBaseClass):
 
         return action_instances
 
-    def execute_action(self, name, params, sg_publish_data):
+    def execute_action(self, name, params, sg_data):
         """
         Execute a given action. The data sent to this be method will
         represent one of the actions enumerated by the generate_actions method.
 
         :param name: Action name string representing one of the items returned by generate_actions.
         :param params: Params data, as specified by generate_actions.
-        :param sg_publish_data: Shotgun data dictionary with all the standard publish fields.
+        :param sg_data: Shotgun data dictionary with all the standard publish fields.
         :returns: No return value expected.
         """
         app = self.parent
-        app.log_debug("Execute action called for action %s. Parameters: %s. Publish Data: %s" % (name,
-                                                                                                 params,
-                                                                                                 sg_publish_data))
+        app.log_debug("Execute action called for action %s. "
+                      "Parameters: %s. Shotgun Data: %s" % (name, params, sg_data))
 
         engine = self.parent.engine
         operations = engine.operations
 
         if name == "reference":
-            path = self.get_publish_path(sg_publish_data)
+            path = self.get_publish_path(sg_data)
             operations.create_reference(path)
 
         elif name == "import":
-            path = self.get_publish_path(sg_publish_data)
+            path = self.get_publish_path(sg_data)
             operations.import_file(path, create_stage=False)
 
         elif name == "texture_node":
-            path = self.get_publish_path(sg_publish_data)
+            path = self.get_publish_path(sg_data)
             operations.create_texture_node(path)
 
         else:
             try:
-                HookBaseClass.execute_action(self, name, params, sg_publish_data)
-            except AttributeError as e:
+                HookBaseClass.execute_action(self, name, params, sg_data)
+            except AttributeError, e:
                 # base class doesn't have the method, so ignore and continue
                 pass
 
@@ -140,7 +140,7 @@ class AliasActions(HookBaseClass):
         Each entry will have the following values:
 
             name: Name of the action to execute
-            sg_publish_data: Publish information coming from Shotgun
+            sg_data: Publish information coming from Shotgun
             params: Parameters passed down from the generate_actions hook.
 
         .. note::
@@ -156,7 +156,6 @@ class AliasActions(HookBaseClass):
         """
         for single_action in actions:
             name = single_action["name"]
-            sg_publish_data = single_action["sg_publish_data"]
+            sg_data = single_action["sg_data"]
             params = single_action["params"]
-
-            self.execute_action(name, params, sg_publish_data)
+            self.execute_action(name, params, sg_data)
