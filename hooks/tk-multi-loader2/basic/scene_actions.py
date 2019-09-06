@@ -150,7 +150,6 @@ class AliasActions(HookBaseClass):
         :param list actions: Action dictionaries.
         """
         messages = {}
-        logger = self.parent.engine.logger
 
         for single_action in actions:
             name = single_action["name"]
