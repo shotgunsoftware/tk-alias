@@ -112,7 +112,6 @@ class AliasPublishJTFilePlugin(HookBaseClass):
         translation_command += ["-e1s",
                                 "-g",
                                 "-xk",
-                                "-l",
                                 "-s",
                                 "1.0000",
                                 "-u",
@@ -131,6 +130,8 @@ class AliasPublishJTFilePlugin(HookBaseClass):
         engine_logger = self.parent.engine.logger
 
         try:
+            engine.logger.debug("Translating JT: {}".format(self.publish_template_yml))
+            engine.logger.debug("RUNNING the command {}".format(" ".join(translation_command)))
             engine_logger.debug("Command for translation: {}".format(" ".join(translation_command)))
             subprocess.check_call(translation_command, stderr=subprocess.STDOUT, shell=True)
         except Exception as e:
