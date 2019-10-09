@@ -14,6 +14,8 @@ set of win32 functions used by Alias engine to manage toolkit UI under windows
 import ctypes
 from ctypes import wintypes
 
+from sgtk.platform.qt import QtCore
+
 # user32.dll
 EnumWindows = ctypes.windll.user32.EnumWindows
 EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int))
@@ -162,11 +164,14 @@ def qwidget_winid_to_hwnd(id):
     :param id: qtwidget winid to convert
     :returns: window handle
     """
-    # Setup arguments and return types
-    ctypes.pythonapi.PyCObject_AsVoidPtr.restype = ctypes.c_void_p
-    ctypes.pythonapi.PyCObject_AsVoidPtr.argtypes = [ ctypes.py_object ]
- 
-    # Convert PyCObject to a void pointer
-    hwnd = ctypes.pythonapi.PyCObject_AsVoidPtr(id)
+    if QtCore.__version__.startswith("5."):
+        hwnd = id
+    else:
+        # Setup arguments and return types
+        ctypes.pythonapi.PyCObject_AsVoidPtr.restype = ctypes.c_void_p
+        ctypes.pythonapi.PyCObject_AsVoidPtr.argtypes = [ctypes.py_object]
+
+        # Convert PyCObject to a void pointer
+        hwnd = ctypes.pythonapi.PyCObject_AsVoidPtr(id)
     
     return hwnd
