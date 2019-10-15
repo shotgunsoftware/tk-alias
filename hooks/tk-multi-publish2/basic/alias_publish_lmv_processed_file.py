@@ -126,7 +126,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             translator_info = engine_translator_info.get("alias_translators")
             lmv_translator = translator_info.get('lmv')
             lmv_translator_executable = lmv_translator.get('alias_translator_exe')
-            alias_translator_dir = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
+            # alias_translator_dir = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
+            alias_translator_dir = self.parent.engine.alias_bindir
             lmv_executable_fullpath = os.path.join(alias_translator_dir, 'LMVExtractor', lmv_translator_executable)
             if os.path.isfile(lmv_executable_fullpath):
                 self.logger.info("LMV validation finished.")
@@ -193,7 +194,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         alias_translators = engine_translator_info.get("alias_translators")
         lmv_translator = alias_translators.get("lmv")
         lmv_translator_exe = lmv_translator.get("alias_translator_exe")
-        alias_translator_dir = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
+        alias_translator_dir = alias_translator_dir = self.parent.engine.alias_bindir
 
         return os.path.join(alias_translator_dir, "LMVExtractor", lmv_translator_exe)
 
