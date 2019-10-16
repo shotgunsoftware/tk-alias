@@ -45,7 +45,55 @@ class AliasTranslationPublishPlugin(HookBaseClass):
                     "AlToRef.exe"
                 ),
                 "extra_parameters": []
-            }
+            },
+            "igs": {
+                "exec_path": os.path.join(
+                    publisher.engine.alias_bindir,
+                    "translators",
+                    "AliasToIges.exe"
+                ),
+                "extra_parameters": []
+            },
+            "catpart": {
+                "exec_path": os.path.join(
+                    publisher.engine.alias_bindir,
+                    "AlToC5.exe"
+                ),
+                "extra_parameters": []
+            },
+            "jt": {
+                "exec_path": os.path.join(
+                    publisher.engine.alias_bindir,
+                    "AlToJt.bat"
+                ),
+                "extra_parameters": [
+                    "-e1s",
+                    "-g",
+                    "-xk",
+                    "-s",
+                    "1.0000",
+                    "-u",
+                    "128",
+                    "-m0",
+                    "-ta",
+                    "-t",
+                    "0.100000",
+                    "-t1t",
+                    "0.250000",
+                    "-t2t",
+                    "1.000000",
+                    "-tl",
+                    "1"
+                ]
+            },
+            "stp": {
+                "exec_path": os.path.join(
+                    publisher.engine.alias_bindir,
+                    "translators",
+                    "AliasToStep.exe"
+                ),
+                "extra_parameters": []
+            },
         }
 
     @property
@@ -185,7 +233,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             (self.name,)
         )
 
-        return {"accepted": True}
+        return {"accepted": True, "checked": False}
 
     def validate(self, settings, item):
         """
@@ -440,6 +488,33 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             extension = extension.lstrip(".").lower()
 
         return extension
+
+    def _copy_work_to_publish(self, settings, item):
+        """
+        This method handles copying work file path(s) to a designated publish
+        location.
+
+        This method requires a "work_template" and a "publish_template" be set
+        on the supplied item.
+
+        The method will handle copying the "path" property to the corresponding
+        publish location assuming the path corresponds to the "work_template"
+        and the fields extracted from the "work_template" are sufficient to
+        satisfy the "publish_template".
+
+        The method will not attempt to copy files if any of the above
+        requirements are not met. If the requirements are met, the file will
+        ensure the publish path folder exists and then copy the file to that
+        location.
+
+        If the item has "sequence_paths" set, it will attempt to copy all paths
+        assuming they meet the required criteria with respect to the templates.
+
+        """
+
+        # here, as we inherit from the publish_plugin, we have to remove all the actions done in _copy_work_to_publish
+        # otherwise the translation will be erased by the wire work file
+        pass
 
 
 def _session_path():
