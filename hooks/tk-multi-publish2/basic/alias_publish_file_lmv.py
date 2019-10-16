@@ -61,3 +61,14 @@ class AliasPublishLMVFilePlugin(HookBaseClass):
             via the project's <a href='%s'>Media</a> page, <a href='%s'>RV</a>, or
             the <a href='%s'>Shotgun Review</a> mobile app.
             """ % (media_page_url, review_url, review_url)
+
+    @property
+    def item_filters(self):
+        """
+        List of item types that this plugin is interested in.
+
+        Only items matching entries in this list will be presented to the
+        accept() method. Strings can contain glob patters such as *, for example
+        ["maya.*", "file.maya"]
+        """
+        return ["alias.session"]

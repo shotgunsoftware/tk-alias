@@ -166,7 +166,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         accept() method. Strings can contain glob patters such as *, for example
         ["maya.*", "file.maya"]
         """
-        return ["alias.session"]
+        return ["alias.session.translation"]
 
     def accept(self, settings, item):
         """
@@ -248,7 +248,6 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         """
 
         publisher = self.parent
-        operations = publisher.engine.operations
 
         path = _session_path()
 
@@ -377,7 +376,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             self.logger.error("Failed to export translation: %s" % e)
             return
 
-        parent_sg_publish_data = item.properties.get("sg_publish_data")
+        parent_sg_publish_data = item.parent.properties.get("sg_publish_data")
 
         super(AliasTranslationPublishPlugin, self).publish(settings, item)
 
