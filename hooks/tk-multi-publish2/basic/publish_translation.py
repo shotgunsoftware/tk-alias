@@ -329,7 +329,16 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             self.logger.error("Failed to export translation: %s" % e)
             return
 
+        parent_sg_publish_data = item.properties.get("sg_publish_data")
+
         super(AliasTranslationPublishPlugin, self).publish(settings, item)
+
+        # If we have some parent publish data, share the thumbnail between the parent publish and it child
+        if parent_sg_publish_data:
+            publisher.shotgun.share_thumbnail(
+                entities=[item.properties.get("sg_publish_data")],
+                source_entity=parent_sg_publish_data
+            )
 
     def get_publish_template(self, settings, item):
         """
@@ -369,9 +378,26 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         path_info = publisher.util.get_file_path_components(publish_path)
         extension = path_info["extension"]
 
+        # ensure lowercase and no dot
         if extension:
+            extension = extension.lstrip(".").lower()
+
+            for type_def in settings["File Types"].value:
+
+                publish_type = type_def[0]
+                file_extensions = type_def[1:]
+
+                if extension in file_extensions:
+                    # found a matching type in settings. use it!
+                    return publish_type
+
+        # --- no pre-defined publish type found...
+
+        if extension:
+            # publish type is based on extension
             publish_type = "%s File" % extension.capitalize()
         else:
+            # no extension, assume it is a folder
             publish_type = "Folder"
 
         return publish_type
