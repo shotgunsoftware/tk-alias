@@ -67,6 +67,23 @@ class AliasEngine(sgtk.platform.Engine):
         QtCore.QTextCodec.setCodecForCStrings(utf8)
         self.logger.debug("set utf-8 codec for widget text")
 
+        pyside_folder = os.path.dirname(QtCore.__file__)
+        site_packages_folder = os.path.dirname(pyside_folder)
+        lib_folder = os.path.dirname(site_packages_folder)
+        python_folder = os.path.dirname(lib_folder)
+        shotgun_create_folder = os.path.dirname(python_folder)
+        qt_folder = os.path.join(shotgun_create_folder, "Qt")
+
+        # PySide plugins
+        plugins_dir = os.path.join(pyside_folder, "plugins")
+        if os.path.exists(plugins_dir):
+            QtCore.QCoreApplication.addLibraryPath(plugins_dir)
+
+        # QT plugins
+        plugins_dir = os.path.join(qt_folder, "plugins")
+        if os.path.exists(plugins_dir):
+            QtCore.QCoreApplication.addLibraryPath(plugins_dir)
+
     def post_app_init(self):
         """
         Runs after all apps have been initialized.
