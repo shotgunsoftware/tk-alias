@@ -100,6 +100,17 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         return base_settings
 
+    @property
+    def item_filters(self):
+        """
+        List of item types that this plugin is interested in.
+
+        Only items matching entries in this list will be presented to the
+        accept() method. Strings can contain glob patters such as *, for example
+        ["maya.*", "file.maya"]
+        """
+        return ["alias.session"]
+
     def _fix_year_in_path(self, path, year=2019, is_license=False):
         new_path = path if not is_license else os.path.dirname(path)
         max_iteration = 10

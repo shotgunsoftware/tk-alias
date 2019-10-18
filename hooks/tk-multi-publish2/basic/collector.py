@@ -76,6 +76,13 @@ class AliasSessionCollector(HookBaseClass):
         )
         session_item.set_icon_from_path(icon_path)
 
+        # add a new item for Alias translations to separate them from the main session item
+        translation_item = session_item.create_item(
+            "alias.session.translation",
+            "Alias Translations",
+            "All Alias Translations"
+        )
+
         # if a work template is defined, add it to the item properties so
         # that it can be used by attached publish plugins
         work_template_setting = settings.get("Work Template")
@@ -90,6 +97,7 @@ class AliasSessionCollector(HookBaseClass):
             # the attached publish plugins will need to resolve the fields at
             # execution time.
             session_item.properties["work_template"] = work_template
+            translation_item.properties["work_template"] = work_template
             self.logger.debug("Work template defined for Alias collection.")
 
         self.logger.info("Collected current Alias file")
