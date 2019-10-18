@@ -85,7 +85,7 @@ class AliasPublishJTFilePlugin(HookBaseClass):
         translator_info = engine_translator_info.get("alias_translators").get(file_extension)
         executable = translator_info.get("alias_translator_exe")
         licensed = translator_info.get("alias_translator_is_licensed")
-        alias_translator_dir, new_year = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
+        alias_translator_dir = engine.alias_bindir
 
         alias_translator_license_path = info.get("product_license_path")
         alias_translator_license_prod_key = info.get("product_key")
