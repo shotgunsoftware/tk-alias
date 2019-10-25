@@ -322,6 +322,13 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             )
             return False
 
+        translator_path = _get_translator_path(translator_settings)
+        if not translator_path:
+            self.logger.warning(
+                "Couldn't find translator path."
+            )
+            return False
+
         return super(AliasTranslationPublishPlugin, self).validate(settings, item)
 
     def publish(self, settings, item):
@@ -351,7 +358,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         alias_info = operations.get_info()
 
         cmd = [
-            translator_settings.get("exec_path"),
+            _get_translator_path(translator_settings),
             "-productKey",
             alias_info.get("product_key"),
             "-productVersion",
@@ -552,3 +559,20 @@ def _get_save_as_action():
             "callback": callback
         }
     }
+
+
+def _get_translator_path(translator_settings):
+    """
+    From the translator settings, find the translator path
+    :return: Path to the exec used to translate the file
+    """
+    # try to find the exec path, for backward compatibility we need to test in the parent folder
+    exec_path = translator_settings.get("exec_path")
+    if not os.path.isfile(exec_path):
+        exec_path = os.path.join(
+            os.path.split(os.path.dirname(exec_path))[0],
+            os.path.basename(exec_path)
+        )
+        if not os.path.isfile(exec_path):
+            return None
+    return exec_path
