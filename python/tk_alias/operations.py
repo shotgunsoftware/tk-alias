@@ -18,6 +18,10 @@ import alias_api
 
 
 class AliasOperations(object):
+    OPEN_FILE_TARGET_NEW_SCENE = 0
+    OPEN_FILE_TARGET_NEW_STAGE = 1
+    OPEN_FILE_TARGET_CURRENT_STAGE = 2
+
     def __init__(self, engine):
         """Initialize attributes."""
         self._engine = engine
@@ -31,140 +35,73 @@ class AliasOperations(object):
 
         return current_path
 
-    def open_file(self, path):
-        """Open a file in the scene."""
-        self.logger.debug("Opening file {}".format(path))
+    def save_file(self, path):
+        """Save file"""
+        self.logger.debug("Saving file: {}".format(path))
 
-        if not self.can_open_file(path):
-            self.logger.debug("Open file aborted because the file is locked")
-            return
+        is_new = path != self.get_current_path()
 
-        as_new_stage = False
+        if is_new:
+            self.current_file_closed()
 
-        if self.get_current_path() or self.get_stages_number() > 1:
-            self.logger.debug("Asking user for deleting the scene or creating a new stage")
-            answer = self._can_delete_current_objects()
-
-            if answer == QtGui.QMessageBox.Cancel:
-                self.logger.debug("Open file aborted by the user")
-                return
-
-            if answer == QtGui.QMessageBox.No:
-                as_new_stage = True
-
-        if as_new_stage:
-            self.open_file_as_new_stage(path)
-        else:
-            self.open_file_as_new_scene(path)
-
-        self._engine.stage_selected()
-
-    def create_new_file(self):
-        """Create a new file in the scene."""
-        self.logger.debug("Creating a New file")
-
-        as_new_stage = False
-
-        self.logger.debug("Asking user for deleting the scene or creating a new stage")
-        answer = self._can_delete_current_objects_new_file()
-
-        if answer == QtGui.QMessageBox.Cancel:
-            self.logger.debug("Open file aborted by the user")
-            return
-
-        if answer == QtGui.QMessageBox.No:
-            as_new_stage = True
-
-        if as_new_stage:
-            alias_api.create_new_stage(uuid.uuid4().hex)
-            pass
-        else:
-            self.reset_scene()
-
-    def open_file_as_new_stage(self, path):
-        """Open a file as a new stage"""
-        self.logger.debug("Opening the file as new stage")
-
-        # Opening a file involves closing the old one.
-        # Notify the file usage hook of the closing.
-        self.current_file_closed()
-
-        success, message = alias_api.open_file_as_new_stage(path)
-        self.logger.debug("Result: {}, Message: {}".format(success, message))
-
-        if not success:
-            raise Exception("Error opening as new stage the file {}".format(path))
-
-    def open_file_as_new_scene(self, path):
-        """Open a file renewing the scene"""
-        self.logger.debug("Opening the file as a new scene")
-
-        success, message = alias_api.open_file_as_new_scene(path)
-        self.logger.debug("Result: {}, Message: {}".format(success, message))
-
-        if not success:
-            raise Exception("Error opening the file {}".format(path))
-
-    def open_save_as_dialog(self):
-        """
-        Launch a Qt file browser to select a file, then save the supplied
-        project to that path.
-        """
-
-        # Alias doesn't appear to have a "save as" dialog accessible via
-        # python. so open our own Qt file dialog.
-        file_dialog = QtGui.QFileDialog(
-            parent=self.get_parent_window(),
-            caption="Save As",
-            directory=os.path.expanduser("~"),
-            filter="Alias file (*.wire)"
-        )
-        file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
-        file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
-        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
-        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
-        if not file_dialog.exec_():
-            return
-        path = file_dialog.selectedFiles()[0]
-
-        if os.path.splitext(path)[-1] != ".wire":
-            path = "{0}.wire".format(path)
-
-        if path:
-            self.save_file_as(path)
-
-    def save_file(self):
-        """Save current file."""
-        self.logger.debug("Saving current_file")
-
-        success, message = alias_api.save_file()
-
-        self.logger.debug("Result: {}, Message: {}".format(success, message))
-
-        if not success:
-            raise Exception("Error saving the current file")
-
-    def save_file_as(self, path):
-        """Save new file."""
-        self.logger.debug("Saving file as: {}".format(path))
-
-        self.current_file_closed()
-
-        success, message = alias_api.save_file_as(path)
+        ctx = self._engine.context
+        success, message = alias_api.save_file(path)
 
         self.logger.debug("Result: {}, Message: {}".format(success, message))
 
         if not success:
             raise Exception("Error saving the file {}".format(path))
 
-        self._engine.execute_hook_method("file_usage_hook", "file_attempt_open", path=path)
+        self._engine.save_context_for_path(path=path, ctx=ctx)
+        self._engine.save_context_for_stage_name(ctx=ctx)
+
+        if is_new:
+            self._engine.execute_hook_method("file_usage_hook", "file_attempt_open", path=path)
+
+    def open_file(self, path, target=None):
+        """Open a file in the scene."""
+        self.logger.debug("Opening file {}".format(path))
+
+        # Check if the file is locked
+        if not self.can_open_file(path):
+            self.logger.debug("Open file aborted because the file is locked")
+            return
+
+        if not target:
+            target = self.OPEN_FILE_TARGET_NEW_SCENE
+
+            # Scene is empty: open the file in the current stage
+            if self.is_pristine():
+                target = self.OPEN_FILE_TARGET_CURRENT_STAGE
+            else:
+                self.logger.debug("Asking user for deleting the scene or creating a new stage")
+                answer = self._can_delete_current_objects()
+
+                if answer == QtGui.QMessageBox.Cancel:
+                    self.logger.debug("Open file aborted by the user")
+                    return
+
+                if answer == QtGui.QMessageBox.No:
+                    target = self.OPEN_FILE_TARGET_NEW_STAGE
+
+            if target == self.OPEN_FILE_TARGET_NEW_SCENE:
+                self.current_file_closed()
+
+        ctx = self._engine.context
+        success, message = alias_api.open_file(path, target)
+        self.logger.debug("Result: {}, Message: {}".format(success, message))
+
+        if not success:
+            raise Exception("Error opening the file {}".format(path))
+
+        self._engine.save_context_for_path(path=path, ctx=ctx)
+        self._engine.save_context_for_stage_name(ctx=ctx)
 
     def open_save_as_dialog(self):
         """
         Launch a Qt file browser to select a file, then save the supplied
         project to that path.
         """
-
         # Alias doesn't appear to have a "save as" dialog accessible via
         # python. so open our own Qt file dialog.
         file_dialog = QtGui.QFileDialog(
@@ -185,15 +122,15 @@ class AliasOperations(object):
             path = "{0}.wire".format(path)
 
         if path:
-            self.save_file_as(path)
+            self.save_file(path)
 
-    def reset_scene(self):
+    def reset(self):
         """Reset the current scene."""
         self.logger.debug("Resetting the scene")
 
         self.current_file_closed()
 
-        success, message = alias_api.reset_scene()
+        success, message = alias_api.reset()
 
         self.logger.debug("Result: {}, Message: {}".format(success, message))
 
@@ -228,14 +165,14 @@ class AliasOperations(object):
 
         return answer
 
-    def _can_delete_current_objects_new_file(self):
+    def want_to_delete_current_objects(self):
         """Confirm if can delete objects."""
         message = "DELETE all objects, shaders, views and actions in all existing Stages before Opening a New " \
                   "File?"
         message_type = QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
         answer = QtGui.QMessageBox.question(self.get_parent_window(), "Open", message, message_type)
 
-        return answer
+        return answer == QtGui.QMessageBox.Yes
 
     def create_reference(self, path, standalone=True):
         """Load a file inside the scene as a reference."""
@@ -246,9 +183,6 @@ class AliasOperations(object):
 
         success, message = alias_api.create_reference(path)
         self.logger.debug("Result: {}, Message: {}".format(success, message))
-
-        if success:
-            self._engine.stage_selected()
 
         if not standalone:
             message_type = "information" if success else "warning"
@@ -268,14 +202,11 @@ class AliasOperations(object):
             raise Exception("File not found on disk - '%s'" % path)
 
         if create_stage:
-            success, message = alias_api.open_file_as_new_stage(path)
+            success, message = alias_api.open_file(path, self.OPEN_FILE_TARGET_NEW_STAGE)
         else:
             success, message = alias_api.import_file(path)
 
         self.logger.debug("Result: {}, Message: {}".format(success, message))
-
-        if success:
-            self._engine.stage_selected()
 
         if not standalone:
             message_type = "information" if success else "warning"
@@ -296,9 +227,6 @@ class AliasOperations(object):
 
         success, message = alias_api.create_texture_node(path)
         self.logger.debug("Result: {}, Message: {}".format(success, message))
-
-        if success:
-            self._engine.stage_selected()
 
         if not standalone:
             message_type = "information" if success else "warning"
@@ -394,3 +322,13 @@ class AliasOperations(object):
         self.logger.debug("Result: {}".format(stages_number))
 
         return stages_number
+
+    def get_current_stage(self):
+        """Get current stage name."""
+        return alias_api.get_current_stage()
+
+    def is_pristine(self):
+        """Check the scene if it's pristine"""
+        stages_number = self.get_stages_number()
+        current_stage = self.get_current_stage()
+        return stages_number == 1 and current_stage == "Stage"

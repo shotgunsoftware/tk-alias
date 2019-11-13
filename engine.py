@@ -29,11 +29,15 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_codename = None
         self.alias_execpath = None
         self.alias_bindir = None
-        self._stage_context = {}
         self._dialog_parent = None
 
         self.menu = None
         self.operations = None
+        self._contexts_by_stage_name = {}
+        self._contexts_by_path = {}
+        self.running_operation = False
+        self.current_operation = None
+        self.parent_action = None
 
         if not hasattr(sys, 'argv'):
             sys.argv = ['']
@@ -49,6 +53,10 @@ class AliasEngine(sgtk.platform.Engine):
         """
         self.logger.debug("%s: Post context change...", self)
         if self.context_change_allowed:
+            if not self.running_operation and \
+                    self.current_operation == "prepare_new" and \
+                    self.parent_action == "new_file":
+                self.save_context_for_stage_name(ctx=new_context)
             self._create_menu()
 
     def pre_app_init(self):
@@ -185,30 +193,54 @@ class AliasEngine(sgtk.platform.Engine):
 
         alias_api.create_menu(self.menu.options)
 
-    def stage_selected(self):
-        """Stage was selected"""
-        self.logger.debug("Stage selected")
-
-        path = self.operations.get_current_path()
-
-        if path:
-            self.logger.debug("Stage with path {} selected".format(path))
-            ctx = self.sgtk.context_from_path(path, self.context)
-
-            if not ctx.project:
-                self.logger.debug("The context is not valid with this path, project context selected".format(path))
-                ctx = self.sgtk.context_from_entity(self.context.project["type"], self.context.project["id"])
-        else:
-            self.logger.debug("Empty Stage selected")
-            ctx = self.sgtk.context_from_entity(self.context.project["type"], self.context.project["id"])
-
-        if ctx != sgtk.platform.current_engine().context:
-            self.change_context(ctx)
-            self.logger.debug("Context changed")
-        else:
-            self.logger.debug("Context not changed")
-
     def _get_dialog_parent(self):
         """ Get Alias dialog parent"""
         return self._dialog_parent.get_dialog_parent()
+
+    def on_stage_selected(self):
+        """An stage was selected."""
+        path = self.operations.get_current_path()
+        name = self.operations.get_current_stage()
+        current_context = self.context
+        current_operation = self.current_operation
+        parent_action = self.parent_action
+        running_operation = self.running_operation
+
+        self.logger.debug("-" * 50)
+        self.logger.debug("Stage selected")
+        self.logger.debug("stage name: {}, path: {}, current_context: {}".format(name, path, current_context))
+        self.logger.debug("current_operation: {}, parent_action: {}, running_operation: {}".format(current_operation,
+                                                                                                   parent_action,
+                                                                                                   running_operation))
+        self.logger.debug("-" * 50)
+
+        if self.running_operation:
+            return
+
+        # No name and not path
+        if not name and not path:
+            return
+
+        # Known path
+        if path and path in self._contexts_by_path:
+            self.change_context(self._contexts_by_path[path])
+        # Known stage
+        elif name and name in self._contexts_by_stage_name:
+            self.change_context(self._contexts_by_stage_name[name])
+        else:
+            self.change_context(self._get_project_context())
+
+    def save_context_for_path(self, path=None, ctx=None):
+        path = path or self.operations.get_current_path()
+
+        if path:
+            self._contexts_by_path[path] = ctx or self.context
+
+    def save_context_for_stage_name(self, name=None, ctx=None):
+        name = name or self.operations.get_current_stage()
+        if name:
+            self._contexts_by_stage_name[name] = ctx or self.context
+
+    def _get_project_context(self):
+        return self.sgtk.context_from_entity(self.context.project["type"], self.context.project["id"])
 
