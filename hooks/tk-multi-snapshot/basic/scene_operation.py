@@ -36,13 +36,13 @@ class SceneOperation(HookClass):
             operations.open_file(file_path)
 
         elif operation == "save":
-            operations.save_file()
+            operations.save_file(operations.get_current_path())
 
         elif operation == "save_as":
-            operations.save_file_as(file_path)
+            operations.save_file(file_path)
 
         elif operation == "reset":
             if kwargs.get("parent_action", "") != "open_file":
-                operations.reset_scene()
+                operations.reset()
 
             return True

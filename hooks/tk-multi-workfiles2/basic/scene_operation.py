@@ -9,6 +9,9 @@ class SceneOperation(HookClass):
 
         engine = self.parent.engine
         operations = engine.operations
+        engine.running_operation = True
+        engine.current_operation = operation
+        engine.parent_action = parent_action
 
         engine.logger.debug("tk-multi-workfiles2 scene_operation, "
                             "operation: {}, "
@@ -24,21 +27,27 @@ class SceneOperation(HookClass):
                                                    read_only))
 
         if operation == "current_path":
+            engine.running_operation = False
             return operations.get_current_path()
 
         elif operation == "open":
             operations.open_file(file_path)
+            engine.running_operation = False
 
         elif operation == "save":
-            operations.save_file()
+            operations.save_file(operations.get_current_path())
+            engine.running_operation = False
 
         elif operation == "save_as":
-            operations.save_file_as(file_path)
+            operations.save_file(file_path)
+            engine.running_operation = False
 
         elif operation == "reset":
-            if parent_action == "new_file":
-                operations.create_new_file()
-            elif parent_action != "open_file":
-                operations.reset_scene()
+            if parent_action != "open_file":
+                operations.reset()
+
+            engine.running_operation = False
 
             return True
+        else:
+            engine.running_operation = False

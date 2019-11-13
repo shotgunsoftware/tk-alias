@@ -18,6 +18,10 @@ import alias_api
 
 
 class AliasOperations(object):
+    OPEN_FILE_TARGET_NEW_SCENE = 0
+    OPEN_FILE_TARGET_NEW_STAGE = 1
+    OPEN_FILE_TARGET_CURRENT_STAGE = 2
+
     def __init__(self, engine):
         """Initialize attributes."""
         self._engine = engine
@@ -30,6 +34,22 @@ class AliasOperations(object):
         self.logger.debug("Result: {}".format(current_path))
 
         return current_path
+
+    def save_file(self, path):
+        """Save file"""
+        self.logger.debug("Saving file as: {}".format(path))
+
+        self.current_file_closed()
+
+        success, message = alias_api.save_file(path)
+
+        self.logger.debug("Result: {}, Message: {}".format(success, message))
+
+        if not success:
+            raise Exception("Error saving the file {}".format(path))
+
+        self._engine.execute_hook_method("file_usage_hook", "file_attempt_open", path=path)
+
 
     def open_file(self, path):
         """Open a file in the scene."""
@@ -57,8 +77,6 @@ class AliasOperations(object):
         else:
             self.open_file_as_new_scene(path)
 
-        self._engine.stage_selected()
-
     def create_new_file(self):
         """Create a new file in the scene."""
         self.logger.debug("Creating a New file")
@@ -79,7 +97,7 @@ class AliasOperations(object):
             alias_api.create_new_stage(uuid.uuid4().hex)
             pass
         else:
-            self.reset_scene()
+            self.reset()
 
     def open_file_as_new_stage(self, path):
         """Open a file as a new stage"""
@@ -110,7 +128,6 @@ class AliasOperations(object):
         Launch a Qt file browser to select a file, then save the supplied
         project to that path.
         """
-
         # Alias doesn't appear to have a "save as" dialog accessible via
         # python. so open our own Qt file dialog.
         file_dialog = QtGui.QFileDialog(
@@ -131,69 +148,15 @@ class AliasOperations(object):
             path = "{0}.wire".format(path)
 
         if path:
-            self.save_file_as(path)
+            self.save_file(path)
 
-    def save_file(self):
-        """Save current file."""
-        self.logger.debug("Saving current_file")
-
-        success, message = alias_api.save_file()
-
-        self.logger.debug("Result: {}, Message: {}".format(success, message))
-
-        if not success:
-            raise Exception("Error saving the current file")
-
-    def save_file_as(self, path):
-        """Save new file."""
-        self.logger.debug("Saving file as: {}".format(path))
-
-        self.current_file_closed()
-
-        success, message = alias_api.save_file_as(path)
-
-        self.logger.debug("Result: {}, Message: {}".format(success, message))
-
-        if not success:
-            raise Exception("Error saving the file {}".format(path))
-
-        self._engine.execute_hook_method("file_usage_hook", "file_attempt_open", path=path)
-
-    def open_save_as_dialog(self):
-        """
-        Launch a Qt file browser to select a file, then save the supplied
-        project to that path.
-        """
-
-        # Alias doesn't appear to have a "save as" dialog accessible via
-        # python. so open our own Qt file dialog.
-        file_dialog = QtGui.QFileDialog(
-            parent=self.get_parent_window(),
-            caption="Save As",
-            directory=os.path.expanduser("~"),
-            filter="Alias file (*.wire)"
-        )
-        file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
-        file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
-        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
-        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
-        if not file_dialog.exec_():
-            return
-        path = file_dialog.selectedFiles()[0]
-
-        if os.path.splitext(path)[-1] != ".wire":
-            path = "{0}.wire".format(path)
-
-        if path:
-            self.save_file_as(path)
-
-    def reset_scene(self):
+    def reset(self):
         """Reset the current scene."""
         self.logger.debug("Resetting the scene")
 
         self.current_file_closed()
 
-        success, message = alias_api.reset_scene()
+        success, message = alias_api.reset()
 
         self.logger.debug("Result: {}, Message: {}".format(success, message))
 
@@ -247,9 +210,6 @@ class AliasOperations(object):
         success, message = alias_api.create_reference(path)
         self.logger.debug("Result: {}, Message: {}".format(success, message))
 
-        if success:
-            self._engine.stage_selected()
-
         if not standalone:
             message_type = "information" if success else "warning"
             return dict(message_type=message_type, message_code=message, publish_path=path,
@@ -274,9 +234,6 @@ class AliasOperations(object):
 
         self.logger.debug("Result: {}, Message: {}".format(success, message))
 
-        if success:
-            self._engine.stage_selected()
-
         if not standalone:
             message_type = "information" if success else "warning"
             return dict(message_type=message_type, message_code=message, publish_path=path,
@@ -296,9 +253,6 @@ class AliasOperations(object):
 
         success, message = alias_api.create_texture_node(path)
         self.logger.debug("Result: {}, Message: {}".format(success, message))
-
-        if success:
-            self._engine.stage_selected()
 
         if not standalone:
             message_type = "information" if success else "warning"

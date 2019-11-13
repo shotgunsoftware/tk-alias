@@ -91,10 +91,10 @@ class AliasPublishFilePlugin(HookBaseClass):
         # add dependencies for the base class to register when publishing
         item.properties["publish_dependencies"] = self._obtain_references()
 
-        operations.save_file()
+        operations.save_file(operations.get_current_path())
         super(AliasPublishFilePlugin, self).publish(settings, item)
         self.logger.info("Saving new version")
-        operations.save_file_as(item.properties["next_version_path"])
+        operations.save_file(item.properties["next_version_path"])
 
     def accept(self, settings, item):
         """
