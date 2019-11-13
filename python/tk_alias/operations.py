@@ -44,12 +44,16 @@ class AliasOperations(object):
         if is_new:
             self.current_file_closed()
 
+        ctx = self._engine.context
         success, message = alias_api.save_file(path)
 
         self.logger.debug("Result: {}, Message: {}".format(success, message))
 
         if not success:
             raise Exception("Error saving the file {}".format(path))
+
+        self._engine.save_context_for_path(path=path, ctx=ctx)
+        self._engine.save_context_for_stage_name(ctx=ctx)
 
         if is_new:
             self._engine.execute_hook_method("file_usage_hook", "file_attempt_open", path=path)
@@ -83,11 +87,15 @@ class AliasOperations(object):
             if target == self.OPEN_FILE_TARGET_NEW_SCENE:
                 self.current_file_closed()
 
+        ctx = self._engine.context
         success, message = alias_api.open_file(path, target)
         self.logger.debug("Result: {}, Message: {}".format(success, message))
 
         if not success:
             raise Exception("Error opening the file {}".format(path))
+
+        self._engine.save_context_for_path(path=path, ctx=ctx)
+        self._engine.save_context_for_stage_name(ctx=ctx)
 
     def open_save_as_dialog(self):
         """
