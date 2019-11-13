@@ -193,7 +193,7 @@ class AliasOperations(object):
             raise Exception("File not found on disk - '%s'" % path)
 
         if create_stage:
-            success, message = alias_api.open_file_as_new_stage(path)
+            success, message = alias_api.open_file(path, target=self.OPEN_FILE_TARGET_NEW_STAGE)
         else:
             success, message = alias_api.import_file(path)
 

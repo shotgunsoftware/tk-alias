@@ -114,6 +114,6 @@ class CustomActions(HookBaseClass):
             if not allowed_to_open:
                 return False
 
-            operations.open_file_as_new_stage(path)
+            operations.open_file(path, target=operations.OPEN_FILE_TARGET_NEW_STAGE)
 
             return True
