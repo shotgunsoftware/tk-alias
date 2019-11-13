@@ -321,4 +321,6 @@ class AliasOperations(object):
 
     def is_pristine(self):
         """Check the scene if it's pristine"""
-        return self.get_stages_number() == 1 and self.get_current_stage() == "Stage"
+        stages_number = self.get_stages_number()
+        current_stage = self.get_current_stage()
+        return stages_number == 1 and current_stage == "Stage"
