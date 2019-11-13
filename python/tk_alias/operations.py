@@ -54,7 +54,7 @@ class AliasOperations(object):
         if is_new:
             self._engine.execute_hook_method("file_usage_hook", "file_attempt_open", path=path)
 
-    def open_file(self, path):
+    def open_file(self, path, target=None):
         """Open a file in the scene."""
         self.logger.debug("Opening file {}".format(path))
 
@@ -63,24 +63,25 @@ class AliasOperations(object):
             self.logger.debug("Open file aborted because the file is locked")
             return
 
-        target = self.OPEN_FILE_TARGET_NEW_SCENE
+        if not target:
+            target = self.OPEN_FILE_TARGET_NEW_SCENE
 
-        # Scene is empty: open the file in the current stage
-        if self.is_pristine():
-            target = self.OPEN_FILE_TARGET_CURRENT_STAGE
-        else:
-            self.logger.debug("Asking user for deleting the scene or creating a new stage")
-            answer = self._can_delete_current_objects()
+            # Scene is empty: open the file in the current stage
+            if self.is_pristine():
+                target = self.OPEN_FILE_TARGET_CURRENT_STAGE
+            else:
+                self.logger.debug("Asking user for deleting the scene or creating a new stage")
+                answer = self._can_delete_current_objects()
 
-            if answer == QtGui.QMessageBox.Cancel:
-                self.logger.debug("Open file aborted by the user")
-                return
+                if answer == QtGui.QMessageBox.Cancel:
+                    self.logger.debug("Open file aborted by the user")
+                    return
 
-            if answer == QtGui.QMessageBox.No:
-                target = self.OPEN_FILE_TARGET_NEW_STAGE
+                if answer == QtGui.QMessageBox.No:
+                    target = self.OPEN_FILE_TARGET_NEW_STAGE
 
-        if target == self.OPEN_FILE_TARGET_NEW_SCENE:
-            self.current_file_closed()
+            if target == self.OPEN_FILE_TARGET_NEW_SCENE:
+                self.current_file_closed()
 
         success, message = alias_api.open_file(path, target)
         self.logger.debug("Result: {}, Message: {}".format(success, message))
@@ -193,7 +194,7 @@ class AliasOperations(object):
             raise Exception("File not found on disk - '%s'" % path)
 
         if create_stage:
-            success, message = alias_api.open_file(path, target=self.OPEN_FILE_TARGET_NEW_STAGE)
+            success, message = alias_api.open_file(path, self.OPEN_FILE_TARGET_NEW_STAGE)
         else:
             success, message = alias_api.import_file(path)
 
