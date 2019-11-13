@@ -45,6 +45,9 @@ class SceneOperation(HookClass):
         elif operation == "reset":
             if parent_action != "open_file":
                 operations.reset()
+            elif parent_action == "new_file":
+                if not operations.is_pristine() and operations.want_to_delete_current_objects():
+                    operations.reset()
 
             engine.running_operation = False
 
