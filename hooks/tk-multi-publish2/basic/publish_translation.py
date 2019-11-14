@@ -10,7 +10,6 @@
 
 import os
 import sgtk
-import subprocess
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
