@@ -441,20 +441,3 @@ def _get_save_as_action():
             "callback": callback
         }
     }
-
-
-def _get_translator_path(translator_settings):
-    """
-    From the translator settings, find the translator path
-    :return: Path to the exec used to translate the file
-    """
-    # try to find the exec path, for backward compatibility we need to test in the parent folder
-    exec_path = translator_settings.get("exec_path")
-    if not os.path.isfile(exec_path):
-        exec_path = os.path.join(
-            os.path.split(os.path.dirname(exec_path))[0],
-            os.path.basename(exec_path)
-        )
-        if not os.path.isfile(exec_path):
-            return None
-    return exec_path
