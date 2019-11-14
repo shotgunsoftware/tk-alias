@@ -332,3 +332,14 @@ class AliasOperations(object):
         stages_number = self.get_stages_number()
         current_stage = self.get_current_stage()
         return stages_number == 1 and current_stage == "Stage"
+
+    def translate_file(self, path, settings={}):
+        """Translate file"""
+        self.logger.debug("Translating file: {}".format(path))
+
+        success, message = alias_api.translate_file(path)
+
+        self.logger.debug("Result: {}, Message: {}".format(success, message))
+
+        if not success:
+            raise Exception("Error translating the file {}".format(path))
