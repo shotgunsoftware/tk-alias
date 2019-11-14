@@ -30,73 +30,6 @@ class AliasTranslationPublishPlugin(HookBaseClass):
     # NOTE: The plugin icon and name are defined by the base file plugin.
 
     @property
-    def translator_settings(self):
-        """
-        Dictionary defining the translator settings that this plugin expects to access
-        when finding translator data.
-        """
-
-        publisher = self.parent
-
-        return {
-            "wref": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "AlToRef.exe"
-                ),
-                "extra_parameters": []
-            },
-            "igs": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "translators",
-                    "AliasToIges.exe"
-                ),
-                "extra_parameters": []
-            },
-            "catpart": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "AlToC5.exe"
-                ),
-                "extra_parameters": []
-            },
-            "jt": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "AlToJt.bat"
-                ),
-                "extra_parameters": [
-                    "-e1s",
-                    "-g",
-                    "-xk",
-                    "-s",
-                    "1.0000",
-                    "-u",
-                    "128",
-                    "-m0",
-                    "-ta",
-                    "-t",
-                    "0.100000",
-                    "-t1t",
-                    "0.250000",
-                    "-t2t",
-                    "1.000000",
-                    "-tl",
-                    "1"
-                ]
-            },
-            "stp": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "translators",
-                    "AliasToStep.exe"
-                ),
-                "extra_parameters": []
-            },
-        }
-
-    @property
     def description(self):
         """
         Verbose, multi-line description of what the plugin does. This can
@@ -307,28 +240,6 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             )
             return False
 
-        # if we don't have translator settings, we can't publish
-        translation_type = self.get_translation_type(publish_path)
-        if not translation_type:
-            self.logger.warning(
-                "Couldn't find the translation type."
-            )
-            return False
-
-        translator_settings = self.translator_settings.get(translation_type)
-        if not translator_settings:
-            self.logger.warning(
-                "Couldn't find translator settings."
-            )
-            return False
-
-        translator_path = _get_translator_path(translator_settings)
-        if not translator_path:
-            self.logger.warning(
-                "Couldn't find translator path."
-            )
-            return False
-
         return super(AliasTranslationPublishPlugin, self).validate(settings, item)
 
     def publish(self, settings, item):
@@ -350,39 +261,10 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         publish_folder = os.path.dirname(publish_path)
         self.parent.ensure_folder_exists(publish_folder)
 
-        # get translation data in order to build the command line to export the translation
-        translation_type = self.get_translation_type(publish_path)
-        translator_settings = self.translator_settings.get(translation_type)
-
         # get alias info
         alias_info = operations.get_info()
 
-        cmd = [
-            _get_translator_path(translator_settings),
-            "-productKey",
-            alias_info.get("product_key"),
-            "-productVersion",
-            alias_info.get("product_version"),
-            "-productLicenseType",
-            alias_info.get("product_license_type"),
-            "-productLicensePath",
-            alias_info.get("product_license_path"),
-            "-i",
-            item.properties["path"],
-            "-o",
-            publish_path
-        ]
-
-        if translator_settings["extra_parameters"]:
-            cmd.extend(translator_settings["extra_parameters"])
-
-        try:
-            self.logger.debug("Command for translation: {}".format(" ".join(cmd)))
-            subprocess.check_call(cmd, stderr=subprocess.STDOUT, shell=True)
-        except Exception as e:
-            self.logger.error("Failed to export translation: %s" % e)
-            return
-
+        operations.translate_file(publish_path)
         parent_sg_publish_data = item.parent.properties.get("sg_publish_data")
 
         super(AliasTranslationPublishPlugin, self).publish(settings, item)
