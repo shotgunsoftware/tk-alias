@@ -106,7 +106,7 @@ class AliasTranslator(object):
             command += extra_options
 
         command = " ".join(command)
-        self.logger.debug("Command: {command}")
+        self.logger.debug("Command: {command}".format(command=command))
 
         try:
             subprocess.call(command)
