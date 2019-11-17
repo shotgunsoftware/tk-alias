@@ -81,7 +81,7 @@ class AliasLauncher(SoftwareLauncher):
                 break
 
         # Flag -P (plugins list file)
-        plugins_list_file = self._get_plugins_list_file()
+        plugins_list_file = self._get_plugins_list_file(exec_path, tk_alias_codename)
         if plugins_list_file:
             args += " -P {0}".format(plugins_list_file)
 
@@ -194,16 +194,28 @@ class AliasLauncher(SoftwareLauncher):
 
         return sw_versions
 
-    def _get_plugins_list_file(self):
+    def _get_plugins_list_file(self, exec_path, code_name):
         """
         Generates plugins.lst file used by alias in the plugins bootstrap process
 
+        :exec_path: alias executable file path
+        :code_name: alias code name
         :return: plugins.lst path
         """
         # get plugins folder
         plugins_directory = os.path.join(self.disk_location, "plugins")
         plugins_list_file = os.path.join(plugins_directory, "plugins.lst")
         plugins_number = 0
+        alias_bindir = os.path.dirname(exec_path)
+        about_box_file = os.path.join(os.path.dirname(alias_bindir), "resources", "AboutBox.txt")
+
+        with open(about_box_file, "r") as f:
+            about_box_file_first_line = f.readline().split("\r")[0].strip()
+
+        release_prefix = "Alias " + code_name
+        releases = about_box_file_first_line.strip().split(",")
+        release_info = [item.strip() for item in releases if item.strip().startswith(release_prefix)][0]
+        release_version = release_info[len(release_prefix):].strip()
 
         # plugins folder exists?
         if not os.path.isdir(plugins_directory):
@@ -218,6 +230,18 @@ class AliasLauncher(SoftwareLauncher):
 
                 # build *.plugin file path
                 plugin_file_path = os.path.join(plugins_directory, plugin_file_name)
+
+                if "_from_" in plugin_file_name or "_until_" in plugin_file_name:
+                    name, ext = os.path.splitext(plugin_file_name)
+
+                    if "_from_" in plugin_file_name:
+                        version = name.split("_from_")[1].replace("_", ".")
+                        if release_version < version:
+                            continue
+                    else:
+                        version = name.split("_until_")[1].replace("_", ".")
+                        if release_version > version:
+                            continue
 
                 # appends found *.plugin file path in plugins.lst file
                 plf.write("{0}\n".format(plugin_file_path))
