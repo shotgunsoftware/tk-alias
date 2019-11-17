@@ -15,6 +15,7 @@ import uuid
 from sgtk.platform.qt import QtGui
 
 import alias_api
+from .translator import AliasTranslator
 
 
 class AliasOperations(object):
@@ -337,7 +338,10 @@ class AliasOperations(object):
         """Translate file"""
         self.logger.debug("Translating file: {}".format(path))
 
-        success, message = alias_api.translate_file(path)
+        translator = AliasTranslator(engine=self._engine)
+
+        # success, message = alias_api.translate_file(path)
+        success, message = translator.translate_file(input_path=self.get_current_path(), output_path=path)
 
         self.logger.debug("Result: {}, Message: {}".format(success, message))
 
