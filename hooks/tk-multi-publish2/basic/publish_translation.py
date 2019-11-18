@@ -37,63 +37,68 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         """
 
         publisher = self.parent
+        alias_bindir = publisher.engine.alias_bindir
+
+        # wref
+        name = "AlToRef.exe"
+        path = os.path.join(alias_bindir, name)
+        if not os.path.exists(path):
+            path = os.path.join(alias_bindir, "translators", name)
+        wref_dict = dict(exec_path=path, extra_parameters=[])
+
+        # igs
+        name = "AliasToIges.exe"
+        path = os.path.join(alias_bindir, name)
+        if not os.path.exists(path):
+            path = os.path.join(alias_bindir, "translators", name)
+        igs_dict = dict(exec_path=path, extra_parameters=[])
+
+        # catpart
+        name = "AlToC5.exe"
+        path = os.path.join(alias_bindir, name)
+        if not os.path.exists(path):
+            path = os.path.join(alias_bindir, "translators", name)
+        catpart_dict = dict(exec_path=path, extra_parameters=[])
+
+        # jt
+        name = "AlToJt.bat"
+        path = os.path.join(alias_bindir, name)
+        if not os.path.exists(path):
+            path = os.path.join(alias_bindir, "translators", name)
+        extra_parameters = [
+            "-e1s",
+            "-g",
+            "-xk",
+            "-s",
+            "1.0000",
+            "-u",
+            "128",
+            "-m0",
+            "-ta",
+            "-t",
+            "0.100000",
+            "-t1t",
+            "0.250000",
+            "-t2t",
+            "1.000000",
+            "-tl",
+            "1"
+        ]
+        jt_dict = dict(exec_path=path, extra_parameters=extra_parameters)
+
+        # stp
+        name = "AliasToStep.exe"
+        path = os.path.join(alias_bindir, name)
+        if not os.path.exists(path):
+            path = os.path.join(alias_bindir, "translators", name)
+        stp_dict = dict(exec_path=path, extra_parameters=[])
 
         return {
-            "wref": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "AlToRef.exe"
-                ),
-                "extra_parameters": []
-            },
-            "igs": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "translators",
-                    "AliasToIges.exe"
-                ),
-                "extra_parameters": []
-            },
-            "catpart": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "AlToC5.exe"
-                ),
-                "extra_parameters": []
-            },
-            "jt": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "AlToJt.bat"
-                ),
-                "extra_parameters": [
-                    "-e1s",
-                    "-g",
-                    "-xk",
-                    "-s",
-                    "1.0000",
-                    "-u",
-                    "128",
-                    "-m0",
-                    "-ta",
-                    "-t",
-                    "0.100000",
-                    "-t1t",
-                    "0.250000",
-                    "-t2t",
-                    "1.000000",
-                    "-tl",
-                    "1"
-                ]
-            },
-            "stp": {
-                "exec_path": os.path.join(
-                    publisher.engine.alias_bindir,
-                    "translators",
-                    "AliasToStep.exe"
-                ),
-                "extra_parameters": []
-            },
+            "wref": wref_dict,
+            "igs": igs_dict,
+            "catpart": catpart_dict,
+            "jt": jt_dict,
+            "stp": stp_dict,
         }
 
     @property
