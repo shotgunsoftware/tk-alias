@@ -394,9 +394,10 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         if translator_settings["extra_parameters"]:
             cmd.extend(translator_settings["extra_parameters"])
 
-        for translator_settings in settings.get("Translator Settings").value:
-            cmd.append("-{name} {value}".format(name=translator_settings.get("name"),
-                                                value=translator_settings.get("value")))
+        if settings.get("Translator Settings") and settings.get("Translator Settings").value:
+            for setting in settings.get("Translator Settings").value:
+                cmd.append("-{name}".format(name=setting.get("name")))
+                cmd.append("{value}".format(value=setting.get("value")))
 
         try:
             self.logger.debug("Command for translation: {}".format(" ".join(cmd)))
