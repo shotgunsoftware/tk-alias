@@ -137,7 +137,6 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         The type string should be one of the data types that toolkit accepts as
         part of its environment configuration.
         """
-
         # inherit the settings from the base publish plugin
         base_settings = super(AliasTranslationPublishPlugin, self).settings or {}
 
@@ -154,6 +153,20 @@ class AliasTranslationPublishPlugin(HookBaseClass):
 
         # update the base settings
         base_settings.update(alias_publish_settings)
+
+        # translator settings
+        translator_settings = {
+            "Translator Settings": {
+                "type": dict,
+                "default": {},
+                "description": "Translator settings used to set values like file release number for CATPArt, among "
+                               "others. To see all the available options per format, you can look at the command line "
+                               "parameters"
+            }
+        }
+
+        # update the base settings
+        base_settings.update(translator_settings)
 
         return base_settings
 
@@ -373,8 +386,17 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             publish_path
         ]
 
+        import sys
+        sys.path.append(
+            r"C:\Users\ariel.calzada\AppData\Local\JetBrains\Toolbox\apps\PyCharm-P\ch-0\192.7142.42\debug-eggs\pydevd-pycharm.egg")
+        import pydevd_pycharm
+        pydevd_pycharm.settrace('localhost', port=5490, stdoutToServer=True, stderrToServer=True)
+
         if translator_settings["extra_parameters"]:
             cmd.extend(translator_settings["extra_parameters"])
+
+        for name, value in settings.get("Translator Settings").value.items():
+            cmd.append("{name} {value}".format(name=name, value=value))
 
         try:
             self.logger.debug("Command for translation: {}".format(" ".join(cmd)))
