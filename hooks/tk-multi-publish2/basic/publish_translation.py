@@ -142,7 +142,6 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         The type string should be one of the data types that toolkit accepts as
         part of its environment configuration.
         """
-
         # inherit the settings from the base publish plugin
         base_settings = super(AliasTranslationPublishPlugin, self).settings or {}
 
@@ -159,6 +158,20 @@ class AliasTranslationPublishPlugin(HookBaseClass):
 
         # update the base settings
         base_settings.update(alias_publish_settings)
+
+        # translator settings
+        translator_settings = {
+            "Translator Settings": {
+                "type": list,
+                "default": [],
+                "description": "Translator settings used to set values like file release number for CATPArt, among "
+                               "others. To see all the available options per format, you can look at the command line "
+                               "parameters"
+            }
+        }
+
+        # update the base settings
+        base_settings.update(translator_settings)
 
         return base_settings
 
@@ -380,6 +393,11 @@ class AliasTranslationPublishPlugin(HookBaseClass):
 
         if translator_settings["extra_parameters"]:
             cmd.extend(translator_settings["extra_parameters"])
+
+        if settings.get("Translator Settings") and settings.get("Translator Settings").value:
+            for setting in settings.get("Translator Settings").value:
+                cmd.append("-{name}".format(name=setting.get("name")))
+                cmd.append("{value}".format(value=setting.get("value")))
 
         try:
             self.logger.debug("Command for translation: {}".format(" ".join(cmd)))
