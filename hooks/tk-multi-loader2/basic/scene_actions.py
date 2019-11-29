@@ -124,6 +124,9 @@ class AliasActions(HookBaseClass):
         elif name == "texture_node":
             return operations.create_texture_node(path, standalone=False)
 
+        elif name == "import_subdiv":
+            return operations.import_subdiv(path, standalone=False)
+
     def execute_multiple_actions(self, actions):
         """
         Executes the specified action on a list of items.

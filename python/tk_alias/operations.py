@@ -332,3 +332,24 @@ class AliasOperations(object):
         stages_number = self.get_stages_number()
         current_stage = self.get_current_stage()
         return stages_number == 1 and current_stage == "Stage"
+
+    def import_subdiv(self, path, standalone=True):
+        """Import a subdiv file into the current scene."""
+        self.logger.debug("Importing subdiv file {}".format(path))
+
+        if not os.path.exists(path):
+            raise Exception("File not found on disk - '%s'" % path)
+
+        success, message = alias_api.import_subdiv(path)
+
+        self.logger.debug("Result: {}, Message: {}".format(success, message))
+
+        if not standalone:
+            message_type = "information" if success else "warning"
+            return dict(message_type=message_type, message_code=message, publish_path=path,
+                        is_error=False if success else True)
+
+        if not success:
+            raise Exception("Error importing subdiv file")
+
+        QtGui.QMessageBox.information(self.get_parent_window(), "Import Subdiv", "Subdiv File imported successfully.")
