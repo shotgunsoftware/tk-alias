@@ -337,6 +337,11 @@ class AliasOperations(object):
         """Import a subdiv file into the current scene."""
         self.logger.debug("Importing subdiv file {}".format(path))
 
+        if not alias_api.is_subdiv_supported():
+            QtGui.QMessageBox.information(self.get_parent_window(), "Import Subdiv",
+                                          "Subdiv import is not supported in this version of Alias.")
+            return
+
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
 
