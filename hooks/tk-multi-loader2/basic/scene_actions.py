@@ -60,6 +60,8 @@ class AliasActions(HookBaseClass):
         app = self.parent
         app.log_debug("Generate actions called for UI element %s. "
                       "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_publish_data))
+        engine = app.engine
+        operations = engine.operations
 
         action_instances = []
         try:
@@ -91,6 +93,14 @@ class AliasActions(HookBaseClass):
                 "params": None,
                 "caption": "Import into Scene",
                 "description": "This will import the item into the current universe."
+            })
+
+        if "import_subdiv" in actions and operations.is_subdiv_supported():
+            action_instances.append({
+                "name": "import_subdiv",
+                "params": None,
+                "caption": "Import Subdiv file into Scene",
+                "description": "This will import the subdiv item into the current universe."
             })
 
         return action_instances

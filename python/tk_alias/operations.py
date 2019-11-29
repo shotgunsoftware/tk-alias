@@ -358,3 +358,6 @@ class AliasOperations(object):
             raise Exception("Error importing subdiv file")
 
         QtGui.QMessageBox.information(self.get_parent_window(), "Import Subdiv", "Subdiv File imported successfully.")
+
+    def is_subdiv_supported(self):
+        return alias_api.is_subdiv_supported()
