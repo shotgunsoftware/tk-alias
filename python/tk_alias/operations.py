@@ -332,3 +332,9 @@ class AliasOperations(object):
         stages_number = self.get_stages_number()
         current_stage = self.get_current_stage()
         return stages_number == 1 and current_stage == "Stage"
+
+    def create_stage(self, name=None):
+        """Creates an empty stage."""
+        if not name:
+            name = uuid.uuid4().hex
+        return alias_api.create_stage(name)

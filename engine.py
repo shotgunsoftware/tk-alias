@@ -243,4 +243,3 @@ class AliasEngine(sgtk.platform.Engine):
 
     def _get_project_context(self):
         return self.sgtk.context_from_entity(self.context.project["type"], self.context.project["id"])
-
