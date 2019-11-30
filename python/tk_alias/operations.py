@@ -361,3 +361,9 @@ class AliasOperations(object):
 
     def is_subdiv_supported(self):
         return alias_api.is_subdiv_supported()
+
+    def create_stage(self, name=None):
+        """Creates an empty stage."""
+        if not name:
+            name = uuid.uuid4().hex
+        return alias_api.create_stage(name)

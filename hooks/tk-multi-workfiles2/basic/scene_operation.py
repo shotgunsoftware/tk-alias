@@ -48,6 +48,8 @@ class SceneOperation(HookClass):
                     operations.reset()
                 elif operations.want_to_delete_current_objects():
                     operations.reset()
+                else:
+                    operations.create_stage()
             elif parent_action != "open_file":
                 operations.reset()
 
