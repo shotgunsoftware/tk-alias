@@ -60,6 +60,8 @@ class AliasActions(HookBaseClass):
         app = self.parent
         app.log_debug("Generate actions called for UI element %s. "
                       "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_publish_data))
+        engine = app.engine
+        operations = engine.operations
 
         action_instances = []
         try:
@@ -93,6 +95,14 @@ class AliasActions(HookBaseClass):
                 "description": "This will import the item into the current universe."
             })
 
+        if "import_subdiv" in actions and operations.is_subdiv_supported():
+            action_instances.append({
+                "name": "import_subdiv",
+                "params": None,
+                "caption": "Import Subdiv file into Scene",
+                "description": "This will import the subdiv item into the current universe."
+            })
+
         return action_instances
 
     def execute_action(self, name, params, sg_publish_data):
@@ -123,6 +133,9 @@ class AliasActions(HookBaseClass):
 
         elif name == "texture_node":
             return operations.create_texture_node(path, standalone=False)
+
+        elif name == "import_subdiv":
+            return operations.import_subdiv(path, standalone=False)
 
     def execute_multiple_actions(self, actions):
         """
