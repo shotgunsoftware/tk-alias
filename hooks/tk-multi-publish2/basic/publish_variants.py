@@ -30,7 +30,25 @@ class PublishVariantsPlugin(HookBaseClass):
         accept() method. Strings can contain glob patters such as *, for example
         ["maya.*", "file.maya"]
         """
-        return ["*"]
+        return ["alias.session"]
+
+    def get_item_variants(self, item):
+        """
+        Get item variants.
+
+        Use the operations module to get the list and save it
+        as a property.
+        """
+        publisher = self.parent
+        engine = publisher.engine
+        operations = engine.operations
+        variants = item.properties.get("variants")
+
+        if not variants:
+            variants = operations.get_variants()
+            item.properties["variants"] = variants
+
+        return variants
 
     def accept(self, settings, item):
         """
@@ -57,16 +75,9 @@ class PublishVariantsPlugin(HookBaseClass):
 
         :returns: dictionary with boolean keys accepted, required and enabled
         """
-        import sys
-        sys.path.append(
-            r"C:\Users\ariel.calzada\AppData\Local\JetBrains\Toolbox\apps\PyCharm-P\ch-0\192.7142.42\debug-eggs\pydevd-pycharm.egg")
-        import pydevd_pycharm
-        pydevd_pycharm.settrace('localhost', port=5490, stdoutToServer=True, stderrToServer=True)
-
         publisher = self.parent
         engine = publisher.engine
-        operations = engine.operations
-        variants = operations.get_variants()
+        variants = self.get_item_variants(item)
         accepted = True
 
         if not variants:
@@ -89,26 +100,35 @@ class PublishVariantsPlugin(HookBaseClass):
             instances.
         :param item: Item to process
         """
+        self.logger.info("Publishing variants")
+
         publisher = self.parent
-        engine = publisher.engine
-        operations = engine.operations
         version_data = item.properties["sg_version_data"]
-        variants = operations.get_variants()
+        publish_data = item.properties["sg_publish_data"]
+
+        # Links, the note will be attached to published file by default
+        # if a version is created the note will be attached to this too
+        note_links = [publish_data]
+
+        if version_data is not None:
+            note_links.append(version_data)
+
+        variants = self.get_item_variants(item)
 
         for variant_name, variant_path in variants:
-            note_data = {
+            data = {
                 "project": item.context.project,
                 "user": item.context.user,
                 "subject": "Alias Variant",
                 "content": variant_name,
-                "note_links": [version_data],
+                "note_links": note_links,
                 "tasks": [item.context.task],
             }
-            note = publisher.shotgun.create("Note", note_data)
-            publisher.shotgun.upload(entity_type="Note",
-                                     entity_id=note.get("id"),
-                                     path=variant_path,
-                                     field_name="sg_thumbnail")
+
+            note = publisher.shotgun.create("Note", data)
+            publisher.shotgun.upload_thumbnail(entity_type="Note",
+                                               entity_id=note.get("id"),
+                                               path=variant_path)
 
     def finalize(self, settings, item):
         """
