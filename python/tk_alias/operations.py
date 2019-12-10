@@ -313,6 +313,9 @@ class AliasOperations(object):
         success, variants = alias_api.get_variants(tempfile.gettempdir(), uuid.uuid4().hex)
         self.logger.debug("Result: {}, Message: {}".format(success, variants))
 
+        if not success:
+            raise Exception("Error getting variants")
+
         return variants
 
     def get_stages_number(self):

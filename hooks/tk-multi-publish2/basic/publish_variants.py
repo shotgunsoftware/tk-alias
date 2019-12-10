@@ -57,6 +57,11 @@ class PublishVariantsPlugin(HookBaseClass):
 
         :returns: dictionary with boolean keys accepted, required and enabled
         """
+        import sys
+        sys.path.append(
+            r"C:\Users\ariel.calzada\AppData\Local\JetBrains\Toolbox\apps\PyCharm-P\ch-0\192.7142.42\debug-eggs\pydevd-pycharm.egg")
+        import pydevd_pycharm
+        pydevd_pycharm.settrace('localhost', port=5490, stdoutToServer=True, stderrToServer=True)
 
         publisher = self.parent
         engine = publisher.engine
