@@ -12,6 +12,7 @@ import os
 import tempfile
 import uuid
 
+import sgtk
 from sgtk.platform.qt import QtGui
 
 import alias_api
@@ -308,12 +309,21 @@ class AliasOperations(object):
         return annotations
 
     def get_variants(self):
-        """Export variants."""
+        """
+        Get variants list.
+
+        Returns a list of tuples composed by (name, path) or an empty list.
+        """
         self.logger.debug("Getting variants")
         success, variants = alias_api.get_variants(tempfile.gettempdir(), uuid.uuid4().hex)
         self.logger.debug("Result: {}, Message: {}".format(success, variants))
 
-        return variants
+        if not success:
+            raise Exception("Error getting variants")
+
+        normalized_variants = [(name, sgtk.util.ShotgunPath.normalize(path)) for name, path in variants]
+
+        return normalized_variants
 
     def get_stages_number(self):
         """Get stages number."""
