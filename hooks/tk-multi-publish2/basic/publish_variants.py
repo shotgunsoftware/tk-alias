@@ -121,7 +121,7 @@ class AliasPublishVariantsPlugin(HookBaseClass):
         self.logger.info("Publishing variants")
 
         publisher = self.parent
-        version_data = item.properties["sg_version_data"]
+        version_data = item.properties.get("sg_version_data")
         publish_data = item.properties["sg_publish_data"]
 
         # Links, the note will be attached to published file by default
