@@ -133,7 +133,7 @@ class PublishVariantsPlugin(HookBaseClass):
             publisher.shotgun.upload(entity_type="Note",
                                      entity_id=note.get("id"),
                                      path=variant_path,
-                                     field_name="sg_thumbnail")
+                                     field_name="attachments")
 
     def finalize(self, settings, item):
         """
