@@ -135,7 +135,7 @@ class UploadVersionPlugin(HookBaseClass):
         if settings.get("3D Version").value is True:
             self.logger.debug("Creating LMV files from source file")
             # translate the file to lmv and upload the corresponding package to the Version
-            package_path, output_directory = self._translate_file_to_lmv(item)
+            package_path, thumbnail_path, output_directory = self._translate_file_to_lmv(item)
             self.logger.debug("Uploading LMV file to Shotgun")
             self.parent.shotgun.upload(
                 entity_type="Version",
@@ -150,6 +150,13 @@ class UploadVersionPlugin(HookBaseClass):
                     "sg_translation_type": "LMV"
                 }
             )
+            # if the Version thumbnail is empty, update it with the newly created thumbnail
+            if not item.get_thumbnail_as_path() and thumbnail_path:
+                self.parent.shotgun.upload_thumbnail(
+                    entity_type="Version",
+                    entity_id=item.properties["sg_version_data"]["id"],
+                    path=thumbnail_path
+                )
             # delete the temporary folder on disk
             self.logger.debug("Deleting temporary folder")
             shutil.rmtree(output_directory)
@@ -174,6 +181,11 @@ class UploadVersionPlugin(HookBaseClass):
                         path=thumbnail_path,
                         field_name="sg_uploaded_movie"
                     )
+                    self.parent.shotgun.upload_thumbnail(
+                        entity_type="Version",
+                        entity_id=item.properties["sg_version_data"]["id"],
+                        path=thumbnail_path
+                    )
                 self.logger.debug("Deleting temporary folder")
                 shutil.rmtree(output_directory)
 
@@ -191,12 +203,12 @@ class UploadVersionPlugin(HookBaseClass):
 
         # package it up
         self.logger.info("Packaging LMV files")
-        package_path = lmv_translator.package(
+        package_path, thumbnail_path = lmv_translator.package(
             svf_file_name=str(item.properties["sg_version_data"]["id"]),
             thumbnail_path=item.get_thumbnail_as_path()
         )
 
-        return package_path, lmv_translator.output_directory
+        return package_path, thumbnail_path, lmv_translator.output_directory
 
     def _get_thumbnail_from_lmv(self, item):
         """
@@ -211,11 +223,11 @@ class UploadVersionPlugin(HookBaseClass):
         lmv_translator.translate()
 
         self.logger.info("Extracting thumbnails from LMV")
-        full_image_path, thumbnail_path = lmv_translator.extract_thumbnails()
-        if not full_image_path:
+        thumbnail_path = lmv_translator.extract_thumbnail()
+        if not thumbnail_path:
             self.logger.warning("Couldn't retrieve thumbnail data from LMV. Version won't have any associated media")
             return lmv_translator.output_directory
 
-        return lmv_translator.output_directory, full_image_path
+        return lmv_translator.output_directory, thumbnail_path
 
 
