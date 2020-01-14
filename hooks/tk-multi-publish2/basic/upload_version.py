@@ -110,7 +110,7 @@ class UploadVersionPlugin(HookBaseClass):
         :returns: True if item is valid, False otherwise.
         """
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
+        framework_lmv = self.load_framework("tk-framework-lmv_v0.1.x")
         if not framework_lmv:
             self.logger.error(
                 "Could not run LMV translation: missing ATF framework"
@@ -181,7 +181,7 @@ class UploadVersionPlugin(HookBaseClass):
         """
         """
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
+        framework_lmv = self.load_framework("tk-framework-lmv_v0.1.x")
         translator = framework_lmv.import_module("translator")
 
         # translate the file to lmv
@@ -202,7 +202,7 @@ class UploadVersionPlugin(HookBaseClass):
         """
         """
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
+        framework_lmv = self.load_framework("tk-framework-lmv_v0.1.x")
         translator = framework_lmv.import_module("translator")
 
         # translate the file to lmv
