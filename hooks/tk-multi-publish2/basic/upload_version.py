@@ -191,6 +191,13 @@ class UploadVersionPlugin(HookBaseClass):
 
     def _translate_file_to_lmv(self, item):
         """
+        Translate the current Alias file as an LMV package in order to upload it to Shotgun as a 3D Version
+
+        :param item: Item to process
+        :returns:
+            - The path to the LMV zip file
+            - The path to the LMV thumbnail
+            - The path to the temporary folder where the LMV files have been processed
         """
 
         framework_lmv = self.load_framework("tk-framework-lmv_v0.1.x")
@@ -212,6 +219,12 @@ class UploadVersionPlugin(HookBaseClass):
 
     def _get_thumbnail_from_lmv(self, item):
         """
+        Extract the thumbnail from the source file, using the LMV conversion
+
+        :param item: Item to process
+        :returns:
+            - The path to the temporary folder where the LMV files have been processed
+            - The path to the LMV thumbnail
         """
 
         framework_lmv = self.load_framework("tk-framework-lmv_v0.1.x")
