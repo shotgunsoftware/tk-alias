@@ -130,6 +130,12 @@ class PublishVariantsPlugin(HookBaseClass):
                                                entity_id=note.get("id"),
                                                path=variant_path)
 
+            publisher.shotgun.upload(entity_type="Note",
+                                     entity_id=note.get("id"),
+                                     path=variant_path,
+                                     field_name="attachments",
+                                     display_name="Variant Image")
+
     def finalize(self, settings, item):
         """
         Execute the finalization pass. This pass executes once all the publish
