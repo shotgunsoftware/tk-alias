@@ -132,7 +132,7 @@ class UploadVersionPlugin(HookBaseClass):
         super(UploadVersionPlugin, self).publish(settings, item)
 
         # generate the Version content: LMV file or simple 2D thumbnail
-        if settings.get("3D Version") is True:
+        if settings.get("3D Version").value is True:
             self.logger.debug("Creating LMV files from source file")
             # translate the file to lmv and upload the corresponding package to the Version
             package_path, output_directory = self._translate_file_to_lmv(item)
