@@ -7,6 +7,7 @@
 # By accessing, using, copying or modifying this work you indicate your
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
+import os
 import shutil
 import sgtk
 
@@ -17,6 +18,23 @@ class UploadVersionPlugin(HookBaseClass):
     """
     Plugin for sending quicktimes and images to shotgun for review.
     """
+
+    @property
+    def icon(self):
+        """
+        Path to an png icon on disk
+        """
+
+        if hasattr(self, "plugin_icon"):
+            return self.plugin_icon
+
+        # look for icon one level up from this hook's folder in "icons" folder
+        return os.path.join(
+            self.disk_location,
+            os.pardir,
+            "icons",
+            "review.png"
+        )
 
     @property
     def settings(self):
@@ -95,6 +113,14 @@ class UploadVersionPlugin(HookBaseClass):
 
         :returns: dictionary with boolean keys accepted, required and enabled
         """
+
+        if settings.get("3D Version").value is True:
+            self.plugin_icon = os.path.join(
+                self.disk_location,
+                os.pardir,
+                "icons",
+                "3d_model.png"
+            )
 
         return {"accepted": True, "checked": True}
 
