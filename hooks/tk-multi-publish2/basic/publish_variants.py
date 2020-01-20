@@ -13,13 +13,31 @@ import sgtk
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class PublishVariantsPlugin(HookBaseClass):
+class AliasPublishVariantsPlugin(HookBaseClass):
+    """
+    Plugin for publishing variants of the current alias open session
+    """
+
     @property
     def name(self):
         """
         One line display name describing the plugin
         """
-        return "Publish variants to Shotgun"
+        return "Publish Variants to Shotgun"
+
+    @property
+    def description(self):
+        return """
+        <p>
+            This plugin exports all Variant images created in Alias and makes a Note in Shotgun for each one. 
+        </p>
+        <p>  
+            All Notes are linked this version & file. Use this to sync all review notes made in Alias with Shotgun. 
+        </p>
+        <p>
+            To see the Variant images that will be exported, check the Alias Variant Lister.
+        </p> 
+        """
 
     @property
     def item_filters(self):
@@ -103,7 +121,7 @@ class PublishVariantsPlugin(HookBaseClass):
         self.logger.info("Publishing variants")
 
         publisher = self.parent
-        version_data = item.properties["sg_version_data"]
+        version_data = item.properties.get("sg_version_data")
         publish_data = item.properties["sg_publish_data"]
 
         # Links, the note will be attached to published file by default
@@ -130,6 +148,12 @@ class PublishVariantsPlugin(HookBaseClass):
                                                entity_id=note.get("id"),
                                                path=variant_path)
 
+            publisher.shotgun.upload(entity_type="Note",
+                                     entity_id=note.get("id"),
+                                     path=variant_path,
+                                     field_name="attachments",
+                                     display_name="Variant Image")
+
     def finalize(self, settings, item):
         """
         Execute the finalization pass. This pass executes once all the publish
@@ -142,16 +166,3 @@ class PublishVariantsPlugin(HookBaseClass):
         """
         self.logger.info("Variants published successfully")
 
-    @property
-    def description(self):
-        return """
-        <p>
-            This plugin exports all Variant images created in Alias and makes a Note in Shotgun for each one. 
-        </p>
-        <p>  
-            All Notes are linked this version & file. Use this to sync all review notes made in Alias with Shotgun. 
-        </p>
-        <p>
-            To see the Variant images that will be exported, check the Alias Variant Lister.
-        </p> 
-        """
