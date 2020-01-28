@@ -11,6 +11,7 @@
 import os
 import sgtk
 import subprocess
+import time
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -408,14 +409,32 @@ class AliasTranslationPublishPlugin(HookBaseClass):
 
         parent_sg_publish_data = item.parent.properties.get("sg_publish_data")
 
+        if parent_sg_publish_data and not item.description:
+            item.description = parent_sg_publish_data["description"]
+
         super(AliasTranslationPublishPlugin, self).publish(settings, item)
 
         # If we have some parent publish data, share the thumbnail between the parent publish and it child
         if parent_sg_publish_data:
-            publisher.shotgun.share_thumbnail(
-                entities=[item.properties.get("sg_publish_data")],
-                source_entity=parent_sg_publish_data
-            )
+            request_timeout = 60
+            start_time = time.clock()
+            self.logger.debug("Sharing the thumbnail")
+            thumbnail_shared = False
+            while time.clock() - start_time <= request_timeout:
+                try:
+                    publisher.shotgun.share_thumbnail(
+                        entities=[item.properties.get("sg_publish_data")],
+                        source_entity=parent_sg_publish_data
+                    )
+                    self.logger.debug("Thumbnail shared successfully")
+                    thumbnail_shared = True
+                    break
+                except Exception as e:
+                    pass
+                time.sleep(1)
+
+            if not thumbnail_shared:
+                self.logger.debug("Thumbnail couln't be shared")
 
     def get_publish_template(self, settings, item):
         """
