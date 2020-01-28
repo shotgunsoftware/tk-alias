@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
+import re
 import sys
 
 import sgtk
@@ -39,6 +40,9 @@ class AliasLauncher(SoftwareLauncher):
         "version": r"[\d.]+",
         "code_name": "(?:{code_names})".format(code_names="|".join(CODE_NAMES)),
     }
+
+    # Fallback code name to use when none is given
+    FALLBACK_CODE_NAME = "AutoStudio"
 
     # This dictionary defines a list of executable template strings for each
     # of the supported operating systems. The templates are used for both
@@ -71,12 +75,15 @@ class AliasLauncher(SoftwareLauncher):
         :returns: :class:`LaunchInformation` instance
         """
         required_env = {}
+        args = self._clean_args(args)
 
         # Add flags according to the code_name
         tk_alias_codename = None
         for code_name, data in self.CODE_NAMES.items():
             if code_name in exec_path and data.get("flags"):
-                args += data.get("flags")
+                flags = self._clean_args(data.get("flags"))
+                if flags not in args:
+                    args += " " + flags
                 tk_alias_codename = code_name
                 break
 
@@ -114,7 +121,13 @@ class AliasLauncher(SoftwareLauncher):
 
         # Add executable path and codename
         required_env["TK_ALIAS_EXECPATH"] = exec_path
-        required_env["TK_ALIAS_CODENAME"] = tk_alias_codename.lower()
+
+        if tk_alias_codename:
+            tk_alias_codename_lower = tk_alias_codename.lower()
+        else:
+            tk_alias_codename_lower = self.FALLBACK_CODE_NAME.lower()
+
+        required_env["TK_ALIAS_CODENAME"] = tk_alias_codename_lower
 
         return LaunchInformation(exec_path, args, required_env)
 
@@ -202,6 +215,9 @@ class AliasLauncher(SoftwareLauncher):
         :code_name: alias code name
         :return: plugins.lst path
         """
+        # if code name is None, then use the fallback
+        code_name = code_name or self.FALLBACK_CODE_NAME
+
         # get plugins folder
         plugins_directory = os.path.join(self.disk_location, "plugins")
         plugins_list_file = os.path.join(plugins_directory, "plugins.lst")
@@ -249,3 +265,9 @@ class AliasLauncher(SoftwareLauncher):
 
         # returns plugins.lst path or None
         return plugins_list_file if plugins_number else None
+
+    def _clean_args(self, args):
+        if args:
+            args = re.sub(" +", " ", args).strip()
+
+        return args
