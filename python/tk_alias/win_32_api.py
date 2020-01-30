@@ -102,7 +102,7 @@ def safe_get_window_text(hwnd):
                                             SMTO_ABORTIFHUNG | SMTO_BLOCK, 100, 0)
         if result != 0:
             title = buffer.value
-    except Exception as e:
+    except Exception:
         pass
     return title
 
