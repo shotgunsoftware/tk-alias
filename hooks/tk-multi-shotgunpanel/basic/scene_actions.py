@@ -63,7 +63,7 @@ class AliasActions(HookBaseClass):
         try:
             # call base class first
             action_instances += HookBaseClass.generate_actions(self, sg_data, actions, ui_area)
-        except AttributeError:
+        except AttributeError as e:
             # base class doesn't have the method, so ignore and continue
             pass
 
@@ -125,7 +125,7 @@ class AliasActions(HookBaseClass):
         else:
             try:
                 HookBaseClass.execute_action(self, name, params, sg_data)
-            except AttributeError, e:
+            except AttributeError as e:
                 # base class doesn't have the method, so ignore and continue
                 pass
 
