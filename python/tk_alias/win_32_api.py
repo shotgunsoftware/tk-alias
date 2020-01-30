@@ -80,7 +80,7 @@ def find_parent_process_id(process_id):
                 parent_process_id = pe.th32ParentProcessID
                 break
             ret = Process32Next(h_process_snapshot, ctypes.byref(pe))
-    except Exception, e:
+    except Exception as e:
         pass
     else:
         CloseHandle(h_process_snapshot)
@@ -102,7 +102,7 @@ def safe_get_window_text(hwnd):
                                             SMTO_ABORTIFHUNG | SMTO_BLOCK, 100, 0)
         if result != 0:
             title = buffer.value
-    except Exception, e:
+    except Exception as e:
         pass
     return title
 
