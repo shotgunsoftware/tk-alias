@@ -14,12 +14,28 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class PublishAnnotationsPlugin(HookBaseClass):
+    """
+    Plugin for publishing annotations of the current alias open session
+    """
+
     @property
     def name(self):
         """
         One line display name describing the plugin
         """
-        return "Publish variants to Shotgun"
+        return "Publish Annotations to Shotgun"
+
+    @property
+    def description(self):
+        return """
+        <p>
+            This plugin exports all annotations created using the Locator Annotation tool in Alias. 
+        </p>
+        <p>
+            Each annotation will create a Note in Shotgun. All Notes are linked to this version and file. Use this to 
+            sync all review notes made in Alias with Shotgun.
+        </p> 
+        """
 
     @property
     def item_filters(self):
@@ -30,7 +46,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
         accept() method. Strings can contain glob patters such as *, for example
         ["maya.*", "file.maya"]
         """
-        return ["*"]
+        return ["alias.session"]
 
     def accept(self, settings, item):
         """
@@ -59,21 +75,31 @@ class PublishAnnotationsPlugin(HookBaseClass):
         """
 
         publisher = self.parent
-        engine = publisher.engine
-        operations = engine.operations
-        annotations = operations.get_annotations()
-        accepted = True
+        operations = publisher.engine.operations
 
+        annotations = operations.get_annotations()
         if not annotations:
-            engine.logger.debug("There are not annotations to export")
-            accepted = False
+            self.logger.debug("There are not annotations to export")
+            return {"accepted": False}
 
         return {
-            "accepted": accepted,
-            "visible": True,
-            "checked": False,
-            "enabled": True
+            "accepted": True,
+            "checked": False
         }
+
+    def validate(self, settings, item):
+        """
+        Validates the given item to check that it is ok to publish. Returns a
+        boolean to indicate validity.
+
+        :param settings: Dictionary of Settings. The keys are strings, matching
+            the keys returned in the settings property. The values are `Setting`
+            instances.
+        :param item: Item to process
+        :returns: True if item is valid, False otherwise.
+        """
+
+        return True
 
     def publish(self, settings, item):
         """
@@ -84,22 +110,43 @@ class PublishAnnotationsPlugin(HookBaseClass):
             instances.
         :param item: Item to process
         """
+
+        self.logger.info("Publishing annotations")
+
         publisher = self.parent
-        engine = publisher.engine
-        operations = engine.operations
-        version_data = item.properties["sg_version_data"]
+        operations = publisher.engine.operations
+
+        # Links, the note will be attached to published file by default
+        # if a version is created the note will be attached to this too
+        publish_data = item.properties["sg_publish_data"]
+        version_data = item.properties.get("sg_version_data")
+
+        note_links = [publish_data]
+        if version_data is not None:
+            note_links.append(version_data)
+
         annotations = operations.get_annotations()
 
+        batch_data = []
         for annotation in annotations:
             note_data = {
                 "project": item.context.project,
                 "user": item.context.user,
                 "subject": "Alias Annotation",
                 "content": annotation,
-                "note_links": [version_data],
+                "note_links": note_links,
                 "tasks": [item.context.task],
             }
-            note = publisher.shotgun.create("Note", note_data)
+            batch_data.append(
+                {
+                    "request_type": "create",
+                    "entity_type": "Note",
+                    "data": note_data
+                }
+            )
+
+        if batch_data:
+            self.parent.shotgun.batch(batch_data)
 
     def finalize(self, settings, item):
         """
@@ -113,14 +160,4 @@ class PublishAnnotationsPlugin(HookBaseClass):
         """
         self.logger.info("Annotations published successfully")
 
-    @property
-    def description(self):
-        return """
-        <p>
-            This plugin exports all annotations created using the Locator Annotation tool in Alias. 
-        </p>
-        <p>
-            Each annotation will create a Note in Shotgun. All Notes are linked to this version and file. Use this to 
-            sync all review notes made in Alias with Shotgun.
-        </p> 
-        """
+
