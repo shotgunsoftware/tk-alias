@@ -80,7 +80,7 @@ def find_parent_process_id(process_id):
                 parent_process_id = pe.th32ParentProcessID
                 break
             ret = Process32Next(h_process_snapshot, ctypes.byref(pe))
-    except Exception as e:
+    except Exception:
         pass
     else:
         CloseHandle(h_process_snapshot)
