@@ -32,7 +32,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
             This plugin exports all annotations created using the Locator Annotation tool in Alias.
         </p>
         <p>
-            Each annotation will create a Note in Shotgun. All Notes are linked to this version and file. Use this to 
+            Each annotation will create a Note in Shotgun. All Notes are linked to this version and file. Use this to
             sync all review notes made in Alias with Shotgun.
         </p>
         """
