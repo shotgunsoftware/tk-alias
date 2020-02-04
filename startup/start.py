@@ -33,7 +33,9 @@ def start_engine():
         context = sgtk.context.deserialize(os.environ.get("SGTK_CONTEXT"))
         engine = sgtk.platform.start_engine("tk-alias", context.sgtk, context)
     except Exception as e:
-        logger.exception("Unexpected exception while launching the Alias engine {!r}.".format(e))
+        logger.exception(
+            "Unexpected exception while launching the Alias engine {!r}.".format(e)
+        )
         raise
     else:
         logger.debug("Engine started successfully, returning 'AliasEngine' object")

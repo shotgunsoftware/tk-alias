@@ -1,11 +1,11 @@
 ﻿# Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
@@ -20,6 +20,7 @@ class AliasSessionCollector(HookBaseClass):
     Collector that operates on the alias session. Should inherit from the basic
     collector hook.
     """
+
     @property
     def settings(self):
         collector_settings = super(AliasSessionCollector, self).settings or {}
@@ -28,10 +29,10 @@ class AliasSessionCollector(HookBaseClass):
                 "type": "template",
                 "default": None,
                 "description": "Template path for artist work files. Should "
-                               "correspond to a template defined in "
-                               "templates.yml. If configured, is made available"
-                               "to publish plugins via the collected item's "
-                               "properties. ",
+                "correspond to a template defined in "
+                "templates.yml. If configured, is made available"
+                "to publish plugins via the collected item's "
+                "properties. ",
             },
         }
 
@@ -62,25 +63,16 @@ class AliasSessionCollector(HookBaseClass):
 
         # create the session item for the publish hierarchy
         session_item = parent_item.create_item(
-            "alias.session",
-            "Alias Session",
-            display_name
+            "alias.session", "Alias Session", display_name
         )
 
         # get the icon path to display for this item
-        icon_path = os.path.join(
-            self.disk_location,
-            os.pardir,
-            "icons",
-            "alias.png"
-        )
+        icon_path = os.path.join(self.disk_location, os.pardir, "icons", "alias.png")
         session_item.set_icon_from_path(icon_path)
 
         # add a new item for Alias translations to separate them from the main session item
         translation_item = session_item.create_item(
-            "alias.session.translation",
-            "Alias Translations",
-            "All Alias Translations"
+            "alias.session.translation", "Alias Translations", "All Alias Translations"
         )
 
         # if a work template is defined, add it to the item properties so
@@ -89,7 +81,8 @@ class AliasSessionCollector(HookBaseClass):
         if work_template_setting:
 
             work_template = publisher.engine.get_template_by_name(
-                work_template_setting.value)
+                work_template_setting.value
+            )
 
             # store the template on the item for use by publish plugins. we
             # can't evaluate the fields here because there's no guarantee the
@@ -101,5 +94,3 @@ class AliasSessionCollector(HookBaseClass):
             self.logger.debug("Work template defined for Alias collection.")
 
         self.logger.info("Collected current Alias file")
-
-

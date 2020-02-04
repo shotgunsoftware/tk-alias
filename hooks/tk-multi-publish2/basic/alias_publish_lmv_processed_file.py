@@ -1,11 +1,11 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import base64
@@ -42,8 +42,8 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
                 "type": "template",
                 "default": None,
                 "description": "Template path for published work files. Should"
-                               "correspond to a template defined in "
-                               "templates.yml.",
+                "correspond to a template defined in "
+                "templates.yml.",
             }
         }
 
@@ -54,19 +54,14 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
                 "type": "template",
                 "default": None,
                 "description": "Template path for published work files. Should"
-                               "correspond to a template defined in "
-                               "templates.yml.",
+                "correspond to a template defined in "
+                "templates.yml.",
             }
         }
 
         base_settings.update(workfile_settings)
 
-        translator_settings = {
-            self.translator_yml: {
-                "type": "str",
-                "default": None
-            }
-        }
+        translator_settings = {self.translator_yml: {"type": "str", "default": None}}
 
         base_settings.update(translator_settings)
 
@@ -92,7 +87,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
                     "is a list in which the first entry is the Shotgun "
                     "published file type and subsequent entries are file "
                     "extensions that should be associated."
-                )
+                ),
             },
         }
 
@@ -135,11 +130,13 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         try:
             engine_translator_info = self.engine_translator_info
             translator_info = engine_translator_info.get("alias_translators")
-            lmv_translator = translator_info.get('lmv')
-            lmv_translator_executable = lmv_translator.get('alias_translator_exe')
+            lmv_translator = translator_info.get("lmv")
+            lmv_translator_executable = lmv_translator.get("alias_translator_exe")
             # alias_translator_dir = self._fix_year_in_path(engine_translator_info.get("alias_translator_dir"))
             alias_translator_dir = self.parent.engine.alias_bindir
-            lmv_executable_fullpath = os.path.join(alias_translator_dir, 'LMVExtractor', lmv_translator_executable)
+            lmv_executable_fullpath = os.path.join(
+                alias_translator_dir, "LMVExtractor", lmv_translator_executable
+            )
             if os.path.isfile(lmv_executable_fullpath):
                 self.logger.info("LMV validation finished.")
                 return True
@@ -147,7 +144,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
                 self.logger.info("LMV validation filed, extractor not found.")
                 return False
         except Exception as w:
-            self.logger.info('Error: {}'.format(w))
+            self.logger.info("Error: {}".format(w))
             return False
         return False
 
@@ -184,12 +181,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         #     "enabled": False
         # })
         # return base_accept
-        return {
-            "accepted": True,
-            "visible": True,
-            "checked": True,
-            "enabled": False
-        }
+        return {"accepted": True, "visible": True, "checked": True, "enabled": False}
 
     def makedirs(self, path):
         try:
@@ -215,7 +207,7 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         # PublishedFile id
         publish_id = item.properties.sg_publish_data["id"]
-        
+
         # Version id
         version_id = item.properties.sg_version_data["id"]
 
@@ -223,15 +215,15 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
         translator = self._get_translator()
 
         # Temporal dir
-        self.TMPDIR = tempfile.mkdtemp(prefix='sgtk_')
+        self.TMPDIR = tempfile.mkdtemp(prefix="sgtk_")
 
         # Alias file name
         file_name = os.path.basename(source_path)
 
         # JSON file
         self.logger.info("Creating JSON file")
-        index_path = os.path.join(self.TMPDIR, 'index.json')
-        with open(index_path, 'w') as _:
+        index_path = os.path.join(self.TMPDIR, "index.json")
+        with open(index_path, "w") as _:
             pass
 
         # Copy source file locally
@@ -278,47 +270,55 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
             thumb_big_path = os.path.join(images_path_temporal, thumb_big_filename)
             thumb_small_path = os.path.join(images_path_temporal, thumb_small_filename)
 
-            with open(thumb_big_path, 'wb') as thumbnail:
+            with open(thumb_big_path, "wb") as thumbnail:
                 thumbnail.write(thumbnail_data)
                 self.logger.info("LMV image created.")
 
-            with open(thumb_small_path, 'wb') as thumbnail:
+            with open(thumb_small_path, "wb") as thumbnail:
                 thumbnail.write(thumbnail_data)
                 self.logger.info("LMV thumbnail created.")
 
             self.logger.info("Updating thumbnail.")
-            self.parent.engine.shotgun.upload_thumbnail("PublishedFile", publish_id, thumb_small_path)
+            self.parent.engine.shotgun.upload_thumbnail(
+                "PublishedFile", publish_id, thumb_small_path
+            )
 
             self.logger.info("Uploading sg_uploaded_movie")
-            self.parent.engine.shotgun.upload(entity_type="Version",
-                                              entity_id=version_id,
-                                              path=thumb_small_path,
-                                              field_name="sg_uploaded_movie")
+            self.parent.engine.shotgun.upload(
+                entity_type="Version",
+                entity_id=version_id,
+                path=thumb_small_path,
+                field_name="sg_uploaded_movie",
+            )
 
             self.logger.info("ZIP package")
-            zip_path = shutil.make_archive(base_name=base_name,
-                                           format="zip",
-                                           root_dir=output_directory)
+            zip_path = shutil.make_archive(
+                base_name=base_name, format="zip", root_dir=output_directory
+            )
 
             item.properties["thumb_small_path"] = thumb_small_path
         else:
             self.logger.info("ZIP package without images")
-            zip_path = shutil.make_archive(base_name=base_name,
-                                           format="zip",
-                                           root_dir=output_directory)
+            zip_path = shutil.make_archive(
+                base_name=base_name, format="zip", root_dir=output_directory
+            )
 
         self.logger.info("Uploading lmv files")
-        self.parent.engine.shotgun.upload(entity_type="Version",
-                                          entity_id=version_id,
-                                          path=zip_path,
-                                          field_name="sg_translation_files")
+        self.parent.engine.shotgun.upload(
+            entity_type="Version",
+            entity_id=version_id,
+            path=zip_path,
+            field_name="sg_translation_files",
+        )
 
-        self.parent.engine.shotgun.update(entity_type="Version",
-                                          entity_id=version_id,
-                                          data=dict(sg_translation_type="LMV"))
+        self.parent.engine.shotgun.update(
+            entity_type="Version",
+            entity_id=version_id,
+            data=dict(sg_translation_type="LMV"),
+        )
 
         self.logger.info("LMV processing finished successfully.")
-        self.logger.info('Translate Alias file to LMV file locally (DONE).')
+        self.logger.info("Translate Alias file to LMV file locally (DONE).")
 
     def _get_thumbnail_data(self, item, source_temporal_path):
         data = None
@@ -339,10 +339,10 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
             thumbnail_data = []
             while line != "thumbnail end\n":
-                thumbnail_data.append(line.replace('Th ', ''))
+                thumbnail_data.append(line.replace("Th ", ""))
                 line = src_file.readline()
 
-            data = base64.b64decode(''.join(thumbnail_data))
+            data = base64.b64decode("".join(thumbnail_data))
 
         return data
 
@@ -364,9 +364,9 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
     def _get_lmv_target_path(self, item):
         root_path = item.properties.publish_template.root_path
-        version_id = str(item.properties.sg_version_data['id'])
-        target_path = os.path.join(root_path, 'translations', 'lmv', version_id)
-        images_path = os.path.join(root_path, 'translations', 'images')
+        version_id = str(item.properties.sg_version_data["id"])
+        target_path = os.path.join(root_path, "translations", "lmv", version_id)
+        images_path = os.path.join(root_path, "translations", "images")
         self.makedirs(images_path)
 
         return target_path
@@ -417,21 +417,23 @@ class AliasPublishLMVProcessedFilePlugin(HookBaseClass):
 
         publish_type = self.get_publish_type(settings, item)
         item.local_properties.publish_type = publish_type
-        
+
         # Create version
-        path = item.properties['path']
+        path = item.properties["path"]
         file_name = os.path.basename(path)
         name, extension = os.path.splitext(file_name)
-        item.properties['publish_name'] = name
+        item.properties["publish_name"] = name
         super(AliasPublishLMVProcessedFilePlugin, self).publish(settings, item)
-        
+
         self._copy_work_to_publish(settings, item)
 
         thumbnail_path = item.get_thumbnail_as_path()
         if not thumbnail_path and "thumb_small_path" in item.properties:
-            self.parent.engine.shotgun.upload_thumbnail(entity_type="Version",
-                                                        entity_id=item.properties["sg_version_data"]["id"],
-                                                        path=item.properties["thumb_small_path"])
+            self.parent.engine.shotgun.upload_thumbnail(
+                entity_type="Version",
+                entity_id=item.properties["sg_version_data"]["id"],
+                path=item.properties["thumb_small_path"],
+            )
 
         try:
             shutil.rmtree(self.TMPDIR)

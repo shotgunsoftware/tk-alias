@@ -1,11 +1,11 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
@@ -29,14 +29,14 @@ class AliasPublishVariantsPlugin(HookBaseClass):
     def description(self):
         return """
         <p>
-            This plugin exports all Variant images created in Alias and makes a Note in Shotgun for each one. 
+            This plugin exports all Variant images created in Alias and makes a Note in Shotgun for each one.
         </p>
-        <p>  
-            All Notes are linked this version & file. Use this to sync all review notes made in Alias with Shotgun. 
+        <p>
+            All Notes are linked this version & file. Use this to sync all review notes made in Alias with Shotgun.
         </p>
         <p>
             To see the Variant images that will be exported, check the Alias Variant Lister.
-        </p> 
+        </p>
         """
 
     @property
@@ -106,7 +106,7 @@ class AliasPublishVariantsPlugin(HookBaseClass):
             "accepted": accepted,
             "visible": True,
             "checked": False,
-            "enabled": True
+            "enabled": True,
         }
 
     def publish(self, settings, item):
@@ -144,15 +144,17 @@ class AliasPublishVariantsPlugin(HookBaseClass):
             }
 
             note = publisher.shotgun.create("Note", data)
-            publisher.shotgun.upload_thumbnail(entity_type="Note",
-                                               entity_id=note.get("id"),
-                                               path=variant_path)
+            publisher.shotgun.upload_thumbnail(
+                entity_type="Note", entity_id=note.get("id"), path=variant_path
+            )
 
-            publisher.shotgun.upload(entity_type="Note",
-                                     entity_id=note.get("id"),
-                                     path=variant_path,
-                                     field_name="attachments",
-                                     display_name="Variant Image")
+            publisher.shotgun.upload(
+                entity_type="Note",
+                entity_id=note.get("id"),
+                path=variant_path,
+                field_name="attachments",
+                display_name="Variant Image",
+            )
 
     def finalize(self, settings, item):
         """
@@ -165,4 +167,3 @@ class AliasPublishVariantsPlugin(HookBaseClass):
         :param item: Item to process
         """
         self.logger.info("Variants published successfully")
-

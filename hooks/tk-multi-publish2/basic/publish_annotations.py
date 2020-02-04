@@ -1,11 +1,11 @@
 # Copyright (c) 2017 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
@@ -82,10 +82,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
             self.logger.debug("There are not annotations to export")
             return {"accepted": False}
 
-        return {
-            "accepted": True,
-            "checked": False
-        }
+        return {"accepted": True, "checked": False}
 
     def validate(self, settings, item):
         """
@@ -138,11 +135,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
                 "tasks": [item.context.task],
             }
             batch_data.append(
-                {
-                    "request_type": "create",
-                    "entity_type": "Note",
-                    "data": note_data
-                }
+                {"request_type": "create", "entity_type": "Note", "data": note_data}
             )
 
         if batch_data:

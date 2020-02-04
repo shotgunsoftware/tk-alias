@@ -48,9 +48,14 @@ class DialogParent(object):
             proxy_window_hwnd = win_32_api.qwidget_winid_to_hwnd(proxy_window_id)
 
             # set no parent notify
-            proxy_window_style = win_32_api.GetWindowLong(proxy_window_hwnd, win_32_api.GWL_EXSTYLE)
-            win_32_api.SetWindowLong(proxy_window_hwnd, win_32_api.GWL_EXSTYLE,
-                                     proxy_window_style|win_32_api.WS_EX_NOPARENTNOTIFY)
+            proxy_window_style = win_32_api.GetWindowLong(
+                proxy_window_hwnd, win_32_api.GWL_EXSTYLE
+            )
+            win_32_api.SetWindowLong(
+                proxy_window_hwnd,
+                win_32_api.GWL_EXSTYLE,
+                proxy_window_style | win_32_api.WS_EX_NOPARENTNOTIFY,
+            )
 
             # parent to Alias application window
             win_32_api.SetParent(proxy_window_hwnd, main_hwnd)
