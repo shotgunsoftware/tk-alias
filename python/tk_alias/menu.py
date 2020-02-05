@@ -14,9 +14,9 @@ Menu handling for Alias
 
 from collections import OrderedDict
 import os
-import sys
 import uuid
 
+from tank_vendor import six
 from sgtk.platform.qt import QtGui
 from sgtk.platform.qt import QtCore
 from sgtk.util import is_windows, is_macos, is_linux
@@ -225,7 +225,7 @@ class AliasMenu(object):
     @property
     def context_name(self):
         """Returns the context name used by the context submenu caption."""
-        return str(self._engine.context).decode("utf-8")
+        return six.ensure_str(str(self._engine.context))
 
     def jump_to_sg(self):
         """
