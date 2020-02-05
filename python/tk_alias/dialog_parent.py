@@ -3,6 +3,7 @@ import sys
 import win_32_api
 
 from sgtk.platform.qt import QtGui
+from sgtk.util import is_windows
 
 
 class DialogParent(object):
@@ -68,7 +69,7 @@ class DialogParent(object):
         show_dialog & show_modal.
         """
         # determine the parent widget to use:
-        if sys.platform == "win32":
+        if is_windows():
             # for windows, we create a proxy window parented to the
             # main application window that we can then set as the owner
             # for all Toolkit dialogs
