@@ -19,6 +19,7 @@ import uuid
 
 from sgtk.platform.qt import QtGui
 from sgtk.platform.qt import QtCore
+from sgtk.util import is_windows, is_macos, is_linux
 
 
 class AliasMenu(object):
@@ -241,18 +242,14 @@ class AliasMenu(object):
         paths = self._engine.context.filesystem_locations
 
         for disk_location in paths:
-            # get the setting
-            system = sys.platform
-
-            # run the app
-            if system == "linux2":
+            if is_linux():
                 cmd = 'xdg-open "%s"' % disk_location
-            elif system == "darwin":
+            elif is_macos():
                 cmd = 'open "%s"' % disk_location
-            elif system == "win32":
+            elif is_windows():
                 cmd = 'cmd.exe /C start "Folder" "%s"' % disk_location
             else:
-                raise Exception("Platform '%s' is not supported." % system)
+                raise Exception("Platform is not supported.")
 
             self._engine.logger.debug("Jump to filesystem command: {}".format(cmd))
 
