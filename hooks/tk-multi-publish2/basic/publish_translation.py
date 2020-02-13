@@ -31,78 +31,6 @@ class AliasTranslationPublishPlugin(HookBaseClass):
     # NOTE: The plugin icon and name are defined by the base file plugin.
 
     @property
-    def translator_settings(self):
-        """
-        Dictionary defining the translator settings that this plugin expects to access
-        when finding translator data.
-        """
-
-        publisher = self.parent
-        alias_bindir = publisher.engine.alias_bindir
-
-        # wref
-        name = "AlToRef.exe"
-        path = os.path.join(alias_bindir, name)
-        if not os.path.exists(path):
-            path = os.path.join(alias_bindir, "translators", name)
-        wref_dict = dict(exec_path=path, extra_parameters=[])
-
-        # igs
-        name = "AliasToIges.exe"
-        path = os.path.join(alias_bindir, name)
-        if not os.path.exists(path):
-            path = os.path.join(alias_bindir, "translators", name)
-        igs_dict = dict(exec_path=path, extra_parameters=[])
-
-        # catpart
-        name = "AlToC5.exe"
-        path = os.path.join(alias_bindir, name)
-        if not os.path.exists(path):
-            path = os.path.join(alias_bindir, "translators", name)
-        catpart_dict = dict(exec_path=path, extra_parameters=[])
-
-        # jt
-        name = "AlToJt.bat"
-        path = os.path.join(alias_bindir, name)
-        if not os.path.exists(path):
-            path = os.path.join(alias_bindir, "translators", name)
-        extra_parameters = [
-            "-e1s",
-            "-g",
-            "-xk",
-            "-s",
-            "1.0000",
-            "-u",
-            "128",
-            "-m0",
-            "-ta",
-            "-t",
-            "0.100000",
-            "-t1t",
-            "0.250000",
-            "-t2t",
-            "1.000000",
-            "-tl",
-            "1"
-        ]
-        jt_dict = dict(exec_path=path, extra_parameters=extra_parameters)
-
-        # stp
-        name = "AliasToStep.exe"
-        path = os.path.join(alias_bindir, name)
-        if not os.path.exists(path):
-            path = os.path.join(alias_bindir, "translators", name)
-        stp_dict = dict(exec_path=path, extra_parameters=[])
-
-        return {
-            "wref": wref_dict,
-            "igs": igs_dict,
-            "catpart": catpart_dict,
-            "jt": jt_dict,
-            "stp": stp_dict,
-        }
-
-    @property
     def description(self):
         """
         Verbose, multi-line description of what the plugin does. This can
@@ -326,23 +254,30 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             )
             return False
 
+        # use the framework to get the Alias translator
+        framework = self.load_framework("tk-framework-aliastranslations_v0.x.x")
+        if not framework:
+            self.logger.warning("Couldn't find the Alias Translations Framework")
+            return False
+
+        tk_framework_aliastranslations = framework.import_module("tk_framework_aliastranslations")
+        translator = tk_framework_aliastranslations.Translator(path, publish_path)
+
+        # if we don't match valid conditions for the translator, exit
+        if not translator.is_valid():
+            self.logger.warning(
+                "Invalid conditions for translator."
+            )
+            return
+
         # if we don't have translator settings, we can't publish
-        translation_type = self.get_translation_type(publish_path)
-        if not translation_type:
+        if not translator.translation_type:
             self.logger.warning(
                 "Couldn't find the translation type."
             )
             return False
 
-        translator_settings = self.translator_settings.get(translation_type)
-        if not translator_settings:
-            self.logger.warning(
-                "Couldn't find translator settings."
-            )
-            return False
-
-        translator_path = _get_translator_path(translator_settings)
-        if not translator_path:
+        if not translator.translator_path:
             self.logger.warning(
                 "Couldn't find translator path."
             )
@@ -369,42 +304,19 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         publish_folder = os.path.dirname(publish_path)
         self.parent.ensure_folder_exists(publish_folder)
 
-        # get translation data in order to build the command line to export the translation
-        translation_type = self.get_translation_type(publish_path)
-        translator_settings = self.translator_settings.get(translation_type)
-
-        # get alias info
-        alias_info = operations.get_info()
-
-        cmd = [
-            _get_translator_path(translator_settings),
-            "-productKey",
-            alias_info.get("product_key"),
-            "-productVersion",
-            alias_info.get("product_version"),
-            "-productLicenseType",
-            alias_info.get("product_license_type"),
-            "-productLicensePath",
-            alias_info.get("product_license_path"),
-            "-i",
-            item.properties["path"],
-            "-o",
-            publish_path
-        ]
-
-        if translator_settings["extra_parameters"]:
-            cmd.extend(translator_settings["extra_parameters"])
+        # need to build a new instance of the translator for each translation because the type is changing
+        framework = self.load_framework("tk-framework-aliastranslations_v0.x.x")
+        tk_framework_aliastranslations = framework.import_module("tk_framework_aliastranslations")
+        translator = tk_framework_aliastranslations.Translator(item.properties.path, publish_path)
 
         if settings.get("Translator Settings") and settings.get("Translator Settings").value:
             for setting in settings.get("Translator Settings").value:
-                cmd.append("-{name}".format(name=setting.get("name")))
-                cmd.append("{value}".format(value=setting.get("value")))
+                translator.add_extra_param(setting.get("name"), setting.get("value"))
 
         try:
-            self.logger.debug("Command for translation: {}".format(" ".join(cmd)))
-            subprocess.check_call(cmd, stderr=subprocess.STDOUT, shell=True)
+            translator.execute()
         except Exception as e:
-            self.logger.error("Failed to export translation: %s" % e)
+            self.logger.error("Failed to run translation: %s" % e)
             return
 
         parent_sg_publish_data = item.parent.properties.get("sg_publish_data")
@@ -516,27 +428,6 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             sequence=False
         )
 
-    def get_translation_type(self, path):
-        """
-        Get the translation type according to the path extension
-
-        :param path: The path to determine the translation type from
-
-        :return: The translation type or None if the path extension is unknown.
-        """
-
-        publisher = self.parent
-        operations = publisher.engine.operations
-
-        path_info = publisher.util.get_file_path_components(path)
-        extension = path_info["extension"]
-
-        # ensure lowercase and no dot
-        if extension:
-            extension = extension.lstrip(".").lower()
-
-        return extension
-
     def _copy_work_to_publish(self, settings, item):
         """
         This method handles copying work file path(s) to a designated publish
@@ -601,20 +492,3 @@ def _get_save_as_action():
             "callback": callback
         }
     }
-
-
-def _get_translator_path(translator_settings):
-    """
-    From the translator settings, find the translator path
-    :return: Path to the exec used to translate the file
-    """
-    # try to find the exec path, for backward compatibility we need to test in the parent folder
-    exec_path = translator_settings.get("exec_path")
-    if not os.path.isfile(exec_path):
-        exec_path = os.path.join(
-            os.path.split(os.path.dirname(exec_path))[0],
-            os.path.basename(exec_path)
-        )
-        if not os.path.isfile(exec_path):
-            return None
-    return exec_path
