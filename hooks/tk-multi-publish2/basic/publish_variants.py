@@ -17,7 +17,6 @@ class AliasPublishVariantsPlugin(HookBaseClass):
     """
     Plugin for publishing variants of the current alias open session
     """
-
     @property
     def name(self):
         """
@@ -50,24 +49,6 @@ class AliasPublishVariantsPlugin(HookBaseClass):
         """
         return ["alias.session"]
 
-    def get_item_variants(self, item):
-        """
-        Get item variants.
-
-        Use the operations module to get the list and save it
-        as a property.
-        """
-        publisher = self.parent
-        engine = publisher.engine
-        operations = engine.operations
-        variants = item.properties.get("variants")
-
-        if not variants:
-            variants = operations.get_variants()
-            item.properties["variants"] = variants
-
-        return variants
-
     def accept(self, settings, item):
         """
         Method called by the publisher to determine if an item is of any
@@ -95,10 +76,11 @@ class AliasPublishVariantsPlugin(HookBaseClass):
         """
         publisher = self.parent
         engine = publisher.engine
-        variants = self.get_item_variants(item)
+        operations = engine.operations
+
         accepted = True
 
-        if not variants:
+        if not operations.has_variants():
             engine.logger.debug("There are not variants to export")
             accepted = False
 
@@ -121,6 +103,8 @@ class AliasPublishVariantsPlugin(HookBaseClass):
         self.logger.info("Publishing variants")
 
         publisher = self.parent
+        engine = publisher.engine
+        operations = engine.operations
         version_data = item.properties.get("sg_version_data")
         publish_data = item.properties["sg_publish_data"]
 
@@ -131,9 +115,7 @@ class AliasPublishVariantsPlugin(HookBaseClass):
         if version_data is not None:
             note_links.append(version_data)
 
-        variants = self.get_item_variants(item)
-
-        for variant_name, variant_path in variants:
+        for variant_name, variant_path in operations.get_variants():
             data = {
                 "project": item.context.project,
                 "user": item.context.user,

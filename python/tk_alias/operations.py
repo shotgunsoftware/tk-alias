@@ -325,6 +325,16 @@ class AliasOperations(object):
 
         return normalized_variants
 
+    def has_variants(self):
+        """
+        Check if there are variants created in the scene.
+
+        Returns True or False.
+        """
+        self.logger.debug("Checking if there are variants")
+
+        return alias_api.has_variants()
+
     def get_stages_number(self):
         """Get stages number."""
         self.logger.debug("Getting stages number")
