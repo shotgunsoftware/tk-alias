@@ -20,9 +20,7 @@ class AliasPublishVariantsPlugin(HookBaseClass):
 
     @property
     def name(self):
-        """
-        One line display name describing the plugin
-        """
+        """One line display name describing the plugin."""
         return "Publish Variants to Shotgun"
 
     @property
