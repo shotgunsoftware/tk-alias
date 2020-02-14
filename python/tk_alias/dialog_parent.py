@@ -15,7 +15,6 @@ from sgtk.util import is_windows
 set of win32 functions used by Alias engine to manage toolkit UI under windows
 """
 import ctypes
-from ctypes import wintypes
 
 from sgtk.platform.qt import QtCore
 
@@ -48,7 +47,7 @@ WM_GETTEXT = 0x000D
 SMTO_ABORTIFHUNG = 0x0002
 SMTO_BLOCK = 0x0001
 GWL_EXSTYLE = -20
-WS_EX_NOPARENTNOTIFY = 0x00000004
+WS_EX_NOPARENTNOTIFY = 0x000000041
 WS_EX_NOINHERITLAYOUT = 0x00100000
 
 
