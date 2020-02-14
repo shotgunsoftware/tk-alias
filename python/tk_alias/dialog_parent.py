@@ -1,6 +1,3 @@
-from sgtk.platform.qt import QtGui
-from sgtk.util import is_windows
-
 # Copyright (c) 2013 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
@@ -17,6 +14,8 @@ set of win32 functions used by Alias engine to manage toolkit UI under windows
 import ctypes
 
 from sgtk.platform.qt import QtCore
+from sgtk.platform.qt import QtGui
+from sgtk.util import is_windows
 
 # user32.dll
 EnumWindows = ctypes.windll.user32.EnumWindows
@@ -35,7 +34,7 @@ IsWindowEnabled = ctypes.windll.user32.IsWindowEnabled
 GetWindowLong = ctypes.windll.user32.GetWindowLongW
 SetWindowLong = ctypes.windll.user32.SetWindowLongW
 
-# kernal32.dll
+# kernel32.dll
 CloseHandle = ctypes.windll.kernel32.CloseHandle
 CreateToolhelp32Snapshot = ctypes.windll.kernel32.CreateToolhelp32Snapshot
 Process32First = ctypes.windll.kernel32.Process32FirstW
