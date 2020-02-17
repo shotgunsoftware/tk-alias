@@ -81,7 +81,9 @@ class AliasSessionPublishPlugin(HookBaseClass):
         however only the most recent publish will be available to other users.
         Warnings will be provided during validation if there are previous
         publishes.
-        """ % (loader_url,)
+        """ % (
+            loader_url,
+        )
 
     @property
     def settings(self):
@@ -112,8 +114,8 @@ class AliasSessionPublishPlugin(HookBaseClass):
                 "type": "template",
                 "default": None,
                 "description": "Template path for published work files. Should"
-                               "correspond to a template defined in "
-                               "templates.yml.",
+                "correspond to a template defined in "
+                "templates.yml.",
             }
         }
 
@@ -172,18 +174,13 @@ class AliasSessionPublishPlugin(HookBaseClass):
             # provide a save button. the session will need to be saved before
             # validation will succeed.
             self.logger.warn(
-                "The Alias session has not been saved.",
-                extra=_get_save_as_action()
+                "The Alias session has not been saved.", extra=_get_save_as_action()
             )
 
         self.logger.info(
-            "Alias '%s' plugin accepted the current Alias session." %
-            (self.name,)
+            "Alias '%s' plugin accepted the current Alias session." % (self.name,)
         )
-        return {
-            "accepted": True,
-            "checked": True
-        }
+        return {"accepted": True, "checked": True}
 
     def validate(self, settings, item):
         """
@@ -207,10 +204,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
             # the session still requires saving. provide a save button.
             # validation fails.
             error_msg = "The Alias session has not been saved."
-            self.logger.error(
-                error_msg,
-                extra=_get_save_as_action()
-            )
+            self.logger.error(error_msg, extra=_get_save_as_action())
             raise Exception(error_msg)
 
         # ---- check the session against any attached work template
@@ -233,15 +227,14 @@ class AliasSessionPublishPlugin(HookBaseClass):
                         "action_button": {
                             "label": "Save File",
                             "tooltip": "Save the current Alias session to a "
-                                       "different file name",
+                            "different file name",
                             # will launch wf2 if configured
-                            "callback": _get_save_as_action()
+                            "callback": _get_save_as_action(),
                         }
-                    }
+                    },
                 )
             else:
-                self.logger.debug(
-                    "Work template configured and matches session file.")
+                self.logger.debug("Work template configured and matches session file.")
         else:
             self.logger.debug("No work template configured.")
 
@@ -257,7 +250,8 @@ class AliasSessionPublishPlugin(HookBaseClass):
             # the next one until we get one that doesn't exist.
             while os.path.exists(next_version_path):
                 (next_version_path, version) = self._get_next_version_info(
-                    next_version_path, item)
+                    next_version_path, item
+                )
 
             error_msg = "The next version of this file already exists on disk."
             self.logger.error(
@@ -266,10 +260,10 @@ class AliasSessionPublishPlugin(HookBaseClass):
                     "action_button": {
                         "label": "Save to v%s" % (version,),
                         "tooltip": "Save to the next available version number, "
-                                   "v%s" % (version,),
-                        "callback": lambda: operations.save_file(next_version_path)
+                        "v%s" % (version,),
+                        "callback": lambda: operations.save_file(next_version_path),
                     }
-                }
+                },
             )
             raise Exception(error_msg)
 
@@ -278,7 +272,8 @@ class AliasSessionPublishPlugin(HookBaseClass):
         # populate the publish template on the item if found
         publish_template_setting = settings.get("Publish Template")
         publish_template = publisher.engine.get_template_by_name(
-            publish_template_setting.value)
+            publish_template_setting.value
+        )
         if publish_template:
             item.properties["publish_template"] = publish_template
 
@@ -311,8 +306,9 @@ class AliasSessionPublishPlugin(HookBaseClass):
         item.properties["path"] = path
 
         # add dependencies for the base class to register when publishing
-        item.properties["publish_dependencies"] = \
-            _alias_find_additional_session_dependencies()
+        item.properties[
+            "publish_dependencies"
+        ] = _alias_find_additional_session_dependencies()
 
         # let the base class register the publish
         super(AliasSessionPublishPlugin, self).publish(settings, item)
@@ -385,6 +381,6 @@ def _get_save_as_action():
         "action_button": {
             "label": "Save As...",
             "tooltip": "Save the current session",
-            "callback": callback
+            "callback": callback,
         }
     }

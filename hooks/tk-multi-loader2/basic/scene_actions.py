@@ -19,7 +19,6 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasActions(HookBaseClass):
-
     def generate_actions(self, sg_publish_data, actions, ui_area):
         """
         Returns a list of action instances for a particular publish.
@@ -58,50 +57,62 @@ class AliasActions(HookBaseClass):
         :returns List of dictionaries, each with keys name, params, caption and description
         """
         app = self.parent
-        app.log_debug("Generate actions called for UI element %s. "
-                      "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_publish_data))
+        app.log_debug(
+            "Generate actions called for UI element %s. "
+            "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_publish_data)
+        )
         engine = app.engine
         operations = engine.operations
 
         action_instances = []
         try:
             # call base class first
-            action_instances += HookBaseClass.generate_actions(self, sg_publish_data, actions, ui_area)
+            action_instances += HookBaseClass.generate_actions(
+                self, sg_publish_data, actions, ui_area
+            )
         except AttributeError:
             # base class doesn't have the method, so ignore and continue
             pass
 
         if "reference" in actions:
-            action_instances.append({
-                "name": "reference",
-                "params": None,
-                "caption": "Create Reference",
-                "description": "This will add the item to the universe as a standard reference."
-            })
+            action_instances.append(
+                {
+                    "name": "reference",
+                    "params": None,
+                    "caption": "Create Reference",
+                    "description": "This will add the item to the universe as a standard reference.",
+                }
+            )
 
         if "import" in actions:
-            action_instances.append({
-                "name": "import",
-                "params": None,
-                "caption": "Import into Scene",
-                "description": "This will import the item into the current universe."
-            })
+            action_instances.append(
+                {
+                    "name": "import",
+                    "params": None,
+                    "caption": "Import into Scene",
+                    "description": "This will import the item into the current universe.",
+                }
+            )
 
         if "texture_node" in actions:
-            action_instances.append({
-                "name": "texture_node",
-                "params": None,
-                "caption": "Import into Scene",
-                "description": "This will import the item into the current universe."
-            })
+            action_instances.append(
+                {
+                    "name": "texture_node",
+                    "params": None,
+                    "caption": "Import into Scene",
+                    "description": "This will import the item into the current universe.",
+                }
+            )
 
         if "import_subdiv" in actions and operations.is_subdiv_supported():
-            action_instances.append({
-                "name": "import_subdiv",
-                "params": None,
-                "caption": "Import Subdiv file into Scene",
-                "description": "This will import the subdiv item into the current universe."
-            })
+            action_instances.append(
+                {
+                    "name": "import_subdiv",
+                    "params": None,
+                    "caption": "Import Subdiv file into Scene",
+                    "description": "This will import the subdiv item into the current universe.",
+                }
+            )
 
         return action_instances
 
@@ -119,8 +130,10 @@ class AliasActions(HookBaseClass):
         engine = app.engine
         operations = engine.operations
 
-        app.log_debug("Execute action called for action %s. "
-                      "Parameters: %s. Publish Data: %s" % (name, params, sg_publish_data))
+        app.log_debug(
+            "Execute action called for action %s. "
+            "Parameters: %s. Publish Data: %s" % (name, params, sg_publish_data)
+        )
 
         # resolve path
         path = self.get_publish_path(sg_publish_data)
@@ -205,4 +218,6 @@ class AliasActions(HookBaseClass):
                     else:
                         content += "{} ({})".format(message_code, len(paths))
 
-            getattr(QtGui.QMessageBox, message_type)(active_window, message_type.title(), content)
+            getattr(QtGui.QMessageBox, message_type)(
+                active_window, message_type.title(), content
+            )
