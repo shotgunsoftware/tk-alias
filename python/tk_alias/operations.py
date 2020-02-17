@@ -57,7 +57,9 @@ class AliasOperations(object):
         self._engine.save_context_for_stage_name(ctx=ctx)
 
         if is_new:
-            self._engine.execute_hook_method("file_usage_hook", "file_attempt_open", path=path)
+            self._engine.execute_hook_method(
+                "file_usage_hook", "file_attempt_open", path=path
+            )
 
     def open_file(self, path, target=None):
         """Open a file in the scene."""
@@ -75,7 +77,9 @@ class AliasOperations(object):
             if self.is_pristine():
                 target = self.OPEN_FILE_TARGET_CURRENT_STAGE
             else:
-                self.logger.debug("Asking user for deleting the scene or creating a new stage")
+                self.logger.debug(
+                    "Asking user for deleting the scene or creating a new stage"
+                )
                 answer = self._can_delete_current_objects()
 
                 if answer == QtGui.QMessageBox.Cancel:
@@ -109,7 +113,7 @@ class AliasOperations(object):
             parent=self.get_parent_window(),
             caption="Save As",
             directory=os.path.expanduser("~"),
-            filter="Alias file (*.wire)"
+            filter="Alias file (*.wire)",
         )
         file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
         file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
@@ -149,29 +153,43 @@ class AliasOperations(object):
         if not path:
             return
 
-        self.logger.debug("current_file_closed: notifying the file usage hook that the current file has closed")
+        self.logger.debug(
+            "current_file_closed: notifying the file usage hook that the current file has closed"
+        )
         self._engine.execute_hook_method("file_usage_hook", "file_closed", path=path)
 
     def can_open_file(self, path):
         """Check if file can be opened."""
         self.logger.debug("Check availability of {}".format(path))
 
-        return self._engine.execute_hook_method("file_usage_hook", "file_attempt_open", path=path)
+        return self._engine.execute_hook_method(
+            "file_usage_hook", "file_attempt_open", path=path
+        )
 
     def _can_delete_current_objects(self):
         """Confirm if can delete objects."""
         message = "DELETE all objects, shaders, views and actions in all existing Stage before Opening this File?"
-        message_type = QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
-        answer = QtGui.QMessageBox.question(self.get_parent_window(), "Open", message, message_type)
+        message_type = (
+            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
+        )
+        answer = QtGui.QMessageBox.question(
+            self.get_parent_window(), "Open", message, message_type
+        )
 
         return answer
 
     def want_to_delete_current_objects(self):
         """Confirm if can delete objects."""
-        message = "DELETE all objects, shaders, views and actions in all existing Stages before Opening a New " \
-                  "File?"
-        message_type = QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
-        answer = QtGui.QMessageBox.question(self.get_parent_window(), "Open", message, message_type)
+        message = (
+            "DELETE all objects, shaders, views and actions in all existing Stages before Opening a New "
+            "File?"
+        )
+        message_type = (
+            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
+        )
+        answer = QtGui.QMessageBox.question(
+            self.get_parent_window(), "Open", message, message_type
+        )
 
         return answer == QtGui.QMessageBox.Yes
 
@@ -187,23 +205,33 @@ class AliasOperations(object):
 
         if not standalone:
             message_type = "information" if success else "warning"
-            return dict(message_type=message_type, message_code=message, publish_path=path,
-                        is_error=False if success else True)
+            return dict(
+                message_type=message_type,
+                message_code=message,
+                publish_path=path,
+                is_error=False if success else True,
+            )
 
         if not success:
             raise Exception("Error creating the reference")
 
-        QtGui.QMessageBox.information(self.get_parent_window(), "Reference File", "File referenced successfully.")
+        QtGui.QMessageBox.information(
+            self.get_parent_window(), "Reference File", "File referenced successfully."
+        )
 
     def import_file(self, path, create_stage=False, standalone=True):
         """Import a file into the current scene."""
-        self.logger.debug("Importing the file {}, and the create stage: {}".format(path, create_stage))
+        self.logger.debug(
+            "Importing the file {}, and the create stage: {}".format(path, create_stage)
+        )
 
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
 
         if create_stage:
-            success, message = alias_api.open_file(path, self.OPEN_FILE_TARGET_NEW_STAGE)
+            success, message = alias_api.open_file(
+                path, self.OPEN_FILE_TARGET_NEW_STAGE
+            )
         else:
             success, message = alias_api.import_file(path)
 
@@ -211,13 +239,19 @@ class AliasOperations(object):
 
         if not standalone:
             message_type = "information" if success else "warning"
-            return dict(message_type=message_type, message_code=message, publish_path=path,
-                        is_error=False if success else True)
+            return dict(
+                message_type=message_type,
+                message_code=message,
+                publish_path=path,
+                is_error=False if success else True,
+            )
 
         if not success:
             raise Exception("Error import the file")
 
-        QtGui.QMessageBox.information(self.get_parent_window(), "Import File", "File imported successfully.")
+        QtGui.QMessageBox.information(
+            self.get_parent_window(), "Import File", "File imported successfully."
+        )
 
     def create_texture_node(self, path, standalone=True):
         """Create a texture node."""
@@ -231,13 +265,21 @@ class AliasOperations(object):
 
         if not standalone:
             message_type = "information" if success else "warning"
-            return dict(message_type=message_type, message_code=message, publish_path=path,
-                        is_error=False if success else True)
+            return dict(
+                message_type=message_type,
+                message_code=message,
+                publish_path=path,
+                is_error=False if success else True,
+            )
 
         if not success:
             raise Exception("Error creating a texture node")
 
-        QtGui.QMessageBox.information(self.get_parent_window(), "Texture Node", "Texture node created successfully.")
+        QtGui.QMessageBox.information(
+            self.get_parent_window(),
+            "Texture Node",
+            "Texture node created successfully.",
+        )
 
     def get_references(self):
         """Get references."""
@@ -256,11 +298,13 @@ class AliasOperations(object):
 
             name, path = row.split(COL_SEPARATOR)
 
-            references.append({
-                "node": name,
-                "type": "reference",
-                "path": path.replace("/", os.path.sep)
-            })
+            references.append(
+                {
+                    "node": name,
+                    "type": "reference",
+                    "path": path.replace("/", os.path.sep),
+                }
+            )
 
         self.logger.debug("Sending: {}".format(references))
 
@@ -279,8 +323,10 @@ class AliasOperations(object):
         self.logger.debug("Result: {}, Message: {}".format(success, message))
 
         if not success:
-            msg = "One or more selected items cannot be updated.\nIf there is another version of this file " \
-                  "referenced, please check the Alias Reference Manager and remove its reference to enable the update."
+            msg = (
+                "One or more selected items cannot be updated.\nIf there is another version of this file "
+                "referenced, please check the Alias Reference Manager and remove its reference to enable the update."
+            )
             raise Exception(msg)
 
     def get_info(self):
@@ -315,13 +361,17 @@ class AliasOperations(object):
         Returns a list of tuples composed by (name, path) or an empty list.
         """
         self.logger.debug("Getting variants")
-        success, variants = alias_api.get_variants(tempfile.gettempdir(), uuid.uuid4().hex)
+        success, variants = alias_api.get_variants(
+            tempfile.gettempdir(), uuid.uuid4().hex
+        )
         self.logger.debug("Result: {}, Message: {}".format(success, variants))
 
         if not success:
             raise Exception("Error getting variants")
 
-        normalized_variants = [(name, sgtk.util.ShotgunPath.normalize(path)) for name, path in variants]
+        normalized_variants = [
+            (name, sgtk.util.ShotgunPath.normalize(path)) for name, path in variants
+        ]
 
         return normalized_variants
 
@@ -358,8 +408,11 @@ class AliasOperations(object):
         self.logger.debug("Importing subdiv file {}".format(path))
 
         if not alias_api.is_subdiv_supported():
-            QtGui.QMessageBox.information(self.get_parent_window(), "Import Subdiv",
-                                          "Subdiv import is not supported in this version of Alias.")
+            QtGui.QMessageBox.information(
+                self.get_parent_window(),
+                "Import Subdiv",
+                "Subdiv import is not supported in this version of Alias.",
+            )
             return
 
         if not os.path.exists(path):
@@ -371,13 +424,21 @@ class AliasOperations(object):
 
         if not standalone:
             message_type = "information" if success else "warning"
-            return dict(message_type=message_type, message_code=message, publish_path=path,
-                        is_error=False if success else True)
+            return dict(
+                message_type=message_type,
+                message_code=message,
+                publish_path=path,
+                is_error=False if success else True,
+            )
 
         if not success:
             raise Exception("Error importing subdiv file")
 
-        QtGui.QMessageBox.information(self.get_parent_window(), "Import Subdiv", "Subdiv File imported successfully.")
+        QtGui.QMessageBox.information(
+            self.get_parent_window(),
+            "Import Subdiv",
+            "Subdiv File imported successfully.",
+        )
 
     def is_subdiv_supported(self):
         return alias_api.is_subdiv_supported()

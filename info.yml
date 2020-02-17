@@ -50,4 +50,4 @@ description: "Shotgun Integration for Alias DCC"
 
 # Required minimum versions for this item to run
 requires_shotgun_version:
-requires_core_version: "v0.18.116"
+requires_core_version: "v0.19.1"

@@ -165,8 +165,7 @@ class AliasLauncher(SoftwareLauncher):
                 supported_sw_versions.append(sw_version)
             else:
                 self.logger.debug(
-                    "SoftwareVersion %s is not supported: %s" %
-                    (sw_version, reason)
+                    "SoftwareVersion %s is not supported: %s" % (sw_version, reason)
                 )
 
         return supported_sw_versions
@@ -185,8 +184,7 @@ class AliasLauncher(SoftwareLauncher):
             self.logger.debug("Processing template %s.", executable_template)
 
             executable_matches = self._glob_and_match(
-                executable_template,
-                self.COMPONENT_REGEX_LOOKUP
+                executable_template, self.COMPONENT_REGEX_LOOKUP
             )
 
             # Extract all products from that executable.
@@ -201,7 +199,7 @@ class AliasLauncher(SoftwareLauncher):
                         version,
                         "Alias {code_name}".format(code_name=code_name),
                         executable_path,
-                        self._icon_from_executable(code_name)
+                        self._icon_from_executable(code_name),
                     )
                 )
 
@@ -223,15 +221,19 @@ class AliasLauncher(SoftwareLauncher):
         plugins_list_file = os.path.join(plugins_directory, "plugins.lst")
         plugins_number = 0
         alias_bindir = os.path.dirname(exec_path)
-        about_box_file = os.path.join(os.path.dirname(alias_bindir), "resources", "AboutBox.txt")
+        about_box_file = os.path.join(
+            os.path.dirname(alias_bindir), "resources", "AboutBox.txt"
+        )
 
         with open(about_box_file, "r") as f:
             about_box_file_first_line = f.readline().split("\r")[0].strip()
 
         release_prefix = "Alias " + code_name
         releases = about_box_file_first_line.strip().split(",")
-        release_info = [item.strip() for item in releases if item.strip().startswith(release_prefix)][0]
-        release_version = release_info[len(release_prefix):].strip()
+        release_info = [
+            item.strip() for item in releases if item.strip().startswith(release_prefix)
+        ][0]
+        release_version = release_info[len(release_prefix) :].strip()
 
         # plugins folder exists?
         if not os.path.isdir(plugins_directory):

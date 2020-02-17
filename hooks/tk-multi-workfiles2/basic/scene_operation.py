@@ -4,8 +4,16 @@ HookClass = sgtk.get_hook_baseclass()
 
 
 class SceneOperation(HookClass):
-    def execute(self, operation, file_path, context=None, parent_action=None, file_version=None, read_only=None,
-                **kwargs):
+    def execute(
+        self,
+        operation,
+        file_path,
+        context=None,
+        parent_action=None,
+        file_version=None,
+        read_only=None,
+        **kwargs
+    ):
 
         engine = self.parent.engine
         operations = engine.operations
@@ -13,18 +21,17 @@ class SceneOperation(HookClass):
         engine.current_operation = operation
         engine.parent_action = parent_action
 
-        engine.logger.debug("tk-multi-workfiles2 scene_operation, "
-                            "operation: {}, "
-                            "file_path: {}, "
-                            "context: {}, "
-                            "parent_action: {}, "
-                            "file_version: {}, "
-                            "read_only: {}".format(operation,
-                                                   file_path,
-                                                   context,
-                                                   parent_action,
-                                                   file_version,
-                                                   read_only))
+        engine.logger.debug(
+            "tk-multi-workfiles2 scene_operation, "
+            "operation: {}, "
+            "file_path: {}, "
+            "context: {}, "
+            "parent_action: {}, "
+            "file_version: {}, "
+            "read_only: {}".format(
+                operation, file_path, context, parent_action, file_version, read_only
+            )
+        )
 
         if operation == "current_path":
             engine.running_operation = False
