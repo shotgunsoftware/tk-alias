@@ -15,7 +15,7 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 class AliasPublishVariantsPlugin(HookBaseClass):
     """
-    Plugin for publishing variants of the current alias open session
+    Plugin for publishing variants of the current alias open session.
     """
 
     @property
