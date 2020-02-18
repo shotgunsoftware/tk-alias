@@ -44,6 +44,9 @@ class AliasLauncher(SoftwareLauncher):
     # Fallback code name to use when none is given
     FALLBACK_CODE_NAME = "AutoStudio"
 
+    # Legacy maximum version number
+    LEGACY_MAXIMUM_VERSION_NUMBER = "2020.1"
+
     # This dictionary defines a list of executable template strings for each
     # of the supported operating systems. The templates are used for both
     # globbing and regex matches by replacing the named format placeholders
