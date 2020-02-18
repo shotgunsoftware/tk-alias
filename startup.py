@@ -47,7 +47,7 @@ class AliasLauncher(SoftwareLauncher):
     # Shotgun default plugins
     DEFAULT_PLUGINS = {
         "shotgun.plugin": {"min_version": "2020.2"},
-        "shotgun_legacy.plugin": {"min_version": "2019", "max_version": "2020.1"},
+        "shotgun_legacy.plugin": {"min_version": "2019", "max_version": "2020.1"}
     }
 
     # This dictionary defines a list of executable template strings for each
