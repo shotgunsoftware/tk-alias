@@ -12,7 +12,7 @@ This repository is a part of the Shotgun Pipeline Toolkit.
 
 ## Using this engine in your Setup
 
-All the engines that are part of our standard engine suite are pushed to our engine Store.
+All the engines that are part of our standard engine suite are pushed to our App Store.
 This is where you typically go if you want to install an engine into a project you are
 working on. For an overview of all the Apps and Engines in the Toolkit App Store,
 click here: https://support.shotgunsoftware.com/entries/95441247.
