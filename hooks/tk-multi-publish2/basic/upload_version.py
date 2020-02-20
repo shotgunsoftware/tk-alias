@@ -161,7 +161,7 @@ class UploadVersionPlugin(HookBaseClass):
                 entity_type="Version",
                 entity_id=item.properties["sg_version_data"]["id"],
                 path=package_path,
-                field_name="sg_translation_files",
+                field_name="sg_uploaded_movie",
             )
             self.parent.shotgun.update(
                 entity_type="Version",
