@@ -83,7 +83,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             "-t2t",
             "1.000000",
             "-tl",
-            "1"
+            "1",
         ]
         jt_dict = dict(exec_path=path, extra_parameters=extra_parameters)
 
@@ -119,10 +119,12 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         will be the file that is published. Other users will be able to access
         the published file via the <b><a href='%s'>Loader</a></b> so long as
         they have access to the file's location on disk.
-        
-        <br><br><b color='red'>NOTE:</b> it's not possible to publish a WREF file 
-        if you already have WREF files loaded in your current session. 
-        """ % (loader_url,)
+
+        <br><br><b color='red'>NOTE:</b> it's not possible to publish a WREF file
+        if you already have WREF files loaded in your current session.
+        """ % (
+            loader_url,
+        )
 
     @property
     def settings(self):
@@ -152,8 +154,8 @@ class AliasTranslationPublishPlugin(HookBaseClass):
                 "type": "template",
                 "default": None,
                 "description": "Template path for published work files. Should"
-                               "correspond to a template defined in "
-                               "templates.yml.",
+                "correspond to a template defined in "
+                "templates.yml.",
             }
         }
 
@@ -166,8 +168,8 @@ class AliasTranslationPublishPlugin(HookBaseClass):
                 "type": list,
                 "default": [],
                 "description": "Translator settings used to set values like file release number for CATPArt, among "
-                               "others. To see all the available options per format, you can look at the command line "
-                               "parameters"
+                "others. To see all the available options per format, you can look at the command line "
+                "parameters",
             }
         }
 
@@ -226,15 +228,13 @@ class AliasTranslationPublishPlugin(HookBaseClass):
 
             # get the publish template definition to determine if we are trying to publish a WREF file.
             # If so, disable the plugin if some references are loaded in the current session
-            publish_template = publisher.engine.get_template_by_name(publish_template_setting)
+            publish_template = publisher.engine.get_template_by_name(
+                publish_template_setting
+            )
             if publish_template and "wref" in publish_template.definition:
                 alias_references = operations.get_references()
                 if alias_references:
-                    return {
-                        "accepted": True,
-                        "enabled": False,
-                        "checked": False
-                    }
+                    return {"accepted": True, "enabled": False, "checked": False}
 
         path = _session_path()
 
@@ -243,13 +243,11 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             # provide a save button. the session will need to be saved before
             # validation will succeed.
             self.logger.warn(
-                "The Alias session has not been saved.",
-                extra=_get_save_as_action()
+                "The Alias session has not been saved.", extra=_get_save_as_action()
             )
 
         self.logger.info(
-            "Alias '%s' plugin accepted the current Alias session." %
-            (self.name,)
+            "Alias '%s' plugin accepted the current Alias session." % (self.name,)
         )
 
         return {"accepted": True, "checked": False}
@@ -276,10 +274,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             # the session still requires saving. provide a save button.
             # validation fails.
             error_msg = "The Alias session has not been saved."
-            self.logger.error(
-                error_msg,
-                extra=_get_save_as_action()
-            )
+            self.logger.error(error_msg, extra=_get_save_as_action())
             raise Exception(error_msg)
 
         # ---- check the session against any attached work template
@@ -301,16 +296,15 @@ class AliasTranslationPublishPlugin(HookBaseClass):
                     "action_button": {
                         "label": "Save File",
                         "tooltip": "Save the current VRED session to a "
-                                   "different file name",
+                        "different file name",
                         # will launch wf2 if configured
-                        "callback": _get_save_as_action()
+                        "callback": _get_save_as_action(),
                     }
-                }
+                },
             )
             return False
         else:
-            self.logger.debug(
-                "Work template configured and matches session file.")
+            self.logger.debug("Work template configured and matches session file.")
 
         # ---- populate the necessary properties and call base class validation
 
@@ -329,23 +323,17 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         # if we don't have translator settings, we can't publish
         translation_type = self.get_translation_type(publish_path)
         if not translation_type:
-            self.logger.warning(
-                "Couldn't find the translation type."
-            )
+            self.logger.warning("Couldn't find the translation type.")
             return False
 
         translator_settings = self.translator_settings.get(translation_type)
         if not translator_settings:
-            self.logger.warning(
-                "Couldn't find translator settings."
-            )
+            self.logger.warning("Couldn't find translator settings.")
             return False
 
         translator_path = _get_translator_path(translator_settings)
         if not translator_path:
-            self.logger.warning(
-                "Couldn't find translator path."
-            )
+            self.logger.warning("Couldn't find translator path.")
             return False
 
         return super(AliasTranslationPublishPlugin, self).validate(settings, item)
@@ -389,13 +377,16 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             "-i",
             item.properties["path"],
             "-o",
-            publish_path
+            publish_path,
         ]
 
         if translator_settings["extra_parameters"]:
             cmd.extend(translator_settings["extra_parameters"])
 
-        if settings.get("Translator Settings") and settings.get("Translator Settings").value:
+        if (
+            settings.get("Translator Settings")
+            and settings.get("Translator Settings").value
+        ):
             for setting in settings.get("Translator Settings").value:
                 cmd.append("-{name}".format(name=setting.get("name")))
                 cmd.append("{value}".format(value=setting.get("value")))
@@ -424,7 +415,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
                 try:
                     publisher.shotgun.share_thumbnail(
                         entities=[item.properties.get("sg_publish_data")],
-                        source_entity=parent_sg_publish_data
+                        source_entity=parent_sg_publish_data,
                     )
                     self.logger.debug("Thumbnail shared successfully")
                     thumbnail_shared = True
@@ -452,7 +443,8 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         # here we can't use the item.properties.publish_path value as it can store the current session publish template
         publish_template_setting = settings.get("Publish Template")
         publish_template = publisher.engine.get_template_by_name(
-            publish_template_setting.value)
+            publish_template_setting.value
+        )
 
         return publish_template
 
@@ -511,10 +503,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         publisher = self.parent
         publish_path = self.get_publish_path(settings, item)
 
-        return publisher.util.get_publish_name(
-            publish_path,
-            sequence=False
-        )
+        return publisher.util.get_publish_name(publish_path, sequence=False)
 
     def get_translation_type(self, path):
         """
@@ -598,7 +587,7 @@ def _get_save_as_action():
         "action_button": {
             "label": "Save As...",
             "tooltip": "Save the current session",
-            "callback": callback
+            "callback": callback,
         }
     }
 
@@ -612,8 +601,7 @@ def _get_translator_path(translator_settings):
     exec_path = translator_settings.get("exec_path")
     if not os.path.isfile(exec_path):
         exec_path = os.path.join(
-            os.path.split(os.path.dirname(exec_path))[0],
-            os.path.basename(exec_path)
+            os.path.split(os.path.dirname(exec_path))[0], os.path.basename(exec_path)
         )
         if not os.path.isfile(exec_path):
             return None

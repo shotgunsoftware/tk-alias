@@ -24,10 +24,12 @@ class SceneOperation(HookClass):
         engine = self.parent.engine
         operations = engine.operations
 
-        engine.logger.debug("tk-multi-snapshot scene_operation, "
-                            "operation: {}, "
-                            "file_path: {}, "
-                            "kwargs: {}".format(operation, file_path, kwargs))
+        engine.logger.debug(
+            "tk-multi-snapshot scene_operation, "
+            "operation: {}, "
+            "file_path: {}, "
+            "kwargs: {}".format(operation, file_path, kwargs)
+        )
 
         if operation == "current_path":
             return operations.get_current_path()

@@ -56,40 +56,50 @@ class AliasActions(HookBaseClass):
         :returns List of dictionaries, each with keys name, params, caption and description
         """
         app = self.parent
-        app.log_debug("Generate actions called for UI element %s. "
-                      "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_data))
+        app.log_debug(
+            "Generate actions called for UI element %s. "
+            "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_data)
+        )
 
         action_instances = []
         try:
             # call base class first
-            action_instances += HookBaseClass.generate_actions(self, sg_data, actions, ui_area)
+            action_instances += HookBaseClass.generate_actions(
+                self, sg_data, actions, ui_area
+            )
         except AttributeError:
             # base class doesn't have the method, so ignore and continue
             pass
 
         if "reference" in actions:
-            action_instances.append({
-                "name": "reference",
-                "params": None,
-                "caption": "Create Reference",
-                "description": "This will add the item to the universe as a standard reference."
-            })
+            action_instances.append(
+                {
+                    "name": "reference",
+                    "params": None,
+                    "caption": "Create Reference",
+                    "description": "This will add the item to the universe as a standard reference.",
+                }
+            )
 
         if "import" in actions:
-            action_instances.append({
-                "name": "import",
-                "params": None,
-                "caption": "Import into Scene",
-                "description": "This will import the item into the current universe."
-            })
+            action_instances.append(
+                {
+                    "name": "import",
+                    "params": None,
+                    "caption": "Import into Scene",
+                    "description": "This will import the item into the current universe.",
+                }
+            )
 
         if "texture_node" in actions:
-            action_instances.append({
-                "name": "texture_node",
-                "params": None,
-                "caption": "Import into Scene",
-                "description": "This will import the item into the current universe."
-            })
+            action_instances.append(
+                {
+                    "name": "texture_node",
+                    "params": None,
+                    "caption": "Import into Scene",
+                    "description": "This will import the item into the current universe.",
+                }
+            )
 
         return action_instances
 
@@ -104,8 +114,10 @@ class AliasActions(HookBaseClass):
         :returns: No return value expected.
         """
         app = self.parent
-        app.log_debug("Execute action called for action %s. "
-                      "Parameters: %s. Shotgun Data: %s" % (name, params, sg_data))
+        app.log_debug(
+            "Execute action called for action %s. "
+            "Parameters: %s. Shotgun Data: %s" % (name, params, sg_data)
+        )
 
         engine = self.parent.engine
         operations = engine.operations

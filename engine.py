@@ -20,6 +20,7 @@ class AliasEngine(sgtk.platform.Engine):
     """
     An Alias DC engine for Shotgun Toolkit.
     """
+
     def __init__(self, tk, context, engine_instance_name, env):
         """Initialize custom attributes."""
         # Custom attributes
@@ -39,8 +40,8 @@ class AliasEngine(sgtk.platform.Engine):
         self.current_operation = None
         self.parent_action = None
 
-        if not hasattr(sys, 'argv'):
-            sys.argv = ['']
+        if not hasattr(sys, "argv"):
+            sys.argv = [""]
 
         super(AliasEngine, self).__init__(tk, context, engine_instance_name, env)
 
@@ -53,9 +54,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
         self.logger.debug("%s: Post context change...", self)
         if self.context_change_allowed:
-            if not self.running_operation and \
-                    self.current_operation == "prepare_new" and \
-                    self.parent_action == "new_file":
+            if (
+                not self.running_operation
+                and self.current_operation == "prepare_new"
+                and self.parent_action == "new_file"
+            ):
                 self.save_context_for_stage_name(ctx=new_context)
             self._create_menu()
 
@@ -208,10 +211,16 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("-" * 50)
         self.logger.debug("Stage selected")
-        self.logger.debug("stage name: {}, path: {}, current_context: {}".format(name, path, current_context))
-        self.logger.debug("current_operation: {}, parent_action: {}, running_operation: {}".format(current_operation,
-                                                                                                   parent_action,
-                                                                                                   running_operation))
+        self.logger.debug(
+            "stage name: {}, path: {}, current_context: {}".format(
+                name, path, current_context
+            )
+        )
+        self.logger.debug(
+            "current_operation: {}, parent_action: {}, running_operation: {}".format(
+                current_operation, parent_action, running_operation
+            )
+        )
         self.logger.debug("-" * 50)
 
         if self.running_operation:
@@ -242,4 +251,6 @@ class AliasEngine(sgtk.platform.Engine):
             self._contexts_by_stage_name[name] = ctx or self.context
 
     def _get_project_context(self):
-        return self.sgtk.context_from_entity(self.context.project["type"], self.context.project["id"])
+        return self.sgtk.context_from_entity(
+            self.context.project["type"], self.context.project["id"]
+        )

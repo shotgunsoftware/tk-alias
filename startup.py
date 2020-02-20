@@ -44,6 +44,12 @@ class AliasLauncher(SoftwareLauncher):
     # Fallback code name to use when none is given
     FALLBACK_CODE_NAME = "AutoStudio"
 
+    # Shotgun default plugins
+    DEFAULT_PLUGINS = {
+        "shotgun.plugin": {"min_version": "2020.2"},
+        "shotgun_legacy.plugin": {"min_version": "2019", "max_version": "2020.1"},
+    }
+
     # This dictionary defines a list of executable template strings for each
     # of the supported operating systems. The templates are used for both
     # globbing and regex matches by replacing the named format placeholders
@@ -165,8 +171,7 @@ class AliasLauncher(SoftwareLauncher):
                 supported_sw_versions.append(sw_version)
             else:
                 self.logger.debug(
-                    "SoftwareVersion %s is not supported: %s" %
-                    (sw_version, reason)
+                    "SoftwareVersion %s is not supported: %s" % (sw_version, reason)
                 )
 
         return supported_sw_versions
@@ -185,8 +190,7 @@ class AliasLauncher(SoftwareLauncher):
             self.logger.debug("Processing template %s.", executable_template)
 
             executable_matches = self._glob_and_match(
-                executable_template,
-                self.COMPONENT_REGEX_LOOKUP
+                executable_template, self.COMPONENT_REGEX_LOOKUP
             )
 
             # Extract all products from that executable.
@@ -201,7 +205,7 @@ class AliasLauncher(SoftwareLauncher):
                         version,
                         "Alias {code_name}".format(code_name=code_name),
                         executable_path,
-                        self._icon_from_executable(code_name)
+                        self._icon_from_executable(code_name),
                     )
                 )
 
@@ -220,24 +224,18 @@ class AliasLauncher(SoftwareLauncher):
 
         # get plugins folder
         plugins_directory = os.path.join(self.disk_location, "plugins")
-        plugins_list_file = os.path.join(plugins_directory, "plugins.lst")
-        plugins_number = 0
-        alias_bindir = os.path.dirname(exec_path)
-        about_box_file = os.path.join(os.path.dirname(alias_bindir), "resources", "AboutBox.txt")
-
-        with open(about_box_file, "r") as f:
-            about_box_file_first_line = f.readline().split("\r")[0].strip()
-
-        release_prefix = "Alias " + code_name
-        releases = about_box_file_first_line.strip().split(",")
-        release_info = [item.strip() for item in releases if item.strip().startswith(release_prefix)][0]
-        release_version = release_info[len(release_prefix):].strip()
 
         # plugins folder exists?
         if not os.path.isdir(plugins_directory):
             return None
 
-        # creates plugins.lst file in disk
+        # Get release version
+        release_version = self._get_release_version(exec_path, code_name)
+
+        # Set plugins list file
+        plugins_list_file = os.path.join(plugins_directory, "plugins.lst")
+        plugins_number = 0
+
         with open(plugins_list_file, "w") as plf:
             # loops plugins folder searching for *.plugin files
             for plugin_file_name in os.listdir(plugins_directory):
@@ -247,17 +245,18 @@ class AliasLauncher(SoftwareLauncher):
                 # build *.plugin file path
                 plugin_file_path = os.path.join(plugins_directory, plugin_file_name)
 
-                if "_from_" in plugin_file_name or "_until_" in plugin_file_name:
-                    name, ext = os.path.splitext(plugin_file_name)
+                # if the plugin is a preconfigured
+                if plugin_file_name in self.DEFAULT_PLUGINS:
+                    plugin_data = self.DEFAULT_PLUGINS.get(plugin_file_name)
+                    min_version = plugin_data.get("min_version")
+                    max_version = plugin_data.get("max_version")
 
-                    if "_from_" in plugin_file_name:
-                        version = name.split("_from_")[1].replace("_", ".")
-                        if release_version < version:
-                            continue
-                    else:
-                        version = name.split("_until_")[1].replace("_", ".")
-                        if release_version > version:
-                            continue
+                    # check constraints
+                    if min_version and release_version < min_version:
+                        continue
+
+                    if max_version and release_version > max_version:
+                        continue
 
                 # appends found *.plugin file path in plugins.lst file
                 plf.write("{0}\n".format(plugin_file_path))
@@ -271,3 +270,21 @@ class AliasLauncher(SoftwareLauncher):
             args = re.sub(" +", " ", args).strip()
 
         return args
+
+    def _get_release_version(self, exec_path, code_name):
+        alias_bindir = os.path.dirname(exec_path)
+        about_box_file = os.path.join(
+            os.path.dirname(alias_bindir), "resources", "AboutBox.txt"
+        )
+
+        with open(about_box_file, "r") as f:
+            about_box_file_first_line = f.readline().split("\r")[0].strip()
+
+        release_prefix = "Alias " + code_name
+        releases = about_box_file_first_line.strip().split(",")
+        release_info = [
+            item.strip() for item in releases if item.strip().startswith(release_prefix)
+        ][0]
+        release_version = release_info[len(release_prefix) :].strip()
+
+        return release_version
