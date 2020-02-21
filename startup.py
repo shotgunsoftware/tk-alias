@@ -46,8 +46,18 @@ class AliasLauncher(SoftwareLauncher):
 
     # Shotgun default plugins
     DEFAULT_PLUGINS = {
-        "shotgun.plugin": {"min_version": "2020.2"},
-        "shotgun_legacy.plugin": {"min_version": "2019", "max_version": "2020.1"},
+        "shotgun.plugin": {"min_version": "2020.2", "python_major_version": 3},
+        "shotgun_py2.plugin": {"min_version": "2020.2", "python_major_version": 2},
+        "shotgun_legacy.plugin": {
+            "min_version": "2019",
+            "max_version": "2020.1",
+            "python_major_version": 3,
+        },
+        "shotgun_legacy_py2.plugin": {
+            "min_version": "2019",
+            "max_version": "2020.1",
+            "python_major_version": 2,
+        },
     }
 
     # This dictionary defines a list of executable template strings for each
@@ -250,12 +260,16 @@ class AliasLauncher(SoftwareLauncher):
                     plugin_data = self.DEFAULT_PLUGINS.get(plugin_file_name)
                     min_version = plugin_data.get("min_version")
                     max_version = plugin_data.get("max_version")
+                    python_major_version = plugin_data.get("python_major_version")
 
                     # check constraints
                     if min_version and release_version < min_version:
                         continue
 
                     if max_version and release_version > max_version:
+                        continue
+
+                    if python_major_version != self._get_python_version():
                         continue
 
                 # appends found *.plugin file path in plugins.lst file
@@ -270,6 +284,9 @@ class AliasLauncher(SoftwareLauncher):
             args = re.sub(" +", " ", args).strip()
 
         return args
+
+    def _get_python_version(self):
+        return sys.version_info.major
 
     def _get_release_version(self, exec_path, code_name):
         alias_bindir = os.path.dirname(exec_path)
