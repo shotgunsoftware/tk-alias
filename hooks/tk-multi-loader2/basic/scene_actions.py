@@ -94,6 +94,16 @@ class AliasActions(HookBaseClass):
                 }
             )
 
+        if "import_as_reference" in actions:
+            action_instances.append(
+                {
+                    "name": "import_as_reference",
+                    "params": None,
+                    "caption": "Import as Reference",
+                    "description": "This will import the item as a reference into the current universe.",
+                }
+            )
+
         if "texture_node" in actions:
             action_instances.append(
                 {
@@ -143,6 +153,9 @@ class AliasActions(HookBaseClass):
 
         elif name == "import":
             return operations.import_file(path, create_stage=False, standalone=False)
+
+        elif name == "import_as_reference":
+            return operations.import_file_as_reference(path, create_stage=False, standalone=False)
 
         elif name == "texture_node":
             return operations.create_texture_node(path, standalone=False)

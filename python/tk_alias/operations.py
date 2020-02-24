@@ -253,6 +253,40 @@ class AliasOperations(object):
             self.get_parent_window(), "Import File", "File imported successfully."
         )
 
+    def import_file_as_reference(self, path, create_stage=False, standalone=True):
+        """Import a file as reference into the current scene."""
+        self.logger.debug(
+            "Importing the file {} as references, and then create stage: {}".format(path, create_stage)
+        )
+
+        # if not os.path.exists(path):
+        #     raise Exception("File not found on disk - '%s'" % path)
+        #
+        # if create_stage:
+        #     success, message = alias_api.open_file(
+        #         path, self.OPEN_FILE_TARGET_NEW_STAGE
+        #     )
+        # else:
+        #     success, message = alias_api.import_file(path)
+        #
+        # self.logger.debug("Result: {}, Message: {}".format(success, message))
+        #
+        # if not standalone:
+        #     message_type = "information" if success else "warning"
+        #     return dict(
+        #         message_type=message_type,
+        #         message_code=message,
+        #         publish_path=path,
+        #         is_error=False if success else True,
+        #     )
+        #
+        # if not success:
+        #     raise Exception("Error import the file")
+        #
+        # QtGui.QMessageBox.information(
+        #     self.get_parent_window(), "Import File", "File imported successfully."
+        # )
+
     def create_texture_node(self, path, standalone=True):
         """Create a texture node."""
         self.logger.debug("Creating a texture node of {}".format(path))
