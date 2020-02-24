@@ -127,6 +127,16 @@ class AliasEngine(sgtk.platform.Engine):
         """
         self.logger.debug("%s: Destroying...", self)
 
+        # Close all Shotgun app dialogs that are still opened since
+        # some apps do threads cleanup in their onClose event handler
+        # Note that this function is called when the engine is restarted (through "Reload Engine and Apps")
+
+        # Important: Copy the list of dialogs still opened since the call to close() will modify created_qt_dialogs
+        dialogs_still_opened = self.created_qt_dialogs[:]
+
+        for dialog in dialogs_still_opened:
+            dialog.close()
+
     def init_qt_app(self):
         """
         Initialize QT application.
