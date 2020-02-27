@@ -41,6 +41,11 @@ configuration:
         description: Translators info.
         default_value: {}
 
+    reference_template:
+        type: template
+        description: Reference template to store the files created (.wref) when importing a file as reference.
+        allows_empty: True
+
 # the Shotgun fields that this engine needs in order to operate correctly
 requires_shotgun_fields:
 

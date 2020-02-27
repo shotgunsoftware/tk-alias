@@ -12,6 +12,8 @@
 Hook that loads defines all the available actions, broken down by publish type.
 """
 
+import os
+
 import sgtk
 from sgtk.platform.qt import QtGui
 
@@ -155,7 +157,27 @@ class AliasActions(HookBaseClass):
             return operations.import_file(path, create_stage=False, standalone=False)
 
         elif name == "import_as_reference":
-            return operations.import_file_as_reference(path, create_stage=False, standalone=False)
+            source_path = path
+            output_path = operations.get_import_as_reference_output_path(source_path)
+            output_path = None
+            if not output_path:
+                raise Exception("Error importing the file as reference")
+
+            framework_aliastranslations = self.load_framework(
+                "tk-framework-aliastranslations_v0.x.x"
+            )
+            if not framework_aliastranslations:
+                raise Exception("Could not run alias translations")
+
+            tk_framework_aliastranslations = framework_aliastranslations.import_module(
+                "tk_framework_aliastranslations"
+            )
+            alias_translator = tk_framework_aliastranslations.Translator(
+                source_path, output_path
+            )
+            alias_translator.execute()
+
+            return operations.create_reference(output_path, standalone=False)
 
         elif name == "texture_node":
             return operations.create_texture_node(path, standalone=False)
