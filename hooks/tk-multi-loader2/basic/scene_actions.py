@@ -159,7 +159,6 @@ class AliasActions(HookBaseClass):
         elif name == "import_as_reference":
             source_path = path
             output_path = operations.get_import_as_reference_output_path(source_path)
-            output_path = None
             if not output_path:
                 raise Exception("Error importing the file as reference")
 
