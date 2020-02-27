@@ -296,7 +296,7 @@ class AliasOperations(object):
             if not row or COL_SEPARATOR not in row:
                 continue
 
-            name, path, source_path = row.split(COL_SEPARATOR)
+            name, path = row.split(COL_SEPARATOR)
 
             references.append(
                 {
