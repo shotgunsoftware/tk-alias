@@ -170,7 +170,7 @@ class AliasOperations(object):
         """Confirm if can delete objects."""
         message = "DELETE all objects, shaders, views and actions in all existing Stage before Opening this File?"
         message_type = (
-            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
         )
         answer = QtGui.QMessageBox.question(
             self.get_parent_window(), "Open", message, message_type
@@ -185,7 +185,7 @@ class AliasOperations(object):
             "File?"
         )
         message_type = (
-            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
         )
         answer = QtGui.QMessageBox.question(
             self.get_parent_window(), "Open", message, message_type
@@ -455,18 +455,78 @@ class AliasOperations(object):
 
         It tries to calculate the path using the setting `reference_template`,  if there's not a template defined it
         uses the source path to get the folder and returns it.
-        """
-        template = self._engine.get_setting("reference_template")
 
-        if not template:
-            base_name = os.path.basename(source_path)
-            base_file_name, base_file_extension = os.path.splitext(base_name)
-            parts = base_file_name.split(".")
-            parts[0] = parts[0] + "_" + base_file_extension[1:]
-            output_file_name = ".".join(parts) + ".wref"
+        source_path: It's a filesystem path. The file name has the form {name}.{version}.{extension}
+                     Ex. C:\myproject\assets\Vehicle\myasset\CSA\publish\alias\scene.v002.wire
+        """
+        # get the setting reference_template
+        template_name = self._engine.get_setting("reference_template")
+
+        # scene.v002.wire
+        base_name = os.path.basename(source_path)
+
+        # scene.v002, .wire
+        base_file_name, base_file_extension = os.path.splitext(base_name)
+
+        # scene, v002, wire, 2
+        name, version = base_file_name.split(".")
+        extension = base_file_extension[1:]  # .wire => wire
+        version_number = int(version[1:])  # v002 => 2
+
+        # scene_wire.v002.wref
+        output_file_name = "{name}_{extension}.{version}.wref".format(name=name, extension=extension, version=version)
+
+        if not template_name:
+            # if none template was defined by the user, use the container's folder of the source path
             parent_path = os.path.dirname(source_path)
             output_path = os.path.join(parent_path, output_file_name)
+        else:
+            # if template exists, try to get the output path joining the parts required
+            template = self._engine.get_template_by_name(template_name)
+            fields = self._engine.context.as_template_fields(template, validate=True)
+            missing_keys = template.missing_keys(fields)
 
-            return output_path
+            if "version" in missing_keys:
+                fields["version"] = version_number
+                missing_keys.remove("version")
 
-        return None
+            if "name" in missing_keys:
+                fields["name"] = name
+                missing_keys.remove("name")
+
+            if "alias.extension" in missing_keys:
+                fields["alias.extension"] = extension
+                missing_keys.remove("alias.extension")
+
+            if missing_keys:
+                raise Exception("Not enough keys to apply publish fields (%s) "
+                                "to publish template (%s)" % (fields, template))
+
+            output_path = template.apply_fields(fields)
+
+        return output_path
+
+    def get_publish_version(self, settings, item):
+        """
+        Get the publish version for the supplied settings and item.
+
+        :param settings: This plugin instance's configured settings
+        :param item: The item to determine the publish version for
+
+        Extracts the publish version via the configured work template if
+        possible. Will fall back to using the path info hook.
+        """
+        publish_version = item.get_property("publish_version")
+        if publish_version:
+            return publish_version
+
+        # fall back to the template/path_info logic
+        publisher = self.parent
+        path = item.properties.path
+
+        self.logger.debug("Using path info hook to determine publish version.")
+        publish_version = publisher.util.get_version_number(path)
+        if publish_version is None:
+            publish_version = 1
+
+        return publish_version

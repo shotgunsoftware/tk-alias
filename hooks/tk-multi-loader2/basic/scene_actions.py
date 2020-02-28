@@ -157,24 +157,31 @@ class AliasActions(HookBaseClass):
             return operations.import_file(path, create_stage=False, standalone=False)
 
         elif name == "import_as_reference":
+            # use the current path as source
             source_path = path
+
+            # calculate output path using template or the source path folder
             output_path = operations.get_import_as_reference_output_path(source_path)
+
+            # if the output path couldn't be calculated
             if not output_path:
                 raise Exception("Error importing the file as reference")
 
-            framework_aliastranslations = self.load_framework(
-                "tk-framework-aliastranslations_v0.x.x"
-            )
-            if not framework_aliastranslations:
-                raise Exception("Could not run alias translations")
+            # if the output path doesn't exist, create it using the alias-translations framework
+            if not os.path.exists(output_path):
+                framework_aliastranslations = self.load_framework(
+                    "tk-framework-aliastranslations_v0.x.x"
+                )
+                if not framework_aliastranslations:
+                    raise Exception("Could not run alias translations")
 
-            tk_framework_aliastranslations = framework_aliastranslations.import_module(
-                "tk_framework_aliastranslations"
-            )
-            alias_translator = tk_framework_aliastranslations.Translator(
-                source_path, output_path
-            )
-            alias_translator.execute()
+                tk_framework_aliastranslations = framework_aliastranslations.import_module(
+                    "tk_framework_aliastranslations"
+                )
+                alias_translator = tk_framework_aliastranslations.Translator(
+                    source_path, output_path
+                )
+                alias_translator.execute()
 
             return operations.create_reference(output_path, standalone=False)
 
