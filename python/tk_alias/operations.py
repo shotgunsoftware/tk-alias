@@ -170,7 +170,7 @@ class AliasOperations(object):
         """Confirm if can delete objects."""
         message = "DELETE all objects, shaders, views and actions in all existing Stage before Opening this File?"
         message_type = (
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
+            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
         )
         answer = QtGui.QMessageBox.question(
             self.get_parent_window(), "Open", message, message_type
@@ -185,7 +185,7 @@ class AliasOperations(object):
             "File?"
         )
         message_type = (
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
+            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
         )
         answer = QtGui.QMessageBox.question(
             self.get_parent_window(), "Open", message, message_type
@@ -474,7 +474,9 @@ class AliasOperations(object):
         version_number = int(version[1:])  # v002 => 2
 
         # scene_wire.v002.wref
-        output_file_name = "{name}_{extension}.{version}.wref".format(name=name, extension=extension, version=version)
+        output_file_name = "{name}_{extension}.{version}.wref".format(
+            name=name, extension=extension, version=version
+        )
 
         if not template_name:
             # if none template was defined by the user, use the container's folder of the source path
@@ -499,8 +501,10 @@ class AliasOperations(object):
                 missing_keys.remove("alias.extension")
 
             if missing_keys:
-                raise Exception("Not enough keys to apply publish fields (%s) "
-                                "to publish template (%s)" % (fields, template))
+                raise Exception(
+                    "Not enough keys to apply publish fields (%s) "
+                    "to publish template (%s)" % (fields, template)
+                )
 
             output_path = template.apply_fields(fields)
 
