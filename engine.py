@@ -95,12 +95,6 @@ class AliasEngine(sgtk.platform.Engine):
         if os.path.exists(plugins_dir):
             QtCore.QCoreApplication.addLibraryPath(plugins_dir)
 
-    def post_app_init(self):
-        """
-        Runs after all apps have been initialized.
-        """
-        self.logger.debug("%s: Post Initializing...", self)
-
         # Init QT main loop
         self.init_qt_app()
 
@@ -110,9 +104,6 @@ class AliasEngine(sgtk.platform.Engine):
         # dialog parent handler
         self._dialog_parent = self._tk_alias.DialogParent(engine=self)
 
-        # init menu
-        self.menu = self._tk_alias.AliasMenu(engine=self)
-
         # Env vars
         self.alias_execpath = os.getenv("TK_ALIAS_EXECPATH", None)
         self.alias_bindir = os.path.dirname(self.alias_execpath)
@@ -121,11 +112,30 @@ class AliasEngine(sgtk.platform.Engine):
         # init operations
         self.operations = self._tk_alias.AliasOperations(engine=self)
 
+    def post_app_init(self):
+        """
+        Runs after all apps have been initialized.
+        """
+        self.logger.debug("%s: Post Initializing...", self)
+
+        # init menu
+        self.menu = self._tk_alias.AliasMenu(engine=self)
+
     def destroy_engine(self):
         """
         Called when the engine should tear down itself and all its apps.
         """
         self.logger.debug("%s: Destroying...", self)
+
+        # Close all Shotgun app dialogs that are still opened since
+        # some apps do threads cleanup in their onClose event handler
+        # Note that this function is called when the engine is restarted (through "Reload Engine and Apps")
+
+        # Important: Copy the list of dialogs still opened since the call to close() will modify created_qt_dialogs
+        dialogs_still_opened = self.created_qt_dialogs[:]
+
+        for dialog in dialogs_still_opened:
+            dialog.close()
 
     def init_qt_app(self):
         """
