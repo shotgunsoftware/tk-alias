@@ -451,7 +451,7 @@ class AliasOperations(object):
 
     def get_import_as_reference_output_path(self, source_path):
         """
-        Returns an output path form importing a file (wire, jt, CATPart, ...) as a reference (wref) in the scenes.
+        Returns an output path for importing a file (wire, jt, CATPart, ...) as a reference (wref) in the scene.
 
         It tries to calculate the path using the setting `reference_template`,  if there's not a template defined it
         uses the source path to get the folder and returns it.
@@ -459,54 +459,18 @@ class AliasOperations(object):
         source_path: It's a filesystem path. The file name has the form {name}.{version}.{extension}
                      Ex. C:\myproject\assets\Vehicle\myasset\CSA\publish\alias\scene.v002.wire
         """
-        # get the setting reference_template
-        template_name = self._engine.get_setting("reference_template")
+        # get the template object defined in the info.yml
+        reference_template = self._engine.get_template("reference_template")
+        source_template = self._engine.sgtk.template_from_path(source_path)
+        template_fields = source_template.get_fields(source_path)
 
-        # scene.v002.wire
-        base_name = os.path.basename(source_path)
-
-        # scene.v002, .wire
-        base_file_name, base_file_extension = os.path.splitext(base_name)
-
-        # scene, v002, wire, 2
-        name, version = base_file_name.split(".")
-        extension = base_file_extension[1:]  # .wire => wire
-        version_number = int(version[1:])  # v002 => 2
-
-        # scene_wire.v002.wref
-        output_file_name = "{name}_{extension}.{version}.wref".format(
-            name=name, extension=extension, version=version
-        )
-
-        if not template_name:
-            # if none template was defined by the user, use the container's folder of the source path
-            parent_path = os.path.dirname(source_path)
-            output_path = os.path.join(parent_path, output_file_name)
+        if not reference_template:
+            output_path, output_ext = os.path.splitext(source_path)
+            output_path = "{output_path}_{output_ext}.wref".format(output_path=output_path, output_ext=output_ext[1:])
         else:
-            # if template exists, try to get the output path joining the parts required
-            template = self._engine.get_template_by_name(template_name)
-            fields = self._engine.context.as_template_fields(template, validate=True)
-            missing_keys = template.missing_keys(fields)
+            template_fields["alias.extension"] = os.path.splitext(source_path)[1][1:]
 
-            if "version" in missing_keys:
-                fields["version"] = version_number
-                missing_keys.remove("version")
-
-            if "name" in missing_keys:
-                fields["name"] = name
-                missing_keys.remove("name")
-
-            if "alias.extension" in missing_keys:
-                fields["alias.extension"] = extension
-                missing_keys.remove("alias.extension")
-
-            if missing_keys:
-                raise Exception(
-                    "Not enough keys to apply publish fields (%s) "
-                    "to publish template (%s)" % (fields, template)
-                )
-
-            output_path = template.apply_fields(fields)
+            output_path = reference_template.apply_fields(template_fields)
 
         return output_path
 

@@ -182,6 +182,8 @@ class AliasActions(HookBaseClass):
                     source_path, output_path
                 )
                 alias_translator.execute()
+            else:
+                self.logger.info("The file {} already exists".format(output_path))
 
             return operations.create_reference(output_path, standalone=False)
 
