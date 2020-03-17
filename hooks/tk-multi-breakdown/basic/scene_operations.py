@@ -24,7 +24,9 @@ class SceneOperation(HookClass):
         engine = self.parent.engine
         operations = engine.operations
 
-        return operations.get_references()
+        references = operations.get_references()
+
+        return references
 
     def update(self, items):
         """
