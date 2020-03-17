@@ -466,7 +466,9 @@ class AliasOperations(object):
 
         if not reference_template:
             output_path, output_ext = os.path.splitext(source_path)
-            output_path = "{output_path}_{output_ext}.wref".format(output_path=output_path, output_ext=output_ext[1:])
+            output_path = "{output_path}_{output_ext}.wref".format(
+                output_path=output_path, output_ext=output_ext[1:]
+            )
         else:
             template_fields["alias.extension"] = os.path.splitext(source_path)[1][1:]
 
