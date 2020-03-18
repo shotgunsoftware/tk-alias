@@ -296,7 +296,10 @@ class AliasOperations(object):
             if not row or COL_SEPARATOR not in row:
                 continue
 
-            name, path = row.split(COL_SEPARATOR)
+            name, path, source_path = row.split(COL_SEPARATOR)
+
+            if self.imported_as_reference(path):
+                path = source_path
 
             references.append(
                 {
@@ -475,6 +478,17 @@ class AliasOperations(object):
             output_path = reference_template.apply_fields(template_fields)
 
         return output_path
+
+    def imported_as_reference(self, path):
+        """Returns True if path matches the reference template."""
+        reference_template = self._engine.get_template("reference_template")
+        source_template = self._engine.sgtk.template_from_path(path)
+
+        return (
+            reference_template
+            and source_template
+            and reference_template == source_template
+        )
 
     def get_publish_version(self, settings, item):
         """
