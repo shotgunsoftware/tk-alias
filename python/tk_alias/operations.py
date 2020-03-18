@@ -327,7 +327,7 @@ class AliasOperations(object):
 
         if not success:
             msg = (
-                "One or more selected items cannot be updated.\nIf there is another version of this file "
+                "One or more selected items cannot be updated.\\nIf there is another version of this file "
                 "referenced, please check the Alias Reference Manager and remove its reference to enable the update."
             )
             raise Exception(msg)
@@ -460,7 +460,7 @@ class AliasOperations(object):
         uses the source path to get the folder and returns it.
 
         source_path: It's a filesystem path. The file name has the form {name}.{version}.{extension}
-                     Ex. r"C:\myproject\assets\Vehicle\myasset\CSA\publish\alias\scene.v002.wire"
+                     Ex. r"C:\\myproject\\assets\\Vehicle\\myasset\\CSA\\publish\\alias\\scene.v002.wire"
         """
         # get the template object defined in the info.yml
         reference_template = self._engine.get_template("reference_template")
