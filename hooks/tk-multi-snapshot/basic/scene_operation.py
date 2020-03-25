@@ -23,6 +23,8 @@ class SceneOperation(HookClass):
 
         engine = self.parent.engine
         operations = engine.operations
+        engine.running_operation = True
+        engine.current_operation = operation
 
         engine.logger.debug(
             "tk-multi-snapshot scene_operation, "
@@ -32,19 +34,13 @@ class SceneOperation(HookClass):
         )
 
         if operation == "current_path":
+            engine.running_operation = False
             return operations.get_current_path()
 
         elif operation == "open":
             operations.open_file(file_path)
+            engine.running_operation = False
 
         elif operation == "save":
             operations.save_file(operations.get_current_path())
-
-        elif operation == "save_as":
-            operations.save_file(file_path)
-
-        elif operation == "reset":
-            if kwargs.get("parent_action", "") != "open_file":
-                operations.reset()
-
-            return True
+            engine.running_operation = False
