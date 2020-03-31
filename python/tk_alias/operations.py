@@ -465,16 +465,15 @@ class AliasOperations(object):
         # get the template object defined in the info.yml
         reference_template = self._engine.get_template("reference_template")
         source_template = self._engine.sgtk.template_from_path(source_path)
-        template_fields = source_template.get_fields(source_path)
 
-        if not reference_template:
+        if not reference_template or not source_template:
             output_path, output_ext = os.path.splitext(source_path)
             output_path = "{output_path}_{output_ext}.wref".format(
                 output_path=output_path, output_ext=output_ext[1:]
             )
         else:
+            template_fields = source_template.get_fields(source_path)
             template_fields["alias.extension"] = os.path.splitext(source_path)[1][1:]
-
             output_path = reference_template.apply_fields(template_fields)
 
         return output_path
