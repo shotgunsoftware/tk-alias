@@ -92,6 +92,20 @@ class AliasPublishVariantsPlugin(HookBaseClass):
             "enabled": True,
         }
 
+    def validate(self, settings, item):
+        """
+        Validates the given item to check that it is ok to publish. Returns a
+        boolean to indicate validity.
+
+        :param settings: Dictionary of Settings. The keys are strings, matching
+            the keys returned in the settings property. The values are `Setting`
+            instances.
+        :param item: Item to process
+        :returns: True if item is valid, False otherwise.
+        """
+
+        return True
+
     def publish(self, settings, item):
         """
         Executes the publish logic for the given item and settings.
