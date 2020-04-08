@@ -121,6 +121,8 @@ class AliasEngine(sgtk.platform.Engine):
         # init menu
         self.menu = self._tk_alias.AliasMenu(engine=self)
 
+        self._run_app_instance_commands()
+
     def destroy_engine(self):
         """
         Called when the engine should tear down itself and all its apps.
@@ -264,3 +266,80 @@ class AliasEngine(sgtk.platform.Engine):
         return self.sgtk.context_from_entity(
             self.context.project["type"], self.context.project["id"]
         )
+
+    def _run_app_instance_commands(self):
+        """
+        Runs the series of app instance commands listed in the 'run_at_startup' setting
+        of the environment configuration yaml file.
+        """
+
+        # Build a dictionary mapping app instance names to dictionaries of commands they registered with the engine.
+        app_instance_commands = {}
+        for (command_name, value) in self.commands.items():
+            app_instance = value["properties"].get("app")
+            if app_instance:
+                # Add entry 'command name: command function' to the command dictionary of this app instance.
+                command_dict = app_instance_commands.setdefault(
+                    app_instance.instance_name, {}
+                )
+                command_dict[command_name] = value["callback"]
+
+        commands_to_run = []
+        # Run the series of app instance commands listed in the 'run_at_startup' setting.
+        for app_setting_dict in self.get_setting("run_at_startup", []):
+
+            app_instance_name = app_setting_dict["app_instance"]
+            # Menu name of the command to run or '' to run all commands of the given app instance.
+            setting_command_name = app_setting_dict["name"]
+
+            # Retrieve the command dictionary of the given app instance.
+            command_dict = app_instance_commands.get(app_instance_name)
+
+            if command_dict is None:
+                self.logger.warning(
+                    "%s configuration setting 'run_at_startup' requests app '%s' that is not installed.",
+                    self.name,
+                    app_instance_name,
+                )
+            else:
+                if not setting_command_name:
+                    # Run all commands of the given app instance.
+                    for (command_name, command_function) in command_dict.items():
+                        self.logger.debug(
+                            "%s startup running app '%s' command '%s'.",
+                            self.name,
+                            app_instance_name,
+                            command_name,
+                        )
+                        commands_to_run.append(command_function)
+                else:
+                    # Run the command whose name is listed in the 'run_at_startup' setting.
+                    command_function = command_dict.get(setting_command_name)
+                    if command_function:
+                        self.logger.debug(
+                            "%s startup running app '%s' command '%s'.",
+                            self.name,
+                            app_instance_name,
+                            setting_command_name,
+                        )
+                        commands_to_run.append(command_function)
+                    else:
+                        known_commands = ", ".join(
+                            "'%s'" % name for name in command_dict
+                        )
+                        self.logger.warning(
+                            "%s configuration setting 'run_at_startup' requests app '%s' unknown command '%s'. "
+                            "Known commands: %s",
+                            self.name,
+                            app_instance_name,
+                            setting_command_name,
+                            known_commands,
+                        )
+
+        # no commands to run. just bail
+        if not commands_to_run:
+            return
+
+        # finally, run the commands
+        for command in commands_to_run:
+            command()

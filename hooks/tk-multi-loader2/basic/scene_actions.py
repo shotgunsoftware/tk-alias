@@ -12,6 +12,8 @@
 Hook that loads defines all the available actions, broken down by publish type.
 """
 
+import os
+
 import sgtk
 from sgtk.platform.qt import QtGui
 
@@ -94,6 +96,16 @@ class AliasActions(HookBaseClass):
                 }
             )
 
+        if "import_as_reference" in actions:
+            action_instances.append(
+                {
+                    "name": "import_as_reference",
+                    "params": None,
+                    "caption": "Import as Reference",
+                    "description": "This will import the item as a reference into the current universe.",
+                }
+            )
+
         if "texture_node" in actions:
             action_instances.append(
                 {
@@ -143,6 +155,37 @@ class AliasActions(HookBaseClass):
 
         elif name == "import":
             return operations.import_file(path, create_stage=False, standalone=False)
+
+        elif name == "import_as_reference":
+            # use the current path as source
+            source_path = path
+
+            # calculate output path using template or the source path folder
+            output_path = operations.get_import_as_reference_output_path(source_path)
+
+            # if the output path couldn't be calculated
+            if not output_path:
+                raise Exception("Error importing the file as reference")
+
+            # if the output path doesn't exist, create it using the alias-translations framework
+            if not os.path.exists(output_path):
+                framework_aliastranslations = self.load_framework(
+                    "tk-framework-aliastranslations_v0.x.x"
+                )
+                if not framework_aliastranslations:
+                    raise Exception("Could not run alias translations")
+
+                tk_framework_aliastranslations = framework_aliastranslations.import_module(
+                    "tk_framework_aliastranslations"
+                )
+                alias_translator = tk_framework_aliastranslations.Translator(
+                    source_path, output_path
+                )
+                alias_translator.execute()
+            else:
+                self.logger.info("The file {} already exists".format(output_path))
+
+            return operations.create_reference(output_path, standalone=False)
 
         elif name == "texture_node":
             return operations.create_texture_node(path, standalone=False)

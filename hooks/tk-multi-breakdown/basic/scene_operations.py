@@ -1,3 +1,5 @@
+import os
+
 import sgtk
 
 HookClass = sgtk.get_hook_baseclass()
@@ -24,7 +26,9 @@ class SceneOperation(HookClass):
         engine = self.parent.engine
         operations = engine.operations
 
-        return operations.get_references()
+        references = operations.get_references()
+
+        return references
 
     def update(self, items):
         """
@@ -37,6 +41,43 @@ class SceneOperation(HookClass):
         """
         engine = self.parent.engine
         operations = engine.operations
+        framework_aliastranslations = None
+        tk_framework_aliastranslations = None
 
         engine.logger.debug("Updating scene {}".format(items))
+
+        for i in range(len(items)):
+            _, ext = os.path.splitext(items[i]["path"])
+
+            # create the wref file
+            if ".wref" not in ext:
+                source_path = items[i]["path"]
+                output_path = operations.get_import_as_reference_output_path(
+                    source_path
+                )
+
+                # if the output path doesn't exist, create it using the alias-translations framework
+                if not os.path.exists(output_path):
+                    if not framework_aliastranslations:
+                        framework_aliastranslations = self.load_framework(
+                            "tk-framework-aliastranslations_v0.x.x"
+                        )
+
+                    if not framework_aliastranslations:
+                        raise Exception("Could not run alias translations")
+
+                    if not tk_framework_aliastranslations:
+                        tk_framework_aliastranslations = framework_aliastranslations.import_module(
+                            "tk_framework_aliastranslations"
+                        )
+
+                    alias_translator = tk_framework_aliastranslations.Translator(
+                        source_path, output_path
+                    )
+                    alias_translator.execute()
+                else:
+                    self.logger.info("The file {} already exists".format(output_path))
+
+                items[i]["path"] = output_path
+
         operations.update_scene(items)

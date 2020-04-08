@@ -296,7 +296,10 @@ class AliasOperations(object):
             if not row or COL_SEPARATOR not in row:
                 continue
 
-            name, path = row.split(COL_SEPARATOR)
+            name, path, source_path = row.split(COL_SEPARATOR)
+
+            if self.imported_as_reference(path):
+                path = source_path
 
             references.append(
                 {
@@ -324,7 +327,7 @@ class AliasOperations(object):
 
         if not success:
             msg = (
-                "One or more selected items cannot be updated.\nIf there is another version of this file "
+                "One or more selected items cannot be updated.\\nIf there is another version of this file "
                 "referenced, please check the Alias Reference Manager and remove its reference to enable the update."
             )
             raise Exception(msg)
@@ -448,3 +451,65 @@ class AliasOperations(object):
         if not name:
             name = uuid.uuid4().hex
         return alias_api.create_stage(name)
+
+    def get_import_as_reference_output_path(self, source_path):
+        """
+        Returns an output path for importing a file (wire, jt, CATPart, ...) as a reference (wref) in the scene.
+
+        It tries to calculate the path using the setting `reference_template`,  if there's not a template defined it
+        uses the source path to get the folder and returns it.
+
+        source_path: It's a filesystem path. The file name has the form {name}.{version}.{extension}
+                     Ex. r"C:\\myproject\\assets\\Vehicle\\myasset\\CSA\\publish\\alias\\scene.v002.wire"
+        """
+        # get the template object defined in the info.yml
+        reference_template = self._engine.get_template("reference_template")
+        source_template = self._engine.sgtk.template_from_path(source_path)
+
+        if not reference_template or not source_template:
+            output_path, output_ext = os.path.splitext(source_path)
+            output_path = "{output_path}_{output_ext}.wref".format(
+                output_path=output_path, output_ext=output_ext[1:]
+            )
+        else:
+            template_fields = source_template.get_fields(source_path)
+            template_fields["alias.extension"] = os.path.splitext(source_path)[1][1:]
+            output_path = reference_template.apply_fields(template_fields)
+
+        return output_path
+
+    def imported_as_reference(self, path):
+        """Returns True if path matches the reference template."""
+        reference_template = self._engine.get_template("reference_template")
+        source_template = self._engine.sgtk.template_from_path(path)
+
+        return (
+            reference_template
+            and source_template
+            and reference_template == source_template
+        )
+
+    def get_publish_version(self, settings, item):
+        """
+        Get the publish version for the supplied settings and item.
+
+        :param settings: This plugin instance's configured settings
+        :param item: The item to determine the publish version for
+
+        Extracts the publish version via the configured work template if
+        possible. Will fall back to using the path info hook.
+        """
+        publish_version = item.get_property("publish_version")
+        if publish_version:
+            return publish_version
+
+        # fall back to the template/path_info logic
+        publisher = self.parent
+        path = item.properties.path
+
+        self.logger.debug("Using path info hook to determine publish version.")
+        publish_version = publisher.util.get_version_number(path)
+        if publish_version is None:
+            publish_version = 1
+
+        return publish_version

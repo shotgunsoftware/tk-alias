@@ -36,10 +36,31 @@ configuration:
                 name: { type: str }
                 app_instance: { type: str }
 
+    run_at_startup:
+        type: list
+        description: "Controls what apps will run on startup.  This is a list where each element
+                     is a dictionary with two keys: 'app_instance' and 'name'.  The app_instance
+                     value connects this entry to a particular app instance defined in the
+                     environment configuration file.  The name is the menu name of the command
+                     to run when the Alias engine starts up.  If name is '' then all commands from the
+                     given app instance are started."
+        allows_empty: True
+        default_value: []
+        values:
+            type: dict
+            items:
+                name: { type: str }
+                app_instance: { type: str }
+
     translator_info:
         type: dict
         description: Translators info.
         default_value: {}
+
+    reference_template:
+        type: template
+        description: Reference template to store the files created (.wref) when importing a file as reference.
+        allows_empty: True
 
 # the Shotgun fields that this engine needs in order to operate correctly
 requires_shotgun_fields:
@@ -51,3 +72,6 @@ description: "Shotgun Integration for Alias DCC"
 # Required minimum versions for this item to run
 requires_shotgun_version:
 requires_core_version: "v0.19.1"
+
+frameworks:
+  - {"name": "tk-framework-aliastranslations", "version": "v0.x.x"}
