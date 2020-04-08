@@ -44,6 +44,22 @@ class AliasLauncher(SoftwareLauncher):
     # Fallback code name to use when none is given
     FALLBACK_CODE_NAME = "AutoStudio"
 
+    # Shotgun default plugins
+    DEFAULT_PLUGINS = {
+        "shotgun.plugin": {"min_version": "2020.2", "python_major_version": 3},
+        "shotgun_py2.plugin": {"min_version": "2020.2", "python_major_version": 2},
+        "shotgun_legacy.plugin": {
+            "min_version": "2019",
+            "max_version": "2020.1",
+            "python_major_version": 3,
+        },
+        "shotgun_legacy_py2.plugin": {
+            "min_version": "2019",
+            "max_version": "2020.1",
+            "python_major_version": 2,
+        },
+    }
+
     # This dictionary defines a list of executable template strings for each
     # of the supported operating systems. The templates are used for both
     # globbing and regex matches by replacing the named format placeholders
@@ -218,8 +234,61 @@ class AliasLauncher(SoftwareLauncher):
 
         # get plugins folder
         plugins_directory = os.path.join(self.disk_location, "plugins")
+
+        # plugins folder exists?
+        if not os.path.isdir(plugins_directory):
+            return None
+
+        # Get release version
+        release_version = self._get_release_version(exec_path, code_name)
+
+        # Set plugins list file
         plugins_list_file = os.path.join(plugins_directory, "plugins.lst")
         plugins_number = 0
+
+        with open(plugins_list_file, "w") as plf:
+            # loops plugins folder searching for *.plugin files
+            for plugin_file_name in os.listdir(plugins_directory):
+                if not plugin_file_name.endswith(".plugin"):
+                    continue
+
+                # build *.plugin file path
+                plugin_file_path = os.path.join(plugins_directory, plugin_file_name)
+
+                # if the plugin is a preconfigured
+                if plugin_file_name in self.DEFAULT_PLUGINS:
+                    plugin_data = self.DEFAULT_PLUGINS.get(plugin_file_name)
+                    min_version = plugin_data.get("min_version")
+                    max_version = plugin_data.get("max_version")
+                    python_major_version = plugin_data.get("python_major_version")
+
+                    # check constraints
+                    if min_version and release_version < min_version:
+                        continue
+
+                    if max_version and release_version > max_version:
+                        continue
+
+                    if python_major_version != self._get_python_version():
+                        continue
+
+                # appends found *.plugin file path in plugins.lst file
+                plf.write("{0}\n".format(plugin_file_path))
+                plugins_number += 1
+
+        # returns plugins.lst path or None
+        return plugins_list_file if plugins_number else None
+
+    def _clean_args(self, args):
+        if args:
+            args = re.sub(" +", " ", args).strip()
+
+        return args
+
+    def _get_python_version(self):
+        return sys.version_info.major
+
+    def _get_release_version(self, exec_path, code_name):
         alias_bindir = os.path.dirname(exec_path)
         about_box_file = os.path.join(
             os.path.dirname(alias_bindir), "resources", "AboutBox.txt"
@@ -235,41 +304,4 @@ class AliasLauncher(SoftwareLauncher):
         ][0]
         release_version = release_info[len(release_prefix) :].strip()
 
-        # plugins folder exists?
-        if not os.path.isdir(plugins_directory):
-            return None
-
-        # creates plugins.lst file in disk
-        with open(plugins_list_file, "w") as plf:
-            # loops plugins folder searching for *.plugin files
-            for plugin_file_name in os.listdir(plugins_directory):
-                if not plugin_file_name.endswith(".plugin"):
-                    continue
-
-                # build *.plugin file path
-                plugin_file_path = os.path.join(plugins_directory, plugin_file_name)
-
-                if "_from_" in plugin_file_name or "_until_" in plugin_file_name:
-                    name, ext = os.path.splitext(plugin_file_name)
-
-                    if "_from_" in plugin_file_name:
-                        version = name.split("_from_")[1].replace("_", ".")
-                        if release_version < version:
-                            continue
-                    else:
-                        version = name.split("_until_")[1].replace("_", ".")
-                        if release_version > version:
-                            continue
-
-                # appends found *.plugin file path in plugins.lst file
-                plf.write("{0}\n".format(plugin_file_path))
-                plugins_number += 1
-
-        # returns plugins.lst path or None
-        return plugins_list_file if plugins_number else None
-
-    def _clean_args(self, args):
-        if args:
-            args = re.sub(" +", " ", args).strip()
-
-        return args
+        return release_version

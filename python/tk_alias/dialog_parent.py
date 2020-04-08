@@ -12,6 +12,7 @@
 set of win32 functions used by Alias engine to manage toolkit UI under windows
 """
 import ctypes
+from ctypes import wintypes
 
 from sgtk.platform.qt import QtCore
 from sgtk.platform.qt import QtGui
@@ -53,16 +54,16 @@ WS_EX_NOINHERITLAYOUT = 0x00100000
 # structures
 class PROCESSENTRY32(ctypes.Structure):
     _fields_ = [
-        ("dwSize", ctypes.wintypes.DWORD),
-        ("cntUsage", ctypes.wintypes.DWORD),
-        ("th32ProcessID", ctypes.wintypes.DWORD),
+        ("dwSize", wintypes.DWORD),
+        ("cntUsage", wintypes.DWORD),
+        ("th32ProcessID", wintypes.DWORD),
         ("th32DefaultHeapID", ctypes.POINTER(ctypes.c_ulong)),
-        ("th32ModuleID", ctypes.wintypes.DWORD),
-        ("cntThreads", ctypes.wintypes.DWORD),
-        ("th32ParentProcessID", ctypes.wintypes.DWORD),
+        ("th32ModuleID", wintypes.DWORD),
+        ("cntThreads", wintypes.DWORD),
+        ("th32ParentProcessID", wintypes.DWORD),
         ("pcPriClassBase", ctypes.c_long),
-        ("dwFlags", ctypes.wintypes.DWORD),
-        ("szExeFile", ctypes.c_wchar * ctypes.wintypes.MAX_PATH),
+        ("dwFlags", wintypes.DWORD),
+        ("szExeFile", ctypes.c_wchar * wintypes.MAX_PATH),
     ]
 
 
