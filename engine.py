@@ -343,3 +343,23 @@ class AliasEngine(sgtk.platform.Engine):
         # finally, run the commands
         for command in commands_to_run:
             command()
+
+    #####################################################################################
+    # Logging
+
+    def _emit_log_message(self, handler, record):
+        """
+        Called by the engine to log messages in Alias Terminal.
+        All log messages from the toolkit logging namespace will be passed to this method.
+
+        :param handler: Log handler that this message was dispatched from.
+                        Its default format is "[levelname basename] message".
+        :type handler: :class:`~python.logging.LogHandler`
+        :param record: Standard python logging record.
+        :type record: :class:`~python.logging.LogRecord`
+        """
+
+        msg = handler.format(record)
+
+        # display message
+        print(msg)
