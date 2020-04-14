@@ -140,8 +140,10 @@ class AliasLauncher(SoftwareLauncher):
 
         if tk_alias_codename:
             tk_alias_codename_lower = tk_alias_codename.lower()
+            required_env["TK_ALIAS_VERSION"] = self._get_release_version(exec_path, tk_alias_codename)
         else:
             tk_alias_codename_lower = self.FALLBACK_CODE_NAME.lower()
+            required_env["TK_ALIAS_VERSION"] = self._get_release_version(exec_path, self.FALLBACK_CODE_NAME)
 
         required_env["TK_ALIAS_CODENAME"] = tk_alias_codename_lower
 
