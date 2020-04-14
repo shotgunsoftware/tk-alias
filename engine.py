@@ -358,8 +358,5 @@ class AliasEngine(sgtk.platform.Engine):
         :param record: Standard python logging record.
         :type record: :class:`~python.logging.LogRecord`
         """
-
-        msg = handler.format(record)
-
-        # display message
-        print(msg)
+        # TODO: improve Alias API to redirect the logs to the Alias Promptline
+        pass
