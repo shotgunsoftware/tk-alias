@@ -308,6 +308,6 @@ class AliasLauncher(SoftwareLauncher):
         release_info = [
             item.strip() for item in releases if item.strip().startswith(release_prefix)
         ][0]
-        release_version = release_info[len(release_prefix):].strip()
+        release_version = release_info[len(release_prefix) :].strip()
 
         return release_version
