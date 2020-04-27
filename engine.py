@@ -13,8 +13,6 @@ import sys
 
 import sgtk
 
-import alias_api
-
 
 class AliasEngine(sgtk.platform.Engine):
     """
@@ -32,7 +30,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_bindir = None
         self._dialog_parent = None
 
-        self.menu = None
+        self._menu_generator = None
         self.operations = None
         self._contexts_by_stage_name = {}
         self._contexts_by_path = {}
@@ -60,7 +58,10 @@ class AliasEngine(sgtk.platform.Engine):
                 and self.parent_action == "new_file"
             ):
                 self.save_context_for_stage_name(ctx=new_context)
-            self._create_menu()
+
+        # Rebuild the menu only if we change of context
+        self._menu_generator.create_menu()
+        self._menu_generator.refresh()
 
     def pre_app_init(self):
         """
@@ -119,7 +120,8 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("%s: Post Initializing...", self)
 
         # init menu
-        self.menu = self._tk_alias.AliasMenu(engine=self)
+        self._menu_generator = self._tk_alias.AliasMenuGenerator(engine=self)
+        self._menu_generator.create_menu(clean_menu=False)
 
         self._run_app_instance_commands()
 
@@ -128,6 +130,9 @@ class AliasEngine(sgtk.platform.Engine):
         Called when the engine should tear down itself and all its apps.
         """
         self.logger.debug("%s: Destroying...", self)
+
+        # Clean the menu
+        self._menu_generator.clean_menu()
 
         # Close all Shotgun app dialogs that are still opened since
         # some apps do threads cleanup in their onClose event handler
@@ -188,9 +193,6 @@ class AliasEngine(sgtk.platform.Engine):
         """Alias plugin has been initialized."""
         self.logger.debug("Plugin initialized signal received")
 
-        # Create menu
-        self._create_menu()
-
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
         if path:
             self.operations.open_file(path)
@@ -198,15 +200,6 @@ class AliasEngine(sgtk.platform.Engine):
     def on_plugin_exit(self):
         """Alias plugin has been finished."""
         self.operations.current_file_closed()
-
-    def _create_menu(self):
-        """Create the menu."""
-        self.logger.debug("Creating menu")
-        self.menu.create()
-        self.logger.debug("Raw menu options: {}".format(self.menu.raw_options))
-        self.logger.debug("Menu options: {}".format(self.menu.options))
-
-        alias_api.create_menu(self.menu.options)
 
     def _get_dialog_parent(self):
         """ Get Alias dialog parent"""
