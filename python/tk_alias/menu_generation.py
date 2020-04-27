@@ -15,6 +15,7 @@ from sgtk.util import is_windows, is_macos, is_linux
 
 import alias_api
 
+
 class AliasMenuGenerator(object):
     """
     Menu handling for Alias.
@@ -61,7 +62,9 @@ class AliasMenuGenerator(object):
             # scan through all menu items.
             for cmd in menu_items:
                 if cmd.app_instance_name == app_instance_name and cmd.name == menu_name:
-                    cmd.add_command_to_menu(self._alias_menu, add_separator=add_separator)
+                    cmd.add_command_to_menu(
+                        self._alias_menu, add_separator=add_separator
+                    )
                     cmd.favourite = True
                     # Only add a separator for the first menu item
                     add_separator = False
@@ -74,7 +77,11 @@ class AliasMenuGenerator(object):
 
             # context menu case
             if cmd.app_type == "context_menu":
-                cmd.add_command_to_menu(self._alias_menu, sub_menu=self._context_menu, add_separator=add_separator)
+                cmd.add_command_to_menu(
+                    self._alias_menu,
+                    sub_menu=self._context_menu,
+                    add_separator=add_separator,
+                )
                 add_separator = False
 
             # normal menu
@@ -102,9 +109,13 @@ class AliasMenuGenerator(object):
 
         # Create the menu object
         ctx_menu = self._alias_menu.add_menu(ctx_name)
-        self._alias_menu.add_command("Jump to Shotgun", self._jump_to_sg, parent=ctx_menu)
+        self._alias_menu.add_command(
+            "Jump to Shotgun", self._jump_to_sg, parent=ctx_menu
+        )
         if ctx.filesystem_locations:
-            self._alias_menu.add_command("Jump to File System", self._jump_to_fs,parent=ctx_menu)
+            self._alias_menu.add_command(
+                "Jump to File System", self._jump_to_fs, parent=ctx_menu
+            )
 
         return ctx_menu
 
@@ -134,7 +145,9 @@ class AliasMenuGenerator(object):
                 # display that on the menu
                 cmd_obj = commands_by_app[app_name][0]
                 if not cmd_obj.favourite:
-                    cmd_obj.add_command_to_menu(self._alias_menu, add_separator=add_separator)
+                    cmd_obj.add_command_to_menu(
+                        self._alias_menu, add_separator=add_separator
+                    )
                     add_separator = False
 
     def _jump_to_sg(self):
@@ -231,5 +244,7 @@ class AppCommand(object):
         :return:
         """
         if sub_menu:
-            return menu.add_command(self.name, self.callback, add_separator=add_separator, parent=sub_menu)
+            return menu.add_command(
+                self.name, self.callback, add_separator=add_separator, parent=sub_menu
+            )
         return menu.add_command(self.name, self.callback, add_separator=add_separator)
