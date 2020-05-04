@@ -113,6 +113,28 @@ class AliasEngine(sgtk.platform.Engine):
         # init operations
         self.operations = self._tk_alias.AliasOperations(engine=self)
 
+        # Be sure the current version is supported
+        alias_version = int(os.getenv("TK_ALIAS_VERSION", None))
+        if not alias_version:
+            self.logger.debug("Couldn't get Alias version. Skip version comparison")
+            return
+
+        if alias_version > self.get_setting("compatibility_dialog_min_version", 2021):
+            from sgtk.platform.qt import QtGui
+
+            msg = (
+                "The Shotgun Pipeline Toolkit has not yet been fully tested with Alias %d. "
+                "You can continue to use the Toolkit but you may experience bugs or "
+                "instability.  Please report any issues you see to support@shotgunsoftware.com"
+                % alias_version
+            )
+            self.logger.warning(msg)
+            QtGui.QMessageBox.warning(
+                self.operations.get_parent_window(),
+                "Warning - Shotgun Pipeline Toolkit!",
+                msg,
+            )
+
     def post_app_init(self):
         """
         Runs after all apps have been initialized.
