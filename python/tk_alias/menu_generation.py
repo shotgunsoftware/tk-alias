@@ -86,7 +86,7 @@ class AliasMenuGenerator(object):
 
             # normal menu
             else:
-                if not cmd.app_name in commands_by_app:
+                if cmd.app_name not in commands_by_app:
                     commands_by_app[cmd.app_name] = []
                 commands_by_app[cmd.app_name].append(cmd)
 
