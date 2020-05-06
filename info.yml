@@ -61,6 +61,7 @@ configuration:
         type: template
         description: Reference template to store the files created (.wref) when importing a file as reference.
         allows_empty: True
+        fields: context, *
 
     compatibility_dialog_min_version:
         type:           int

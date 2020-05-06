@@ -8,6 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from .menu import AliasMenu
+from .menu_generation import AliasMenuGenerator
 from .operations import AliasOperations
 from .dialog_parent import DialogParent
