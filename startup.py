@@ -115,6 +115,10 @@ class AliasLauncher(SoftwareLauncher):
         # by appending it to the env PYTHONPATH.
         startup_path = os.path.join(self.disk_location, "startup")
         sgtk.util.append_path_to_env_var("PYTHONPATH", startup_path)
+        sgtk.util.append_path_to_env_var(
+            "PYTHONPATH",
+            os.path.join(self.disk_location, "api")
+        )
 
         # We're going to append all of this Python process's sys.path to the
         # PYTHONPATH environment variable. This will ensure that we have access
