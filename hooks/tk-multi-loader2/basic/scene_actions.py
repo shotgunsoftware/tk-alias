@@ -14,7 +14,6 @@ Hook that loads defines all the available actions, broken down by publish type.
 
 import os
 import sgtk
-from sgtk.platform.qt import QtGui
 import alias_api
 
 
