@@ -10,6 +10,7 @@
 
 import os
 import sgtk
+import alias_api
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -195,7 +196,6 @@ class AliasSessionPublishPlugin(HookBaseClass):
         """
 
         publisher = self.parent
-        operations = publisher.engine.operations
         path = _session_path()
 
         # ---- ensure the session has been saved
@@ -261,7 +261,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
                         "label": "Save to v%s" % (version,),
                         "tooltip": "Save to the next available version number, "
                         "v%s" % (version,),
-                        "callback": lambda: operations.save_file(next_version_path),
+                        "callback": lambda: alias_api.save_file_as(next_version_path),
                     }
                 },
             )
@@ -293,14 +293,13 @@ class AliasSessionPublishPlugin(HookBaseClass):
             instances.
         :param item: Item to process
         """
-        operations = self.parent.engine.operations
 
         # get the path in a normalized state. no trailing separator, separators
         # are appropriate for current os, no double separators, etc.
         path = sgtk.util.ShotgunPath.normalize(_session_path())
 
         # ensure the session is saved
-        operations.save_file(path)
+        alias_api.save_file()
 
         # update the item with the saved session path
         item.properties["path"] = path
@@ -324,25 +323,21 @@ class AliasSessionPublishPlugin(HookBaseClass):
         :param item: Item to process
         """
 
-        operations = self.parent.engine.operations
-
         # do the base class finalization
         super(AliasSessionPublishPlugin, self).finalize(settings, item)
 
         # bump the session file to the next version
-        self._save_to_next_version(item.properties["path"], item, operations.save_file)
+        self._save_to_next_version(item.properties["path"], item, alias_api.save_file_as)
 
 
 def _alias_find_additional_session_dependencies():
     """
     Find additional dependencies from the session
     """
-    engine = sgtk.platform.current_engine()
-    operations = engine.operations
 
     references = []
-    for reference in operations.get_references():
-        path = reference.get("path")
+    for reference in alias_api.get_references():
+        path = reference.path
         if path not in references:
             references.append(path)
 
@@ -354,10 +349,8 @@ def _session_path():
     Return the path to the current session
     :return:
     """
-    engine = sgtk.platform.current_engine()
-    operations = engine.operations
 
-    return operations.get_current_path()
+    return alias_api.get_current_path()
 
 
 def _get_save_as_action():
@@ -366,10 +359,9 @@ def _get_save_as_action():
     """
 
     engine = sgtk.platform.current_engine()
-    operations = engine.operations
 
     # default save callback
-    callback = operations.open_save_as_dialog
+    callback = engine.open_save_as_dialog
 
     # if workfiles2 is configured, use that for file save
     if "tk-multi-workfiles2" in engine.apps:
