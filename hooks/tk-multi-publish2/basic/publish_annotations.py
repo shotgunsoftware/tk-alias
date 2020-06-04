@@ -117,7 +117,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
         if version_data is not None:
             note_links.append(version_data)
 
-        annotations = alias_api.get_annotations()
+        annotations = alias_api.get_annotation_locators()
 
         batch_data = []
         for annotation in annotations:
