@@ -12,6 +12,7 @@ import os
 import sys
 
 import sgtk
+import alias_api
 
 
 class AliasEngine(sgtk.platform.Engine):
@@ -358,6 +359,47 @@ class AliasEngine(sgtk.platform.Engine):
         # finally, run the commands
         for command in commands_to_run:
             command()
+
+    #####################################################################################
+    # QT Utils
+
+    @staticmethod
+    def get_parent_window():
+        """
+        Return current active window as parent
+        """
+        from sgtk.platform.qt import QtGui
+        return QtGui.QApplication.activeWindow()
+
+    def open_save_as_dialog(self):
+        """
+        Launch a Qt file browser to select a file, then save the supplied
+        project to that path.
+        """
+
+        from sgtk.platform.qt import QtGui
+
+        # Alias doesn't appear to have a "save as" dialog accessible via
+        # python. so open our own Qt file dialog.
+        file_dialog = QtGui.QFileDialog(
+            parent=self.get_parent_window(),
+            caption="Save As",
+            directory=os.path.expanduser("~"),
+            filter="Alias file (*.wire)",
+        )
+        file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
+        file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
+        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
+        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
+        if not file_dialog.exec_():
+            return
+        path = file_dialog.selectedFiles()[0]
+
+        if os.path.splitext(path)[-1] != ".wire":
+            path = "{0}.wire".format(path)
+
+        if path:
+            alias_api.save_file_as(path)
 
     #####################################################################################
     # Logging
