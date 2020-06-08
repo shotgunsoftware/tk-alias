@@ -401,6 +401,27 @@ class AliasEngine(sgtk.platform.Engine):
         if path:
             alias_api.save_file_as(path)
 
+    def open_delete_stages_dialog(self, new_file=False):
+        """
+        Launch a QT prompt dialog to ask the user if he wants to delete all the existing stages or keep them when
+        opening a new file.
+        """
+
+        from sgtk.platform.qt import QtGui
+
+        if new_file:
+            message = "DELETE all objects, shaders, views and actions in all existing Stage before Opening a New File?"
+        else:
+            message = "DELETE all objects, shaders, views and actions in all existing Stage before Opening this File?"
+        message_type = (
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
+        )
+        answer = QtGui.QMessageBox.question(
+            self.get_parent_window(), "Open", message, message_type
+        )
+
+        return answer
+
     #####################################################################################
     # Logging
 
