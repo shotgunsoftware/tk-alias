@@ -35,9 +35,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.operations = None
         self._contexts_by_stage_name = {}
         self._contexts_by_path = {}
-        self.running_operation = False
-        self.current_operation = None
-        self.parent_action = None
+        self._stop_watching = False
 
         if not hasattr(sys, "argv"):
             sys.argv = [""]
@@ -51,14 +49,8 @@ class AliasEngine(sgtk.platform.Engine):
         :param old_context: The previous context.
         :param new_context: The current context.
         """
+
         self.logger.debug("%s: Post context change...", self)
-        if self.context_change_allowed:
-            if (
-                not self.running_operation
-                and self.current_operation == "prepare_new"
-                and self.parent_action == "new_file"
-            ):
-                self.save_context_for_stage_name(ctx=new_context)
 
         # Rebuild the menu only if we change of context
         self._menu_generator.create_menu()
@@ -69,6 +61,7 @@ class AliasEngine(sgtk.platform.Engine):
         Sets up the engine into an operational state. This method called before
         any apps are loaded.
         """
+
         self.logger.debug("%s: Initializing..." % (self,))
 
         # unicode characters returned by the shotgun api need to be converted
@@ -228,61 +221,6 @@ class AliasEngine(sgtk.platform.Engine):
         """ Get Alias dialog parent"""
         return self._dialog_parent.get_dialog_parent()
 
-    def on_stage_selected(self):
-        """An stage was selected."""
-        path = self.operations.get_current_path()
-        name = self.operations.get_current_stage()
-        current_context = self.context
-        current_operation = self.current_operation
-        parent_action = self.parent_action
-        running_operation = self.running_operation
-
-        self.logger.debug("-" * 50)
-        self.logger.debug("Stage selected")
-        self.logger.debug(
-            "stage name: {}, path: {}, current_context: {}".format(
-                name, path, current_context
-            )
-        )
-        self.logger.debug(
-            "current_operation: {}, parent_action: {}, running_operation: {}".format(
-                current_operation, parent_action, running_operation
-            )
-        )
-        self.logger.debug("-" * 50)
-
-        if self.running_operation:
-            return
-
-        # No name and not path
-        if not name and not path:
-            return
-
-        # Known path
-        if path and path in self._contexts_by_path:
-            self.change_context(self._contexts_by_path[path])
-        # Known stage
-        elif name and name in self._contexts_by_stage_name:
-            self.change_context(self._contexts_by_stage_name[name])
-        else:
-            self.change_context(self._get_project_context())
-
-    def save_context_for_path(self, path=None, ctx=None):
-        path = path or self.operations.get_current_path()
-
-        if path:
-            self._contexts_by_path[path] = ctx or self.context
-
-    def save_context_for_stage_name(self, name=None, ctx=None):
-        name = name or self.operations.get_current_stage()
-        if name:
-            self._contexts_by_stage_name[name] = ctx or self.context
-
-    def _get_project_context(self):
-        return self.sgtk.context_from_entity(
-            self.context.project["type"], self.context.project["id"]
-        )
-
     def _run_app_instance_commands(self):
         """
         Runs the series of app instance commands listed in the 'run_at_startup' setting
@@ -359,6 +297,50 @@ class AliasEngine(sgtk.platform.Engine):
         # finally, run the commands
         for command in commands_to_run:
             command()
+
+    #####################################################################################
+    # Alias Callbacks
+
+    # in Alias, we need to save and restore the context because of the different stages the user can use
+    # As the Stages can change their name, we need to store the context for both the stage name and the stage path
+
+    def save_context_for_stage(self, context):
+        """
+        A callback happening after a file has been opened in Alias.
+        """
+
+        current_stage = alias_api.get_current_stage()
+        if current_stage.path:
+            self._contexts_by_path[current_stage.path] = context
+        self._contexts_by_stage_name[current_stage.name] = context
+
+    def on_stage_selected(self):
+        """
+        A callback happening when an Alias stage is selected.
+        """
+
+        current_stage = alias_api.get_current_stage()
+
+        # sometimes, we need to stop switching the context on stage selection as some Alias operations need to change
+        # current stage but this action must not affect Shotgun Context switch behaviour
+        if self._stop_watching:
+            return
+
+        if not current_stage:
+            return
+        if not current_stage.name and not current_stage.path:
+            return
+
+        # try to get the context from the file path
+        if current_stage.path and current_stage.path in self._contexts_by_path:
+            self.change_context(self._contexts_by_path[current_stage.path])
+        # otherwise, try to get the context from the stage name
+        elif current_stage.name and current_stage.name in self._contexts_by_stage_name:
+            self.change_context(self._contexts_by_stage_name[current_stage.name])
+        # finally, use the project context as the default one
+        else:
+            project_context = self.sgtk.context_from_entity_dictionary(self.context.project)
+            self.change_context(project_context)
 
     #####################################################################################
     # QT Utils
