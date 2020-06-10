@@ -78,7 +78,6 @@ class SceneOperation(HookClass):
                 # if the current file is an empty file, we can erase it and open the new file instead
                 if alias_api.is_empty_file():
                     alias_api.open_file(file_path, new_stage=False)
-                    # self.parent.engine.save_context_for_stage()
                 # otherwise, ask the use what he'd like to do
                 else:
                     open_in_current_stage = self.parent.engine.open_delete_stages_dialog()
@@ -86,19 +85,15 @@ class SceneOperation(HookClass):
                         return
                     elif open_in_current_stage == QtGui.QMessageBox.No:
                         alias_api.open_file(file_path, new_stage=True)
-                        # self.parent.engine.save_context_for_stage()
                     else:
                         alias_api.reset()
                         alias_api.open_file(file_path, new_stage=False)
-                        # self.parent.engine.save_context_for_stage()
 
             elif operation == "save":
                 alias_api.save_file()
-                # self.parent.engine.save_context_for_stage()
 
             elif operation == "save_as":
                 alias_api.save_file_as(file_path)
-                # self.parent.engine.save_context_for_stage()
 
             elif operation == "reset":
                 # do not reset the file if we try to open another one as we have to deal with the stages an resetting
