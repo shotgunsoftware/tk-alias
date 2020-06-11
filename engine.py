@@ -124,7 +124,7 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.operations.get_parent_window(),
+                self.get_parent_window(),
                 "Warning - Shotgun Pipeline Toolkit!",
                 msg,
             )
@@ -210,12 +210,13 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("Plugin initialized signal received")
 
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
-        if path:
-            self.operations.open_file(path)
+        # if path:
+        #     self.operations.open_file(path)
 
     def on_plugin_exit(self):
         """Alias plugin has been finished."""
-        self.operations.current_file_closed()
+        pass
+        # self.operations.current_file_closed()
 
     def _get_dialog_parent(self):
         """ Get Alias dialog parent"""
