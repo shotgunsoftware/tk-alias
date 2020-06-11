@@ -304,10 +304,13 @@ class AliasEngine(sgtk.platform.Engine):
     # in Alias, we need to save and restore the context because of the different stages the user can use
     # As the Stages can change their name, we need to store the context for both the stage name and the stage path
 
-    def save_context_for_stage(self, context):
+    def save_context_for_stage(self, context=None):
         """
         A callback happening after a file has been opened in Alias.
         """
+
+        if not context:
+            context = self.context
 
         current_stage = alias_api.get_current_stage()
         if current_stage.path:
