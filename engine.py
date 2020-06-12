@@ -32,7 +32,6 @@ class AliasEngine(sgtk.platform.Engine):
         self._dialog_parent = None
 
         self._menu_generator = None
-        self.operations = None
         self._contexts_by_stage_name = {}
         self._contexts_by_path = {}
         self._stop_watching = False
@@ -103,9 +102,6 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_execpath = os.getenv("TK_ALIAS_EXECPATH", None)
         self.alias_bindir = os.path.dirname(self.alias_execpath)
         self.alias_codename = os.getenv("TK_ALIAS_CODENAME", "autostudio")
-
-        # init operations
-        self.operations = self._tk_alias.AliasOperations(engine=self)
 
         # Be sure the current version is supported
         alias_version = int(os.getenv("TK_ALIAS_VERSION", None))
@@ -210,8 +206,8 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("Plugin initialized signal received")
 
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
-        # if path:
-        #     self.operations.open_file(path)
+        if path:
+            alias_api.open_file(path)
 
     def on_plugin_exit(self):
         """Alias plugin has been finished."""
@@ -219,7 +215,9 @@ class AliasEngine(sgtk.platform.Engine):
         # self.operations.current_file_closed()
 
     def _get_dialog_parent(self):
-        """ Get Alias dialog parent"""
+        """
+        Get Alias dialog parent
+        """
         return self._dialog_parent.get_dialog_parent()
 
     def _run_app_instance_commands(self):
