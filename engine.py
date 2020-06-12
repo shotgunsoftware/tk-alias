@@ -201,19 +201,6 @@ class AliasEngine(sgtk.platform.Engine):
         """
         return True
 
-    def on_plugin_init(self):
-        """Alias plugin has been initialized."""
-        self.logger.debug("Plugin initialized signal received")
-
-        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
-        if path:
-            alias_api.open_file(path)
-
-    def on_plugin_exit(self):
-        """Alias plugin has been finished."""
-        pass
-        # self.operations.current_file_closed()
-
     def _get_dialog_parent(self):
         """
         Get Alias dialog parent
@@ -297,15 +284,14 @@ class AliasEngine(sgtk.platform.Engine):
         for command in commands_to_run:
             command()
 
-    #####################################################################################
-    # Alias Callbacks
-
-    # in Alias, we need to save and restore the context because of the different stages the user can use
-    # As the Stages can change their name, we need to store the context for both the stage name and the stage path
-
     def save_context_for_stage(self, context=None):
         """
-        A callback happening after a file has been opened in Alias.
+        Save the context associated to the current Alias stage.
+        We need to save and restore the context because of the different stages the user can use.
+        As the Stages can change their name, we need to store the context for both the stage name and the stage path.
+
+        :param context:  We can specify a context to associate to the current stage. If no one is supplied, we will use
+                         the current one.
         """
 
         if not context:
@@ -315,6 +301,19 @@ class AliasEngine(sgtk.platform.Engine):
         if current_stage.path:
             self._contexts_by_path[current_stage.path] = context
         self._contexts_by_stage_name[current_stage.name] = context
+
+    #####################################################################################
+    # Alias Callbacks
+
+    def on_plugin_init(self):
+        """
+        A callback happening when the Alias Shotgun plugin is initialized. It happens once and only once when Alias
+        starts.
+        """
+
+        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
+        if path:
+            alias_api.open_file(path)
 
     def on_stage_selected(self):
         """
