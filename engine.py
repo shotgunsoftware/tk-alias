@@ -352,6 +352,7 @@ class AliasEngine(sgtk.platform.Engine):
         Return current active window as parent
         """
         from sgtk.platform.qt import QtGui
+
         return QtGui.QApplication.activeWindow()
 
     def open_save_as_dialog(self):
