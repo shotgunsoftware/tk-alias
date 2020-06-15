@@ -117,9 +117,7 @@ class AliasActions(HookBaseClass):
                 }
             )
 
-        # TODO: do we want to keep backward compatibility and check if the import_subdivision method exist?
-        #  for ref: if hasattr(alias_api, "import_subdivision")
-        if "import_subdiv" in actions:
+        if "import_subdiv" in actions and hasattr(alias_api, "import_subdivision"):
             action_instances.append(
                 {
                     "name": "import_subdiv",
