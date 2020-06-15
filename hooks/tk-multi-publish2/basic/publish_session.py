@@ -327,7 +327,9 @@ class AliasSessionPublishPlugin(HookBaseClass):
         super(AliasSessionPublishPlugin, self).finalize(settings, item)
 
         # bump the session file to the next version
-        self._save_to_next_version(item.properties["path"], item, alias_api.save_file_as)
+        self._save_to_next_version(
+            item.properties["path"], item, alias_api.save_file_as
+        )
 
 
 def _alias_find_additional_session_dependencies():

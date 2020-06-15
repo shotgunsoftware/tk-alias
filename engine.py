@@ -120,9 +120,7 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(),
-                "Warning - Shotgun Pipeline Toolkit!",
-                msg,
+                self.get_parent_window(), "Warning - Shotgun Pipeline Toolkit!", msg,
             )
 
     def post_app_init(self):
@@ -340,7 +338,9 @@ class AliasEngine(sgtk.platform.Engine):
             self.change_context(self._contexts_by_stage_name[current_stage.name])
         # finally, use the project context as the default one
         else:
-            project_context = self.sgtk.context_from_entity_dictionary(self.context.project)
+            project_context = self.sgtk.context_from_entity_dictionary(
+                self.context.project
+            )
             self.change_context(project_context)
 
     #####################################################################################
@@ -397,7 +397,7 @@ class AliasEngine(sgtk.platform.Engine):
         else:
             message = "DELETE all objects, shaders, views and actions in all existing Stage before Opening this File?"
         message_type = (
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
+            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
         )
         answer = QtGui.QMessageBox.question(
             self.get_parent_window(), "Open", message, message_type

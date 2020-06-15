@@ -49,17 +49,21 @@ class BreakdownSceneOperation(HookClass):
             # here, we've imported a file as reference and we need to use the source path to get the next
             # available version
             if reference_template and reference_template.validate(r.path):
-                refs.append({
-                    "node": r.name,
-                    "type": "reference",
-                    "path": r.source_path.replace("/", os.path.sep)
-                })
+                refs.append(
+                    {
+                        "node": r.name,
+                        "type": "reference",
+                        "path": r.source_path.replace("/", os.path.sep),
+                    }
+                )
             else:
-                refs.append({
-                    "node": r.name,
-                    "type": "reference",
-                    "path": r.path.replace("/", os.path.sep)
-                })
+                refs.append(
+                    {
+                        "node": r.name,
+                        "type": "reference",
+                        "path": r.path.replace("/", os.path.sep),
+                    }
+                )
         return refs
 
     def update(self, items):
@@ -78,9 +82,13 @@ class BreakdownSceneOperation(HookClass):
         tk_framework_aliastranslations = None
         framework = self.load_framework("tk-framework-aliastranslations_v0.x.x")
         if not framework:
-            self.logger.error("Couldn't load tk-framework-aliastranslations. Some reference updates may fail.")
+            self.logger.error(
+                "Couldn't load tk-framework-aliastranslations. Some reference updates may fail."
+            )
         else:
-            tk_framework_aliastranslations = framework.import_module("tk_framework_aliastranslations")
+            tk_framework_aliastranslations = framework.import_module(
+                "tk_framework_aliastranslations"
+            )
 
         for i in items:
 
@@ -100,10 +108,15 @@ class BreakdownSceneOperation(HookClass):
                     template_fields["alias.extension"] = ext[1:]
                     reference_path = reference_template.apply_fields(template_fields)
 
-                    if not os.path.exists(reference_path) and tk_framework_aliastranslations:
+                    if (
+                        not os.path.exists(reference_path)
+                        and tk_framework_aliastranslations
+                    ):
 
                         self.logger.debug("Translating file to wref...")
-                        translator = tk_framework_aliastranslations.Translator(new_path, reference_path)
+                        translator = tk_framework_aliastranslations.Translator(
+                            new_path, reference_path
+                        )
                         translator.execute()
                         new_path = reference_path
 

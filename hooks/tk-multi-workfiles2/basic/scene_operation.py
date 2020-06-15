@@ -80,7 +80,9 @@ class SceneOperation(HookClass):
                     alias_api.open_file(file_path, new_stage=False)
                 # otherwise, ask the use what he'd like to do
                 else:
-                    open_in_current_stage = self.parent.engine.open_delete_stages_dialog()
+                    open_in_current_stage = (
+                        self.parent.engine.open_delete_stages_dialog()
+                    )
                     if open_in_current_stage == QtGui.QMessageBox.Cancel:
                         return
                     elif open_in_current_stage == QtGui.QMessageBox.No:
@@ -104,7 +106,9 @@ class SceneOperation(HookClass):
                     alias_api.reset()
                     return True
                 else:
-                    open_in_current_stage = self.parent.engine.open_delete_stages_dialog(new_file=True)
+                    open_in_current_stage = self.parent.engine.open_delete_stages_dialog(
+                        new_file=True
+                    )
                     if open_in_current_stage == QtGui.QMessageBox.Cancel:
                         return False
                     elif open_in_current_stage == QtGui.QMessageBox.No:

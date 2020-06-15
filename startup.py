@@ -171,7 +171,9 @@ class AliasLauncher(SoftwareLauncher):
         """
 
         alias_code_name = alias_code_name or self.FALLBACK_CODE_NAME
-        alias_release_version = self._get_release_version(alias_exec_path, alias_code_name)
+        alias_release_version = self._get_release_version(
+            alias_exec_path, alias_code_name
+        )
         python_major_version = self._get_python_version()
 
         api_folder_name = None
@@ -191,7 +193,7 @@ class AliasLauncher(SoftwareLauncher):
             self.disk_location,
             "api",
             "python{major_version}".format(major_version=python_major_version),
-            api_folder_name
+            api_folder_name,
         )
 
         sgtk.util.append_path_to_env_var("PYTHONPATH", python_path)

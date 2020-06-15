@@ -242,8 +242,7 @@ class AliasActions(HookBaseClass):
         else:
             output_path, output_ext = os.path.splitext(path)
             reference_path = "{output_path}_{output_ext}.wref".format(
-                output_path=output_path,
-                output_ext=output_ext[1:]
+                output_path=output_path, output_ext=output_ext[1:]
             )
 
         # if the reference file doesn't exist on disk yet, run the translation
@@ -252,7 +251,9 @@ class AliasActions(HookBaseClass):
             framework = self.load_framework("tk-framework-aliastranslations_v0.x.x")
             if not framework:
                 raise Exception("Couldn't find tk-framework-aliastranslations_v0.x.x")
-            tk_framework_aliastranslations = framework.import_module("tk_framework_aliastranslations")
+            tk_framework_aliastranslations = framework.import_module(
+                "tk_framework_aliastranslations"
+            )
 
             translator = tk_framework_aliastranslations.Translator(path, reference_path)
             translator.execute()
