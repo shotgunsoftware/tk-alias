@@ -132,8 +132,9 @@ class PublishAnnotationsPlugin(HookBaseClass):
                 "subject": "Alias Annotation",
                 "content": annotation,
                 "note_links": note_links,
-                "tasks": [item.context.task],
             }
+            if item.context.task:
+                note_data["tasks"] = [item.context.task]
             batch_data.append(
                 {"request_type": "create", "entity_type": "Note", "data": note_data}
             )
