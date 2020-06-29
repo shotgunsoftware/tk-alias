@@ -62,7 +62,7 @@ class AliasLauncher(SoftwareLauncher):
 
     ALIAS_API = {
         "alias2020.3-alias2021": {"min_version": "2020.3"},
-        "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.2"},
+        "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},
     }
 
     # This dictionary defines a list of executable template strings for each
