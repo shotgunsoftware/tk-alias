@@ -137,8 +137,9 @@ class AliasPublishVariantsPlugin(HookBaseClass):
                 "subject": "Alias Variant",
                 "content": variant_name,
                 "note_links": note_links,
-                "tasks": [item.context.task],
             }
+            if item.context.task:
+                data["tasks"] = [item.context.task]
 
             note = publisher.shotgun.create("Note", data)
             publisher.shotgun.upload_thumbnail(
