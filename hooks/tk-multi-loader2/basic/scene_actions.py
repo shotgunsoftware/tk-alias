@@ -111,7 +111,7 @@ class AliasActions(HookBaseClass):
                 {
                     "name": "texture_node",
                     "params": None,
-                    "caption": "Import into Scene",
+                    "caption": "Create Canvas",
                     "description": "This will import the item into the current universe.",
                 }
             )
