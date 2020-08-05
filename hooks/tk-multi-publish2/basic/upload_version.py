@@ -157,16 +157,16 @@ class UploadVersionPlugin(HookBaseClass):
                 output_directory,
             ) = self._translate_file_to_lmv(item)
             self.logger.debug("Uploading LMV file to Shotgun")
+            self.parent.shotgun.update(
+                entity_type="Version",
+                entity_id=item.properties["sg_version_data"]["id"],
+                data={"sg_translation_type": "LMV"},
+            )
             self.parent.shotgun.upload(
                 entity_type="Version",
                 entity_id=item.properties["sg_version_data"]["id"],
                 path=package_path,
                 field_name="sg_uploaded_movie",
-            )
-            self.parent.shotgun.update(
-                entity_type="Version",
-                entity_id=item.properties["sg_version_data"]["id"],
-                data={"sg_translation_type": "LMV"},
             )
             # if the Version thumbnail is empty, update it with the newly created thumbnail
             if not item.get_thumbnail_as_path() and thumbnail_path:
