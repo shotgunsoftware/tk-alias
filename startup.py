@@ -106,7 +106,8 @@ class AliasLauncher(SoftwareLauncher):
         # Flag -P (plugins list file)
         plugins_list_file = self._get_plugins_list_file(exec_path, tk_alias_codename)
         if plugins_list_file:
-            args += " -P {0}".format(plugins_list_file)
+            args += ' -P "{0}'.format(plugins_list_file)
+            args += '"'
 
         # Append executable folder to PATH environment variable
         sgtk.util.append_path_to_env_var("PATH", os.path.dirname(sys.executable))
