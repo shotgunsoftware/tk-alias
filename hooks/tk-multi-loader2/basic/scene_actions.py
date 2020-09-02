@@ -175,8 +175,10 @@ class AliasActions(HookBaseClass):
                 if not framework_aliastranslations:
                     raise Exception("Could not run alias translations")
 
-                tk_framework_aliastranslations = framework_aliastranslations.import_module(
-                    "tk_framework_aliastranslations"
+                tk_framework_aliastranslations = (
+                    framework_aliastranslations.import_module(
+                        "tk_framework_aliastranslations"
+                    )
                 )
                 alias_translator = tk_framework_aliastranslations.Translator(
                     source_path, output_path

@@ -96,8 +96,7 @@ class AliasMenuGenerator(object):
         # self._alias_menu.refresh()
 
     def clean_menu(self):
-        """
-        """
+        """"""
         self._alias_menu.clean()
 
     def _add_context_menu(self):

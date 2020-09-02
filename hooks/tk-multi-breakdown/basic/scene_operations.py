@@ -67,8 +67,10 @@ class SceneOperation(HookClass):
                         raise Exception("Could not run alias translations")
 
                     if not tk_framework_aliastranslations:
-                        tk_framework_aliastranslations = framework_aliastranslations.import_module(
-                            "tk_framework_aliastranslations"
+                        tk_framework_aliastranslations = (
+                            framework_aliastranslations.import_module(
+                                "tk_framework_aliastranslations"
+                            )
                         )
 
                     alias_translator = tk_framework_aliastranslations.Translator(
