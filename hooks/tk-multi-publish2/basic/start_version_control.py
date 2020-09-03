@@ -11,6 +11,8 @@
 import os
 import sgtk
 
+import alias_api
+
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
@@ -197,20 +199,19 @@ class AliasStartVersionControlPlugin(HookBaseClass):
         """
 
         publisher = self.parent
-        operations = publisher.engine.operations
 
         # get the path in a normalized state. no trailing separator, separators
         # are appropriate for current os, no double separators, etc.
         path = sgtk.util.ShotgunPath.normalize(_session_path())
 
         # ensure the session is saved in its current state
-        operations.save_file(operations.get_current_path())
+        alias_api.save_file()
 
         # get the path to a versioned copy of the file.
         version_path = publisher.util.get_version_path(path, "v001")
 
         # save to the new version path
-        operations.save_file(version_path)
+        alias_api.save_file_as(version_path)
         self.logger.info("A version number has been added to the Alias file...")
         self.logger.info("  Alias file path: %s" % (version_path,))
 
@@ -269,10 +270,8 @@ def _session_path():
     Return the path to the current session
     :return:
     """
-    engine = sgtk.platform.current_engine()
-    operations = engine.operations
 
-    return operations.get_current_path()
+    return alias_api.get_current_path()
 
 
 def _get_save_as_action():
@@ -282,10 +281,9 @@ def _get_save_as_action():
     """
 
     engine = sgtk.platform.current_engine()
-    operations = engine.operations
 
     # default save callback
-    callback = operations.open_save_as_dialog
+    callback = engine.open_save_as_dialog
 
     # if workfiles2 is configured, use that for file save
     if "tk-multi-workfiles2" in engine.apps:

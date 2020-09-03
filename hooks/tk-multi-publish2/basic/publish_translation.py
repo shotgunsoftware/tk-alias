@@ -10,8 +10,9 @@
 
 import os
 import sgtk
-import subprocess
 import time
+
+import alias_api
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -144,7 +145,6 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         """
 
         publisher = self.parent
-        operations = publisher.engine.operations
 
         publish_template_setting = settings.get("Publish Template").value
         if publish_template_setting:
@@ -160,7 +160,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
                 publish_template_setting
             )
             if publish_template and "wref" in publish_template.definition:
-                alias_references = operations.get_references()
+                alias_references = alias_api.get_references()
                 if alias_references:
                     return {"accepted": True, "enabled": False, "checked": False}
 
@@ -285,7 +285,6 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         """
 
         publisher = self.parent
-        operations = publisher.engine.operations
 
         # get the path to create and publish
         publish_path = self.get_publish_path(settings, item)
@@ -457,10 +456,7 @@ def _session_path():
     :return:
     """
 
-    engine = sgtk.platform.current_engine()
-    operations = engine.operations
-
-    return operations.get_current_path()
+    return alias_api.get_current_path()
 
 
 def _get_save_as_action():
@@ -469,10 +465,9 @@ def _get_save_as_action():
     """
 
     engine = sgtk.platform.current_engine()
-    operations = engine.operations
 
     # default save callback
-    callback = operations.open_save_as_dialog
+    callback = engine.open_save_as_dialog
 
     # if workfiles2 is configured, use that for file save
     if "tk-multi-workfiles2" in engine.apps:

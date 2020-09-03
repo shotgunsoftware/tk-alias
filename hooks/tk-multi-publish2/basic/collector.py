@@ -11,6 +11,7 @@
 import os
 
 import sgtk
+import alias_api
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -49,10 +50,9 @@ class AliasSessionCollector(HookBaseClass):
         :param parent_item: Root item instance
         """
         publisher = self.parent
-        operations = publisher.engine.operations
 
         # get the path to the current file
-        path = operations.get_current_path()
+        path = alias_api.get_current_path()
 
         # determine the display name for the item
         if path:

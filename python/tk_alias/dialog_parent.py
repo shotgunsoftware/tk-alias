@@ -259,4 +259,4 @@ class DialogParent(object):
             # for all Toolkit dialogs
             return self.get_proxy_window()
 
-        return self._engine.operations.get_parent_window()
+        return self._engine.get_parent_window()

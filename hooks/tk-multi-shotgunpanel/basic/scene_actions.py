@@ -12,12 +12,18 @@
 Hook that loads defines all the available actions, broken down by publish type.
 """
 
+import os
 import sgtk
+import alias_api
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasActions(HookBaseClass):
+    """
+    Shotgun Panel Actions for Alias
+    """
+
     def generate_actions(self, sg_data, actions, ui_area):
         """
         Returns a list of action instances for a particular publish.
@@ -55,8 +61,8 @@ class AliasActions(HookBaseClass):
         :param ui_area: String denoting the UI Area (see above).
         :returns List of dictionaries, each with keys name, params, caption and description
         """
-        app = self.parent
-        app.log_debug(
+
+        self.logger.debug(
             "Generate actions called for UI element %s. "
             "Actions: %s. Publish Data: %s" % (ui_area, actions, sg_data)
         )
@@ -91,6 +97,16 @@ class AliasActions(HookBaseClass):
                 }
             )
 
+        if "import_as_reference" in actions:
+            action_instances.append(
+                {
+                    "name": "import_as_reference",
+                    "params": None,
+                    "caption": "Import as Reference",
+                    "description": "This will import the item as a reference into the current universe.",
+                }
+            )
+
         if "texture_node" in actions:
             action_instances.append(
                 {
@@ -98,6 +114,16 @@ class AliasActions(HookBaseClass):
                     "params": None,
                     "caption": "Create Canvas",
                     "description": "This will import the item into the current universe.",
+                }
+            )
+
+        if "import_subdiv" in actions and hasattr(alias_api, "import_subdivision"):
+            action_instances.append(
+                {
+                    "name": "import_subdiv",
+                    "params": None,
+                    "caption": "Import Subdiv file into Scene",
+                    "description": "This will import the subdiv item into the current universe.",
                 }
             )
 
@@ -113,26 +139,29 @@ class AliasActions(HookBaseClass):
         :param sg_data: Shotgun data dictionary with all the standard publish fields.
         :returns: No return value expected.
         """
-        app = self.parent
-        app.log_debug(
+
+        self.logger.debug(
             "Execute action called for action %s. "
             "Parameters: %s. Shotgun Data: %s" % (name, params, sg_data)
         )
 
-        engine = self.parent.engine
-        operations = engine.operations
+        # resolve path
+        path = self.get_publish_path(sg_data)
 
         if name == "reference":
-            path = self.get_publish_path(sg_data)
-            operations.create_reference(path)
+            self._create_reference(path)
 
         elif name == "import":
-            path = self.get_publish_path(sg_data)
-            operations.import_file(path, create_stage=False)
+            self._import_file(path)
+
+        elif name == "import_as_reference":
+            self._import_file_as_reference(path)
 
         elif name == "texture_node":
-            path = self.get_publish_path(sg_data)
-            operations.create_texture_node(path)
+            self._create_texture_node(path)
+
+        elif name == "import_subdiv":
+            self._import_subdivision(path)
 
         else:
             try:
@@ -171,3 +200,80 @@ class AliasActions(HookBaseClass):
             sg_data = single_action["sg_data"]
             params = single_action["params"]
             self.execute_action(name, params, sg_data)
+
+    def _create_reference(self, path):
+        """
+        Create an Alias reference.
+
+        :param path: Path to the file.
+        """
+        if not os.path.exists(path):
+            raise Exception("File not found on disk - '%s'" % path)
+        alias_api.create_reference(path)
+
+    def _import_file(self, path):
+        """
+        Import the file into the current Alias session.
+
+        :param path: Path to file.
+        """
+        if not os.path.exists(path):
+            raise Exception("File not found on disk - '%s'" % path)
+        alias_api.import_file(path)
+
+    def _import_file_as_reference(self, path):
+        """
+        Import the file as an Alias reference, converting it on the fly as wref.
+
+        :param path: Path to the file.
+        """
+
+        reference_template = self.parent.engine.get_template("reference_template")
+        source_template = self.sgtk.template_from_path(path)
+
+        # get the path to the reference, using the templates if it's possible otherwise using the source path
+        # location
+        if reference_template and source_template:
+            template_fields = source_template.get_fields(path)
+            template_fields["alias.extension"] = os.path.splitext(path)[-1][1:]
+            reference_path = reference_template.apply_fields(template_fields)
+        else:
+            output_path, output_ext = os.path.splitext(path)
+            reference_path = "{output_path}_{output_ext}.wref".format(
+                output_path=output_path, output_ext=output_ext[1:]
+            )
+
+        # if the reference file doesn't exist on disk yet, run the translation
+        if not os.path.exists(reference_path):
+
+            framework = self.load_framework("tk-framework-aliastranslations_v0.x.x")
+            if not framework:
+                raise Exception("Couldn't find tk-framework-aliastranslations_v0.x.x")
+            tk_framework_aliastranslations = framework.import_module(
+                "tk_framework_aliastranslations"
+            )
+
+            translator = tk_framework_aliastranslations.Translator(path, reference_path)
+            translator.execute()
+
+        alias_api.create_reference(reference_path)
+
+    def _create_texture_node(self, path):
+        """
+        Import an image as Canvas in Alias
+
+        :param path:  Path to the image.
+        """
+        if not os.path.exists(path):
+            raise Exception("File not found on disk - '%s'" % path)
+        alias_api.create_texture_node(path)
+
+    def _import_subdivision(self, path):
+        """
+        Import a file as subdivision in the current Alias session.
+
+        :param path: Path to the file.
+        """
+        if not os.path.exists(path):
+            raise Exception("File not found on disk - '%s'" % path)
+        alias_api.import_subdivision(path)
