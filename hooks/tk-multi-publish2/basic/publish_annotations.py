@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import sgtk
+import alias_api
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -74,10 +75,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
-        publisher = self.parent
-        operations = publisher.engine.operations
-
-        annotations = operations.get_annotations()
+        annotations = alias_api.get_annotation_locators()
         if not annotations:
             self.logger.debug("There are not annotations to export")
             return {"accepted": False}
@@ -110,9 +108,6 @@ class PublishAnnotationsPlugin(HookBaseClass):
 
         self.logger.info("Publishing annotations")
 
-        publisher = self.parent
-        operations = publisher.engine.operations
-
         # Links, the note will be attached to published file by default
         # if a version is created the note will be attached to this too
         publish_data = item.properties["sg_publish_data"]
@@ -122,7 +117,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
         if version_data is not None:
             note_links.append(version_data)
 
-        annotations = operations.get_annotations()
+        annotations = alias_api.get_annotation_locators()
 
         batch_data = []
         for annotation in annotations:

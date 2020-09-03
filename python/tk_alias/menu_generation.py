@@ -21,6 +21,8 @@ class AliasMenuGenerator(object):
     Menu handling for Alias.
     """
 
+    MENU_NAME = "al_shotgun"
+
     def __init__(self, engine):
         """
         Initializes a new menu generator.
@@ -29,11 +31,14 @@ class AliasMenuGenerator(object):
         :type engine: :class:`tank.platform.Engine`
         """
         self._engine = engine
-        self._alias_menu = alias_api.ShotgunMenu()
+        self._alias_menu = alias_api.Menu(self.MENU_NAME)
 
     def create_menu(self, clean_menu=True):
         """
-        :return:
+        Render the entire Shotgun menu.
+
+        :param clean_menu:  If clean_menu is set to true, the previous Shotgun menu will be cleaned before creating the
+                            new one. This is useful in the case you're rebuilding the menu after context switching.
         """
 
         # First, ensure that the Shotgun menu inside Alias is empty.
@@ -93,16 +98,17 @@ class AliasMenuGenerator(object):
         # add all the apps to the main menu
         self._add_apps_to_menu(commands_by_app)
 
-        # self._alias_menu.refresh()
-
     def clean_menu(self):
         """
+        Clean the Shotgun menu in Alias by removing all its entries.
         """
         self._alias_menu.clean()
 
     def _add_context_menu(self):
         """
-        :return:
+        Adds a context menu which displays the current context
+
+        :return:  An :class:`alias_api.MenuItem` instance representing the context menu.
         """
         ctx = self._engine.context
         ctx_name = six.ensure_str(str(self._engine.context))
@@ -181,6 +187,9 @@ class AliasMenuGenerator(object):
                 self._engine.logger.error("Failed to launch '%s'!", cmd)
 
     def refresh(self):
+        """
+        Refresh the menu by forcing Alias to rebuild of its menus.
+        """
         self._alias_menu.refresh()
 
 

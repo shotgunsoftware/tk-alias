@@ -17,11 +17,6 @@ configuration:
         description: Controls whether debug messages should be emitted to the logger
         default_value: false
 
-    file_usage_hook:
-        type: hook
-        description: Hook to customize behaviour on file change and file close.
-        default_value: default_file_usage
-
     menu_favourites:
         type: list
         description: "Controls the favourites section on the main menu. This is a list
@@ -51,11 +46,6 @@ configuration:
             items:
                 name: { type: str }
                 app_instance: { type: str }
-
-    translator_info:
-        type: dict
-        description: Translators info.
-        default_value: {}
 
     reference_template:
         type: template

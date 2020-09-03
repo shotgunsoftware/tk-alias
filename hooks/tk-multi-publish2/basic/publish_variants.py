@@ -10,6 +10,8 @@
 
 import sgtk
 
+import alias_api
+
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
@@ -75,22 +77,12 @@ class AliasPublishVariantsPlugin(HookBaseClass):
 
         :returns: dictionary with boolean keys accepted, required and enabled
         """
-        publisher = self.parent
-        engine = publisher.engine
-        operations = engine.operations
 
-        accepted = True
+        if not alias_api.has_variants():
+            self.logger.debug("There are not variants to export")
+            return {"accepted": False}
 
-        if not operations.has_variants():
-            engine.logger.debug("There are not variants to export")
-            accepted = False
-
-        return {
-            "accepted": accepted,
-            "visible": True,
-            "checked": False,
-            "enabled": True,
-        }
+        return {"accepted": True, "checked": False}
 
     def validate(self, settings, item):
         """
@@ -118,8 +110,6 @@ class AliasPublishVariantsPlugin(HookBaseClass):
         self.logger.info("Publishing variants")
 
         publisher = self.parent
-        engine = publisher.engine
-        operations = engine.operations
         version_data = item.properties.get("sg_version_data")
         publish_data = item.properties["sg_publish_data"]
 
@@ -130,12 +120,12 @@ class AliasPublishVariantsPlugin(HookBaseClass):
         if version_data is not None:
             note_links.append(version_data)
 
-        for variant_name, variant_path in operations.get_variants():
+        for variant in alias_api.get_variants():
             data = {
                 "project": item.context.project,
                 "user": item.context.user,
                 "subject": "Alias Variant",
-                "content": variant_name,
+                "content": variant.name,
                 "note_links": note_links,
             }
             if item.context.task:
@@ -143,13 +133,13 @@ class AliasPublishVariantsPlugin(HookBaseClass):
 
             note = publisher.shotgun.create("Note", data)
             publisher.shotgun.upload_thumbnail(
-                entity_type="Note", entity_id=note.get("id"), path=variant_path
+                entity_type="Note", entity_id=note.get("id"), path=variant.path
             )
 
             publisher.shotgun.upload(
                 entity_type="Note",
                 entity_id=note.get("id"),
-                path=variant_path,
+                path=variant.path,
                 field_name="attachments",
                 display_name="Variant Image",
             )

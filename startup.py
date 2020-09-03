@@ -60,6 +60,11 @@ class AliasLauncher(SoftwareLauncher):
         },
     }
 
+    ALIAS_API = {
+        "alias2020.3-alias2021": {"min_version": "2020.3"},
+        "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},
+    }
+
     # This dictionary defines a list of executable template strings for each
     # of the supported operating systems. The templates are used for both
     # globbing and regex matches by replacing the named format placeholders
@@ -116,6 +121,9 @@ class AliasLauncher(SoftwareLauncher):
         startup_path = os.path.join(self.disk_location, "startup")
         sgtk.util.append_path_to_env_var("PYTHONPATH", startup_path)
 
+        # setup the PYTHONPATH according to Alias version
+        self.__setup_pythonpath(tk_alias_codename, exec_path)
+
         # We're going to append all of this Python process's sys.path to the
         # PYTHONPATH environment variable. This will ensure that we have access
         # to all libraries available in this process. We're appending instead of
@@ -155,6 +163,40 @@ class AliasLauncher(SoftwareLauncher):
 
     ##########################################################################################
     # private methods
+
+    def __setup_pythonpath(self, alias_code_name, alias_exec_path):
+        """
+        Setup the PYTHONPATH to access Alias API according to Alias and Python versions
+        :return:
+        """
+
+        alias_code_name = alias_code_name or self.FALLBACK_CODE_NAME
+        alias_release_version = self._get_release_version(
+            alias_exec_path, alias_code_name
+        )
+        python_major_version = self._get_python_version()
+
+        api_folder_name = None
+        for api_folder in self.ALIAS_API:
+            min_version = self.ALIAS_API[api_folder].get("min_version")
+            max_version = self.ALIAS_API[api_folder].get("max_version")
+            if min_version and alias_release_version < min_version:
+                continue
+            if max_version and alias_release_version > max_version:
+                continue
+            api_folder_name = api_folder
+
+        if not api_folder_name:
+            return
+
+        python_path = os.path.join(
+            self.disk_location,
+            "api",
+            "python{major_version}".format(major_version=python_major_version),
+            api_folder_name,
+        )
+
+        sgtk.util.append_path_to_env_var("PYTHONPATH", python_path)
 
     def _icon_from_executable(self, code_name):
         """
