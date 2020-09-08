@@ -111,7 +111,8 @@ class AliasLauncher(SoftwareLauncher):
         # Flag -P (plugins list file)
         plugins_list_file = self._get_plugins_list_file(exec_path, tk_alias_codename)
         if plugins_list_file:
-            args += " -P {0}".format(plugins_list_file)
+            args += ' -P "{0}'.format(plugins_list_file)
+            args += '"'
 
         # Append executable folder to PATH environment variable
         sgtk.util.append_path_to_env_var("PATH", os.path.dirname(sys.executable))
@@ -290,8 +291,9 @@ class AliasLauncher(SoftwareLauncher):
         # Get release version
         release_version = self._get_release_version(exec_path, code_name)
 
-        # Set plugins list file
-        plugins_list_file = os.path.join(plugins_directory, "plugins.lst")
+        # Set plugins list file to the user TEMP directory
+        plugin_temp_file_directory = os.environ["TEMP"]
+        plugins_list_file = os.path.join(plugin_temp_file_directory, "plugins.lst")
         plugins_number = 0
 
         with open(plugins_list_file, "w") as plf:
