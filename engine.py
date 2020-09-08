@@ -12,6 +12,7 @@ import os
 import sys
 
 import sgtk
+import alias_api
 
 
 class AliasEngine(sgtk.platform.Engine):
@@ -31,12 +32,9 @@ class AliasEngine(sgtk.platform.Engine):
         self._dialog_parent = None
 
         self._menu_generator = None
-        self.operations = None
         self._contexts_by_stage_name = {}
         self._contexts_by_path = {}
-        self.running_operation = False
-        self.current_operation = None
-        self.parent_action = None
+        self._stop_watching = False
 
         if not hasattr(sys, "argv"):
             sys.argv = [""]
@@ -50,14 +48,8 @@ class AliasEngine(sgtk.platform.Engine):
         :param old_context: The previous context.
         :param new_context: The current context.
         """
+
         self.logger.debug("%s: Post context change...", self)
-        if self.context_change_allowed:
-            if (
-                not self.running_operation
-                and self.current_operation == "prepare_new"
-                and self.parent_action == "new_file"
-            ):
-                self.save_context_for_stage_name(ctx=new_context)
 
         # Rebuild the menu only if we change of context
         self._menu_generator.create_menu()
@@ -68,6 +60,7 @@ class AliasEngine(sgtk.platform.Engine):
         Sets up the engine into an operational state. This method called before
         any apps are loaded.
         """
+
         self.logger.debug("%s: Initializing..." % (self,))
 
         # unicode characters returned by the shotgun api need to be converted
@@ -110,9 +103,6 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_bindir = os.path.dirname(self.alias_execpath)
         self.alias_codename = os.getenv("TK_ALIAS_CODENAME", "autostudio")
 
-        # init operations
-        self.operations = self._tk_alias.AliasOperations(engine=self)
-
         # Be sure the current version is supported
         alias_version = int(os.getenv("TK_ALIAS_VERSION", None))
         if not alias_version:
@@ -130,9 +120,7 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.operations.get_parent_window(),
-                "Warning - Shotgun Pipeline Toolkit!",
-                msg,
+                self.get_parent_window(), "Warning - Shotgun Pipeline Toolkit!", msg,
             )
 
     def post_app_init(self):
@@ -211,76 +199,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
         return True
 
-    def on_plugin_init(self):
-        """Alias plugin has been initialized."""
-        self.logger.debug("Plugin initialized signal received")
-
-        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
-        if path:
-            self.operations.open_file(path)
-
-    def on_plugin_exit(self):
-        """Alias plugin has been finished."""
-        self.operations.current_file_closed()
-
     def _get_dialog_parent(self):
-        """ Get Alias dialog parent"""
+        """
+        Get Alias dialog parent
+        """
         return self._dialog_parent.get_dialog_parent()
-
-    def on_stage_selected(self):
-        """An stage was selected."""
-        path = self.operations.get_current_path()
-        name = self.operations.get_current_stage()
-        current_context = self.context
-        current_operation = self.current_operation
-        parent_action = self.parent_action
-        running_operation = self.running_operation
-
-        self.logger.debug("-" * 50)
-        self.logger.debug("Stage selected")
-        self.logger.debug(
-            "stage name: {}, path: {}, current_context: {}".format(
-                name, path, current_context
-            )
-        )
-        self.logger.debug(
-            "current_operation: {}, parent_action: {}, running_operation: {}".format(
-                current_operation, parent_action, running_operation
-            )
-        )
-        self.logger.debug("-" * 50)
-
-        if self.running_operation:
-            return
-
-        # No name and not path
-        if not name and not path:
-            return
-
-        # Known path
-        if path and path in self._contexts_by_path:
-            self.change_context(self._contexts_by_path[path])
-        # Known stage
-        elif name and name in self._contexts_by_stage_name:
-            self.change_context(self._contexts_by_stage_name[name])
-        else:
-            self.change_context(self._get_project_context())
-
-    def save_context_for_path(self, path=None, ctx=None):
-        path = path or self.operations.get_current_path()
-
-        if path:
-            self._contexts_by_path[path] = ctx or self.context
-
-    def save_context_for_stage_name(self, name=None, ctx=None):
-        name = name or self.operations.get_current_stage()
-        if name:
-            self._contexts_by_stage_name[name] = ctx or self.context
-
-    def _get_project_context(self):
-        return self.sgtk.context_from_entity(
-            self.context.project["type"], self.context.project["id"]
-        )
 
     def _run_app_instance_commands(self):
         """
@@ -358,6 +281,130 @@ class AliasEngine(sgtk.platform.Engine):
         # finally, run the commands
         for command in commands_to_run:
             command()
+
+    def save_context_for_stage(self, context=None):
+        """
+        Save the context associated to the current Alias stage.
+        We need to save and restore the context because of the different stages the user can use.
+        As the Stages can change their name, we need to store the context for both the stage name and the stage path.
+
+        :param context:  We can specify a context to associate to the current stage. If no one is supplied, we will use
+                         the current one.
+        """
+
+        if not context:
+            context = self.context
+
+        current_stage = alias_api.get_current_stage()
+        if current_stage.path:
+            self._contexts_by_path[current_stage.path] = context
+        self._contexts_by_stage_name[current_stage.name] = context
+
+    #####################################################################################
+    # Alias Callbacks
+
+    def on_plugin_init(self):
+        """
+        A callback happening when the Alias Shotgun plugin is initialized. It happens once and only once when Alias
+        starts.
+        """
+
+        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
+        if path:
+            alias_api.open_file(path)
+
+    def on_stage_selected(self):
+        """
+        A callback happening when an Alias stage is selected.
+        """
+
+        current_stage = alias_api.get_current_stage()
+
+        # sometimes, we need to stop switching the context on stage selection as some Alias operations need to change
+        # current stage but this action must not affect Shotgun Context switch behaviour
+        if self._stop_watching:
+            return
+
+        if not current_stage:
+            return
+        if not current_stage.name and not current_stage.path:
+            return
+
+        # try to get the context from the file path
+        if current_stage.path and current_stage.path in self._contexts_by_path:
+            self.change_context(self._contexts_by_path[current_stage.path])
+        # otherwise, try to get the context from the stage name
+        elif current_stage.name and current_stage.name in self._contexts_by_stage_name:
+            self.change_context(self._contexts_by_stage_name[current_stage.name])
+        # finally, use the project context as the default one
+        else:
+            project_context = self.sgtk.context_from_entity_dictionary(
+                self.context.project
+            )
+            self.change_context(project_context)
+
+    #####################################################################################
+    # QT Utils
+
+    @staticmethod
+    def get_parent_window():
+        """
+        Return current active window as parent
+        """
+        from sgtk.platform.qt import QtGui
+
+        return QtGui.QApplication.activeWindow()
+
+    def open_save_as_dialog(self):
+        """
+        Launch a Qt file browser to select a file, then save the supplied
+        project to that path.
+        """
+
+        from sgtk.platform.qt import QtGui
+
+        # Alias doesn't appear to have a "save as" dialog accessible via
+        # python. so open our own Qt file dialog.
+        file_dialog = QtGui.QFileDialog(
+            parent=self.get_parent_window(),
+            caption="Save As",
+            directory=os.path.expanduser("~"),
+            filter="Alias file (*.wire)",
+        )
+        file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
+        file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
+        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
+        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
+        if not file_dialog.exec_():
+            return
+        path = file_dialog.selectedFiles()[0]
+
+        if os.path.splitext(path)[-1] != ".wire":
+            path = "{0}.wire".format(path)
+
+        if path:
+            alias_api.save_file_as(path)
+
+    def open_delete_stages_dialog(self, new_file=False):
+        """
+        Launch a QT prompt dialog to ask the user if he wants to delete all the existing stages or keep them when
+        opening a new file.
+        """
+
+        from sgtk.platform.qt import QtGui
+
+        if new_file:
+            message = "DELETE all objects, shaders, views and actions in all existing Stage before Opening a New File?"
+        else:
+            message = "DELETE all objects, shaders, views and actions in all existing Stage before Opening this File?"
+        message_type = (
+            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
+        )
+        answer = QtGui.QMessageBox.question(
+            self.get_parent_window(), "Open", message, message_type
+        )
+
+        return answer
 
     #####################################################################################
     # Logging
