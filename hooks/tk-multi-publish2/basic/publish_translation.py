@@ -344,6 +344,18 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             if not thumbnail_shared:
                 self.logger.debug("Thumbnail couln't be shared")
 
+    def finalize(self, settings, item):
+        """
+        Execute the finalization pass. This pass executes once all the publish
+        tasks have completed, and can for example be used to version up files.
+
+        :param settings: Dictionary of Settings. The keys are strings, matching
+            the keys returned in the settings property. The values are `Setting`
+            instances.
+        :param item: Item to process
+        """
+        self.logger.info("Translation(s) published successfully")
+
     def get_publish_template(self, settings, item):
         """
         Get a publish template for the supplied settings and item.
