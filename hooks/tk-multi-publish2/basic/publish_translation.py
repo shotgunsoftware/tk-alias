@@ -354,7 +354,16 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             instances.
         :param item: Item to process
         """
-        self.logger.info("Translation(s) published successfully")
+        self.logger.info(
+            "Translation published successfully",
+            extra={
+                "action_show_in_shotgun": {
+                    "label": "Show Publish",
+                    "tooltip": "Reveal the published file in Shotgun.",
+                    "entity": item.properties["sg_publish_data"],
+                }
+            },
+        )
 
     def get_publish_template(self, settings, item):
         """
