@@ -175,7 +175,7 @@ class AliasActions(HookBaseClass):
             self._import_file(path)
 
         elif name == "import_as_reference":
-            self._import_file_as_reference(path)
+            self._import_file_as_reference(path, sg_publish_data)
 
         elif name == "texture_node":
             self._create_texture_node(path)
@@ -203,14 +203,27 @@ class AliasActions(HookBaseClass):
             raise Exception("File not found on disk - '%s'" % path)
         alias_api.import_file(path)
 
-    def _import_file_as_reference(self, path):
+    def _import_file_as_reference(self, path, sg_publish_data):
         """
         Import the file as an Alias reference, converting it on the fly as wref.
 
         :param path: Path to the file.
         """
 
-        reference_template = self.parent.engine.get_template("reference_template")
+        # we need to build a context object from the publish_data in order to get the right reference_template to use
+        # according to the published file task
+        reference_template = None
+        if "task" in sg_publish_data.keys():
+            ctx = self.sgtk.context_from_entity_dictionary(sg_publish_data["task"])
+            if ctx:
+                env = sgtk.platform.engine.get_environment_from_context(self.sgtk, ctx)
+                engine_settings = env.get_engine_settings(self.parent.engine.name)
+                reference_template_name = engine_settings.get("reference_template")
+                if reference_template_name:
+                    reference_template = self.parent.engine.get_template_by_name(
+                        reference_template_name
+                    )
+
         source_template = self.sgtk.template_from_path(path)
 
         # get the path to the reference, using the templates if it's possible otherwise using the source path
