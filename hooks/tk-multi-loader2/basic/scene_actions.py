@@ -213,7 +213,7 @@ class AliasActions(HookBaseClass):
         # we need to build a context object from the publish_data in order to get the right reference_template to use
         # according to the published file task
         reference_template = None
-        if "task" in sg_publish_data.keys():
+        if "task" in sg_publish_data.keys() and sg_publish_data["task"]:
             ctx = self.sgtk.context_from_entity_dictionary(sg_publish_data["task"])
             if ctx:
                 env = sgtk.platform.engine.get_environment_from_context(self.sgtk, ctx)
