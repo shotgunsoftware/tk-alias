@@ -210,20 +210,7 @@ class AliasActions(HookBaseClass):
         :param path: Path to the file.
         """
 
-        # we need to build a context object from the publish_data in order to get the right reference_template to use
-        # according to the published file task
-        reference_template = None
-        if "task" in sg_publish_data.keys() and sg_publish_data["task"]:
-            ctx = self.sgtk.context_from_entity_dictionary(sg_publish_data["task"])
-            if ctx:
-                env = sgtk.platform.engine.get_environment_from_context(self.sgtk, ctx)
-                engine_settings = env.get_engine_settings(self.parent.engine.name)
-                reference_template_name = engine_settings.get("reference_template")
-                if reference_template_name:
-                    reference_template = self.parent.engine.get_template_by_name(
-                        reference_template_name
-                    )
-
+        reference_template = self._get_reference_template(sg_publish_data)
         source_template = self.sgtk.template_from_path(path)
 
         # get the path to the reference, using the templates if it's possible otherwise using the source path
@@ -272,3 +259,28 @@ class AliasActions(HookBaseClass):
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
         alias_api.import_subdivision(path)
+
+    def _get_reference_template(self, sg_publish_data):
+        """
+        :return:
+        """
+
+        # first of all, we need to determine if the file we're trying to import lives in the current project or in
+        # another one
+        in_current_project = (sg_publish_data["project"]["id"] == self.parent.context.project["id"])
+        self.logger.info("[DEBUG BARBARA] in_current_project: {}".format(in_current_project))
+
+        # we need to build a context object from the publish_data in order to get the right reference_template to use
+        # according to the published file task
+        reference_template = None
+        if "task" in sg_publish_data.keys() and sg_publish_data["task"]:
+            ctx = self.sgtk.context_from_entity_dictionary(sg_publish_data["task"])
+            if ctx:
+                env = sgtk.platform.engine.get_environment_from_context(self.sgtk, ctx)
+                engine_settings = env.get_engine_settings(self.parent.engine.name)
+                reference_template_name = engine_settings.get("reference_template")
+                if reference_template_name:
+                    reference_template = self.parent.engine.get_template_by_name(
+                        reference_template_name
+                    )
+        return reference_template
