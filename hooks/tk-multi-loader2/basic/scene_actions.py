@@ -305,7 +305,9 @@ class AliasActions(HookBaseClass):
 
         # first of all, we need to determine if the file we're trying to import lives in the current project or in
         # another one
-        in_current_project = (sg_publish_data["project"]["id"] == self.parent.context.project["id"])
+        in_current_project = (
+            sg_publish_data["project"]["id"] == self.parent.context.project["id"]
+        )
 
         if in_current_project:
             return self.parent.sgtk
@@ -314,10 +316,14 @@ class AliasActions(HookBaseClass):
         # project in order to get the right configuration settings
         else:
 
-            pc_local_path = self.__get_pipeline_configuration_local_path(sg_publish_data["project"]["id"])
+            pc_local_path = self.__get_pipeline_configuration_local_path(
+                sg_publish_data["project"]["id"]
+            )
             if not pc_local_path:
                 self.logger.warning(
-                    "Couldn't get tank instance for project {}.".format(sg_publish_data["project"]["id"])
+                    "Couldn't get tank instance for project {}.".format(
+                        sg_publish_data["project"]["id"]
+                    )
                 )
                 return None
 
@@ -338,10 +344,16 @@ class AliasActions(HookBaseClass):
         # here, we are going to use the default plugin id "basic.*" to find the pipeline configurations
         mgr = sgtk.bootstrap.ToolkitManager()
         mgr.plugin_id = sgtk.commands.constants.DEFAULT_PLUGIN_ID
-        pipeline_configurations = mgr.get_pipeline_configurations({"type": "Project", "id": project_id})
+        pipeline_configurations = mgr.get_pipeline_configurations(
+            {"type": "Project", "id": project_id}
+        )
 
         if not pipeline_configurations:
-            self.logger.warning("Couldn't retrieve any pipeline configuration linked to project {}".format(project_id))
+            self.logger.warning(
+                "Couldn't retrieve any pipeline configuration linked to project {}".format(
+                    project_id
+                )
+            )
             return
 
         if len(pipeline_configurations) == 1:
@@ -354,10 +366,14 @@ class AliasActions(HookBaseClass):
             # 2- if one pipeline configuration is named Primary and linked to this project, use it
             # 3- reject all the other cases
 
-            pipeline_config = self.__get_project_pipeline_configuration(pipeline_configurations, project_id)
+            pipeline_config = self.__get_project_pipeline_configuration(
+                pipeline_configurations, project_id
+            )
 
             if not pipeline_config:
-                pipeline_config = self.__get_primary_pipeline_configuration(pipeline_configurations, project_id)
+                pipeline_config = self.__get_primary_pipeline_configuration(
+                    pipeline_configurations, project_id
+                )
 
         if not pipeline_config:
             self.logger.warning(
@@ -372,7 +388,7 @@ class AliasActions(HookBaseClass):
             project_id,
             plugin_id,
             pipeline_config["id"],
-            LocalFileStorageManager.CACHE
+            LocalFileStorageManager.CACHE,
         )
 
         return os.path.join(config_local_path, "cfg")
@@ -409,7 +425,10 @@ class AliasActions(HookBaseClass):
         """
 
         for pc in pipeline_configurations:
-            if pc["project_id"] == project_id and pc["name"] == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME:
+            if (
+                pc["project_id"] == project_id
+                and pc["name"] == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME
+            ):
                 return pc
 
         return None
