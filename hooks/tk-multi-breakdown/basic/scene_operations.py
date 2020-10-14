@@ -42,8 +42,6 @@ class BreakdownSceneOperation(HookClass):
 
         refs = []
 
-        # reference_template = self.parent.engine.get_template("reference_template")
-
         # only deal with references which match a template
         for r in alias_api.get_references():
 
