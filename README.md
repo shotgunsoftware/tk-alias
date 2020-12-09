@@ -21,4 +21,4 @@ click here: https://support.shotgunsoftware.com/entries/95441247.
 
 ## Have a Question?
 
-Don't hesitate to contact us! You can find us on support@shotgunsoftware.com
+Don't hesitate to contact us! You can find us on https://support.shotgunsoftware.com
