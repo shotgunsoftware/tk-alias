@@ -19,6 +19,13 @@ class UploadVersionPlugin(HookBaseClass):
     Plugin for sending quicktimes and images to shotgun for review.
     """
 
+    # Translation workers are responsible for performing the LMV translation.
+    # 'local': a local translator will be used, determined based on file type and current engine
+    # 'framework':  the tk-framework-lmv translator will be used (default)
+    TRANSLATION_WORKER_LOCAL = "local"
+    TRANSLATION_WORKER_FRAMEWORK = "framework"
+    TRANSLATION_WORKERS = [TRANSLATION_WORKER_LOCAL, TRANSLATION_WORKER_FRAMEWORK]
+
     @property
     def icon(self):
         """
@@ -64,6 +71,11 @@ class UploadVersionPlugin(HookBaseClass):
                 "type": "bool",
                 "default": False,
                 "description": "Upload content to Shotgun?",
+            },
+            "Translation Worker": {
+                "type": "str",
+                "default": self.TRANSLATION_WORKER_FRAMEWORK,
+                "description": "Specify the worker to use to perform LMV translation.",
             },
         }
 
@@ -133,6 +145,16 @@ class UploadVersionPlugin(HookBaseClass):
             self.logger.error("Could not run LMV translation: missing ATF framework")
             return False
 
+        translation_worker = settings.get("Translation Worker").value
+        if translation_worker not in self.TRANSLATION_WORKERS:
+            self.logger.error(
+                "Unknown Translation Worker '{worker}'. Translation worker must be one of {workers}".format(
+                    worker=translation_worker,
+                    workers=", ".join(self.TRANSLATION_WORKERS),
+                )
+            )
+            return False
+
         return True
 
     def publish(self, settings, item):
@@ -149,14 +171,18 @@ class UploadVersionPlugin(HookBaseClass):
 
         # generate the Version content: LMV file or simple 2D thumbnail
         if settings.get("3D Version").value is True:
+            use_framework_translator = (
+                settings.get("Translation Worker").value
+                == self.TRANSLATION_WORKER_FRAMEWORK
+            )
             self.logger.debug("Creating LMV files from source file")
             # translate the file to lmv and upload the corresponding package to the Version
             (
                 package_path,
                 thumbnail_path,
                 output_directory,
-            ) = self._translate_file_to_lmv(item)
-            self.logger.debug("Uploading LMV file to Shotgun")
+            ) = self._translate_file_to_lmv(item, use_framework_translator)
+            self.logger.info("Uploading LMV files to Shotgun")
             self.parent.shotgun.update(
                 entity_type="Version",
                 entity_id=item.properties["sg_version_data"]["id"],
@@ -190,9 +216,16 @@ class UploadVersionPlugin(HookBaseClass):
                     field_name="sg_uploaded_movie",
                 )
             else:
+                use_framework_translator = (
+                    settings.get("Translation Worker").value
+                    == self.TRANSLATION_WORKER_FRAMEWORK
+                )
                 self.logger.debug("Converting file to LMV to extract thumbnails")
-                output_directory, thumbnail_path = self._get_thumbnail_from_lmv(item)
+                output_directory, thumbnail_path = self._get_thumbnail_from_lmv(
+                    item, use_framework_translator
+                )
                 if thumbnail_path:
+                    self.logger.info("Uploading LMV thumbnail file to Shotgun")
                     self.parent.shotgun.upload(
                         entity_type="Version",
                         entity_id=item.properties["sg_version_data"]["id"],
@@ -207,11 +240,12 @@ class UploadVersionPlugin(HookBaseClass):
                 self.logger.debug("Deleting temporary folder")
                 shutil.rmtree(output_directory)
 
-    def _translate_file_to_lmv(self, item):
+    def _translate_file_to_lmv(self, item, use_framework_translator):
         """
         Translate the current Alias file as an LMV package in order to upload it to Shotgun as a 3D Version
 
         :param item: Item to process
+        :param use_framework_translator: True will force the translator shipped with tk-framework-lmv to be used
         :returns:
             - The path to the LMV zip file
             - The path to the LMV thumbnail
@@ -224,7 +258,7 @@ class UploadVersionPlugin(HookBaseClass):
         # translate the file to lmv
         lmv_translator = translator.LMVTranslator(item.properties.path)
         self.logger.info("Converting file to LMV")
-        lmv_translator.translate()
+        lmv_translator.translate(use_framework_translator=use_framework_translator)
 
         # package it up
         self.logger.info("Packaging LMV files")
@@ -235,11 +269,12 @@ class UploadVersionPlugin(HookBaseClass):
 
         return package_path, thumbnail_path, lmv_translator.output_directory
 
-    def _get_thumbnail_from_lmv(self, item):
+    def _get_thumbnail_from_lmv(self, item, use_framework_translator):
         """
         Extract the thumbnail from the source file, using the LMV conversion
 
         :param item: Item to process
+        :param use_framework_translator: True will force the translator shipped with tk-framework-lmv to be used
         :returns:
             - The path to the temporary folder where the LMV files have been processed
             - The path to the LMV thumbnail
@@ -251,7 +286,7 @@ class UploadVersionPlugin(HookBaseClass):
         # translate the file to lmv
         lmv_translator = translator.LMVTranslator(item.properties.path)
         self.logger.info("Converting file to LMV")
-        lmv_translator.translate()
+        lmv_translator.translate(use_framework_translator=use_framework_translator)
 
         self.logger.info("Extracting thumbnails from LMV")
         thumbnail_path = lmv_translator.extract_thumbnail()
