@@ -115,8 +115,8 @@ class AliasEngine(sgtk.platform.Engine):
             msg = (
                 "The Shotgun Pipeline Toolkit has not yet been fully tested with Alias %d. "
                 "You can continue to use the Toolkit but you may experience bugs or "
-                "instability.  Please report any issues you see to support@shotgunsoftware.com"
-                % alias_version
+                "instability.  Please report any issues you see to %s"
+                % (alias_version, sgtk.support_url)
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
