@@ -128,11 +128,19 @@ class BreakdownSceneOperation(HookClass):
                         new_path = reference_path
 
                     else:
-                        self.logger.error("Couldn't convert file to wref. Skip file {}...".format(new_path))
+                        self.logger.error(
+                            "Couldn't convert file to wref. Skip file {}...".format(
+                                new_path
+                            )
+                        )
                         continue
 
                 else:
-                    self.logger.error("Couldn't convert file to wref. Skip file {}...".format(new_path))
+                    self.logger.error(
+                        "Couldn't convert file to wref. Skip file {}...".format(
+                            new_path
+                        )
+                    )
                     continue
 
             # get the reference by its name and update it with the new path
