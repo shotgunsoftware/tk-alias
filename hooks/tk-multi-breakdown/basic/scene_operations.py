@@ -54,7 +54,7 @@ class BreakdownSceneOperation(HookClass):
             if reference_template and reference_template.validate(r.path):
                 refs.append(
                     {
-                        "node": r.name,
+                        "node": r.name if r.uuid == [] else r.uuid,
                         "type": "reference",
                         "path": r.source_path.replace("/", os.path.sep),
                     }
@@ -62,7 +62,7 @@ class BreakdownSceneOperation(HookClass):
             else:
                 refs.append(
                     {
-                        "node": r.name,
+                        "node": r.name if r.uuid == [] else r.uuid,
                         "type": "reference",
                         "path": r.path.replace("/", os.path.sep),
                     }
@@ -111,7 +111,11 @@ class BreakdownSceneOperation(HookClass):
                     template_fields["alias.extension"] = ext[1:]
                     reference_path = reference_template.apply_fields(template_fields)
 
-                    if (
+                    if os.path.exists(reference_path):
+                        self.logger.debug("File already converted!")
+                        new_path = reference_path
+
+                    elif (
                         not os.path.exists(reference_path)
                         and tk_framework_aliastranslations
                     ):
@@ -123,8 +127,19 @@ class BreakdownSceneOperation(HookClass):
                         translator.execute()
                         new_path = reference_path
 
+                    else:
+                        self.logger.error("Couldn't convert file to wref. Skip file {}...".format(new_path))
+                        continue
+
+                else:
+                    self.logger.error("Couldn't convert file to wref. Skip file {}...".format(new_path))
+                    continue
+
             # get the reference by its name and update it with the new path
-            ref = alias_api.get_reference_by_name(node)
+            if isinstance(node, list):
+                ref = alias_api.get_reference_by_uuid(node)
+            else:
+                ref = alias_api.get_reference_by_name(node)
             alias_api.update_reference(ref.path, new_path)
 
     def _get_reference_template_from_path(self, file_path):
