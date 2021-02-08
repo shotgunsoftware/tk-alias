@@ -58,6 +58,16 @@ class AliasEngine(sgtk.platform.Engine):
         """
         return True
 
+    @staticmethod
+    def get_current_engine():
+        """
+        Return the engine that Toolkit is currently running. This is used by the Alias
+        C++ Plugin to ensure that its reference to the engine is not stale (e.g. the
+        plugin's reference will become stale after the engine has been reloaded).
+        """
+
+        return sgtk.platform.current_engine()
+
     def post_context_change(self, old_context, new_context):
         """
         Runs after a context change has occurred.
