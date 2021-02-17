@@ -166,6 +166,15 @@ class UploadVersionPlugin(HookBaseClass):
         :param item: Item to process
         """
 
+        publisher = self.parent
+        path = item.properties["path"]
+
+        # be sure to strip the extension from the publish name
+        path_components = publisher.util.get_file_path_components(path)
+        filename = path_components["filename"]
+        (publish_name, extension) = os.path.splitext(filename)
+        item.properties["publish_name"] = publish_name
+
         # create the Version in Shotgun
         super(UploadVersionPlugin, self).publish(settings, item)
 
