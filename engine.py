@@ -12,6 +12,7 @@ import os
 import sys
 
 import sgtk
+from sgtk.util import LocalFileStorageManager
 import alias_api
 
 
@@ -432,3 +433,175 @@ class AliasEngine(sgtk.platform.Engine):
         """
         # TODO: improve Alias API to redirect the logs to the Alias Promptline
         pass
+
+    #####################################################################################
+    # Utils
+
+    def get_tk_from_project_id(self, project_id):
+        """
+        Get the tank instance given the project ID. This is useful when you have to deal with files from library project
+
+        :param project_id: Id of the project you want to get the tank instance for
+        :return: An instance of :class`sgtk.Sgtk`
+        """
+
+        # first of all, we need to determine if the file we're trying to import lives in the current project or in
+        # another one
+        in_current_project = project_id == self.context.project["id"]
+
+        if in_current_project:
+            return self.sgtk
+
+        # if the file we're trying to import lives in another project, we need to access the configuration used by this
+        # project in order to get the right configuration settings
+        else:
+
+            pc_local_path = self.__get_pipeline_configuration_local_path(project_id)
+            if not pc_local_path:
+                self.logger.warning(
+                    "Couldn't get tank instance for project {}.".format(project_id)
+                )
+                return None
+
+            return sgtk.sgtk_from_path(pc_local_path)
+
+    def get_reference_template(self, tk, sg_data):
+        """
+        Get the reference_template according to the given context
+
+        :param tk: Instance of :class`sgtk.Sgtk` for the project we want to get the reference template from
+        :param sg_data: Dictionary of Shotgun data containing some context information. This dictionary must contain
+                        the 'task' field
+        :return: The reference template object
+        """
+
+        if "task" not in sg_data.keys():
+            self.logger.error("Couldn't find 'task' key in sg_data dictionary")
+            return
+
+        ctx = tk.context_from_entity_dictionary(sg_data["task"])
+
+        if not ctx:
+            self.logger.error("Couldn't find context from data: {}".format(sg_data))
+            return
+
+        env = sgtk.platform.engine.get_environment_from_context(tk, ctx)
+        if not env:
+            self.logger.error("Couldn't get environment from context")
+            return
+
+        engine_settings = env.get_engine_settings(self.name)
+        if not engine_settings:
+            self.logger.error("Couldn't get engine settings")
+            return
+
+        reference_template_name = engine_settings.get("reference_template")
+        if not reference_template_name:
+            self.logger.error("Couldn't get reference template from settings")
+            return
+
+        return tk.templates.get(reference_template_name)
+
+    def __get_pipeline_configuration_local_path(self, project_id):
+        """
+        Get the path to the local configuration (the one which stands in the Sgtk cache folder) in order to be able
+        to build a :class`sgtk.Sgtk` instance from this path
+
+        :param project_id: Id of the project we want to retrieve the config for
+        :returns: The local path to the config if we could determine which config to use, None otherwise.
+        """
+
+        plugin_id = "basic.desktop"
+
+        # first, start the toolkit manager to get all the pipeline configurations related to the distant project
+        # here, we are going to use the default plugin id "basic.*" to find the pipeline configurations
+        mgr = sgtk.bootstrap.ToolkitManager()
+        mgr.plugin_id = sgtk.commands.constants.DEFAULT_PLUGIN_ID
+        pipeline_configurations = mgr.get_pipeline_configurations(
+            {"type": "Project", "id": project_id}
+        )
+
+        if not pipeline_configurations:
+            self.logger.warning(
+                "Couldn't retrieve any pipeline configuration linked to project {}".format(
+                    project_id
+                )
+            )
+            return
+
+        if len(pipeline_configurations) == 1:
+            pipeline_config = pipeline_configurations[0]
+
+        else:
+
+            # try to determine which configuration we want to use:
+            # 1- if one and only one pipeline configuration is restricted to this project, use it
+            # 2- if one pipeline configuration is named Primary and linked to this project, use it
+            # 3- reject all the other cases
+
+            pipeline_config = self.__get_project_pipeline_configuration(
+                pipeline_configurations, project_id
+            )
+
+            if not pipeline_config:
+                pipeline_config = self.__get_primary_pipeline_configuration(
+                    pipeline_configurations, project_id
+                )
+
+        if not pipeline_config:
+            self.logger.warning(
+                "Couldn't get the pipeline configuration linked to project {}: too many configurations".format(
+                    project_id
+                )
+            )
+            return None
+
+        config_local_path = LocalFileStorageManager.get_configuration_root(
+            self.sgtk.shotgun_url,
+            project_id,
+            plugin_id,
+            pipeline_config["id"],
+            LocalFileStorageManager.CACHE,
+        )
+
+        return os.path.join(config_local_path, "cfg")
+
+    def __get_project_pipeline_configuration(self, pipeline_configurations, project_id):
+        """
+        Parse the pipeline configuration list in order to find if one of them is only used by this project.
+
+        :param pipeline_configurations: List of pipeline configurations to parse
+        :param project_id:              Id of the project we want to get the pipeline configuration for
+        :returns: The pipeline configuration if only one config has been defined for this project, None otherwise.
+        """
+
+        pipeline_configuration = None
+
+        for pc in pipeline_configurations:
+            if not pc["project"]:
+                continue
+            if pc["project"]["id"] == project_id:
+                if pipeline_configuration:
+                    return None
+                pipeline_configuration = pc
+
+        return pipeline_configuration
+
+    def __get_primary_pipeline_configuration(self, pipeline_configurations, project_id):
+        """
+        Parse the pipeline configuration list in order to find if one of them has been defined as "Primary" for this
+        project.
+
+        :param pipeline_configurations: List of pipeline configurations to parse
+        :param project_id:              Id of the project we want to get the pipeline configuration for
+        :returns: The pipeline configuration if a "Primary" config has been found for this project, None otherwise.
+        """
+
+        for pc in pipeline_configurations:
+            if (
+                pc["project_id"] == project_id
+                and pc["name"] == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME
+            ):
+                return pc
+
+        return None
