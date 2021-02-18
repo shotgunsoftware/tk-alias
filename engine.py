@@ -41,6 +41,33 @@ class AliasEngine(sgtk.platform.Engine):
 
         super(AliasEngine, self).__init__(tk, context, engine_instance_name, env)
 
+    @property
+    def host_info(self):
+        """
+        Returns information about the application hosting this engine.
+
+        :returns: A {"name": application name, "version": application version}
+                  dictionary. eg: {"name": "AfterFX", "version": "2017.1.1"}
+        """
+        return dict(name="Alias", version="unknown")
+
+    @property
+    def context_change_allowed(self):
+        """
+        Specifies that context changes are allowed by the engine.
+        """
+        return True
+
+    @staticmethod
+    def get_current_engine():
+        """
+        Return the engine that Toolkit is currently running. This is used by the Alias
+        C++ Plugin to ensure that its reference to the engine is not stale (e.g. the
+        plugin's reference will become stale after the engine has been reloaded).
+        """
+
+        return sgtk.platform.current_engine()
+
     def post_context_change(self, old_context, new_context):
         """
         Runs after a context change has occurred.
@@ -181,23 +208,6 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
         self._initialize_dark_look_and_feel()
-
-    @property
-    def host_info(self):
-        """
-        Returns information about the application hosting this engine.
-
-        :returns: A {"name": application name, "version": application version}
-                  dictionary. eg: {"name": "AfterFX", "version": "2017.1.1"}
-        """
-        return dict(name="Alias", version="unknown")
-
-    @property
-    def context_change_allowed(self):
-        """
-        Specifies that context changes are allowed by the engine.
-        """
-        return True
 
     def _get_dialog_parent(self):
         """
