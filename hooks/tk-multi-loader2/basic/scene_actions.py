@@ -391,6 +391,12 @@ class AliasActions(HookBaseClass):
             LocalFileStorageManager.CACHE,
         )
 
+        # ensure that the config is cached locally
+        if not os.path.exists(config_local_path):
+            mgr.pipeline_configuration = pipeline_config["id"]
+            mgr.plugin_id = plugin_id
+            mgr.prepare_engine(self.parent.engine.name, pipeline_config["project"])
+
         return os.path.join(config_local_path, "cfg")
 
     def __get_project_pipeline_configuration(self, pipeline_configurations, project_id):
@@ -426,7 +432,8 @@ class AliasActions(HookBaseClass):
 
         for pc in pipeline_configurations:
             if (
-                pc["project_id"] == project_id
+                pc["project"]
+                and pc["project"]["id"] == project_id
                 and pc["name"] == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME
             ):
                 return pc
