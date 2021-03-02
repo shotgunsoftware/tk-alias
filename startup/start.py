@@ -10,7 +10,7 @@
 
 """
 This file is loaded automatically by Alias at startup
-It sets up the Toolkit context and prepares the tk-alias2 engine.
+It sets up the Toolkit context and prepares the tk-alias engine.
 """
 
 import os
