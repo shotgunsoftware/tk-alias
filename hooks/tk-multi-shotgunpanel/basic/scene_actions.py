@@ -142,7 +142,7 @@ class AliasActions(HookBaseClass):
 
         self.logger.debug(
             "Execute action called for action %s. "
-            "Parameters: %s. Shotgun Data: %s" % (name, params, sg_data)
+            "Parameters: %s. SG Data: %s" % (name, params, sg_data)
         )
 
         if name == "reference":
