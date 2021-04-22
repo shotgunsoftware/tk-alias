@@ -73,7 +73,10 @@ class SceneOperation(HookClass):
 
             if operation == "current_path":
                 return alias_api.get_current_path()
-
+            
+            elif operation == "prepare_new":
+                pass
+                
             elif operation == "open":
                 # if the current file is an empty file, we can erase it and open the new file instead
                 if alias_api.is_empty_file():
