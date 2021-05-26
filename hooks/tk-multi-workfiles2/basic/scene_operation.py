@@ -138,9 +138,35 @@ class SceneOperation(HookClass):
 
                 # Get the path to the tempalte new file - this will be relative to the hooks/tk-multi-workfiles2 directory
                 template_path = template_new_file_settings.get(
-                    context.step["name"]
-                ) or template_new_file_settings.get("Default")
+                    context.step["name"], template_new_file_settings.get("Default")
+                )
+
+                if isinstance(template_path, dict):
+                    asset_template_path = None
+
+                    # Attempt to get retrieve an asset type specific template file
+                    if context.entity and context.entity["type"] == "Asset":
+                        results = self.parent.shotgun.find(
+                            "Asset",
+                            [["id", "is", context.entity["id"]]],
+                            fields=["sg_asset_type"],
+                        )
+                        if results:
+                            asset_template_path = template_path.get(
+                                results[0]["sg_asset_type"],
+                                template_path.get("Default"),
+                            )
+                        else:
+                            self.logger.error(
+                                "Failed to find Asset with id '{}' to determine template new file.".format(
+                                    context.entity["id"]
+                                )
+                            )
+
+                    template_path = asset_template_path or template_path.get("Default")
+
                 if not template_path:
+                    self.logger.warning("No template for new file found.")
                     return
 
                 template_path = template_path.replace("/", os.path.sep)

@@ -63,7 +63,9 @@ configuration:
 
     new_file_template:
         type: dict
-        description: "Specify the Alias file to open by default, based on pipeline step, when creating a new scene."
+        description: "Specify the Alias file to open by default, based on pipeline step, when creating a new
+                      scene. Value is defined as a dict with Pipeline Step names as the keys, and values may
+                      be a string or a nested dict, with Asset Type names as the keys and values are strings."
         default_value: {}
 
 # the Shotgun fields that this engine needs in order to operate correctly
