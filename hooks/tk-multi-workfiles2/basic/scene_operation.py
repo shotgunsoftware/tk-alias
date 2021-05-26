@@ -181,7 +181,7 @@ class SceneOperation(HookClass):
                     self.logger.debug(
                         "Opening Alias template new file `{}`".format(full_path)
                     )
-                    alias_api.open_file(full_path, new_stage=False)
+                    alias_api.import_file(full_path)
 
                 else:
                     self.logger.warning(
