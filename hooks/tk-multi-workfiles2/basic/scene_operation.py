@@ -122,8 +122,47 @@ class SceneOperation(HookClass):
                 else:
                     alias_api.reset()
 
-        finally:
+                return True
 
+            elif operation == "prepare_new":
+                # On prepping a new scene, check if there is an Alias template new file to open. The template new file
+                # will be determined by pipeline step.
+                if not context or not context.step:
+                    return
+
+                template_new_file_settings = self.parent.engine.settings.get(
+                    "new_file_template"
+                )
+                if not template_new_file_settings:
+                    return
+
+                # Get the path to the tempalte new file - this will be relative to the hooks/tk-multi-workfiles2 directory
+                template_path = template_new_file_settings.get(
+                    context.step["name"]
+                ) or template_new_file_settings.get("Default")
+                if not template_path:
+                    return
+
+                template_path = template_path.replace("/", os.path.sep)
+                # Get the absolute path to the template new file
+                full_path = os.path.join(
+                    self.disk_location,  # path to this hook's directory
+                    "..",  # go up a directory to the base directory for tk-multi-workfiles2 hooks
+                    template_path,  # the relative path to the file from the base tk-multi-workfiles2 hooks dir
+                )
+
+                if os.path.exists(full_path):
+                    self.logger.debug(
+                        "Opening Alias template new file `{}`".format(full_path)
+                    )
+                    alias_api.open_file(full_path, new_stage=False)
+
+                else:
+                    self.logger.warning(
+                        "Alias template new file does not exists `{}`".format(full_path)
+                    )
+
+        finally:
             self.parent.engine._stop_watching = False
             if operation in ["save_as", "prepare_new", "open"]:
                 self.parent.engine.save_context_for_stage(context)
