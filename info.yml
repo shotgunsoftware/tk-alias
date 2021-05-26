@@ -66,6 +66,11 @@ configuration:
         description:    "Disable warning about older versions of Alias"
         default_value:  True
 
+    new_file_template:
+        type: dict
+        description: "Specify the Alias file to open by default, based on pipeline step, when creating a new scene."
+        default_value: {}
+
 # the Shotgun fields that this engine needs in order to operate correctly
 requires_shotgun_fields:
 
