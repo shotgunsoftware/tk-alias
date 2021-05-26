@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import alias_api
+import os
 import uuid
 
 import sgtk
@@ -102,21 +103,24 @@ class SceneOperation(HookClass):
                 # the current session will delete all the stages
                 if parent_action == "open_file":
                     return True
+
                 if alias_api.is_empty_file() and len(alias_api.get_stages()) == 1:
                     alias_api.reset()
                     return True
+
+                # Reset for new file
+                open_in_current_stage = self.parent.engine.open_delete_stages_dialog(
+                    new_file=True
+                )
+
+                if open_in_current_stage == QtGui.QMessageBox.Cancel:
+                    return False
+
+                if open_in_current_stage == QtGui.QMessageBox.No:
+                    stage_name = uuid.uuid4().hex
+                    alias_api.create_stage(stage_name)
                 else:
-                    open_in_current_stage = self.parent.engine.open_delete_stages_dialog(
-                        new_file=True
-                    )
-                    if open_in_current_stage == QtGui.QMessageBox.Cancel:
-                        return False
-                    elif open_in_current_stage == QtGui.QMessageBox.No:
-                        stage_name = uuid.uuid4().hex
-                        alias_api.create_stage(stage_name)
-                    else:
-                        alias_api.reset()
-                    return True
+                    alias_api.reset()
 
         finally:
 
