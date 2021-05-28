@@ -49,7 +49,7 @@ configuration:
 
     reference_template:
         type: template
-        description: Reference template to store the files created (.wref) when importing a file as reference.
+        description: "Reference template to store the files created (.wref) when importing a file as reference."
         allows_empty: True
         fields: context, *
 
@@ -62,11 +62,10 @@ configuration:
         default_value:  2022
 
     new_file_template:
-        type: dict
-        description: "Specify the Alias file to open by default, based on pipeline step, when creating a new
-                      scene. Value is defined as a dict with Pipeline Step names as the keys, and values may
-                      be a string or a nested dict, with Asset Type names as the keys and values are strings."
-        default_value: {}
+        type: template
+        description: "New file template to store the Alias files to import on creating a new file."
+        allows_empty: True
+        fields: context, *
 
 # the Shotgun fields that this engine needs in order to operate correctly
 requires_shotgun_fields:

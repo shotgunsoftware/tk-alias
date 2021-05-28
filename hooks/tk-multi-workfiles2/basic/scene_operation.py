@@ -130,32 +130,32 @@ class SceneOperation(HookClass):
                 if not context or not context.step:
                     return
 
-                template_new_file_settings = self.parent.engine.settings.get(
-                    "new_file_template"
-                )
-                if not template_new_file_settings:
+                new_file_template = self.parent.engine.get_template("new_file_template")
+                if not new_file_template:
                     return
 
-                # Get the path to the tempalte new file - this will be relative to the hooks/tk-multi-workfiles2 directory
-                template_path = template_new_file_settings.get(
-                    context.step["name"], template_new_file_settings.get("Default")
-                )
+                template_fields = context.as_template_fields(new_file_template)
 
-                if isinstance(template_path, dict):
-                    asset_template_path = None
+                try:
+                    new_file_path = new_file_template.apply_fields(template_fields)
+                except Exception as e:
+                    # Manually get the template fields
+                    template_fields = {
+                        "Step": context.step["name"],
+                    }
 
-                    # Attempt to get retrieve an asset type specific template file
+                    # Attempt to extract the asset type associated with this context.
                     if context.entity and context.entity["type"] == "Asset":
                         results = self.parent.shotgun.find(
                             "Asset",
                             [["id", "is", context.entity["id"]]],
                             fields=["sg_asset_type"],
                         )
+
                         if results:
-                            asset_template_path = template_path.get(
-                                results[0]["sg_asset_type"],
-                                template_path.get("Default"),
-                            )
+                            template_fields["sg_asset_type"] = results[0][
+                                "sg_asset_type"
+                            ]
                         else:
                             self.logger.error(
                                 "Failed to find Asset with id '{}' to determine template new file.".format(
@@ -163,29 +163,20 @@ class SceneOperation(HookClass):
                                 )
                             )
 
-                    template_path = asset_template_path or template_path.get("Default")
+                    # Try again with manually found template fields
+                    new_file_path = new_file_template.apply_fields(template_fields)
 
-                if not template_path:
-                    self.logger.warning("No template for new file found.")
-                    return
-
-                template_path = template_path.replace("/", os.path.sep)
-                # Get the absolute path to the template new file
-                full_path = os.path.join(
-                    self.disk_location,  # path to this hook's directory
-                    "..",  # go up a directory to the base directory for tk-multi-workfiles2 hooks
-                    template_path,  # the relative path to the file from the base tk-multi-workfiles2 hooks dir
-                )
-
-                if os.path.exists(full_path):
+                if os.path.exists(new_file_path):
                     self.logger.debug(
-                        "Opening Alias template new file `{}`".format(full_path)
+                        "Opening Alias template new file `{}`".format(new_file_path)
                     )
-                    alias_api.import_file(full_path)
+                    alias_api.import_file(new_file_path)
 
                 else:
                     self.logger.warning(
-                        "Alias template new file does not exists `{}`".format(full_path)
+                        "Alias template new file does not exists `{}`".format(
+                            new_file_path
+                        )
                     )
 
         finally:
