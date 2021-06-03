@@ -24,7 +24,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
         """
         One line display name describing the plugin
         """
-        return "Publish Annotations to Shotgun"
+        return "Publish Annotations to ShotGrid"
 
     @property
     def description(self):

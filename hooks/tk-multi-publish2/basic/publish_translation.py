@@ -359,7 +359,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             extra={
                 "action_show_in_shotgun": {
                     "label": "Show Publish",
-                    "tooltip": "Reveal the published file in Shotgun.",
+                    "tooltip": "Reveal the published file in ShotGrid.",
                     "entity": item.properties["sg_publish_data"],
                 }
             },

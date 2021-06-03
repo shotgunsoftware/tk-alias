@@ -116,7 +116,7 @@ class AliasMenuGenerator(object):
         # Create the menu object
         ctx_menu = self._alias_menu.add_menu(ctx_name)
         self._alias_menu.add_command(
-            "Jump to Shotgun", self._jump_to_sg, parent=ctx_menu
+            "Jump to ShotGrid", self._jump_to_sg, parent=ctx_menu
         )
         if ctx.filesystem_locations:
             self._alias_menu.add_command(

@@ -141,14 +141,14 @@ class AliasEngine(sgtk.platform.Engine):
             from sgtk.platform.qt import QtGui
 
             msg = (
-                "The Shotgun Pipeline Toolkit has not yet been fully tested with Alias %d. "
+                "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %d. "
                 "You can continue to use the Toolkit but you may experience bugs or "
                 "instability.  Please report any issues you see to %s"
                 % (alias_version, sgtk.support_url)
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(), "Warning - Shotgun Pipeline Toolkit!", msg,
+                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
             )
 
     def post_app_init(self):
