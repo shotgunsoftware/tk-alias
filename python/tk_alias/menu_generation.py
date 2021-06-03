@@ -35,9 +35,9 @@ class AliasMenuGenerator(object):
 
     def create_menu(self, clean_menu=True):
         """
-        Render the entire Shotgun menu.
+        Render the entire ShotGrid menu.
 
-        :param clean_menu:  If clean_menu is set to true, the previous Shotgun menu will be cleaned before creating the
+        :param clean_menu:  If clean_menu is set to true, the previous ShotGrid menu will be cleaned before creating the
                             new one. This is useful in the case you're rebuilding the menu after context switching.
         """
 
@@ -100,7 +100,7 @@ class AliasMenuGenerator(object):
 
     def clean_menu(self):
         """
-        Clean the Shotgun menu in Alias by removing all its entries.
+        Clean the ShotGrid menu in Alias by removing all its entries.
         """
         self._alias_menu.clean()
 
@@ -158,7 +158,7 @@ class AliasMenuGenerator(object):
 
     def _jump_to_sg(self):
         """
-        Jump to shotgun, launch web browser
+        Jump to ShotGrid, launch web browser
         """
         url = self._engine.context.shotgun_url
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
