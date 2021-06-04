@@ -21,7 +21,7 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 class AliasActions(HookBaseClass):
     """
-    Shotgun Panel Actions for Alias
+    ShotGrid Panel Actions for Alias
     """
 
     def generate_actions(self, sg_data, actions, ui_area):
@@ -56,7 +56,7 @@ class AliasActions(HookBaseClass):
         one object is returned for an action, use the params key to pass additional
         data into the run_action hook.
 
-        :param sg_data: Shotgun data dictionary with all the standard publish fields.
+        :param sg_data: ShotGrid data dictionary with all the standard publish fields.
         :param actions: List of action strings which have been defined in the app configuration.
         :param ui_area: String denoting the UI Area (see above).
         :returns List of dictionaries, each with keys name, params, caption and description
@@ -136,13 +136,13 @@ class AliasActions(HookBaseClass):
 
         :param name: Action name string representing one of the items returned by generate_actions.
         :param params: Params data, as specified by generate_actions.
-        :param sg_data: Shotgun data dictionary with all the standard publish fields.
+        :param sg_data: ShotGrid data dictionary with all the standard publish fields.
         :returns: No return value expected.
         """
 
         self.logger.debug(
             "Execute action called for action %s. "
-            "Parameters: %s. Shotgun Data: %s" % (name, params, sg_data)
+            "Parameters: %s. ShotGrid Data: %s" % (name, params, sg_data)
         )
 
         if name == "reference":
@@ -183,7 +183,7 @@ class AliasActions(HookBaseClass):
         Each entry will have the following values:
 
             name: Name of the action to execute
-            sg_data: Publish information coming from Shotgun
+            sg_data: Publish information coming from ShotGrid
             params: Parameters passed down from the generate_actions hook.
 
         .. note::

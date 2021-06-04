@@ -16,7 +16,7 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 class UploadVersionPlugin(HookBaseClass):
     """
-    Plugin for sending quicktimes and images to shotgun for review.
+    Plugin for sending quicktimes and images to ShotGrid for review.
     """
 
     # Translation workers are responsible for performing the LMV translation.
@@ -70,7 +70,7 @@ class UploadVersionPlugin(HookBaseClass):
             "Upload": {
                 "type": "bool",
                 "default": False,
-                "description": "Upload content to Shotgun?",
+                "description": "Upload content to ShotGrid?",
             },
             "Translation Worker": {
                 "type": "str",
@@ -175,7 +175,7 @@ class UploadVersionPlugin(HookBaseClass):
         (publish_name, extension) = os.path.splitext(filename)
         item.properties["publish_name"] = publish_name
 
-        # create the Version in Shotgun
+        # create the Version in ShotGrid
         super(UploadVersionPlugin, self).publish(settings, item)
 
         # generate the Version content: LMV file or simple 2D thumbnail
@@ -191,7 +191,7 @@ class UploadVersionPlugin(HookBaseClass):
                 thumbnail_path,
                 output_directory,
             ) = self._translate_file_to_lmv(item, use_framework_translator)
-            self.logger.info("Uploading LMV files to Shotgun")
+            self.logger.info("Uploading LMV files to ShotGrid")
             self.parent.shotgun.update(
                 entity_type="Version",
                 entity_id=item.properties["sg_version_data"]["id"],
@@ -234,7 +234,7 @@ class UploadVersionPlugin(HookBaseClass):
                     item, use_framework_translator
                 )
                 if thumbnail_path:
-                    self.logger.info("Uploading LMV thumbnail file to Shotgun")
+                    self.logger.info("Uploading LMV thumbnail file to ShotGrid")
                     self.parent.shotgun.upload(
                         entity_type="Version",
                         entity_id=item.properties["sg_version_data"]["id"],
@@ -251,7 +251,7 @@ class UploadVersionPlugin(HookBaseClass):
 
     def _translate_file_to_lmv(self, item, use_framework_translator):
         """
-        Translate the current Alias file as an LMV package in order to upload it to Shotgun as a 3D Version
+        Translate the current Alias file as an LMV package in order to upload it to ShotGrid as a 3D Version
 
         :param item: Item to process
         :param use_framework_translator: True will force the translator shipped with tk-framework-lmv to be used
