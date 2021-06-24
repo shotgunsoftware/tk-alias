@@ -13,6 +13,7 @@ import sys
 
 import sgtk
 from sgtk.util import LocalFileStorageManager
+
 import alias_api
 
 
@@ -30,6 +31,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_codename = None
         self.alias_execpath = None
         self.alias_bindir = None
+        self.alias_version = None
         self._dialog_parent = None
 
         self._menu_generator = None
@@ -132,19 +134,32 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_codename = os.getenv("TK_ALIAS_CODENAME", "autostudio")
 
         # Be sure the current version is supported
-        alias_version = int(os.getenv("TK_ALIAS_VERSION", None))
-        if not alias_version:
+        self.alias_version = os.getenv("TK_ALIAS_VERSION", None)
+        if not self.alias_version:
             self.logger.debug("Couldn't get Alias version. Skip version comparison")
             return
 
-        if alias_version > self.get_setting("compatibility_dialog_min_version", 2021):
+        if int(self.alias_version[0:4]) > self.get_setting("compatibility_dialog_min_version", 2021):
             from sgtk.platform.qt import QtGui
 
             msg = (
-                "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %d. "
+                "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
                 "You can continue to use the Toolkit but you may experience bugs or "
                 "instability.  Please report any issues you see to %s"
-                % (alias_version, sgtk.support_url)
+                % (self.alias_version, sgtk.support_url)
+            )
+            self.logger.warning(msg)
+            QtGui.QMessageBox.warning(
+                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
+            )
+        elif int(self.alias_version[0:4]) < 2021 and self.get_setting("compatibility_dialog_old_version"):
+            from sgtk.platform.qt import QtGui
+
+            msg = (
+                "The ShotGrid Pipeline Toolkit is not fully capable with Alias %s. "
+                "You should consider upgarding to a more recent version of Alias. "
+                "Please report any issues you see to %s"
+                % (self.alias_version, sgtk.support_url)
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(

@@ -20,9 +20,6 @@ class AliasMenuGenerator(object):
     """
     Menu handling for Alias.
     """
-
-    MENU_NAME = "al_shotgun"
-
     def __init__(self, engine):
         """
         Initializes a new menu generator.
@@ -31,6 +28,10 @@ class AliasMenuGenerator(object):
         :type engine: :class:`tank.platform.Engine`
         """
         self._engine = engine
+        if engine.alias_version == "2022.2": #TODO: add int greather than check
+            self.MENU_NAME = "al_shotgrid"
+        else:
+            self.MENU_NAME = "al_shotgun"
         self._alias_menu = alias_api.Menu(self.MENU_NAME)
 
     def create_menu(self, clean_menu=True):
@@ -41,7 +42,7 @@ class AliasMenuGenerator(object):
                             new one. This is useful in the case you're rebuilding the menu after context switching.
         """
 
-        # First, ensure that the Shotgun menu inside Alias is empty.
+        # First, ensure that the ShotGrid menu inside Alias is empty.
         # This is to ensure we can recover from weird context switches
         # where the engine didn't clean up after itself properly.
         if clean_menu:
