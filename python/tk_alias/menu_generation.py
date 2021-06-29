@@ -28,7 +28,7 @@ class AliasMenuGenerator(object):
         :type engine: :class:`tank.platform.Engine`
         """
         self._engine = engine
-        if engine.alias_version == "2022.2": #TODO: add int greather than check
+        if self._version_check(engine.alias_version) >= 20222:
             self.MENU_NAME = "al_shotgrid"
         else:
             self.MENU_NAME = "al_shotgun"
@@ -186,6 +186,23 @@ class AliasMenuGenerator(object):
             exit_code = os.system(cmd)
             if exit_code != 0:
                 self._engine.logger.error("Failed to launch '%s'!", cmd)
+    
+    def _version_check(self, version):
+        """
+        Check if Alias version is greater than 2022.2 for ShotGrid menu name
+
+        :param version: String value of Alias version from startup.py
+        """
+        multiply_by_10 = False
+        if len(version) == 4:
+            multiply_by_10 = True
+        elif len(version) > 6:
+            version = version[0:5]
+        version_int = int(version.replace(".", ""))
+        if multiply_by_10:
+            version_int = version_int * 10
+
+        return version_int
 
     def refresh(self):
         """
