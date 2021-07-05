@@ -157,7 +157,7 @@ class AliasEngine(sgtk.platform.Engine):
 
             msg = (
                 "The ShotGrid Pipeline Toolkit is not fully capable with Alias %s. "
-                "You should consider upgarding to a more recent version of Alias. "
+                "You should consider upgrading to a more recent version of Alias. "
                 "Please report any issues you see to %s"
                 % (self.alias_version, sgtk.support_url)
             )
