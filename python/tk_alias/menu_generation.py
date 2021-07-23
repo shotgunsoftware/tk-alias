@@ -20,6 +20,7 @@ class AliasMenuGenerator(object):
     """
     Menu handling for Alias.
     """
+
     def __init__(self, engine):
         """
         Initializes a new menu generator.
@@ -186,7 +187,7 @@ class AliasMenuGenerator(object):
             exit_code = os.system(cmd)
             if exit_code != 0:
                 self._engine.logger.error("Failed to launch '%s'!", cmd)
-    
+
     def _version_check(self, version):
         """
         Check if Alias version is greater than 2022.2 for ShotGrid menu name
