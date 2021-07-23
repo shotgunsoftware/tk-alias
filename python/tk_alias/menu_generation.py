@@ -29,7 +29,7 @@ class AliasMenuGenerator(object):
         :type engine: :class:`tank.platform.Engine`
         """
         self._engine = engine
-        if self._version_check(engine.alias_version) >= 20222:
+        if self._version_check(engine.alias_version, "2022.2") >= 0:
             self.MENU_NAME = "al_shotgrid"
         else:
             self.MENU_NAME = "al_shotgun"
@@ -188,22 +188,40 @@ class AliasMenuGenerator(object):
             if exit_code != 0:
                 self._engine.logger.error("Failed to launch '%s'!", cmd)
 
-    def _version_check(self, version):
+    def _version_check(self, version1, version2):
         """
         Check if Alias version is greater than 2022.2 for ShotGrid menu name
 
-        :param version: String value of Alias version from startup.py
+        :param version1: String value of Alias version from startup.py
+        :param version2: String value of comparison version from this file
         """
-        multiply_by_10 = False
-        if len(version) == 4:
-            multiply_by_10 = True
-        elif len(version) > 6:
-            version = version[0:5]
-        version_int = int(version.replace(".", ""))
-        if multiply_by_10:
-            version_int = version_int * 10
+        # This will split both the versions by '.'
+        arr1 = version1.split(".")
+        arr2 = version2.split(".")
+        n = len(arr1)
+        m = len(arr2)
 
-        return version_int
+        # converts to integer from string
+        arr1 = [int(i) for i in arr1]
+        arr2 = [int(i) for i in arr2]
+
+        # compares which list is bigger and fills
+        # smaller list with zero (for unequal delimeters)
+        if n > m:
+            for i in range(m, n):
+                arr2.append(0)
+        elif m > n:
+            for i in range(n, m):
+                arr1.append(0)
+
+        # returns 1 if version 1 is bigger and -1 if
+        # version 2 is bigger and 0 if equal
+        for i in range(len(arr1)):
+            if arr1[i] > arr2[i]:
+                return 1
+            elif arr2[i] > arr1[i]:
+                return -1
+        return 0
 
     def refresh(self):
         """
