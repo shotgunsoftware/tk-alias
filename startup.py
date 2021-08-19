@@ -44,10 +44,20 @@ class AliasLauncher(SoftwareLauncher):
     # Fallback code name to use when none is given
     FALLBACK_CODE_NAME = "AutoStudio"
 
-    # Shotgun default plugins
+    # ShotGrid default plugins
     DEFAULT_PLUGINS = {
-        "shotgun.plugin": {"min_version": "2020.2", "python_major_version": 3},
-        "shotgun_py2.plugin": {"min_version": "2020.2", "python_major_version": 2},
+        "shotgrid.plugin": {"min_version": "2022.2", "python_major_version": 3},
+        "shotgrid_py2.plugin": {"min_version": "2022.2", "python_major_version": 2},
+        "shotgun.plugin": {
+            "min_version": "2020.2",
+            "max_version": "2022.1",
+            "python_major_version": 3,
+        },
+        "shotgun_py2.plugin": {
+            "min_version": "2020.2",
+            "max_version": "2022.1",
+            "python_major_version": 2,
+        },
         "shotgun_legacy.plugin": {
             "min_version": "2019",
             "max_version": "2020.1",
@@ -63,7 +73,7 @@ class AliasLauncher(SoftwareLauncher):
     ALIAS_API = {
         "alias2021.3": {"min_version": "2021.3"},
         "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.2.2"},
-        "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.2"},
+        "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.2.2"},
     }
 
     # This dictionary defines a list of executable template strings for each
@@ -152,12 +162,12 @@ class AliasLauncher(SoftwareLauncher):
             tk_alias_codename_lower = tk_alias_codename.lower()
             required_env["TK_ALIAS_VERSION"] = self._get_release_version(
                 exec_path, tk_alias_codename
-            ).split(".")[0]
+            )
         else:
             tk_alias_codename_lower = self.FALLBACK_CODE_NAME.lower()
             required_env["TK_ALIAS_VERSION"] = self._get_release_version(
                 exec_path, self.FALLBACK_CODE_NAME
-            ).split(".")[0]
+            )
 
         required_env["TK_ALIAS_CODENAME"] = tk_alias_codename_lower
 

@@ -61,6 +61,11 @@ configuration:
                         value to the current major version + 1."
         default_value:  2022
 
+    compatibility_dialog_old_version:
+        type:           bool
+        description:    "Disable warning about older versions of Alias"
+        default_value:  True
+
 # the Shotgun fields that this engine needs in order to operate correctly
 requires_shotgun_fields:
 
