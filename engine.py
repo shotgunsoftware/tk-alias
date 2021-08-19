@@ -13,6 +13,8 @@ import sys
 
 import sgtk
 from sgtk.util import LocalFileStorageManager
+from tank_vendor import six
+
 import alias_api
 
 
@@ -431,8 +433,15 @@ class AliasEngine(sgtk.platform.Engine):
         :param record: Standard python logging record.
         :type record: :class:`~python.logging.LogRecord`
         """
-        # TODO: improve Alias API to redirect the logs to the Alias Promptline
-        pass
+
+        # Get the formatted message and ensure it is a string
+        msg = six.ensure_str(handler.format(record))
+
+        # Split the message into 'max_len' chunks to display in the Alias prompt.
+        max_len = 225
+        msg_lines = [msg[i : i + max_len] for i in range(0, len(msg), max_len)]
+        for line in msg_lines:
+            alias_api.log_to_prompt(line)
 
     #####################################################################################
     # Utils
