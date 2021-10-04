@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Functions &mdash; Alias Python API  documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Exceptions" href="exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Alias Python API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="alias_api.html">Alias C++ API Python Bindings</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Functions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Alias Python API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="alias_api.html">Alias C++ API Python Bindings</a> &raquo;</li>
+      <li>Functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/functions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="module-alias_api">
+<span id="functions"></span><h1>Functions<a class="headerlink" href="#module-alias_api" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="alias_api.cleanup_geometry_model">
+<code class="descclassname">alias_api.</code><code class="descname">cleanup_geometry_model</code><span class="sig-paren">(</span><em>face_to_surf: bool = False</em>, <em>split_c1_breaks: bool = False</em>, <em>split_closed_basis: bool = False</em>, <em>shrink_closed_surf: bool = False</em>, <em>set_persistent_ids: bool = False</em>, <em>split_sphere: bool = False</em>, <em>picked_dags_only: bool = False</em>, <em>split_multiknots: bool = False</em>, <em>delete_null_nodes: bool = False</em>, <em>delete_degenerate_geo: bool = False</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.cleanup_geometry_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to clean up the geometry of the model.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_alternative">
+<code class="descclassname">alias_api.</code><code class="descname">create_alternative</code><span class="sig-paren">(</span><em>name: unicode</em>, <em>force: bool = False</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.create_alternative" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which creates an Alias alternative.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_layer">
+<code class="descclassname">alias_api.</code><code class="descname">create_layer</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.create_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which create a new layer in the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_reference">
+<code class="descclassname">alias_api.</code><code class="descname">create_reference</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.create_reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which creates a reference in Alias given its file path.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_stage">
+<code class="descclassname">alias_api.</code><code class="descname">create_stage</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.create_stage" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which creates a new stage in Alias.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_texture_node">
+<code class="descclassname">alias_api.</code><code class="descname">create_texture_node</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.create_texture_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li>create_texture_node(imagePath: unicode, useConstructionPlane: bool = False, errs: list = []) -&gt; bool</li>
+</ol>
+<p>A function which creates a Canvas Image at the center of the world.</p>
+<ol class="arabic simple" start="2">
+<li>create_texture_node(name : unicode, imagePath : unicode, useConstructionPlane: bool, errs: list) -&gt; bool</li>
+</ol>
+<p>A function which creates a Canvas Image at the center of the world.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.delete_null_nodes">
+<code class="descclassname">alias_api.</code><code class="descname">delete_null_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.delete_null_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to delete all null nodes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_alternative_by_name">
+<code class="descclassname">alias_api.</code><code class="descname">get_alternative_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_alternative_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which retrieves an Alias alternative given its name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_alternatives">
+<code class="descclassname">alias_api.</code><code class="descname">get_alternatives</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_alternatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which retrieves all the alternatives of the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_annotation_locators">
+<code class="descclassname">alias_api.</code><code class="descname">get_annotation_locators</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_annotation_locators" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which gets all the annotation locators of the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_current_path">
+<code class="descclassname">alias_api.</code><code class="descname">get_current_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; unicode<a class="headerlink" href="#alias_api.get_current_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which gets the current file path.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_current_stage">
+<code class="descclassname">alias_api.</code><code class="descname">get_current_stage</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_current_stage" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which gets the current stage.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_layer_by_id">
+<code class="descclassname">alias_api.</code><code class="descname">get_layer_by_id</code><span class="sig-paren">(</span><em>id: int</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_layer_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which retrieves a layer given its id.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_layer_by_name">
+<code class="descclassname">alias_api.</code><code class="descname">get_layer_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_layer_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which retrieves a layer given its name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_layers">
+<code class="descclassname">alias_api.</code><code class="descname">get_layers</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which gets all the layers of the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_product_information">
+<code class="descclassname">alias_api.</code><code class="descname">get_product_information</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#alias_api.get_product_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which gets useful product information.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_reference_by_name">
+<code class="descclassname">alias_api.</code><code class="descname">get_reference_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_reference_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which retrieves a reference given its name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_reference_by_path">
+<code class="descclassname">alias_api.</code><code class="descname">get_reference_by_path</code><span class="sig-paren">(</span><em>path: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_reference_by_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which retrieves a reference given its path.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_reference_by_uuid">
+<code class="descclassname">alias_api.</code><code class="descname">get_reference_by_uuid</code><span class="sig-paren">(</span><em>uuid: list</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_reference_by_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which retrieves a reference given its uuid.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_references">
+<code class="descclassname">alias_api.</code><code class="descname">get_references</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_references" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which retrieves all the references imported into the currentfile.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_stages">
+<code class="descclassname">alias_api.</code><code class="descname">get_stages</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_stages" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which returns all the existing stages of the current Alias session.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_variants">
+<code class="descclassname">alias_api.</code><code class="descname">get_variants</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which gets all the variants of the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.has_variants">
+<code class="descclassname">alias_api.</code><code class="descname">has_variants</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.has_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which checks if the current file contains variants.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.import_file">
+<code class="descclassname">alias_api.</code><code class="descname">import_file</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.import_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which imports a file into the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.is_empty_file">
+<code class="descclassname">alias_api.</code><code class="descname">is_empty_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.is_empty_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which checks if the current file is empty or not.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.log_message">
+<code class="descclassname">alias_api.</code><code class="descname">log_message</code><span class="sig-paren">(</span><em>outputType: AlOutputType</em>, <em>msg: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.log_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which logs a message to the given output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.log_to_errlog">
+<code class="descclassname">alias_api.</code><code class="descname">log_to_errlog</code><span class="sig-paren">(</span><em>msg: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.log_to_errlog" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which logs a message to the Alias error log.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.log_to_prompt">
+<code class="descclassname">alias_api.</code><code class="descname">log_to_prompt</code><span class="sig-paren">(</span><em>msg: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.log_to_prompt" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which logs a message to the Alias prompt.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.log_to_prompt_no_history">
+<code class="descclassname">alias_api.</code><code class="descname">log_to_prompt_no_history</code><span class="sig-paren">(</span><em>msg: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.log_to_prompt_no_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which logs a message to the Alias prompt without history.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.log_to_stderr">
+<code class="descclassname">alias_api.</code><code class="descname">log_to_stderr</code><span class="sig-paren">(</span><em>msg: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.log_to_stderr" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which logs a message to the standard error stream.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.log_to_stdout">
+<code class="descclassname">alias_api.</code><code class="descname">log_to_stdout</code><span class="sig-paren">(</span><em>msg: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.log_to_stdout" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which logs a message to the standard output stream.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.open_file">
+<code class="descclassname">alias_api.</code><code class="descname">open_file</code><span class="sig-paren">(</span><em>path: unicode</em>, <em>new_stage: bool = False</em>, <em>delete_current: bool = False</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.open_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which opens a file in Alias.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.reset">
+<code class="descclassname">alias_api.</code><code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which resets the current session by deleting all the stages.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.save_file">
+<code class="descclassname">alias_api.</code><code class="descname">save_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.save_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which saves the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.save_file_as">
+<code class="descclassname">alias_api.</code><code class="descname">save_file_as</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.save_file_as" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which saves the current file to a given location.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.update_reference">
+<code class="descclassname">alias_api.</code><code class="descname">update_reference</code><span class="sig-paren">(</span><em>old_path: unicode</em>, <em>new_path: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.update_reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which updates a reference in Alias by a new one.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.zero_transform">
+<code class="descclassname">alias_api.</code><code class="descname">zero_transform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.zero_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li>zero_transform() -&gt; int</li>
+</ol>
+<p>A function that applies the zero transform to all dag nodes in the pick list.</p>
+<ol class="arabic simple" start="2">
+<li>zero_transform(nodeName: unicode, clearPickList: bool = False) -&gt; int</li>
+</ol>
+<p>A function that applies the zero transform to all dag nodes in the pick list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.zero_transform_top_level">
+<code class="descclassname">alias_api.</code><code class="descname">zero_transform_top_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.zero_transform_top_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that applies the zero transform operation to the current pick list.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="exceptions.html" class="btn btn-neutral float-left" title="Exceptions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Autodesk, Inc.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
