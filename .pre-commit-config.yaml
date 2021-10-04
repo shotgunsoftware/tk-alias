@@ -37,3 +37,5 @@ repos:
     hooks:
     - id: black
       language_version: python3
+# Exclude api folder from pre-commit checks
+exclude: api/*
