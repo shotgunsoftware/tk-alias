@@ -225,9 +225,9 @@ class AliasActions(HookBaseClass):
             )
         except AttributeError:
             raise Exception(
-                    "There is an issue with Pipeline Configurations for the Linked Project<br>"
-                    " Please see the guidelines <a href=https://github.com/shotgunsoftware/tk-alias/wiki/Loading#import-as-reference-from-another-project><b>here.</b></a>"
-                )
+                "There is an issue with Pipeline Configurations for the Linked Project<br>"
+                " Please see the guidelines <a href=https://github.com/shotgunsoftware/tk-alias/wiki/Loading#import-as-reference-from-another-project><b>here.</b></a>"
+            )
             return
 
         source_template = tk.template_from_path(path)

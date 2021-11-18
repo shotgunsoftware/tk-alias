@@ -620,7 +620,8 @@ class AliasEngine(sgtk.platform.Engine):
             try:
                 if (
                     pc["project_id"] == project_id
-                    and pc["name"] == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME
+                    and pc["name"]
+                    == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME
                 ):
                     return pc
             except KeyError:
