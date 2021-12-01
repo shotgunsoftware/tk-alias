@@ -617,10 +617,13 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         for pc in pipeline_configurations:
-            if (
-                pc["project_id"] == project_id
-                and pc["name"] == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME
-            ):
-                return pc
-
+            try:
+                if (
+                    pc["project_id"] == project_id
+                    and pc["name"]
+                    == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME
+                ):
+                    return pc
+            except KeyError:
+                self.logger.warning("No project_id key for {}.".format(pc))
         return None
