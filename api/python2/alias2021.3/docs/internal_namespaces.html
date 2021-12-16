@@ -67,7 +67,35 @@
 <dt id="_CPPv44alPy">
 <span id="_CPPv34alPy"></span><span id="_CPPv24alPy"></span><span id="alPy"></span><span class="target" id="namespaceal_py"></span><em class="property">namespace </em><code class="descname">alPy</code><a class="headerlink" href="#_CPPv44alPy" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Typedefs</p>
+<dl class="type">
+<dt id="_CPPv4N4alPy16PythonCallbackFnE">
+<span id="_CPPv3N4alPy16PythonCallbackFnE"></span><span id="_CPPv2N4alPy16PythonCallbackFnE"></span><span id="alPy::PythonCallbackFn"></span><span class="target" id="namespaceal_py_1a521ca0d60fb2e463ffed25fe79d70ae9"></span><em class="property">typedef </em>std::function&lt;void<span class="sig-paren">(</span><a class="reference internal" href="#_CPPv44alPy" title="alPy">alPy</a>::PythonCallbackMessageResult *<span class="sig-paren">)</span>&gt; <code class="descname">PythonCallbackFn</code><a class="headerlink" href="#_CPPv4N4alPy16PythonCallbackFnE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="type">
+<dt id="_CPPv4N4alPy17PythonCallbackFnsE">
+<span id="_CPPv3N4alPy17PythonCallbackFnsE"></span><span id="_CPPv2N4alPy17PythonCallbackFnsE"></span><span id="alPy::PythonCallbackFns"></span><span class="target" id="namespaceal_py_1afd766fed2772d7f1bd20e653c8f22e71"></span><em class="property">typedef </em>std::unordered_map&lt;unsigned long int, <a class="reference internal" href="#_CPPv4N4alPy16PythonCallbackFnE" title="alPy::PythonCallbackFn">PythonCallbackFn</a>&gt; <code class="descname">PythonCallbackFns</code><a class="headerlink" href="#_CPPv4N4alPy17PythonCallbackFnsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="function">
+<dt id="_CPPv4N4alPy17defineAccessTypesERN2py6moduleE">
+<span id="_CPPv3N4alPy17defineAccessTypesERN2py6moduleE"></span><span id="_CPPv2N4alPy17defineAccessTypesERN2py6moduleE"></span><span id="alPy::defineAccessTypes__py::moduleR"></span><span class="target" id="namespaceal_py_1ab414acd78b0ea8897e65ef4db9c2b855"></span>void <code class="descname">defineAccessTypes</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17defineAccessTypesERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy12defineCameraERN2py6moduleE">
+<span id="_CPPv3N4alPy12defineCameraERN2py6moduleE"></span><span id="_CPPv2N4alPy12defineCameraERN2py6moduleE"></span><span id="alPy::defineCamera__py::moduleR"></span><span class="target" id="namespaceal_py_1aabd98acbf48689eca52179d1a5f466af"></span>void <code class="descname">defineCamera</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12defineCameraERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy16defineCameraNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy16defineCameraNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy16defineCameraNodeERN2py6moduleE"></span><span id="alPy::defineCameraNode__py::moduleR"></span><span class="target" id="namespaceal_py_1af09cec2b78744cbc8538f44a39f9d359"></span>void <code class="descname">defineCameraNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy16defineCameraNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="_CPPv4N4alPy12createCanvasEPKcbN2py4listE">
 <span id="_CPPv3N4alPy12createCanvasEPKcbN2py4listE"></span><span id="_CPPv2N4alPy12createCanvasEPKcbN2py4listE"></span><span id="alPy::createCanvas__cCP.b.py::list"></span><span class="target" id="namespaceal_py_1a29a902d976654137da8fcf4d6ffb5802"></span>bool <code class="descname">createCanvas</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>imagePath</em>, bool <em>useConstructionPlane</em> = false, py::list <em>errs</em> = py::list()<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12createCanvasEPKcbN2py4listE" title="Permalink to this definition">¶</a><br /></dt>
@@ -109,25 +137,106 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy20cleanupGeometryModelEbbbbbbbbbb">
-<span id="_CPPv3N4alPy20cleanupGeometryModelEbbbbbbbbbb"></span><span id="_CPPv2N4alPy20cleanupGeometryModelEbbbbbbbbbb"></span><span id="alPy::cleanupGeometryModel__b.b.b.b.b.b.b.b.b.b"></span><span class="target" id="namespaceal_py_1a4a3cfcada64f3269082b939cedbf47a3"></span>int <code class="descname">cleanupGeometryModel</code><span class="sig-paren">(</span>bool <em>faceToSurf</em>, bool <em>splitC1Breaks</em>, bool <em>splitClosedBasis</em>, bool <em>shrinkClosedSurf</em>, bool <em>setPersistentIds</em>, bool <em>splitSphere</em>, bool <em>pickedDagsOnly</em>, bool <em>splitMultiknots</em>, bool <em>delNullNodes</em>, bool <em>delDegenerateGeo</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy20cleanupGeometryModelEbbbbbbbbbb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Clean up geometry in the model. </p>
-<p>This function will clean up the geometry in the model by performing all the actions specified by the user.</p>
+<dt id="_CPPv4N4alPy12defineCanvasERN2py6moduleE">
+<span id="_CPPv3N4alPy12defineCanvasERN2py6moduleE"></span><span id="_CPPv2N4alPy12defineCanvasERN2py6moduleE"></span><span id="alPy::defineCanvas__py::moduleR"></span><span class="target" id="namespaceal_py_1ae0ed8c894778776f58decfec28c1ecee"></span>void <code class="descname">defineCanvas</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12defineCanvasERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy13defineClusterERN2py6moduleE">
+<span id="_CPPv3N4alPy13defineClusterERN2py6moduleE"></span><span id="_CPPv2N4alPy13defineClusterERN2py6moduleE"></span><span id="alPy::defineCluster__py::moduleR"></span><span class="target" id="namespaceal_py_1ab9c4abce3ede84fe0b5e105d5eb402b5"></span>void <code class="descname">defineCluster</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13defineClusterERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy17defineClusterNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy17defineClusterNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy17defineClusterNodeERN2py6moduleE"></span><span id="alPy::defineClusterNode__py::moduleR"></span><span class="target" id="namespaceal_py_1a757ca57c4ef04bb9b3307fff86070da6"></span>void <code class="descname">defineClusterNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17defineClusterNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy24defineConstructionEntityERN2py6moduleE">
+<span id="_CPPv3N4alPy24defineConstructionEntityERN2py6moduleE"></span><span id="_CPPv2N4alPy24defineConstructionEntityERN2py6moduleE"></span><span id="alPy::defineConstructionEntity__py::moduleR"></span><span class="target" id="namespaceal_py_1a3cefe233a54444deb5e2fff94f942038"></span>void <code class="descname">defineConstructionEntity</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy24defineConstructionEntityERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy23defineConstructionPlaneERN2py6moduleE">
+<span id="_CPPv3N4alPy23defineConstructionPlaneERN2py6moduleE"></span><span id="_CPPv2N4alPy23defineConstructionPlaneERN2py6moduleE"></span><span id="alPy::defineConstructionPlane__py::moduleR"></span><span class="target" id="namespaceal_py_1ad8d5896e66b7cf13acea71ccddce0a07"></span>void <code class="descname">defineConstructionPlane</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy23defineConstructionPlaneERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15defineCurveNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy15defineCurveNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy15defineCurveNodeERN2py6moduleE"></span><span id="alPy::defineCurveNode__py::moduleR"></span><span class="target" id="namespaceal_py_1a02e6127748fc6735f7c632df4cff154c"></span>void <code class="descname">defineCurveNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15defineCurveNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy20defineCurveOnSurfaceERN2py6moduleE">
+<span id="_CPPv3N4alPy20defineCurveOnSurfaceERN2py6moduleE"></span><span id="_CPPv2N4alPy20defineCurveOnSurfaceERN2py6moduleE"></span><span id="alPy::defineCurveOnSurface__py::moduleR"></span><span class="target" id="namespaceal_py_1a89e3c837159e3fb0c7a661707a1ff642"></span>void <code class="descname">defineCurveOnSurface</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy20defineCurveOnSurfaceERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy25defineCurveOnSurfacePointERN2py6moduleE">
+<span id="_CPPv3N4alPy25defineCurveOnSurfacePointERN2py6moduleE"></span><span id="_CPPv2N4alPy25defineCurveOnSurfacePointERN2py6moduleE"></span><span id="alPy::defineCurveOnSurfacePoint__py::moduleR"></span><span class="target" id="namespaceal_py_1a7faa1eac881d15e3d1be86f5981404a6"></span>void <code class="descname">defineCurveOnSurfacePoint</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy25defineCurveOnSurfacePointERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy16defineCurvePointERN2py6moduleE">
+<span id="_CPPv3N4alPy16defineCurvePointERN2py6moduleE"></span><span id="_CPPv2N4alPy16defineCurvePointERN2py6moduleE"></span><span id="alPy::defineCurvePoint__py::moduleR"></span><span class="target" id="namespaceal_py_1a47081767b840c2387dae092bcec98dd5"></span>void <code class="descname">defineCurvePoint</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy16defineCurvePointERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy13defineDagNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy13defineDagNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy13defineDagNodeERN2py6moduleE"></span><span id="alPy::defineDagNode__py::moduleR"></span><span class="target" id="namespaceal_py_1a72ba184c39bdda3d8f5b7936fd7cd5c3"></span>void <code class="descname">defineDagNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13defineDagNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy16defineExceptionsERN2py6moduleE">
+<span id="_CPPv3N4alPy16defineExceptionsERN2py6moduleE"></span><span id="_CPPv2N4alPy16defineExceptionsERN2py6moduleE"></span><span id="alPy::defineExceptions__py::moduleR"></span><span class="target" id="namespaceal_py_1ae5c823b15cac3b39b9983a63242e426a"></span>void <code class="descname">defineExceptions</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy16defineExceptionsERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy10defineFaceERN2py6moduleE">
+<span id="_CPPv3N4alPy10defineFaceERN2py6moduleE"></span><span id="_CPPv2N4alPy10defineFaceERN2py6moduleE"></span><span id="alPy::defineFace__py::moduleR"></span><span class="target" id="namespaceal_py_1abbc9aa3c8609971fa88b61f7e754db46"></span>void <code class="descname">defineFace</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy10defineFaceERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy14defineFaceNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy14defineFaceNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy14defineFaceNodeERN2py6moduleE"></span><span id="alPy::defineFaceNode__py::moduleR"></span><span class="target" id="namespaceal_py_1acae43b866c18c9fd4994e4d6d80df534"></span>void <code class="descname">defineFaceNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14defineFaceNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15defineGroupNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy15defineGroupNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy15defineGroupNodeERN2py6moduleE"></span><span id="alPy::defineGroupNode__py::moduleR"></span><span class="target" id="namespaceal_py_1a7be190c7f795aead083c38215d7e49c7"></span>void <code class="descname">defineGroupNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15defineGroupNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy14defineHashableERN2py6moduleE">
+<span id="_CPPv3N4alPy14defineHashableERN2py6moduleE"></span><span id="_CPPv2N4alPy14defineHashableERN2py6moduleE"></span><span id="alPy::defineHashable__py::moduleR"></span><span class="target" id="namespaceal_py_1a81e4b85bc1016c604b340b3d8c738923"></span>void <code class="descname">defineHashable</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14defineHashableERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy14defineIKHandleERN2py6moduleE">
+<span id="_CPPv3N4alPy14defineIKHandleERN2py6moduleE"></span><span id="_CPPv2N4alPy14defineIKHandleERN2py6moduleE"></span><span id="alPy::defineIKHandle__py::moduleR"></span><span class="target" id="namespaceal_py_1a71b250f3d74d6f1f9f5fd477a1f04052"></span>void <code class="descname">defineIKHandle</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14defineIKHandleERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy18defineIKHandleNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy18defineIKHandleNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy18defineIKHandleNodeERN2py6moduleE"></span><span id="alPy::defineIKHandleNode__py::moduleR"></span><span class="target" id="namespaceal_py_1aa5eb54eba450d70f98bdafb5bb5df5f7"></span>void <code class="descname">defineIKHandleNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18defineIKHandleNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy14defineIteratorERN2py6moduleE">
+<span id="_CPPv3N4alPy14defineIteratorERN2py6moduleE"></span><span id="_CPPv2N4alPy14defineIteratorERN2py6moduleE"></span><span id="alPy::defineIterator__py::moduleR"></span><span class="target" id="namespaceal_py_1a1763614ed973dcb7e7292b72e66636a9"></span>void <code class="descname">defineIterator</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14defineIteratorERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy11createLayerERKNSt6stringE">
+<span id="_CPPv3N4alPy11createLayerERKNSt6stringE"></span><span id="_CPPv2N4alPy11createLayerERKNSt6stringE"></span><span id="alPy::createLayer__ssCR"></span><span class="target" id="namespaceal_py_1a4b0c603c15b8bad315156f29cbf531df"></span>AlLayer *<code class="descname">createLayer</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>layer_name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11createLayerERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a new Alias layer object in the Alias Universe. </p>
+<p>This is a convenience method. This functionality can be achieved by simply using the AlLayer constructor and create method.</p>
 <p><dl class="docutils">
 <dt><strong>Return</strong></dt>
-<dd>The number of of dag nodes being changed. </dd>
+<dd>The layer object. </dd>
 <dt><strong>Parameters</strong></dt>
 <dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">face_to_surf</span></code>: if True, convert all FaceNode to trimmed surface </li>
-<li><code class="docutils literal notranslate"><span class="pre">split_c1_breaks</span></code>: if True, split C1 breaks to multiple surfaces </li>
-<li><code class="docutils literal notranslate"><span class="pre">split_closed_basis</span></code>: if True, divide a closed surface to multiple surfaces and split a closed trimming curve to two pieces </li>
-<li><code class="docutils literal notranslate"><span class="pre">shrink_closed_surf</span></code>: if True, shrink closed basis surface of a region </li>
-<li><code class="docutils literal notranslate"><span class="pre">set_persistent_id</span></code>: if True, set persistent ID for each node, region </li>
-<li><code class="docutils literal notranslate"><span class="pre">split_sphere</span></code>: if True, split sphere at equator </li>
-<li><code class="docutils literal notranslate"><span class="pre">picked_dags_only</span></code>: if True, only picked node will be checked and changed if False, the actions will be performed for all the nodes </li>
-<li><code class="docutils literal notranslate"><span class="pre">split_multiknots</span></code>: if True, detach all multiknots </li>
-<li><code class="docutils literal notranslate"><span class="pre">delete_degenerate_geo</span></code>: if True, delete degenerate geometry </li>
-<li><code class="docutils literal notranslate"><span class="pre">delete_null_nodes</span></code>: if True, delete all null nodes</li>
+<li><code class="docutils literal notranslate"><span class="pre">layer_name</span></code>: name for the layer to create.</li>
 </ul>
 </dd>
 </dl>
@@ -135,143 +244,52 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy15deleteNullNodesEv">
-<span id="_CPPv3N4alPy15deleteNullNodesEv"></span><span id="_CPPv2N4alPy15deleteNullNodesEv"></span><span id="alPy::deleteNullNodes"></span><span class="target" id="namespaceal_py_1a0a27fca7f3b884ae3a28f9c35db80ec7"></span>int <code class="descname">deleteNullNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15deleteNullNodesEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Delete all the null nodes of the current scene. </p>
+<dt id="_CPPv4N4alPy17createLayerFolderERKNSt6stringE">
+<span id="_CPPv3N4alPy17createLayerFolderERKNSt6stringE"></span><span id="_CPPv2N4alPy17createLayerFolderERKNSt6stringE"></span><span id="alPy::createLayerFolder__ssCR"></span><span class="target" id="namespaceal_py_1aad7f099a9c5c37b50a26e82c74324048"></span>AlLayer *<code class="descname">createLayerFolder</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>folder_name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17createLayerFolderERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a new Alias layer folder object in the Alias Universe. </p>
+<p>This is a convenience method. This functionality can be achieved by simply using the AlLayer constructor and create method.</p>
 <p><dl class="docutils">
 <dt><strong>Return</strong></dt>
-<dd>The number of of dag nodes being changed. </dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy15getCurrentStageEv">
-<span id="_CPPv3N4alPy15getCurrentStageEv"></span><span id="_CPPv2N4alPy15getCurrentStageEv"></span><span id="alPy::getCurrentStage"></span><span class="target" id="namespaceal_py_1a89949bd29da8f5e846155178bc166983"></span>py::object <code class="descname">getCurrentStage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15getCurrentStageEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get the current stage. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The stage as a Python object. </dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy14getCurrentPathEv">
-<span id="_CPPv3N4alPy14getCurrentPathEv"></span><span id="_CPPv2N4alPy14getCurrentPathEv"></span><span id="alPy::getCurrentPath"></span><span class="target" id="namespaceal_py_1a97ac60ec9664018a59d5013ad7566628"></span>std::string <code class="descname">getCurrentPath</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14getCurrentPathEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get the path to the current file. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The path to the current file. </dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy11isEmptyFileEv">
-<span id="_CPPv3N4alPy11isEmptyFileEv"></span><span id="_CPPv2N4alPy11isEmptyFileEv"></span><span id="alPy::isEmptyFile"></span><span class="target" id="namespaceal_py_1a80c2246cee64589abd9af664e681d90d"></span>bool <code class="descname">isEmptyFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11isEmptyFileEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Check if the file is empty or not. It could be useful when you want to create a new file. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>True is the file is empty, false otherwise. </dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy8saveFileEv">
-<span id="_CPPv3N4alPy8saveFileEv"></span><span id="_CPPv2N4alPy8saveFileEv"></span><span id="alPy::saveFile"></span><span class="target" id="namespaceal_py_1a24d2580f81e00278477896b761d9dc42"></span>void <code class="descname">saveFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy8saveFileEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Save the current file. </p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy10saveFileAsENSt6stringE">
-<span id="_CPPv3N4alPy10saveFileAsENSt6stringE"></span><span id="_CPPv2N4alPy10saveFileAsENSt6stringE"></span><span id="alPy::saveFileAs__ss"></span><span class="target" id="namespaceal_py_1a2567e4b2e3c8915d2f888b23964da61f"></span>void <code class="descname">saveFileAs</code><span class="sig-paren">(</span>std::string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy10saveFileAsENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Save the current file to the given location. </p>
-<p><dl class="docutils">
+<dd>The layer folder object. </dd>
 <dt><strong>Parameters</strong></dt>
 <dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: the path to save the file to </li>
+<li><code class="docutils literal notranslate"><span class="pre">folder_name</span></code>: name of the layer folder to create.</li>
 </ul>
 </dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy8openFileENSt6stringEbb">
-<span id="_CPPv3N4alPy8openFileENSt6stringEbb"></span><span id="_CPPv2N4alPy8openFileENSt6stringEbb"></span><span id="alPy::openFile__ss.b.b"></span><span class="target" id="namespaceal_py_1a1126e6f2dc71695f0530ab0e59801170"></span>void <code class="descname">openFile</code><span class="sig-paren">(</span>std::string <em>path</em>, bool <em>new_stage</em>, bool <em>delete_current</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy8openFileENSt6stringEbb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Open an Alias file. </p>
-<p><dl class="docutils">
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: path to the file to open </li>
-<li><code class="docutils literal notranslate"><span class="pre">new_stage</span></code>: if set to true, open the file in a new stage. Otherwise open the file in the current stage </li>
-<li><code class="docutils literal notranslate"><span class="pre">delete_current</span></code>: if set to true, when opening a file in the current stage, be sure the content of the file won’t be happen to the stage but will replace the current one. </li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy10importFileENSt6stringE">
-<span id="_CPPv3N4alPy10importFileENSt6stringE"></span><span id="_CPPv2N4alPy10importFileENSt6stringE"></span><span id="alPy::importFile__ss"></span><span class="target" id="namespaceal_py_1a2161f38fc2cbef1957c35ccef34a2d1e"></span>void <code class="descname">importFile</code><span class="sig-paren">(</span>std::string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy10importFileENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Import a file into the current one. </p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy5resetEv">
-<span id="_CPPv3N4alPy5resetEv"></span><span id="_CPPv2N4alPy5resetEv"></span><span id="alPy::reset"></span><span class="target" id="namespaceal_py_1aed189e3a09ad5147189825b10a66d565"></span>void <code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy5resetEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Reset the current Alias session by deleting all the stages and setting the default window. </p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy11createStageENSt6stringE">
-<span id="_CPPv3N4alPy11createStageENSt6stringE"></span><span id="_CPPv2N4alPy11createStageENSt6stringE"></span><span id="alPy::createStage__ss"></span><span class="target" id="namespaceal_py_1ad78ea86a42eb7940b8a853511a009c52"></span>void <code class="descname">createStage</code><span class="sig-paren">(</span>std::string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11createStageENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Create a new stage in Alias. </p>
-<p><dl class="docutils">
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: the stage name. </li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy9getStagesEv">
-<span id="_CPPv3N4alPy9getStagesEv"></span><span id="_CPPv2N4alPy9getStagesEv"></span><span id="alPy::getStages"></span><span class="target" id="namespaceal_py_1a7b7e30193b41f117495353c0a6fd6346"></span>py::list <code class="descname">getStages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy9getStagesEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get all the existing stages of the current Alias session. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>A Python list of Python <a class="reference internal" href="#classal_py_1_1_stage"><span class="std std-ref">Stage</span></a> objects. </dd>
 </dl>
 </p>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N4alPy9getLayersEv">
-<span id="_CPPv3N4alPy9getLayersEv"></span><span id="_CPPv2N4alPy9getLayersEv"></span><span id="alPy::getLayers"></span><span class="target" id="namespaceal_py_1a481ee4a49c670b0def130f3028182ace"></span>py::list <code class="descname">getLayers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy9getLayersEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get all the existing layers of the current scene. </p>
+<span id="_CPPv3N4alPy9getLayersEv"></span><span id="_CPPv2N4alPy9getLayersEv"></span><span id="alPy::getLayers"></span><span class="target" id="namespaceal_py_1a086fc0e4807da2970af5180bfa8b181f"></span>std::vector&lt;AlLayer *&gt; <code class="descname">getLayers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy9getLayersEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get all the layers in the Alias Universe. </p>
 <p><dl class="docutils">
 <dt><strong>Return</strong></dt>
-<dd>A list of <a class="reference internal" href="#classal_py_1_1_layer"><span class="std std-ref">Layer</span></a> objects. </dd>
+<dd>A list of Layer objects that represents the Alias layers in the universe. </dd>
 </dl>
 </p>
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy14getLayerByNameENSt6stringE">
-<span id="_CPPv3N4alPy14getLayerByNameENSt6stringE"></span><span id="_CPPv2N4alPy14getLayerByNameENSt6stringE"></span><span id="alPy::getLayerByName__ss"></span><span class="target" id="namespaceal_py_1ac98ae4cde3098ec1fbeca65435ed5cc9"></span>py::object <code class="descname">getLayerByName</code><span class="sig-paren">(</span>std::string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14getLayerByNameENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get a layer given its name. </p>
+<dt id="_CPPv4N4alPy7isEmptyEP7AlLayer">
+<span id="_CPPv3N4alPy7isEmptyEP7AlLayer"></span><span id="_CPPv2N4alPy7isEmptyEP7AlLayer"></span><span id="alPy::isEmpty__AlLayerP"></span><span class="target" id="namespaceal_py_1a168665a4e8d762d54097af2f2db5e5fe"></span>bool <code class="descname">isEmpty</code><span class="sig-paren">(</span>AlLayer *<em>layer</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy7isEmptyEP7AlLayer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the Alias layer has some associated geometry. </p>
 <p><dl class="docutils">
 <dt><strong>Return</strong></dt>
-<dd>A <a class="reference internal" href="#classal_py_1_1_layer"><span class="std std-ref">Layer</span></a> object representing the layer if one has been found with the right name, None otherwise. </dd>
+<dd>True if the Alias layer is empty, False otherwise. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy19exportContentToFileEP7AlLayerRKNSt6stringE">
+<span id="_CPPv3N4alPy19exportContentToFileEP7AlLayerRKNSt6stringE"></span><span id="_CPPv2N4alPy19exportContentToFileEP7AlLayerRKNSt6stringE"></span><span id="alPy::exportContentToFile__AlLayerP.ssCR"></span><span class="target" id="namespaceal_py_1a9ec63bdd02fa598de4c20b7093101a2f"></span>statusCode <code class="descname">exportContentToFile</code><span class="sig-paren">(</span>AlLayer *<em>layer</em>, <em class="property">const</em> std::string &amp;<em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy19exportContentToFileEP7AlLayerRKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Export the content of the Alias layer to a WIRE file. </p>
+<p><dl class="docutils">
 <dt><strong>Parameters</strong></dt>
 <dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: the layer name</li>
+<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: the path to the file we want to export the layer content to. </li>
 </ul>
 </dd>
 </dl>
@@ -279,15 +297,53 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy12getLayerByIdEi">
-<span id="_CPPv3N4alPy12getLayerByIdEi"></span><span id="_CPPv2N4alPy12getLayerByIdEi"></span><span id="alPy::getLayerById__i"></span><span class="target" id="namespaceal_py_1ae174e723d07760828c7d594a7b3ce988"></span>py::object <code class="descname">getLayerById</code><span class="sig-paren">(</span>int <em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12getLayerByIdEi" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get a layer given its id. </p>
+<dt id="_CPPv4N4alPy15assignSelectionEP7AlLayer">
+<span id="_CPPv3N4alPy15assignSelectionEP7AlLayer"></span><span id="_CPPv2N4alPy15assignSelectionEP7AlLayer"></span><span id="alPy::assignSelection__AlLayerP"></span><span class="target" id="namespaceal_py_1ab186a03c194bcc609b92d3d838178b11"></span>statusCode <code class="descname">assignSelection</code><span class="sig-paren">(</span>AlLayer *<em>layer</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15assignSelectionEP7AlLayer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Assign the current selection to the Alias layer. </p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy11assignChildEP7AlLayerP7AlLayer">
+<span id="_CPPv3N4alPy11assignChildEP7AlLayerP7AlLayer"></span><span id="_CPPv2N4alPy11assignChildEP7AlLayerP7AlLayer"></span><span id="alPy::assignChild__AlLayerP.AlLayerP"></span><span class="target" id="namespaceal_py_1a53efbf52620f3d0f798e73ce3fa4337b"></span>statusCode <code class="descname">assignChild</code><span class="sig-paren">(</span>AlLayer *<em>layer</em>, AlLayer *<em>childLayer</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11assignChildEP7AlLayerP7AlLayer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Assign an Alias layer as child of the current layer. </p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy11defineLayerERN2py6moduleE">
+<span id="_CPPv3N4alPy11defineLayerERN2py6moduleE"></span><span id="_CPPv2N4alPy11defineLayerERN2py6moduleE"></span><span id="alPy::defineLayer__py::moduleR"></span><span class="target" id="namespaceal_py_1a33fd8b42938bb4c8ee2aba171473740f"></span>void <code class="descname">defineLayer</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11defineLayerERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy19defineLayeredShaderERN2py6moduleE">
+<span id="_CPPv3N4alPy19defineLayeredShaderERN2py6moduleE"></span><span id="_CPPv2N4alPy19defineLayeredShaderERN2py6moduleE"></span><span id="alPy::defineLayeredShader__py::moduleR"></span><span class="target" id="namespaceal_py_1a09cfb0cd18d7388393d9718fa3d5279b"></span>void <code class="descname">defineLayeredShader</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy19defineLayeredShaderERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy11defineLightERN2py6moduleE">
+<span id="_CPPv3N4alPy11defineLightERN2py6moduleE"></span><span id="_CPPv2N4alPy11defineLightERN2py6moduleE"></span><span id="alPy::defineLight__py::moduleR"></span><span class="target" id="namespaceal_py_1aa40cdf320682fcbcadc28a0482fac07d"></span>void <code class="descname">defineLight</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11defineLightERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15defineLightNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy15defineLightNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy15defineLightNodeERN2py6moduleE"></span><span id="alPy::defineLightNode__py::moduleR"></span><span class="target" id="namespaceal_py_1af6efb674eedc3cb468bc5abdbb39f476"></span>void <code class="descname">defineLightNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15defineLightNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy14defineLinkItemERN2py6moduleE">
+<span id="_CPPv3N4alPy14defineLinkItemERN2py6moduleE"></span><span id="_CPPv2N4alPy14defineLinkItemERN2py6moduleE"></span><span id="alPy::defineLinkItem__py::moduleR"></span><span class="target" id="namespaceal_py_1a500b6a2e8ccd38e44c9a8e14b0971e1a"></span>void <code class="descname">defineLinkItem</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14defineLinkItemERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15isLocatorPickedERK9AlLocator">
+<span id="_CPPv3N4alPy15isLocatorPickedERK9AlLocator"></span><span id="_CPPv2N4alPy15isLocatorPickedERK9AlLocator"></span><span id="alPy::isLocatorPicked__AlLocatorCR"></span><span class="target" id="namespaceal_py_1aade988d117cb1e8966de33760124fc79"></span>int <code class="descname">isLocatorPicked</code><span class="sig-paren">(</span><em class="property">const</em> AlLocator &amp;<em>locator</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15isLocatorPickedERK9AlLocator" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the AlLocator object is picked or not. </p>
+<p>This is a helper method to return the <code class="docutils literal notranslate"><span class="pre">isPicked</span></code> variable, since python cannot return values by reference for immutable types.</p>
 <p><dl class="docutils">
 <dt><strong>Return</strong></dt>
-<dd>A <a class="reference internal" href="#classal_py_1_1_layer"><span class="std std-ref">Layer</span></a> object representing the layer if one has been found with the right name, None otherwise. </dd>
+<dd>Return an integer value indicating the result: -1 - failed to check if the locater is picked or not 0 - the locator is not picked 1 - the locator is picked </dd>
 <dt><strong>Parameters</strong></dt>
 <dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">id</span></code>: the layer id</li>
+<li><code class="docutils literal notranslate"><span class="pre">locator</span></code>: - the AlLocator to check</li>
 </ul>
 </dd>
 </dl>
@@ -295,15 +351,17 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy11createLayerENSt6stringE">
-<span id="_CPPv3N4alPy11createLayerENSt6stringE"></span><span id="_CPPv2N4alPy11createLayerENSt6stringE"></span><span id="alPy::createLayer__ss"></span><span class="target" id="namespaceal_py_1a828dc1fb7f5035336714cf59a87c34b1"></span>py::object <code class="descname">createLayer</code><span class="sig-paren">(</span>std::string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11createLayerENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Create a layer. </p>
+<dt id="_CPPv4N4alPy18isLocatorTemplatedERK9AlLocator">
+<span id="_CPPv3N4alPy18isLocatorTemplatedERK9AlLocator"></span><span id="_CPPv2N4alPy18isLocatorTemplatedERK9AlLocator"></span><span id="alPy::isLocatorTemplated__AlLocatorCR"></span><span class="target" id="namespaceal_py_1a489a223595d1b4b8056d607cc7ecbc9a"></span>int <code class="descname">isLocatorTemplated</code><span class="sig-paren">(</span><em class="property">const</em> AlLocator &amp;<em>locator</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18isLocatorTemplatedERK9AlLocator" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the AlLocator object is templated or not. </p>
+<p>An AlLocator is said to be templated if it depends on another object which is templated.</p>
+<p>This is a helper method to return the <code class="docutils literal notranslate"><span class="pre">templated</span></code> variable, since python cannot return values by reference for immutable types.</p>
 <p><dl class="docutils">
 <dt><strong>Return</strong></dt>
-<dd>A <a class="reference internal" href="#classal_py_1_1_layer"><span class="std std-ref">Layer</span></a> object representing the newly created layer. </dd>
+<dd>Return an integer value indicating the result: -1 - failed to check if the locater is templated or not 0 - the locator is not templated 1 - the locator is templated </dd>
 <dt><strong>Parameters</strong></dt>
 <dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: the layer name</li>
+<li><code class="docutils literal notranslate"><span class="pre">locator</span></code>: - the AlLocator to check</li>
 </ul>
 </dd>
 </dl>
@@ -311,15 +369,9 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy21getAnnotationLocatorsEv">
-<span id="_CPPv3N4alPy21getAnnotationLocatorsEv"></span><span id="_CPPv2N4alPy21getAnnotationLocatorsEv"></span><span id="alPy::getAnnotationLocators"></span><span class="target" id="namespaceal_py_1a1b0e49ec719c5dd9152d33d16d85f12d"></span>py::list <code class="descname">getAnnotationLocators</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy21getAnnotationLocatorsEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>List all the annotation locators of the current file. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>A list of annotations. </dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy13defineLocatorERN2py6moduleE">
+<span id="_CPPv3N4alPy13defineLocatorERN2py6moduleE"></span><span id="_CPPv2N4alPy13defineLocatorERN2py6moduleE"></span><span id="alPy::defineLocator__py::moduleR"></span><span class="target" id="namespaceal_py_1a8d5bd3ea4621c49e21c97b2e78518c72"></span>void <code class="descname">defineLocator</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13defineLocatorERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N4alPy10logMessageE12AlOutputTypePKc">
@@ -409,197 +461,54 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy15getAlternativesEv">
-<span id="_CPPv3N4alPy15getAlternativesEv"></span><span id="_CPPv2N4alPy15getAlternativesEv"></span><span id="alPy::getAlternatives"></span><span class="target" id="namespaceal_py_1a39e75e0942dd51f461aff81006a3fd10"></span>py::list <code class="descname">getAlternatives</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15getAlternativesEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get a list of all the alternatives of the current file. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>A list of Python <a class="reference internal" href="#classal_py_1_1_alternative"><span class="std std-ref">Alternative</span></a> objects. </dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy12defineLoggerERN2py6moduleE">
+<span id="_CPPv3N4alPy12defineLoggerERN2py6moduleE"></span><span id="_CPPv2N4alPy12defineLoggerERN2py6moduleE"></span><span id="alPy::defineLogger__py::moduleR"></span><span class="target" id="namespaceal_py_1ac4b3d4782e473042a530acdbfa41617c"></span>void <code class="descname">defineLogger</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12defineLoggerERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy20getAlternativeByNameENSt6stringE">
-<span id="_CPPv3N4alPy20getAlternativeByNameENSt6stringE"></span><span id="_CPPv2N4alPy20getAlternativeByNameENSt6stringE"></span><span id="alPy::getAlternativeByName__ss"></span><span class="target" id="namespaceal_py_1aada2e80c17623f539ae572ecc5bc44e4"></span>py::object <code class="descname">getAlternativeByName</code><span class="sig-paren">(</span>std::string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy20getAlternativeByNameENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get an Alias alternative given its name. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The <a class="reference internal" href="#classal_py_1_1_alternative"><span class="std std-ref">Alternative</span></a> Python object. </dd>
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: name of the <a class="reference internal" href="#classal_py_1_1_alternative"><span class="std std-ref">Alternative</span></a> we want to retrieve</li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy10defineMenuERN2py6moduleE">
+<span id="_CPPv3N4alPy10defineMenuERN2py6moduleE"></span><span id="_CPPv2N4alPy10defineMenuERN2py6moduleE"></span><span id="alPy::defineMenu__py::moduleR"></span><span class="target" id="namespaceal_py_1af80d3b2666fc4c4620126ebe63b32048"></span>void <code class="descname">defineMenu</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy10defineMenuERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy17createAlternativeENSt6stringEb">
-<span id="_CPPv3N4alPy17createAlternativeENSt6stringEb"></span><span id="_CPPv2N4alPy17createAlternativeENSt6stringEb"></span><span id="alPy::createAlternative__ss.b"></span><span class="target" id="namespaceal_py_1a909d1712c06bd444e9006a57083f82be"></span>py::object <code class="descname">createAlternative</code><span class="sig-paren">(</span>std::string <em>name</em>, bool <em>force</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17createAlternativeENSt6stringEb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Create an Alias alternative. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The <a class="reference internal" href="#classal_py_1_1_alternative"><span class="std std-ref">Alternative</span></a> Python object. </dd>
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: name of the <a class="reference internal" href="#classal_py_1_1_alternative"><span class="std std-ref">Alternative</span></a> we want to create</li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy10defineMeshERN2py6moduleE">
+<span id="_CPPv3N4alPy10defineMeshERN2py6moduleE"></span><span id="_CPPv2N4alPy10defineMeshERN2py6moduleE"></span><span id="alPy::defineMesh__py::moduleR"></span><span class="target" id="namespaceal_py_1abedbf576984d86b94a36924145350f5f"></span>void <code class="descname">defineMesh</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy10defineMeshERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy13getReferencesEv">
-<span id="_CPPv3N4alPy13getReferencesEv"></span><span id="_CPPv2N4alPy13getReferencesEv"></span><span id="alPy::getReferences"></span><span class="target" id="namespaceal_py_1a3884741e4db5ba923c013bfb53ce5a4a"></span>py::list <code class="descname">getReferences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13getReferencesEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get a list of all the references of the current file. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>A list of Python <a class="reference internal" href="#classal_py_1_1_reference"><span class="std std-ref">Reference</span></a> objects. </dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy14defineMeshNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy14defineMeshNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy14defineMeshNodeERN2py6moduleE"></span><span id="alPy::defineMeshNode__py::moduleR"></span><span class="target" id="namespaceal_py_1a76526fa821f1a9e4270daacf1d380bd1"></span>void <code class="descname">defineMeshNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14defineMeshNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy18getReferenceByPathENSt6stringE">
-<span id="_CPPv3N4alPy18getReferenceByPathENSt6stringE"></span><span id="_CPPv2N4alPy18getReferenceByPathENSt6stringE"></span><span id="alPy::getReferenceByPath__ss"></span><span class="target" id="namespaceal_py_1a3aa708e89203011dc9b7a54cf7431854"></span>py::object <code class="descname">getReferenceByPath</code><span class="sig-paren">(</span>std::string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18getReferenceByPathENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Find a reference file given its path. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The <a class="reference internal" href="#classal_py_1_1_reference"><span class="std std-ref">Reference</span></a> Python object. </dd>
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: path to the reference file</li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy13defineMessageERN2py6moduleE">
+<span id="_CPPv3N4alPy13defineMessageERN2py6moduleE"></span><span id="_CPPv2N4alPy13defineMessageERN2py6moduleE"></span><span id="alPy::defineMessage__py::moduleR"></span><span class="target" id="namespaceal_py_1a5143bd9cd1cd4ce655e29011bf719514"></span>void <code class="descname">defineMessage</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13defineMessageERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy18getReferenceByNameENSt6stringE">
-<span id="_CPPv3N4alPy18getReferenceByNameENSt6stringE"></span><span id="_CPPv2N4alPy18getReferenceByNameENSt6stringE"></span><span id="alPy::getReferenceByName__ss"></span><span class="target" id="namespaceal_py_1a656675d06541c5887b47be3af616ab71"></span>py::object <code class="descname">getReferenceByName</code><span class="sig-paren">(</span>std::string <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18getReferenceByNameENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Find a reference file given its name. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The <a class="reference internal" href="#classal_py_1_1_reference"><span class="std std-ref">Reference</span></a> Python object. </dd>
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: name to the reference file.</li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy12defineObjectERN2py6moduleE">
+<span id="_CPPv3N4alPy12defineObjectERN2py6moduleE"></span><span id="_CPPv2N4alPy12defineObjectERN2py6moduleE"></span><span id="alPy::defineObject__py::moduleR"></span><span class="target" id="namespaceal_py_1a34116b7ff6ed0a521eb7dc6ce4c81c3c"></span>void <code class="descname">defineObject</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12defineObjectERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy18getReferenceByUUIDEN2py4listE">
-<span id="_CPPv3N4alPy18getReferenceByUUIDEN2py4listE"></span><span id="_CPPv2N4alPy18getReferenceByUUIDEN2py4listE"></span><span id="alPy::getReferenceByUUID__py::list"></span><span class="target" id="namespaceal_py_1a48c3e54989791ae1b37b2b57008ee360"></span>py::object <code class="descname">getReferenceByUUID</code><span class="sig-paren">(</span>py::list <em>uuid</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18getReferenceByUUIDEN2py4listE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Find a reference file given its UUID. </p>
-<p>This method requires Alias version &gt; v2020.2</p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The <a class="reference internal" href="#classal_py_1_1_reference"><span class="std std-ref">Reference</span></a> Python object. </dd>
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">uuid</span></code>: UUID to the reference file.</li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy24defineOrthographicCameraERN2py6moduleE">
+<span id="_CPPv3N4alPy24defineOrthographicCameraERN2py6moduleE"></span><span id="_CPPv2N4alPy24defineOrthographicCameraERN2py6moduleE"></span><span id="alPy::defineOrthographicCamera__py::moduleR"></span><span class="target" id="namespaceal_py_1a76c67f9e82b4cf1d8a0a2e3fa8ec6a8b"></span>void <code class="descname">defineOrthographicCamera</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy24defineOrthographicCameraERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy15createReferenceENSt6stringE">
-<span id="_CPPv3N4alPy15createReferenceENSt6stringE"></span><span id="_CPPv2N4alPy15createReferenceENSt6stringE"></span><span id="alPy::createReference__ss"></span><span class="target" id="namespaceal_py_1ab2c932a8e027421e81c8a9ad9fd5b8e1"></span>py::object <code class="descname">createReference</code><span class="sig-paren">(</span>std::string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15createReferenceENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Create a reference given its path. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The <a class="reference internal" href="#classal_py_1_1_reference"><span class="std std-ref">Reference</span></a> Python object. </dd>
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: path to the file to use as a reference</li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy23definePerspectiveCameraERN2py6moduleE">
+<span id="_CPPv3N4alPy23definePerspectiveCameraERN2py6moduleE"></span><span id="_CPPv2N4alPy23definePerspectiveCameraERN2py6moduleE"></span><span id="alPy::definePerspectiveCamera__py::moduleR"></span><span class="target" id="namespaceal_py_1a41da471850922a6d9d1c14fbe0e47d5f"></span>void <code class="descname">definePerspectiveCamera</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy23definePerspectiveCameraERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy15updateReferenceENSt6stringENSt6stringE">
-<span id="_CPPv3N4alPy15updateReferenceENSt6stringENSt6stringE"></span><span id="_CPPv2N4alPy15updateReferenceENSt6stringENSt6stringE"></span><span id="alPy::updateReference__ss.ss"></span><span class="target" id="namespaceal_py_1a9c032b479114e3362c7375baf15cbac0"></span>py::object <code class="descname">updateReference</code><span class="sig-paren">(</span>std::string <em>oldPath</em>, std::string <em>newPath</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15updateReferenceENSt6stringENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Update a reference by deleting the old one and creating a new one. </p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The <a class="reference internal" href="#classal_py_1_1_reference"><span class="std std-ref">Reference</span></a> Python object. </dd>
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">oldPath</span></code>: path to the reference file to delete </li>
-<li><code class="docutils literal notranslate"><span class="pre">newPath</span></code>: path to the reference file to create</li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy14definePickListERN2py6moduleE">
+<span id="_CPPv3N4alPy14definePickListERN2py6moduleE"></span><span id="_CPPv2N4alPy14definePickListERN2py6moduleE"></span><span id="alPy::definePickList__py::moduleR"></span><span class="target" id="namespaceal_py_1abd3fb79885c4432e77937e2818ff8d8b"></span>void <code class="descname">definePickList</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14definePickListERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy17importSubdivisionENSt6stringE">
-<span id="_CPPv3N4alPy17importSubdivisionENSt6stringE"></span><span id="_CPPv2N4alPy17importSubdivisionENSt6stringE"></span><span id="alPy::importSubdivision__ss"></span><span class="target" id="namespaceal_py_1a913986dbb3d37ace0ff9d1e1a40e0bc4"></span>void <code class="descname">importSubdivision</code><span class="sig-paren">(</span>std::string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17importSubdivisionENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Import the subdivision for the given path. </p>
-<p>Throws <em><a class="reference internal" href="#classal_py_1_1_alias_python_exception"><span class="std std-ref">AliasPythonException</span></a></em> on failure to import.</p>
-<p><dl class="docutils">
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: the import path </li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy13zeroTransformEv">
-<span id="_CPPv3N4alPy13zeroTransformEv"></span><span id="_CPPv2N4alPy13zeroTransformEv"></span><span id="alPy::zeroTransform"></span><span class="target" id="namespaceal_py_1a25038c28da5690b0da544d49bdf2e76d"></span>statusCode <code class="descname">zeroTransform</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13zeroTransformEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Apply the zero transform to all picked nodes. </p>
-<p>Reset any scaling, translation (movement), and rotation to all picked dag nodes.</p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>sObjectNotFound if there is nothing on the pick list, or AlDagNodeExt::zeroTransformDagNode returned it indicating that the arguments passed were invalid. sSuccess if there were no dag nodes to apply the transform to (trivial case), or AlDagNodeExt::zeroTransformDagNode returned it indicating the transform was applied successfully. </dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy13zeroTransformEPcb">
-<span id="_CPPv3N4alPy13zeroTransformEPcb"></span><span id="_CPPv2N4alPy13zeroTransformEPcb"></span><span id="alPy::zeroTransform__cP.b"></span><span class="target" id="namespaceal_py_1a8f3cc47f451cf03652150d3df00b21ed"></span>statusCode <code class="descname">zeroTransform</code><span class="sig-paren">(</span>char *<em>nodeName</em>, bool <em>clearPickList</em> = false<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13zeroTransformEPcb" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Apply the zero transform to nodes that match the given <em>nodeName</em>. </p>
-<p>Adds all objects to the pick list that match the given string pattern <em>nodeName</em>, then the zero transform is applied reseting any scaling, translation (movement), and rotation.</p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>sInvalidArgument if AlPickList::pickByName fails to find any objects matching ‘nodeName’. sInvalidObject if there is nothing on the pick list, or zeroTransform returned it indicating that the arguments passed were invalid. sSuccess if there were no dag nodes to apply the transform to (trivial case), or zeroTransform returned it indicating the transform was applied successfully. </dd>
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last simple">
-<li><code class="docutils literal notranslate"><span class="pre">nodeName</span></code>: all objects in the dag that match this string pattern will be picked. </li>
-<li><code class="docutils literal notranslate"><span class="pre">clearPickList</span></code>: if true the current pick list will be cleared and set to the objects found by AlPickList::pickByName, else the current pick list will be saved and restored before this function returns. Default is false.</li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N4alPy21zeroTransformTopLevelEv">
-<span id="_CPPv3N4alPy21zeroTransformTopLevelEv"></span><span id="_CPPv2N4alPy21zeroTransformTopLevelEv"></span><span id="alPy::zeroTransformTopLevel"></span><span class="target" id="namespaceal_py_1ad26f7036ae86b6a6275fec10e238b79c"></span>statusCode <code class="descname">zeroTransformTopLevel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy21zeroTransformTopLevelEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Apply the zero transform to all top level dag nodes in the universe. </p>
-<p>Reset any scaling, translation (movement), and rotation to all top-level dag nodes.</p>
-<p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>The status code result from performing the transform. </dd>
-</dl>
-</p>
-</dd></dl>
+<dt id="_CPPv4N4alPy11definePointERN2py6moduleE">
+<span id="_CPPv3N4alPy11definePointERN2py6moduleE"></span><span id="_CPPv2N4alPy11definePointERN2py6moduleE"></span><span id="alPy::definePoint__py::moduleR"></span><span class="target" id="namespaceal_py_1a6d71fa43aa570dc0dde588bbe9dae717"></span>void <code class="descname">definePoint</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11definePointERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N4alPy21getProductInformationEv">
@@ -613,46 +522,496 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy11hasVariantsEv">
-<span id="_CPPv3N4alPy11hasVariantsEv"></span><span id="_CPPv2N4alPy11hasVariantsEv"></span><span id="alPy::hasVariants"></span><span class="target" id="namespaceal_py_1a11d80a46623991973770db2c1cd2961e"></span>bool <code class="descname">hasVariants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11hasVariantsEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Check if the current file contains at least one variant. </p>
+<dt id="_CPPv4N4alPy13defineProductERN2py6moduleE">
+<span id="_CPPv3N4alPy13defineProductERN2py6moduleE"></span><span id="_CPPv2N4alPy13defineProductERN2py6moduleE"></span><span id="alPy::defineProduct__py::moduleR"></span><span class="target" id="namespaceal_py_1a3b8c04f30bc10310e3ab41de2588531f"></span>void <code class="descname">defineProduct</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13defineProductERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15getAlternativesEP15AlReferenceFile">
+<span id="_CPPv3N4alPy15getAlternativesEP15AlReferenceFile"></span><span id="_CPPv2N4alPy15getAlternativesEP15AlReferenceFile"></span><span id="alPy::getAlternatives__AlReferenceFileP"></span><span class="target" id="namespaceal_py_1ae6f59a7fd405c2677219cbe55bb3f699"></span>std::vector&lt;AlReferenceFileSet *&gt; <code class="descname">getAlternatives</code><span class="sig-paren">(</span>AlReferenceFile *<em>refFile</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15getAlternativesEP15AlReferenceFile" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get all the alternatives this reference belongs to. </p>
 <p><dl class="docutils">
 <dt><strong>Return</strong></dt>
-<dd>True if the file contains variants, otherwise false. </dd>
+<dd>A list of AlReferenceFileSet objects. </dd>
 </dl>
 </p>
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4N4alPy11getVariantsEv">
-<span id="_CPPv3N4alPy11getVariantsEv"></span><span id="_CPPv2N4alPy11getVariantsEv"></span><span id="alPy::getVariants"></span><span class="target" id="namespaceal_py_1a2d48e073423b59536c5055df6c57590a"></span>py::list <code class="descname">getVariants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11getVariantsEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Get the list of variants for the current file in Alias. </p>
-<p>For each variant of the current file, generate the associated thumbnail and get its path. Get also the variant name and return everything as a Python list.</p>
-<p>NOTE: this function works only in OpenAlias.</p>
+<dt id="_CPPv4N4alPy13getReferencesEP18AlReferenceFileSet">
+<span id="_CPPv3N4alPy13getReferencesEP18AlReferenceFileSet"></span><span id="_CPPv2N4alPy13getReferencesEP18AlReferenceFileSet"></span><span id="alPy::getReferences__AlReferenceFileSetP"></span><span class="target" id="namespaceal_py_1a1099ed3bb1543a0890ed77150a77e5c9"></span>std::vector&lt;AlReferenceFile *&gt; <code class="descname">getReferences</code><span class="sig-paren">(</span>AlReferenceFileSet *<em>refFileSet</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13getReferencesEP18AlReferenceFileSet" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get all the references belonging to the current alternative. </p>
 <p><dl class="docutils">
 <dt><strong>Return</strong></dt>
-<dd>A list of Python <a class="reference internal" href="#classal_py_1_1_variant"><span class="std std-ref">Variant</span></a> objects </dd>
+<dd>A list of AlReferenceFile objects. </dd>
 </dl>
 </p>
 </dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy7getUuidEP15AlReferenceFile">
+<span id="_CPPv3N4alPy7getUuidEP15AlReferenceFile"></span><span id="_CPPv2N4alPy7getUuidEP15AlReferenceFile"></span><span id="alPy::getUuid__AlReferenceFileP"></span><span class="target" id="namespaceal_py_1a994f1a4c987d4665c1dfd348ba7aa7fd"></span>std::vector&lt;unsigned int&gt; <code class="descname">getUuid</code><span class="sig-paren">(</span>AlReferenceFile *<em>refFile</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy7getUuidEP15AlReferenceFile" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Convert the AlReferenceFile UUID to a type consumable by python. </p>
+<p>Converts the UUID struct to a python list.</p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>A python list of length 4 that contains the UUID value. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">refFile</span></code>: - the AlReferenceFile to get the UUID</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15getAlternativesEv">
+<span id="_CPPv3N4alPy15getAlternativesEv"></span><span id="_CPPv2N4alPy15getAlternativesEv"></span><span id="alPy::getAlternatives"></span><span class="target" id="namespaceal_py_1a5fc8f956c14b116c4ae3bbbd2a42e8f0"></span>std::vector&lt;AlReferenceFileSet *&gt; <code class="descname">getAlternatives</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15getAlternativesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get a list of all the alternatives of the current file. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>A list of AlReferenceFileSet objects. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy20getAlternativeByNameERKNSt6stringE">
+<span id="_CPPv3N4alPy20getAlternativeByNameERKNSt6stringE"></span><span id="_CPPv2N4alPy20getAlternativeByNameERKNSt6stringE"></span><span id="alPy::getAlternativeByName__ssCR"></span><span class="target" id="namespaceal_py_1add7ec7ac812e1abecdd96d5fd24d0e77"></span>AlReferenceFileSet *<code class="descname">getAlternativeByName</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy20getAlternativeByNameERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get an Alias alternative given its name. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The AlReferenceFileSet object. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: name of the Alternative we want to retrieve</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy17createAlternativeERKNSt6stringEb">
+<span id="_CPPv3N4alPy17createAlternativeERKNSt6stringEb"></span><span id="_CPPv2N4alPy17createAlternativeERKNSt6stringEb"></span><span id="alPy::createAlternative__ssCR.b"></span><span class="target" id="namespaceal_py_1a132b04502aa5ba9107badf5d05c784df"></span>AlReferenceFileSet *<code class="descname">createAlternative</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>name</em>, bool <em>force</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17createAlternativeERKNSt6stringEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create an Alias alternative. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The AlReferenceFileSet object. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: name of the Alternative we want to create</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy12hasReferenceEv">
+<span id="_CPPv3N4alPy12hasReferenceEv"></span><span id="_CPPv2N4alPy12hasReferenceEv"></span><span id="alPy::hasReference"></span><span class="target" id="namespaceal_py_1ae0aace77e09c412f5bdf7879f5feada0"></span>bool <code class="descname">hasReference</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12hasReferenceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if there are any AlReferenceFiles in the Alias Universe. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>True if there are any AlReferenceFiles found in the Alias Universe, else False. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy13getReferencesEv">
+<span id="_CPPv3N4alPy13getReferencesEv"></span><span id="_CPPv2N4alPy13getReferencesEv"></span><span id="alPy::getReferences"></span><span class="target" id="namespaceal_py_1ada89da808eb9ed1673ff8581314f7bec"></span>std::vector&lt;AlReferenceFile *&gt; <code class="descname">getReferences</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13getReferencesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get a list of all the references of the current file. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>A list of AlReferenceFile objects. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy18getReferenceByPathERKNSt6stringE">
+<span id="_CPPv3N4alPy18getReferenceByPathERKNSt6stringE"></span><span id="_CPPv2N4alPy18getReferenceByPathERKNSt6stringE"></span><span id="alPy::getReferenceByPath__ssCR"></span><span class="target" id="namespaceal_py_1a71bb2ce47224ac89c2ab4e3abd844614"></span>AlReferenceFile *<code class="descname">getReferenceByPath</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18getReferenceByPathERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Find a reference file given its path. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The AlReferenceFile object. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: path to the reference file</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy18getReferenceByNameERKNSt6stringE">
+<span id="_CPPv3N4alPy18getReferenceByNameERKNSt6stringE"></span><span id="_CPPv2N4alPy18getReferenceByNameERKNSt6stringE"></span><span id="alPy::getReferenceByName__ssCR"></span><span class="target" id="namespaceal_py_1a36a74397737ea42db269990279d05105"></span>AlReferenceFile *<code class="descname">getReferenceByName</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18getReferenceByNameERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Find a reference file given its name. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The AlReferenceFile object. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: name to the reference file.</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy18getReferenceByUUIDEN2py4listE">
+<span id="_CPPv3N4alPy18getReferenceByUUIDEN2py4listE"></span><span id="_CPPv2N4alPy18getReferenceByUUIDEN2py4listE"></span><span id="alPy::getReferenceByUUID__py::list"></span><span class="target" id="namespaceal_py_1aa10e7a799bd528030bc3eeb7b6021d2a"></span>AlReferenceFile *<code class="descname">getReferenceByUUID</code><span class="sig-paren">(</span>py::list <em>uuid</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18getReferenceByUUIDEN2py4listE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Find a reference file given its UUID. </p>
+<p>This method requires Alias version &gt; v2020.2</p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The AlReferenceFile object. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">uuid</span></code>: UUID to the reference file.</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15createReferenceERKNSt6stringE">
+<span id="_CPPv3N4alPy15createReferenceERKNSt6stringE"></span><span id="_CPPv2N4alPy15createReferenceERKNSt6stringE"></span><span id="alPy::createReference__ssCR"></span><span class="target" id="namespaceal_py_1a240a9d67a7c195e781b5deff2ebc9637"></span>AlReferenceFile *<code class="descname">createReference</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15createReferenceERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a reference given its path. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The AlReferenceFile object. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: path to the file to use as a reference</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15updateReferenceERKNSt6stringERKNSt6stringE">
+<span id="_CPPv3N4alPy15updateReferenceERKNSt6stringERKNSt6stringE"></span><span id="_CPPv2N4alPy15updateReferenceERKNSt6stringERKNSt6stringE"></span><span id="alPy::updateReference__ssCR.ssCR"></span><span class="target" id="namespaceal_py_1a60a90ab7adfbc90daf80d1d4c7999da2"></span>AlReferenceFile *<code class="descname">updateReference</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>oldPath</em>, <em class="property">const</em> std::string &amp;<em>newPath</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15updateReferenceERKNSt6stringERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update a reference by deleting the old one and creating a new one. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The AlReferenceFile object. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">oldPath</span></code>: path to the reference file to delete </li>
+<li><code class="docutils literal notranslate"><span class="pre">newPath</span></code>: path to the reference file to create</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15defineReferenceERN2py6moduleE">
+<span id="_CPPv3N4alPy15defineReferenceERN2py6moduleE"></span><span id="_CPPv2N4alPy15defineReferenceERN2py6moduleE"></span><span id="alPy::defineReference__py::moduleR"></span><span class="target" id="namespaceal_py_1a52af8b4675b1c4630065e30421465cde"></span>void <code class="descname">defineReference</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15defineReferenceERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy12defineShaderERN2py6moduleE">
+<span id="_CPPv3N4alPy12defineShaderERN2py6moduleE"></span><span id="_CPPv2N4alPy12defineShaderERN2py6moduleE"></span><span id="alPy::defineShader__py::moduleR"></span><span class="target" id="namespaceal_py_1ab1aab4364afa35d726b18d0d986d48a0"></span>void <code class="descname">defineShader</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12defineShaderERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy11defineShellERN2py6moduleE">
+<span id="_CPPv3N4alPy11defineShellERN2py6moduleE"></span><span id="_CPPv2N4alPy11defineShellERN2py6moduleE"></span><span id="alPy::defineShell__py::moduleR"></span><span class="target" id="namespaceal_py_1aa16dc4fff4ce44e2dd10124772fa977a"></span>void <code class="descname">defineShell</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11defineShellERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15defineShellNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy15defineShellNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy15defineShellNodeERN2py6moduleE"></span><span id="alPy::defineShellNode__py::moduleR"></span><span class="target" id="namespaceal_py_1a92fa5e3eb08fbd220664e06df1292fb8"></span>void <code class="descname">defineShellNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15defineShellNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy16defineSpacePointERN2py6moduleE">
+<span id="_CPPv3N4alPy16defineSpacePointERN2py6moduleE"></span><span id="_CPPv2N4alPy16defineSpacePointERN2py6moduleE"></span><span id="alPy::defineSpacePoint__py::moduleR"></span><span class="target" id="namespaceal_py_1a4cbb0db1ebbfd66bbb7f800542697094"></span>void <code class="descname">defineSpacePoint</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy16defineSpacePointERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15getCurrentStageEv">
+<span id="_CPPv3N4alPy15getCurrentStageEv"></span><span id="_CPPv2N4alPy15getCurrentStageEv"></span><span id="alPy::getCurrentStage"></span><span class="target" id="namespaceal_py_1a031b26b0202157c783fa2e1c30cc8fe6"></span><a class="reference internal" href="internal_classes.html#_CPPv4N4alPy5StageE" title="alPy::Stage">Stage</a> *<code class="descname">getCurrentStage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15getCurrentStageEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get the current stage. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The <a class="reference internal" href="#classal_py_1_1_stage"><span class="std std-ref">Stage</span></a> object. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy14getCurrentPathEv">
+<span id="_CPPv3N4alPy14getCurrentPathEv"></span><span id="_CPPv2N4alPy14getCurrentPathEv"></span><span id="alPy::getCurrentPath"></span><span class="target" id="namespaceal_py_1a97ac60ec9664018a59d5013ad7566628"></span>std::string <code class="descname">getCurrentPath</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14getCurrentPathEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get the path to the current file. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The path to the current file. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy12isStageEmptyEv">
+<span id="_CPPv3N4alPy12isStageEmptyEv"></span><span id="_CPPv2N4alPy12isStageEmptyEv"></span><span id="alPy::isStageEmpty"></span><span class="target" id="namespaceal_py_1a356aa2bd9ffeca879b16e8a40fdc762f"></span>bool <code class="descname">isStageEmpty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12isStageEmptyEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the current stage is empty or not. </p>
+<p>Useful when you want to create a new file.</p>
+<p>A stage is empty if it has at least one AlDagNode that is not an AlGroupNode, and is not one of the default AlCameraNodes in the default AlGroupNode.</p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>true is the stage is empty, otherwise false. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy8saveFileEv">
+<span id="_CPPv3N4alPy8saveFileEv"></span><span id="_CPPv2N4alPy8saveFileEv"></span><span id="alPy::saveFile"></span><span class="target" id="namespaceal_py_1a845feff51733ae341add598f5ff753c8"></span>statusCode <code class="descname">saveFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy8saveFileEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Save the current file. </p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy10saveFileAsERKNSt6stringE">
+<span id="_CPPv3N4alPy10saveFileAsERKNSt6stringE"></span><span id="_CPPv2N4alPy10saveFileAsERKNSt6stringE"></span><span id="alPy::saveFileAs__ssCR"></span><span class="target" id="namespaceal_py_1a91af46be13e62c505bc46dea1f50fa84"></span>statusCode <code class="descname">saveFileAs</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy10saveFileAsERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Save the current file to the given location. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The resulting status code for the save as operation: sSuccess - the file was saved successfully sFailure - the file was not saved successfully (file may have been saved but failed to name the stage correctly)</dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: the path to save the file to</li>
+</ul>
+</dd>
+<dt><strong>Exceptions</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><a class="reference internal" href="#classal_py_1_1_alias_python_exception"><span class="std std-ref"><span class="pre">AliasPythonException</span></span></a></code>: if:<ol class="arabic">
+<li>There was an error saving the file</li>
+<li>The given path points to a stage set file (.stg) </li>
+</ol>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy8openFileERKNSt6stringEbb">
+<span id="_CPPv3N4alPy8openFileERKNSt6stringEbb"></span><span id="_CPPv2N4alPy8openFileERKNSt6stringEbb"></span><span id="alPy::openFile__ssCR.b.b"></span><span class="target" id="namespaceal_py_1a51907095f5d30d0974292363603e64a8"></span>statusCode <code class="descname">openFile</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>path</em>, bool <em>new_stage</em>, bool <em>delete_current</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy8openFileERKNSt6stringEbb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Open an Alias file. </p>
+<p><dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: path to the file to open </li>
+<li><code class="docutils literal notranslate"><span class="pre">new_stage</span></code>: if set to true, open the file in a new stage. Otherwise open the file in the current stage </li>
+<li><code class="docutils literal notranslate"><span class="pre">delete_current</span></code>: if set to true, when opening a file in the current stage, be sure the content of the file won’t be happen to the stage but will replace the current one. </li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy10importFileERKNSt6stringE">
+<span id="_CPPv3N4alPy10importFileERKNSt6stringE"></span><span id="_CPPv2N4alPy10importFileERKNSt6stringE"></span><span id="alPy::importFile__ssCR"></span><span class="target" id="namespaceal_py_1ab7fe277b80bf03c24c785af8d8cf427a"></span>void <code class="descname">importFile</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy10importFileERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Import a file into the current one. </p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy5resetEv">
+<span id="_CPPv3N4alPy5resetEv"></span><span id="_CPPv2N4alPy5resetEv"></span><span id="alPy::reset"></span><span class="target" id="namespaceal_py_1aed189e3a09ad5147189825b10a66d565"></span>void <code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy5resetEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reset the current Alias session by deleting all the stages and setting the default window. </p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy11createStageERKNSt6stringE">
+<span id="_CPPv3N4alPy11createStageERKNSt6stringE"></span><span id="_CPPv2N4alPy11createStageERKNSt6stringE"></span><span id="alPy::createStage__ssCR"></span><span class="target" id="namespaceal_py_1ae3f6c8cf55af80fa469e0475c8d8d9b7"></span>statusCode <code class="descname">createStage</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11createStageERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a new stage in Alias. </p>
+<p><dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: the stage name. </li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy9getStagesEv">
+<span id="_CPPv3N4alPy9getStagesEv"></span><span id="_CPPv2N4alPy9getStagesEv"></span><span id="alPy::getStages"></span><span class="target" id="namespaceal_py_1a861dbe8f0269e10d926bd513099a92ae"></span>std::vector&lt;<a class="reference internal" href="internal_classes.html#_CPPv4N4alPy5StageE" title="alPy::Stage">Stage</a> *&gt; <code class="descname">getStages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy9getStagesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get all the existing stages of the current Alias session. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>A list of <a class="reference internal" href="#classal_py_1_1_stage"><span class="std std-ref">Stage</span></a> objects. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy11defineStageERN2py6moduleE">
+<span id="_CPPv3N4alPy11defineStageERN2py6moduleE"></span><span id="_CPPv2N4alPy11defineStageERN2py6moduleE"></span><span id="alPy::defineStage__py::moduleR"></span><span class="target" id="namespaceal_py_1a3dee2f7f0de5f2a2eda20ec721bce4b9"></span>void <code class="descname">defineStage</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11defineStageERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy13defineSurfaceERN2py6moduleE">
+<span id="_CPPv3N4alPy13defineSurfaceERN2py6moduleE"></span><span id="_CPPv2N4alPy13defineSurfaceERN2py6moduleE"></span><span id="alPy::defineSurface__py::moduleR"></span><span class="target" id="namespaceal_py_1ad1ecba352d74cecc4a3c0a3313fce9ca"></span>void <code class="descname">defineSurface</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13defineSurfaceERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy17defineSurfaceNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy17defineSurfaceNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy17defineSurfaceNodeERN2py6moduleE"></span><span id="alPy::defineSurfaceNode__py::moduleR"></span><span class="target" id="namespaceal_py_1a9d891221d4a203bc4820bf72e39dff3b"></span>void <code class="descname">defineSurfaceNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17defineSurfaceNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy18defineSurfacePointERN2py6moduleE">
+<span id="_CPPv3N4alPy18defineSurfacePointERN2py6moduleE"></span><span id="_CPPv2N4alPy18defineSurfacePointERN2py6moduleE"></span><span id="alPy::defineSurfacePoint__py::moduleR"></span><span class="target" id="namespaceal_py_1a9ab7a85710b89ce7908182c73cde609c"></span>void <code class="descname">defineSurfacePoint</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18defineSurfacePointERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy18defineSwitchShaderERN2py6moduleE">
+<span id="_CPPv3N4alPy18defineSwitchShaderERN2py6moduleE"></span><span id="_CPPv2N4alPy18defineSwitchShaderERN2py6moduleE"></span><span id="alPy::defineSwitchShader__py::moduleR"></span><span class="target" id="namespaceal_py_1aff7e4d3ab807e6fe9f8af61f25e70b7b"></span>void <code class="descname">defineSwitchShader</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy18defineSwitchShaderERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy17defineTextureNodeERN2py6moduleE">
+<span id="_CPPv3N4alPy17defineTextureNodeERN2py6moduleE"></span><span id="_CPPv2N4alPy17defineTextureNodeERN2py6moduleE"></span><span id="alPy::defineTextureNode__py::moduleR"></span><span class="target" id="namespaceal_py_1a03af9fd77697558c68782b74441996fc"></span>void <code class="descname">defineTextureNode</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17defineTextureNodeERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy21defineTransformMatrixERN2py6moduleE">
+<span id="_CPPv3N4alPy21defineTransformMatrixERN2py6moduleE"></span><span id="_CPPv2N4alPy21defineTransformMatrixERN2py6moduleE"></span><span id="alPy::defineTransformMatrix__py::moduleR"></span><span class="target" id="namespaceal_py_1acf2d1718050aa8601e814004278316ce"></span>void <code class="descname">defineTransformMatrix</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy21defineTransformMatrixERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15deleteNullNodesEv">
+<span id="_CPPv3N4alPy15deleteNullNodesEv"></span><span id="_CPPv2N4alPy15deleteNullNodesEv"></span><span id="alPy::deleteNullNodes"></span><span class="target" id="namespaceal_py_1a0a27fca7f3b884ae3a28f9c35db80ec7"></span>int <code class="descname">deleteNullNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15deleteNullNodesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Delete all the null nodes of the current scene. </p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The number of of dag nodes being changed. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy20cleanupGeometryModelEbbbbbbbbbb">
+<span id="_CPPv3N4alPy20cleanupGeometryModelEbbbbbbbbbb"></span><span id="_CPPv2N4alPy20cleanupGeometryModelEbbbbbbbbbb"></span><span id="alPy::cleanupGeometryModel__b.b.b.b.b.b.b.b.b.b"></span><span class="target" id="namespaceal_py_1a4a3cfcada64f3269082b939cedbf47a3"></span>int <code class="descname">cleanupGeometryModel</code><span class="sig-paren">(</span>bool <em>faceToSurf</em>, bool <em>splitC1Breaks</em>, bool <em>splitClosedBasis</em>, bool <em>shrinkClosedSurf</em>, bool <em>setPersistentIds</em>, bool <em>splitSphere</em>, bool <em>pickedDagsOnly</em>, bool <em>splitMultiknots</em>, bool <em>delNullNodes</em>, bool <em>delDegenerateGeo</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy20cleanupGeometryModelEbbbbbbbbbb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Clean up geometry in the model. </p>
+<p>This function will clean up the geometry in the model by performing all the actions specified by the user.</p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The number of of dag nodes being changed. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">face_to_surf</span></code>: if True, convert all FaceNode to trimmed surface </li>
+<li><code class="docutils literal notranslate"><span class="pre">split_c1_breaks</span></code>: if True, split C1 breaks to multiple surfaces </li>
+<li><code class="docutils literal notranslate"><span class="pre">split_closed_basis</span></code>: if True, divide a closed surface to multiple surfaces and split a closed trimming curve to two pieces </li>
+<li><code class="docutils literal notranslate"><span class="pre">shrink_closed_surf</span></code>: if True, shrink closed basis surface of a region </li>
+<li><code class="docutils literal notranslate"><span class="pre">set_persistent_id</span></code>: if True, set persistent ID for each node, region </li>
+<li><code class="docutils literal notranslate"><span class="pre">split_sphere</span></code>: if True, split sphere at equator </li>
+<li><code class="docutils literal notranslate"><span class="pre">picked_dags_only</span></code>: if True, only picked node will be checked and changed if False, the actions will be performed for all the nodes </li>
+<li><code class="docutils literal notranslate"><span class="pre">split_multiknots</span></code>: if True, detach all multiknots </li>
+<li><code class="docutils literal notranslate"><span class="pre">delete_degenerate_geo</span></code>: if True, delete degenerate geometry </li>
+<li><code class="docutils literal notranslate"><span class="pre">delete_null_nodes</span></code>: if True, delete all null nodes</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy14defineUniverseERN2py6moduleE">
+<span id="_CPPv3N4alPy14defineUniverseERN2py6moduleE"></span><span id="_CPPv2N4alPy14defineUniverseERN2py6moduleE"></span><span id="alPy::defineUniverse__py::moduleR"></span><span class="target" id="namespaceal_py_1a8e0ab6c34dfd26a83f23e9909b9b1459"></span>void <code class="descname">defineUniverse</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy14defineUniverseERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy7toArrayEA1N_K1T">
+<span id="_CPPv3N4alPy7toArrayEA1N_K1T"></span><span id="_CPPv2N4alPy7toArrayEAN_K1T"></span><span id="alPy::toArray__TCA"></span><em class="property">template </em>&lt;<em class="property">typename</em> T, unsigned int <em>N</em>&gt;<br /><span class="target" id="namespaceal_py_1a279592e3871995b762b2623451bd3d68"></span>std::array&lt;T, N&gt; <code class="descname">toArray</code><span class="sig-paren">(</span><em class="property">const</em> T <em>cstyleArray</em>[<em>N</em>]<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy7toArrayEA1N_K1T" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy13toCStyleArrayERKNSt5arrayI1T1NEEA1N_1T">
+<span id="_CPPv3N4alPy13toCStyleArrayERKNSt5arrayI1T1NEEA1N_1T"></span><span id="_CPPv2N4alPy13toCStyleArrayERKNSt5arrayI1T1NEEAN_1T"></span><span id="alPy::toCStyleArray__std::array:T.N:CR.TA"></span><em class="property">template </em>&lt;<em class="property">typename</em> T, unsigned int <em>N</em>&gt;<br /><span class="target" id="namespaceal_py_1af99b796b287b7123ee7b5d6f5052fcba"></span>void <code class="descname">toCStyleArray</code><span class="sig-paren">(</span><em class="property">const</em> std::array&lt;T, N&gt; &amp;<em>arr</em>, T <em>cstyleArray</em>[<em>N</em>]<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13toCStyleArrayERKNSt5arrayI1T1NEEA1N_1T" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy9toArray2DEA4ROWS_A4COLS_K1T">
+<span id="_CPPv3N4alPy9toArray2DEA4ROWS_A4COLS_K1T"></span><span id="_CPPv2N4alPy9toArray2DEAROWS_ACOLS_K1T"></span><span id="alPy::toArray2D__TCAA"></span><em class="property">template </em>&lt;<em class="property">typename</em> T, unsigned int <em>ROWS</em>, unsigned int <em>COLS</em>&gt;<br /><span class="target" id="namespaceal_py_1a4ef131e6d6956eac0d9fb380666489de"></span>std::array&lt;std::array&lt;T, COLS&gt;, ROWS&gt; <code class="descname">toArray2D</code><span class="sig-paren">(</span><em class="property">const</em> T <em>cstyleArray</em>[<em>ROWS</em>][<em>COLS</em>]<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy9toArray2DEA4ROWS_A4COLS_K1T" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy15toCStyleArray2DERKNSt5arrayINSt5arrayI1T4COLSEE4ROWSEEA4ROWS_A4COLS_1T">
+<span id="_CPPv3N4alPy15toCStyleArray2DERKNSt5arrayINSt5arrayI1T4COLSEE4ROWSEEA4ROWS_A4COLS_1T"></span><span id="_CPPv2N4alPy15toCStyleArray2DERKNSt5arrayINSt5arrayI1T4COLSEE4ROWSEEAROWS_ACOLS_1T"></span><span id="alPy::toCStyleArray2D__std::array:std::array:T.COLS:.ROWS:CR.TAA"></span><em class="property">template </em>&lt;<em class="property">typename</em> T, unsigned int <em>ROWS</em>, unsigned int <em>COLS</em>&gt;<br /><span class="target" id="namespaceal_py_1ade6f508e0b91e384526e003c907e6f98"></span>void <code class="descname">toCStyleArray2D</code><span class="sig-paren">(</span><em class="property">const</em> std::array&lt;std::array&lt;T, COLS&gt;, ROWS&gt; &amp;<em>arr</em>, T <em>cstyleArray</em>[<em>ROWS</em>][<em>COLS</em>]<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15toCStyleArray2DERKNSt5arrayINSt5arrayI1T4COLSEE4ROWSEEA4ROWS_A4COLS_1T" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy10defineMathERN2py6moduleE">
+<span id="_CPPv3N4alPy10defineMathERN2py6moduleE"></span><span id="_CPPv2N4alPy10defineMathERN2py6moduleE"></span><span id="alPy::defineMath__py::moduleR"></span><span class="target" id="namespaceal_py_1aa85d719478e71685caa0baacce2974c5"></span>void <code class="descname">defineMath</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy10defineMathERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy13defineVariantERN2py6moduleE">
+<span id="_CPPv3N4alPy13defineVariantERN2py6moduleE"></span><span id="_CPPv2N4alPy13defineVariantERN2py6moduleE"></span><span id="alPy::defineVariant__py::moduleR"></span><span class="target" id="namespaceal_py_1ad6b6f6b7c6206da9eb62d46815db04ca"></span>void <code class="descname">defineVariant</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy13defineVariantERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy12defineWindowERN2py6moduleE">
+<span id="_CPPv3N4alPy12defineWindowERN2py6moduleE"></span><span id="_CPPv2N4alPy12defineWindowERN2py6moduleE"></span><span id="alPy::defineWindow__py::moduleR"></span><span class="target" id="namespaceal_py_1ab337c2a1db203aca544c4f006f0afd28"></span>void <code class="descname">defineWindow</code><span class="sig-paren">(</span>py::module &amp;<em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12defineWindowERN2py6moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy29isConstructionEntityTemplatedERK20AlConstructionEntity">
+<span id="_CPPv3N4alPy29isConstructionEntityTemplatedERK20AlConstructionEntity"></span><span id="_CPPv2N4alPy29isConstructionEntityTemplatedERK20AlConstructionEntity"></span><span id="alPy::isConstructionEntityTemplated__AlConstructionEntityCR"></span><span class="target" id="namespaceal_py_1a5849be02ff974637819a068acb39423f"></span>int <code class="descname">isConstructionEntityTemplated</code><span class="sig-paren">(</span><em class="property">const</em> AlConstructionEntity &amp;<em>entity</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy29isConstructionEntityTemplatedERK20AlConstructionEntity" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the AlConstructionEntity object is templated or not. </p>
+<p>An AlConstructionEntity is said to be templated if it depends on another object which is templated.</p>
+<p>This is a helper method to return the <code class="docutils literal notranslate"><span class="pre">templated</span></code> variable, since python cannot return values by reference for immutable types.</p>
+<p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>Return an integer value indicating the result: -1 - failed to check if the locater is templated or not 0 - the locator is not templated 1 - the locator is templated </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">entity</span></code>: - the AlConstructionEntity to check</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy17importSubdivisionENSt6stringE">
+<span id="_CPPv3N4alPy17importSubdivisionENSt6stringE"></span><span id="_CPPv2N4alPy17importSubdivisionENSt6stringE"></span><span id="alPy::importSubdivision__ss"></span><span class="target" id="namespaceal_py_1a913986dbb3d37ace0ff9d1e1a40e0bc4"></span>void <code class="descname">importSubdivision</code><span class="sig-paren">(</span>std::string <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17importSubdivisionENSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>DEPRECATED - Import the subdivision for the given path. </p>
+<p>Throws <em><a class="reference internal" href="#classal_py_1_1_alias_python_exception"><span class="std std-ref">AliasPythonException</span></a></em> on failure to import.</p>
+<p>This function will be removed.</p>
+<p><dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal notranslate"><span class="pre">path</span></code>: the import path </li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N4alPy12vec3_to_listERKN8alPyMath4Vec3E">
+<span id="_CPPv3N4alPy12vec3_to_listERKN8alPyMath4Vec3E"></span><span id="_CPPv2N4alPy12vec3_to_listERKN8alPyMath4Vec3E"></span><span id="alPy::vec3_to_list__alPyMath::Vec3CR"></span><span class="target" id="namespaceal_py_1a897154fa87ce1f35454e6446cf083b85"></span>py::list <code class="descname">vec3_to_list</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv48alPyMath" title="alPyMath">alPyMath</a>::Vec3 &amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy12vec3_to_listERKN8alPyMath4Vec3E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 </div>
 <dl class="class">
 <dt id="_CPPv4N4alPy20AliasPythonExceptionE">
 <span id="_CPPv3N4alPy20AliasPythonExceptionE"></span><span id="_CPPv2N4alPy20AliasPythonExceptionE"></span><span id="alPy::AliasPythonException"></span><span class="target" id="classal_py_1_1_alias_python_exception"></span><em class="property">class </em><code class="descname">AliasPythonException</code> : <em class="property">public</em> std::exception<a class="headerlink" href="#_CPPv4N4alPy20AliasPythonExceptionE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><em>#include &lt;exception.h&gt;</em><p>A custom exception class to report errors to Python callers. </p>
-</dd></dl>
-
-<dl class="class">
-<dt id="_CPPv4N4alPy11AlternativeE">
-<span id="_CPPv3N4alPy11AlternativeE"></span><span id="_CPPv2N4alPy11AlternativeE"></span><span id="alPy::Alternative"></span><span class="target" id="classal_py_1_1_alternative"></span><em class="property">class </em><code class="descname">Alternative</code><br /></dt>
-<dd><em>#include &lt;reference.h&gt;</em><p>Object encapsulating an Alias alternative reference. </p>
-</dd></dl>
-
-<dl class="class">
-<dt id="_CPPv4N4alPy5LayerE">
-<span id="_CPPv3N4alPy5LayerE"></span><span id="_CPPv2N4alPy5LayerE"></span><span id="alPy::Layer"></span><span class="target" id="classal_py_1_1_layer"></span><em class="property">class </em><code class="descname">Layer</code><br /></dt>
-<dd><em>#include &lt;layer.h&gt;</em><p>Object encapsulating an Alias layer. </p>
 </dd></dl>
 
 <dl class="class">
@@ -670,81 +1029,21 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv4N4alPy9ReferenceE">
-<span id="_CPPv3N4alPy9ReferenceE"></span><span id="_CPPv2N4alPy9ReferenceE"></span><span id="alPy::Reference"></span><span class="target" id="classal_py_1_1_reference"></span><em class="property">class </em><code class="descname">Reference</code><br /></dt>
-<dd><em>#include &lt;reference.h&gt;</em><p>Object encapsulating an Alias reference. </p>
-</dd></dl>
-
-<dl class="class">
 <dt id="_CPPv4N4alPy5StageE">
 <span id="_CPPv3N4alPy5StageE"></span><span id="_CPPv2N4alPy5StageE"></span><span id="alPy::Stage"></span><span class="target" id="classal_py_1_1_stage"></span><em class="property">class </em><code class="descname">Stage</code><br /></dt>
-<dd><em>#include &lt;file_io.h&gt;</em><p>Object encapsulating an Alias stage. </p>
-</dd></dl>
-
-<dl class="class">
-<dt id="_CPPv4N4alPy7VariantE">
-<span id="_CPPv3N4alPy7VariantE"></span><span id="_CPPv2N4alPy7VariantE"></span><span id="alPy::Variant"></span><span class="target" id="classal_py_1_1_variant"></span><em class="property">class </em><code class="descname">Variant</code><br /></dt>
-<dd><em>#include &lt;variant.h&gt;</em><p>Object encapsulating an Alias variant. </p>
+<dd><em>#include &lt;stage.h&gt;</em><p>Object encapsulating an Alias stage. </p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="type">
-<dt id="_CPPv46alPyOA">
-<span id="_CPPv36alPyOA"></span><span id="_CPPv26alPyOA"></span><span id="alPyOA"></span><span class="target" id="namespaceal_py_o_a"></span><em class="property">namespace </em><code class="descname">alPyOA</code><a class="headerlink" href="#_CPPv46alPyOA" title="Permalink to this definition">¶</a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Functions</p>
-<dl class="function">
-<dt id="_CPPv4N6alPyOA12createCanvasEPKcPKcAL3E_dAL2E_dAL3E_dAL3E_dAL3E_d">
-<span id="_CPPv3N6alPyOA12createCanvasEPKcPKcAL3E_dAL2E_dAL3E_dAL3E_dAL3E_d"></span><span id="_CPPv2N6alPyOA12createCanvasEPKcPKcA3_dA2_dA3_dA3_dA3_d"></span><span id="alPyOA::createCanvas__cCP.cCP.doubleA.doubleA.doubleA.doubleA.doubleA"></span><span class="target" id="namespaceal_py_o_a_1aa25a25b01418bae175e6acd10f39015c"></span>bool <code class="descname">createCanvas</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em>, <em class="property">const</em> char *<em>imagePath</em>, double <em>origin</em>[3], double <em>scale</em>[2], double <em>axisX</em>[3], double <em>axisY</em>[3], double <em>axisZ</em>[3]<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6alPyOA12createCanvasEPKcPKcAL3E_dAL2E_dAL3E_dAL3E_dAL3E_d" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N6alPyOA20loadCanvasIntoWindowEPKcPKcR8AlWindow">
-<span id="_CPPv3N6alPyOA20loadCanvasIntoWindowEPKcPKcR8AlWindow"></span><span id="_CPPv2N6alPyOA20loadCanvasIntoWindowEPKcPKcR8AlWindow"></span><span id="alPyOA::loadCanvasIntoWindow__cCP.cCP.AlWindowR"></span><span class="target" id="namespaceal_py_o_a_1a92797ad25b7f7c177c62dc76dc34ba7c"></span>statusCode <code class="descname">loadCanvasIntoWindow</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em>, <em class="property">const</em> char *<em>imagePath</em>, AlWindow &amp;<em>window</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6alPyOA20loadCanvasIntoWindowEPKcPKcR8AlWindow" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N6alPyOA31loadCanvasOntoConstructionPlaneEPKcPKcR19AlConstructionPlane">
-<span id="_CPPv3N6alPyOA31loadCanvasOntoConstructionPlaneEPKcPKcR19AlConstructionPlane"></span><span id="_CPPv2N6alPyOA31loadCanvasOntoConstructionPlaneEPKcPKcR19AlConstructionPlane"></span><span id="alPyOA::loadCanvasOntoConstructionPlane__cCP.cCP.AlConstructionPlaneR"></span><span class="target" id="namespaceal_py_o_a_1a238fa22c4903e00bcd7bcf320c5d6a8f"></span>bool <code class="descname">loadCanvasOntoConstructionPlane</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em>, <em class="property">const</em> char *<em>imagePath</em>, AlConstructionPlane &amp;<em>constructionPlane</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6alPyOA31loadCanvasOntoConstructionPlaneEPKcPKcR19AlConstructionPlane" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">doxygennamespace: Cannot find namespace “alPyOA” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/d-shotgun_alias-python-api_PR-29/build/python2_AliasSurface2021.3.1/bin/Release/docs//doxygen/xml</p>
 </div>
-</dd></dl>
-
-<dl class="type">
-<dt id="_CPPv46alPyOM">
-<span id="_CPPv36alPyOM"></span><span id="_CPPv26alPyOM"></span><span id="alPyOM"></span><span class="target" id="namespaceal_py_o_m"></span><em class="property">namespace </em><code class="descname">alPyOM</code><a class="headerlink" href="#_CPPv46alPyOM" title="Permalink to this definition">¶</a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Functions</p>
-<dl class="function">
-<dt id="_CPPv4N6alPyOM20getPerspectiveCameraER8AlWindow">
-<span id="_CPPv3N6alPyOM20getPerspectiveCameraER8AlWindow"></span><span id="_CPPv2N6alPyOM20getPerspectiveCameraER8AlWindow"></span><span id="alPyOM::getPerspectiveCamera__AlWindowR"></span><span class="target" id="namespaceal_py_o_m_1a7537c4b02541be87e114888aef464415"></span>AlPerspectiveCamera *<code class="descname">getPerspectiveCamera</code><span class="sig-paren">(</span>AlWindow &amp;<em>window</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6alPyOM20getPerspectiveCameraER8AlWindow" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N6alPyOM8getFrameERK19AlPerspectiveCameraPN8alPyMath4Vec3EPN8alPyMath4Vec3EPN8alPyMath4Vec3E">
-<span id="_CPPv3N6alPyOM8getFrameERK19AlPerspectiveCameraPN8alPyMath4Vec3EPN8alPyMath4Vec3EPN8alPyMath4Vec3E"></span><span id="_CPPv2N6alPyOM8getFrameERK19AlPerspectiveCameraPN8alPyMath4Vec3EPN8alPyMath4Vec3EPN8alPyMath4Vec3E"></span><span id="alPyOM::getFrame__AlPerspectiveCameraCR.alPyMath::Vec3P.alPyMath::Vec3P.alPyMath::Vec3P"></span><span class="target" id="namespaceal_py_o_m_1a77a4ed27ab87b29de3b477ff582ba893"></span>statusCode <code class="descname">getFrame</code><span class="sig-paren">(</span><em class="property">const</em> AlPerspectiveCamera &amp;<em>camera</em>, <a class="reference internal" href="#_CPPv48alPyMath" title="alPyMath">alPyMath</a>::Vec3 *<em>u</em>, <a class="reference internal" href="#_CPPv48alPyMath" title="alPyMath">alPyMath</a>::Vec3 *<em>v</em>, <a class="reference internal" href="#_CPPv48alPyMath" title="alPyMath">alPyMath</a>::Vec3 *<em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6alPyOM8getFrameERK19AlPerspectiveCameraPN8alPyMath4Vec3EPN8alPyMath4Vec3EPN8alPyMath4Vec3E" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N6alPyOM8getFrameERKN8AlWindow10AlViewTypeEPN8alPyMath4Vec3EPN8alPyMath4Vec3EPN8alPyMath4Vec3E">
-<span id="_CPPv3N6alPyOM8getFrameERKN8AlWindow10AlViewTypeEPN8alPyMath4Vec3EPN8alPyMath4Vec3EPN8alPyMath4Vec3E"></span><span id="_CPPv2N6alPyOM8getFrameERKN8AlWindow10AlViewTypeEPN8alPyMath4Vec3EPN8alPyMath4Vec3EPN8alPyMath4Vec3E"></span><span id="alPyOM::getFrame__AlWindow::AlViewTypeCR.alPyMath::Vec3P.alPyMath::Vec3P.alPyMath::Vec3P"></span><span class="target" id="namespaceal_py_o_m_1a427b5c21cf226083f06356f9740fe403"></span>statusCode <code class="descname">getFrame</code><span class="sig-paren">(</span><em class="property">const</em> AlWindow::AlViewType &amp;<em>viewType</em>, <a class="reference internal" href="#_CPPv48alPyMath" title="alPyMath">alPyMath</a>::Vec3 *<em>u</em>, <a class="reference internal" href="#_CPPv48alPyMath" title="alPyMath">alPyMath</a>::Vec3 *<em>v</em>, <a class="reference internal" href="#_CPPv48alPyMath" title="alPyMath">alPyMath</a>::Vec3 *<em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6alPyOM8getFrameERKN8AlWindow10AlViewTypeEPN8alPyMath4Vec3EPN8alPyMath4Vec3EPN8alPyMath4Vec3E" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N6alPyOM28firstPickedConstructionPlaneEv">
-<span id="_CPPv3N6alPyOM28firstPickedConstructionPlaneEv"></span><span id="_CPPv2N6alPyOM28firstPickedConstructionPlaneEv"></span><span id="alPyOM::firstPickedConstructionPlane"></span><span class="target" id="namespaceal_py_o_m_1a1086c9e8110c5c81b5933715893743d0"></span>AlConstructionPlane *<code class="descname">firstPickedConstructionPlane</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6alPyOM28firstPickedConstructionPlaneEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="_CPPv4N6alPyOM21findConstructionPlaneEPKc">
-<span id="_CPPv3N6alPyOM21findConstructionPlaneEPKc"></span><span id="_CPPv2N6alPyOM21findConstructionPlaneEPKc"></span><span id="alPyOM::findConstructionPlane__cCP"></span><span class="target" id="namespaceal_py_o_m_1ae9fc9f4ff8bc590d59fb31b5eade71aa"></span>AlConstructionPlane *<code class="descname">findConstructionPlane</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6alPyOM21findConstructionPlaneEPKc" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">doxygennamespace: Cannot find namespace “alPyOM” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/d-shotgun_alias-python-api_PR-29/build/python2_AliasSurface2021.3.1/bin/Release/docs//doxygen/xml</p>
 </div>
-</dd></dl>
-
 <dl class="type">
 <dt id="_CPPv48alPyMath">
 <span id="_CPPv38alPyMath"></span><span id="_CPPv28alPyMath"></span><span id="alPyMath"></span><span class="target" id="namespaceal_py_math"></span><em class="property">namespace </em><code class="descname">alPyMath</code><a class="headerlink" href="#_CPPv48alPyMath" title="Permalink to this definition">¶</a><br /></dt>
