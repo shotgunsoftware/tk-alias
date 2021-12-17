@@ -326,6 +326,9 @@ class AliasEngine(sgtk.platform.Engine):
             context = self.context
 
         current_stage = alias_api.get_current_stage()
+        if not current_stage:
+            return
+
         if current_stage.path:
             self._contexts_by_path[current_stage.path] = context
         self._contexts_by_stage_name[current_stage.name] = context
