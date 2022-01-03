@@ -10,3 +10,4 @@
 
 from .menu_generation import AliasMenuGenerator
 from .dialog_parent import DialogParent
+from .alias_event_watcher import AliasEventWatcher

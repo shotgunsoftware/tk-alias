@@ -33,6 +33,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_bindir = None
         self.alias_version = None
         self._dialog_parent = None
+        self.__event_watcher = None
 
         self._menu_generator = None
         self._contexts_by_stage_name = {}
@@ -60,6 +61,10 @@ class AliasEngine(sgtk.platform.Engine):
         Specifies that context changes are allowed by the engine.
         """
         return True
+
+    @property
+    def event_watcher(self):
+        return self.__event_watcher
 
     @staticmethod
     def get_current_engine():
@@ -128,6 +133,10 @@ class AliasEngine(sgtk.platform.Engine):
         # dialog parent handler
         self._dialog_parent = self._tk_alias.DialogParent(engine=self)
 
+        # event watcher
+        self.__event_watcher = self._tk_alias.AliasEventWatcher()
+        self.__event_watcher.start_watching()
+
         # Env vars
         self.alias_execpath = os.getenv("TK_ALIAS_EXECPATH", None)
         self.alias_bindir = os.path.dirname(self.alias_execpath)
@@ -190,6 +199,8 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Clean the menu
         self._menu_generator.clean_menu()
+
+        self.__event_watcher.stop_watching()
 
         # Close all Shotgun app dialogs that are still opened since
         # some apps do threads cleanup in their onClose event handler
@@ -375,6 +386,8 @@ class AliasEngine(sgtk.platform.Engine):
                 self.context.project
             )
             self.change_context(project_context)
+
+        self.__event_watcher.start_watching()
 
     #####################################################################################
     # QT Utils
