@@ -35,7 +35,7 @@ class AliasEventWatcher(object):
 
         self.stop_watching()
         for ev in scene_events:
-            if self.__callback_already_registered(ev, cb_fn):
+            if self.__is_callback_registered(ev, cb_fn):
                 continue
             existing_callbacks = self.__scene_events.get(ev, [])
             existing_callbacks.append(cb_fn)
@@ -51,12 +51,12 @@ class AliasEventWatcher(object):
 
         self.stop_watching()
         for ev in scene_events:
-            if not self.__callback_already_registered(ev, cb_fn):
+            if not self.__is_callback_registered(ev, cb_fn):
                 continue
             self.__scene_events[ev].remove(cb_fn)
         self.start_watching()
 
-    def __callback_already_registered(self, scene_event, cb_fn):
+    def __is_callback_registered(self, scene_event, cb_fn):
         """
         """
         for fn in self.__scene_events.get(scene_event, []):
