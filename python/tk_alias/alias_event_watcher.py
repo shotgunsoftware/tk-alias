@@ -14,6 +14,7 @@ class AliasEventWatcher(object):
 
     def __init__(self):
         """
+        Class constructor.
         """
 
         self.__registered_callbacks = []
@@ -22,6 +23,9 @@ class AliasEventWatcher(object):
 
     @property
     def is_watching(self):
+        """
+        Return True if the EventWatcher is actually watching for the even, False otherwise.
+        """
         return self.__is_watching
 
     def register_alias_callback(self, cb_fn, scene_events):
