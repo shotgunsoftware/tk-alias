@@ -387,8 +387,6 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.change_context(project_context)
 
-        self.__event_watcher.start_watching()
-
     #####################################################################################
     # QT Utils
 
