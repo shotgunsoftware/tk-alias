@@ -70,34 +70,518 @@
              
   <div class="section" id="module-alias_api">
 <span id="functions"></span><h1>Functions<a class="headerlink" href="#module-alias_api" title="Permalink to this headline">¶</a></h1>
+<p>Python bindings to Alias C++ API</p>
+<dl class="class">
+<dt id="alias_api.AlCoordinateSystem">
+<em class="property">class </em><code class="descclassname">alias_api.</code><code class="descname">AlCoordinateSystem</code><a class="headerlink" href="#alias_api.AlCoordinateSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Members:</p>
+<p>YUp</p>
+<p>ZUp</p>
+<dl class="attribute">
+<dt id="alias_api.AlCoordinateSystem.name">
+<code class="descname">name</code><a class="headerlink" href="#alias_api.AlCoordinateSystem.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="alias_api.AlCurveFormType">
+<em class="property">class </em><code class="descclassname">alias_api.</code><code class="descname">AlCurveFormType</code><a class="headerlink" href="#alias_api.AlCurveFormType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Members:</p>
+<p>InvalidCurve</p>
+<p>Periodic</p>
+<p>Open</p>
+<p>Closed</p>
+<dl class="attribute">
+<dt id="alias_api.AlCurveFormType.name">
+<code class="descname">name</code><a class="headerlink" href="#alias_api.AlCurveFormType.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="alias_api.AlCurveNodeJoinErrors">
+<em class="property">class </em><code class="descclassname">alias_api.</code><code class="descname">AlCurveNodeJoinErrors</code><a class="headerlink" href="#alias_api.AlCurveNodeJoinErrors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Members:</p>
+<p>BadCluster</p>
+<p>Success</p>
+<p>NoAttributes</p>
+<p>BadData</p>
+<p>Failure</p>
+<p>InvalidKeyPoint</p>
+<p>CurveClosed</p>
+<p>DuplicateCurve</p>
+<dl class="attribute">
+<dt id="alias_api.AlCurveNodeJoinErrors.name">
+<code class="descname">name</code><a class="headerlink" href="#alias_api.AlCurveNodeJoinErrors.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="alias_api.AlDisplayModeType">
+<em class="property">class </em><code class="descclassname">alias_api.</code><code class="descname">AlDisplayModeType</code><a class="headerlink" href="#alias_api.AlDisplayModeType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Members:</p>
+<p>CompressedSbd</p>
+<p>GeomEditPoints</p>
+<p>Dashed</p>
+<p>Invisible</p>
+<p>GeomHull</p>
+<p>Template</p>
+<p>GeomCVs</p>
+<p>BoundingBox</p>
+<p>GeomKeyPoints</p>
+<p>ConstructionPlane</p>
+<dl class="attribute">
+<dt id="alias_api.AlDisplayModeType.name">
+<code class="descname">name</code><a class="headerlink" href="#alias_api.AlDisplayModeType.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="alias_api.AlMessageType">
+<em class="property">class </em><code class="descclassname">alias_api.</code><code class="descname">AlMessageType</code><a class="headerlink" href="#alias_api.AlMessageType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Members:</p>
+<p>CnetDeleted</p>
+<p>Quit</p>
+<p>FirstMessage</p>
+<p>ShaderModified</p>
+<p>DagNodeModifiedGeometry</p>
+<p>LayersReordered</p>
+<p>LayerAttributeChanged</p>
+<p>UniverseMerged</p>
+<p>LayerStateModified</p>
+<p>Invalid</p>
+<p>UntrimSurface</p>
+<p>LayerSymmetryModified</p>
+<p>DagNodeModified</p>
+<p>CommandInstall</p>
+<p>PostUpdate</p>
+<p>ReferenceFileSetDeleted</p>
+<p>PreStore</p>
+<p>DagInserted</p>
+<p>DagNodePreReplaceGeometry</p>
+<p>HierarchyModified</p>
+<p>StageCreated</p>
+<p>UniverseActive</p>
+<p>DagNodeUndeleted</p>
+<p>TextureAdded</p>
+<p>DagNodeReplaceGeometry</p>
+<p>AttributesDelete</p>
+<p>LightModified</p>
+<p>Update</p>
+<p>ExprModified</p>
+<p>PostStore</p>
+<p>DagNodeModifiedConstraint</p>
+<p>DeleteAll</p>
+<p>CommandFree</p>
+<p>CosVisible</p>
+<p>UniverseCreated</p>
+<p>ShaderDeleted</p>
+<p>UniverseDeleted</p>
+<p>DagNodeModifiedShaderAssignment</p>
+<p>LayerAssign</p>
+<p>StageDeleted</p>
+<p>StageActive</p>
+<p>JointModified</p>
+<p>ListModifiedNodes</p>
+<p>AnimPlayback</p>
+<p>CameraModified</p>
+<p>TextureModified</p>
+<p>LayerDeleted</p>
+<p>Refresh</p>
+<p>PlotRefresh</p>
+<p>PreUpdate</p>
+<p>LastMessage</p>
+<p>DagNodeVisible</p>
+<p>ClMemberModified</p>
+<p>DagDispModified</p>
+<p>PostRetrieve</p>
+<p>CosModified</p>
+<p>LayerVisibilityModified</p>
+<p>PreRefresh</p>
+<p>CommandUnInstall</p>
+<p>TrimSurface</p>
+<p>DagNodeApplyTransformation</p>
+<p>ShaderAdded</p>
+<p>PreRetrieve</p>
+<p>LayerAdded</p>
+<p>CloudDeleted</p>
+<p>StageMerged</p>
+<p>TextureDeleted</p>
+<p>DagNodeInstanced</p>
+<p>CosDeleted</p>
+<p>PickListModified</p>
+<p>LayersEnabled</p>
+<p>ReferenceFileDeleted</p>
+<p>DagNodeDeleted</p>
+<p>DagNameModified</p>
+<dl class="attribute">
+<dt id="alias_api.AlMessageType.name">
+<code class="descname">name</code><a class="headerlink" href="#alias_api.AlMessageType.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="alias_api.AlObjectType">
+<em class="property">class </em><code class="descclassname">alias_api.</code><code class="descname">AlObjectType</code><a class="headerlink" href="#alias_api.AlObjectType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Members:</p>
+<p>LightLookAtNodeType</p>
+<p>TrimBoundaryType</p>
+<p>ImagePlaneType</p>
+<p>FuturePointType5</p>
+<p>FuturePointType4</p>
+<p>FuturePointType3</p>
+<p>FuturePointType2</p>
+<p>IKHandleType</p>
+<p>AnnotationLocatorType</p>
+<p>SurfaceCVType</p>
+<p>ArcAttributeType</p>
+<p>PointType</p>
+<p>CharSnippetType</p>
+<p>PolysetVertexType</p>
+<p>FaceNodeType</p>
+<p>LightUpNodeType</p>
+<p>TorusLightType</p>
+<p>ConicAttributeType</p>
+<p>ReferenceFileSetType</p>
+<p>PointLightType</p>
+<p>ActionType</p>
+<p>ParamActionType</p>
+<p>ContactType</p>
+<p>DeviationLocatorType</p>
+<p>BoxLightType</p>
+<p>JointType</p>
+<p>EnvironmentType</p>
+<p>DistanceLocatorType</p>
+<p>ConstructionPlaneType</p>
+<p>AngleLocatorType</p>
+<p>AreaLightType</p>
+<p>RevSurfAttributeType</p>
+<p>BlendPointType</p>
+<p>KeyframeType</p>
+<p>PolygonType</p>
+<p>CurveNodeType</p>
+<p>CameraViewType</p>
+<p>OrthographicCameraType</p>
+<p>LinearLightType</p>
+<p>DagNodeType</p>
+<p>TrimCurveType</p>
+<p>ConstraintType</p>
+<p>SurfaceNodeType</p>
+<p>MeshNodeType</p>
+<p>CylinderLightType</p>
+<p>PlaneAttributeType</p>
+<p>FaceType</p>
+<p>ConstructionEntityType</p>
+<p>StreamType</p>
+<p>CharacterSpaceType</p>
+<p>CurveCVType</p>
+<p>ChannelType</p>
+<p>CurveOnSurfaceType</p>
+<p>MeshType</p>
+<p>CurveType</p>
+<p>ConeLightType</p>
+<p>VolumeLightType</p>
+<p>OrientationConstraintType</p>
+<p>TrimRegionType</p>
+<p>SurfacePointType</p>
+<p>FuturePointType1</p>
+<p>AimConstraintType</p>
+<p>PointConstraintType</p>
+<p>ClusterNodeType</p>
+<p>CurvePointType</p>
+<p>WindowType</p>
+<p>CameraUpType</p>
+<p>TextureType</p>
+<p>LightType</p>
+<p>SpacePointType</p>
+<p>RadialLocatorType</p>
+<p>LayerType</p>
+<p>ConstructionFutureType1</p>
+<p>ConstructionFutureType2</p>
+<p>CommandRefType</p>
+<p>CharTransitionType</p>
+<p>PolysetNodeType</p>
+<p>AttributeType</p>
+<p>SetType</p>
+<p>ReferenceFileType</p>
+<p>AmbientLightType</p>
+<p>EvaluateType</p>
+<p>LocatorType</p>
+<p>PerspectiveCameraType</p>
+<p>DirectionLightType</p>
+<p>CameraType</p>
+<p>BlendCurveType</p>
+<p>ShellNodeType</p>
+<p>CloudType</p>
+<p>CurveOnSurfacePointType</p>
+<p>PolysetType</p>
+<p>SetMemberType</p>
+<p>SpotLightType</p>
+<p>SphereLightType</p>
+<p>MinmaxLocatorType</p>
+<p>CategoryType</p>
+<p>ShellType</p>
+<p>ShaderType</p>
+<p>SurfaceType</p>
+<p>NonAmbientLightType</p>
+<p>CharacterType</p>
+<p>LightNodeType</p>
+<p>IKHandleNodeType</p>
+<p>TextureNodeType</p>
+<p>LineAttributeType</p>
+<p>ClusterType</p>
+<p>GroupNodeType</p>
+<p>CurveAttributeType</p>
+<p>CommandType</p>
+<p>ConstructionVectorType</p>
+<p>CameraEyeType</p>
+<p>MotionActionType</p>
+<p>ClusterMemberType</p>
+<p>SurfaceCurveType</p>
+<dl class="attribute">
+<dt id="alias_api.AlObjectType.name">
+<code class="descname">name</code><a class="headerlink" href="#alias_api.AlObjectType.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="alias_api.AlStatusCode">
+<em class="property">class </em><code class="descclassname">alias_api.</code><code class="descname">AlStatusCode</code><a class="headerlink" href="#alias_api.AlStatusCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Members:</p>
+<p>ExprAxInsertCircRef</p>
+<p>ObjectInExclusiveSet</p>
+<p>InvalidArgument</p>
+<p>InvalidWireFile</p>
+<p>ObjectAlreadyPresent</p>
+<p>ObjectInSet</p>
+<p>ObjectNotAMember</p>
+<p>ExprParseError</p>
+<p>ExprNotValidName</p>
+<p>Failure</p>
+<p>ExprNotDagObject</p>
+<p>ExprNotValidParameter</p>
+<p>ObjectDescendentInSet</p>
+<p>RenameStageFailure</p>
+<p>ExprBadVariable</p>
+<p>Success</p>
+<p>DeleteStageFailure</p>
+<p>ExprNotValidRelative</p>
+<p>InvalidObject</p>
+<p>ObjectInAnotherSet</p>
+<p>InvalidWindowType</p>
+<p>ExprNotValidCV</p>
+<p>ExprAxInsertBadRef</p>
+<p>NoParent</p>
+<p>EndOfAlStatusCodes</p>
+<p>ExprAxInsertSelfRef</p>
+<p>CannotDelete</p>
+<p>InsufficientMemory</p>
+<p>NoProjectEnvironment</p>
+<p>AlreadyCreated</p>
+<p>SetStageFailure</p>
+<p>AlreadyTrimmed</p>
+<p>NotAvailable</p>
+<p>NameChangedToUniqueOne</p>
+<p>ObjectNotFound</p>
+<p>EndOfGlobalCodes</p>
+<p>ObjectAncestorInSet</p>
+<dl class="attribute">
+<dt id="alias_api.AlStatusCode.name">
+<code class="descname">name</code><a class="headerlink" href="#alias_api.AlStatusCode.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.add_message_handler">
+<code class="descclassname">alias_api.</code><code class="descname">add_message_handler</code><span class="sig-paren">(</span><em>message_type: alias_api.AlMessageType, callback_func: Callable[[alias_api.MessageResult], None]</em><span class="sig-paren">)</span> &#x2192; Tuple[int, int]<a class="headerlink" href="#alias_api.add_message_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install a message handler in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.al_are_equal">
+<code class="descclassname">alias_api.</code><code class="descname">al_are_equal</code><span class="sig-paren">(</span><em>al_object1: alias_api.AlObject</em>, <em>al_object2: alias_api.AlObject</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.al_are_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the two Alias Objects are equal, else False.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.al_is_valid">
+<code class="descclassname">alias_api.</code><code class="descname">al_is_valid</code><span class="sig-paren">(</span><em>al_object: alias_api.AlObject</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.al_is_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the Alias Object is valid, else False.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.apply_iterator_to_dag_nodes">
+<code class="descclassname">alias_api.</code><code class="descname">apply_iterator_to_dag_nodes</code><span class="sig-paren">(</span><em>iter: AlIterator</em>, <em>retcode: int</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.apply_iterator_to_dag_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the iterator to all AlDagNodes. It does not recursively go down the DAG.</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="alias_api.cleanup_geometry_model">
 <code class="descclassname">alias_api.</code><code class="descname">cleanup_geometry_model</code><span class="sig-paren">(</span><em>face_to_surf: bool = False</em>, <em>split_c1_breaks: bool = False</em>, <em>split_closed_basis: bool = False</em>, <em>shrink_closed_surf: bool = False</em>, <em>set_persistent_ids: bool = False</em>, <em>split_sphere: bool = False</em>, <em>picked_dags_only: bool = False</em>, <em>split_multiknots: bool = False</em>, <em>delete_null_nodes: bool = False</em>, <em>delete_degenerate_geo: bool = False</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.cleanup_geometry_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function to clean up the geometry of the model.</p>
+<dd><p>Clean up the geometry of the model.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.clear_pick_list">
+<code class="descclassname">alias_api.</code><code class="descname">clear_pick_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.clear_pick_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all objects from the pick list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.convert_face_node_to_trimmed_surface_node">
+<code class="descclassname">alias_api.</code><code class="descname">convert_face_node_to_trimmed_surface_node</code><span class="sig-paren">(</span><em>node: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.convert_face_node_to_trimmed_surface_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a AlFaceNode to AlSurfaceNode (a trimmed surface).</p>
+<p>The dag node and the attachment is not changed but the geometry is replaced
+by a trimmed surface. The animation and other attachment on geometry
+level are gone (lost).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode"><em>AlDagNode</em></a>) – The face node to convert. This will be modified if the function succeeds.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The status code result.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.convert_to_trimmed_surface_node">
+<code class="descclassname">alias_api.</code><code class="descname">convert_to_trimmed_surface_node</code><span class="sig-paren">(</span><em>node: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.convert_to_trimmed_surface_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function works on a AlSurfaceNode only, and only on a surface
+that is a closed/periodic and untrimmed surface (e.g. a pure cylinder).
+then the function converts it to a trimmed surface and split the
+closed surface into multiple open regions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode"><em>AlDagNode</em></a>) – The node to convert.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The status code result
+Success - the conversion is done so the geometry under<blockquote>
+<div>node is changed (also the wrapper AlDagNode)</div></blockquote>
+<dl class="docutils">
+<dt>Failure - there is no need to convert or error happened</dt>
+<dd>the node is not changed at all.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.copy_object">
+<code class="descclassname">alias_api.</code><code class="descname">copy_object</code><span class="sig-paren">(</span><em>node: alias_api.AlDagNode</em>, <em>run_cleanup: int = True</em><span class="sig-paren">)</span> &#x2192; alias_api.AlDagNode<a class="headerlink" href="#alias_api.copy_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function performs the copy of the dag node based on the
+copy options that have been set with the setCopyOptionFlags()
+routine.</p>
+<p>Note: set runCleanup to False if you will be performing many
+copies, then call AlDagNodeExt::copyObjectCleanup() after.
+This will speed up the copying of objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode"><em>AlDagNode</em></a>) – The dag node to copy</li>
+<li><strong>run_cleanup</strong> (<em>bool</em>) – Flag to run clean up after copy object operation.
+Defaults to True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The copied object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode">AlDagNode</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.copy_object_cleanup">
+<code class="descclassname">alias_api.</code><code class="descname">copy_object_cleanup</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.copy_object_cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this method after performing a number of dag node copy object operations to clean up the scene.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.create_alternative">
-<code class="descclassname">alias_api.</code><code class="descname">create_alternative</code><span class="sig-paren">(</span><em>name: unicode</em>, <em>force: bool = False</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.create_alternative" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which creates an Alias alternative.</p>
+<code class="descclassname">alias_api.</code><code class="descname">create_alternative</code><span class="sig-paren">(</span><em>name: unicode</em>, <em>force: bool = False</em><span class="sig-paren">)</span> &#x2192; alias_api.AlReferenceFileSet<a class="headerlink" href="#alias_api.create_alternative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an AlReferenceFileSet in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_construction_plane">
+<code class="descclassname">alias_api.</code><code class="descname">create_construction_plane</code><span class="sig-paren">(</span><em>tm: alias_api.AlTM</em><span class="sig-paren">)</span> &#x2192; alias_api.AlDagNode<a class="headerlink" href="#alias_api.create_construction_plane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dag node that is a construction plane at the position denoted by ‘tm’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tm</strong> (<a class="reference internal" href="classes.html#alias_api.AlTM" title="alias_api.AlTM"><em>AlTM</em></a>) – The tansformation matrix used to set the construction plane position.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The construction plane dag node.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode">AlDagNode</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.create_layer">
-<code class="descclassname">alias_api.</code><code class="descname">create_layer</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.create_layer" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which create a new layer in the current file.</p>
+<code class="descclassname">alias_api.</code><code class="descname">create_layer</code><span class="sig-paren">(</span><em>layer_name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlLayer<a class="headerlink" href="#alias_api.create_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new AlLayer in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_layer_folder">
+<code class="descclassname">alias_api.</code><code class="descname">create_layer_folder</code><span class="sig-paren">(</span><em>folder_name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlLayer<a class="headerlink" href="#alias_api.create_layer_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new AlLayer folder in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_orthographic_camera">
+<code class="descclassname">alias_api.</code><code class="descname">create_orthographic_camera</code><span class="sig-paren">(</span><em>view_type: AlWindow::AlViewType</em><span class="sig-paren">)</span> &#x2192; alias_api.AlOrthographicCamera<a class="headerlink" href="#alias_api.create_orthographic_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and return an AlOrthographicCamera object.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_perspective_camera">
+<code class="descclassname">alias_api.</code><code class="descname">create_perspective_camera</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.AlPerspectiveCamera<a class="headerlink" href="#alias_api.create_perspective_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and return a AlPerspectiveCamera object.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.create_reference">
-<code class="descclassname">alias_api.</code><code class="descname">create_reference</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.create_reference" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which creates a reference in Alias given its file path.</p>
+<code class="descclassname">alias_api.</code><code class="descname">create_reference</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlReferenceFile<a class="headerlink" href="#alias_api.create_reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an AlReferenceFile with the given path, in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.create_shader">
+<code class="descclassname">alias_api.</code><code class="descname">create_shader</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.AlShader<a class="headerlink" href="#alias_api.create_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new AlShader in the Alias Universe.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.create_stage">
-<code class="descclassname">alias_api.</code><code class="descname">create_stage</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.create_stage" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which creates a new stage in Alias.</p>
+<code class="descclassname">alias_api.</code><code class="descname">create_stage</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.create_stage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new stage in Alias.</p>
 </dd></dl>
 
 <dl class="function">
@@ -115,117 +599,309 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="alias_api.delete_all_construction_entities">
+<code class="descclassname">alias_api.</code><code class="descname">delete_all_construction_entities</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.delete_all_construction_entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all AlConstructionPlane objects found in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.delete_history">
+<code class="descclassname">alias_api.</code><code class="descname">delete_history</code><span class="sig-paren">(</span><em>node: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.delete_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the history from this dag node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode"><em>AlDagNode</em></a>) – The dag node to delete history from.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The status code result.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="alias_api.delete_null_nodes">
 <code class="descclassname">alias_api.</code><code class="descname">delete_null_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.delete_null_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function to delete all null nodes.</p>
+<dd><p>Delete all null nodes in the Alias scene.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.expand_instances">
+<code class="descclassname">alias_api.</code><code class="descname">expand_instances</code><span class="sig-paren">(</span><em>node: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.expand_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert all instsances below the given node (top node of tree) to uninstanced geometry.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.find_dag_node_by_name">
+<code class="descclassname">alias_api.</code><code class="descname">find_dag_node_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlDagNode<a class="headerlink" href="#alias_api.find_dag_node_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and return the DagNode that matches the given name.</p>
+<p>This traverses into group nodes to search the entire DAG for the node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – The unique dag node name to search by.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.find_top_level_dag_node_by_name">
+<code class="descclassname">alias_api.</code><code class="descname">find_top_level_dag_node_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlDagNode<a class="headerlink" href="#alias_api.find_top_level_dag_node_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and return the DagNode that matches the given name.</p>
+<p>This does not traverse into group nodes, only the top-level nodes in the DAG.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – The unique dag node name to search by.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.first_construction_entity">
+<code class="descclassname">alias_api.</code><code class="descname">first_construction_entity</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.AlConstructionEntity<a class="headerlink" href="#alias_api.first_construction_entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first AlConstructionPlane object found in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.first_dag_node">
+<code class="descclassname">alias_api.</code><code class="descname">first_dag_node</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.AlDagNode<a class="headerlink" href="#alias_api.first_dag_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first AlDagNode in the list of Alias AlDagNode objects (the DAG).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.first_pick_item">
+<code class="descclassname">alias_api.</code><code class="descname">first_pick_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.first_pick_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the pick list to reference the first object in the list.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_alternative_by_name">
-<code class="descclassname">alias_api.</code><code class="descname">get_alternative_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_alternative_by_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which retrieves an Alias alternative given its name.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_alternative_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlReferenceFileSet<a class="headerlink" href="#alias_api.get_alternative_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the AlReferenceFileSet matching the given name.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_alternatives">
-<code class="descclassname">alias_api.</code><code class="descname">get_alternatives</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_alternatives" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which retrieves all the alternatives of the current file.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_alternatives</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[alias_api.AlReferenceFileSet]<a class="headerlink" href="#alias_api.get_alternatives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all the alternatives for the current AlReferenceFileSet.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_annotation_locators">
-<code class="descclassname">alias_api.</code><code class="descname">get_annotation_locators</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_annotation_locators" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which gets all the annotation locators of the current file.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_annotation_locators</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[unicode]<a class="headerlink" href="#alias_api.get_annotation_locators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all the annotation locators of the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_children">
+<code class="descclassname">alias_api.</code><code class="descname">get_children</code><span class="sig-paren">(</span><em>arg0: alias_api.AlGroupNode</em><span class="sig-paren">)</span> &#x2192; List[alias_api.AlDagNode]<a class="headerlink" href="#alias_api.get_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all the children in the group node.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_construction_plane_by_name">
+<code class="descclassname">alias_api.</code><code class="descname">get_construction_plane_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlConstructionPlane<a class="headerlink" href="#alias_api.get_construction_plane_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the AlConstructionPlane matching the given unique name.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_current_path">
 <code class="descclassname">alias_api.</code><code class="descname">get_current_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; unicode<a class="headerlink" href="#alias_api.get_current_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which gets the current file path.</p>
+<dd><p>Return the current file path.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_current_pick_item">
+<code class="descclassname">alias_api.</code><code class="descname">get_current_pick_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; AlObject<a class="headerlink" href="#alias_api.get_current_pick_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the object that the pick list is currently referencing.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_current_stage">
-<code class="descclassname">alias_api.</code><code class="descname">get_current_stage</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_current_stage" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which gets the current stage.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="alias_api.get_layer_by_id">
-<code class="descclassname">alias_api.</code><code class="descname">get_layer_by_id</code><span class="sig-paren">(</span><em>id: int</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_layer_by_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which retrieves a layer given its id.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_current_stage</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.Stage<a class="headerlink" href="#alias_api.get_current_stage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current stage.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_layer_by_name">
-<code class="descclassname">alias_api.</code><code class="descname">get_layer_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_layer_by_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which retrieves a layer given its name.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_layer_by_name</code><span class="sig-paren">(</span><em>layer_name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlLayer<a class="headerlink" href="#alias_api.get_layer_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a layer given its name in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_layer_by_number">
+<code class="descclassname">alias_api.</code><code class="descname">get_layer_by_number</code><span class="sig-paren">(</span><em>layer_number: int</em><span class="sig-paren">)</span> &#x2192; alias_api.AlLayer<a class="headerlink" href="#alias_api.get_layer_by_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a layer given its number in the Alias Universe.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_layers">
-<code class="descclassname">alias_api.</code><code class="descname">get_layers</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_layers" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which gets all the layers of the current file.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_layers</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[alias_api.AlLayer]<a class="headerlink" href="#alias_api.get_layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all the layers in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_perspective_camera_by_name">
+<code class="descclassname">alias_api.</code><code class="descname">get_perspective_camera_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlPerspectiveCamera<a class="headerlink" href="#alias_api.get_perspective_camera_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and return the AlPerspectiveCamera that matches the unique identifier name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_perspective_cameras">
+<code class="descclassname">alias_api.</code><code class="descname">get_perspective_cameras</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[alias_api.AlPerspectiveCamera]<a class="headerlink" href="#alias_api.get_perspective_cameras" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and return all AlPerspectiveCameras in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_pick_item_dag_nodes">
+<code class="descclassname">alias_api.</code><code class="descname">get_pick_item_dag_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[AlDagNode]<a class="headerlink" href="#alias_api.get_pick_item_dag_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all dag nodes that are in the pick list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_pick_items">
+<code class="descclassname">alias_api.</code><code class="descname">get_pick_items</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[AlObject]<a class="headerlink" href="#alias_api.get_pick_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all objects that are in the pick list.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_product_information">
 <code class="descclassname">alias_api.</code><code class="descname">get_product_information</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#alias_api.get_product_information" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which gets useful product information.</p>
+<dd><p>Return the Alias product information.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_reference_by_name">
-<code class="descclassname">alias_api.</code><code class="descname">get_reference_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_reference_by_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which retrieves a reference given its name.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_reference_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlReferenceFile<a class="headerlink" href="#alias_api.get_reference_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the AlReferenceFile matching the given name.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_reference_by_path">
-<code class="descclassname">alias_api.</code><code class="descname">get_reference_by_path</code><span class="sig-paren">(</span><em>path: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_reference_by_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which retrieves a reference given its path.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_reference_by_path</code><span class="sig-paren">(</span><em>path: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlReferenceFile<a class="headerlink" href="#alias_api.get_reference_by_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the AlReferenceFile matching the given file path.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_reference_by_uuid">
-<code class="descclassname">alias_api.</code><code class="descname">get_reference_by_uuid</code><span class="sig-paren">(</span><em>uuid: list</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.get_reference_by_uuid" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which retrieves a reference given its uuid.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_reference_by_uuid</code><span class="sig-paren">(</span><em>uuid: list</em><span class="sig-paren">)</span> &#x2192; alias_api.AlReferenceFile<a class="headerlink" href="#alias_api.get_reference_by_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the AlReferenceFile matching the given uuid.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_references">
-<code class="descclassname">alias_api.</code><code class="descname">get_references</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_references" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which retrieves all the references imported into the currentfile.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_references</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[alias_api.AlReferenceFile]<a class="headerlink" href="#alias_api.get_references" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all the AlReferenceFiles imported into the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_shader_by_name">
+<code class="descclassname">alias_api.</code><code class="descname">get_shader_by_name</code><span class="sig-paren">(</span><em>shader_name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlShader<a class="headerlink" href="#alias_api.get_shader_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Shader found by the given name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_shaders">
+<code class="descclassname">alias_api.</code><code class="descname">get_shaders</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[alias_api.AlShader]<a class="headerlink" href="#alias_api.get_shaders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all the shaders in the Alias universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_shaders_by_node">
+<code class="descclassname">alias_api.</code><code class="descname">get_shaders_by_node</code><span class="sig-paren">(</span><em>node_name: unicode</em><span class="sig-paren">)</span> &#x2192; List[alias_api.AlShader]<a class="headerlink" href="#alias_api.get_shaders_by_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all the shaders assigned to the node corresponding to the given name.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_stages">
-<code class="descclassname">alias_api.</code><code class="descname">get_stages</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_stages" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which returns all the existing stages of the current Alias session.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_stages</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[alias_api.Stage]<a class="headerlink" href="#alias_api.get_stages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all the existing stages of the current Alias session.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.get_top_dag_nodes">
+<code class="descclassname">alias_api.</code><code class="descname">get_top_dag_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[alias_api.AlDagNode]<a class="headerlink" href="#alias_api.get_top_dag_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of the top level dag nodes in the Alias Universe.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.get_variants">
-<code class="descclassname">alias_api.</code><code class="descname">get_variants</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#alias_api.get_variants" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which gets all the variants of the current file.</p>
+<code class="descclassname">alias_api.</code><code class="descname">get_variants</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[alias_api.Variant]<a class="headerlink" href="#alias_api.get_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all the variants of the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.has_annotation_locator">
+<code class="descclassname">alias_api.</code><code class="descname">has_annotation_locator</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.has_annotation_locator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there are any annotation locators in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.has_history">
+<code class="descclassname">alias_api.</code><code class="descname">has_history</code><span class="sig-paren">(</span><em>node: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.has_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the dag node has history, else False.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode"><em>AlDagNode</em></a>) – The dag node to check history.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the node has history, else False.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.has_reference">
+<code class="descclassname">alias_api.</code><code class="descname">has_reference</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.has_reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if any AlReferenceFiles found in the current Alias Universe.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.has_variants">
 <code class="descclassname">alias_api.</code><code class="descname">has_variants</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.has_variants" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which checks if the current file contains variants.</p>
+<dd><p>Check if the current file contains variants.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.import_file">
 <code class="descclassname">alias_api.</code><code class="descname">import_file</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.import_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which imports a file into the current file.</p>
+<dd><p>Import a file into the current file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.initialize_universe">
+<code class="descclassname">alias_api.</code><code class="descname">initialize_universe</code><span class="sig-paren">(</span><em>up: alias_api.AlCoordinateSystem = &lt;AlCoordinateSystem.???: 1&gt;</em>, <em>init_project_env: int = False</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.initialize_universe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.is_copy_of_vred_shader">
+<code class="descclassname">alias_api.</code><code class="descname">is_copy_of_vred_shader</code><span class="sig-paren">(</span><em>shader: alias_api.AlShader</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.is_copy_of_vred_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the shader was created from a VRED shader.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.is_empty_file">
 <code class="descclassname">alias_api.</code><code class="descname">is_empty_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.is_empty_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which checks if the current file is empty or not.</p>
+<dd><p>Deprecated - use ‘is_stage_empty’ instead.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.is_stage_empty">
+<code class="descclassname">alias_api.</code><code class="descname">is_stage_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.is_stage_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the current file is empty or not.</p>
 </dd></dl>
 
 <dl class="function">
@@ -265,33 +941,92 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="alias_api.next_construction_entity">
+<code class="descclassname">alias_api.</code><code class="descname">next_construction_entity</code><span class="sig-paren">(</span><em>entity: alias_api.AlConstructionEntity</em><span class="sig-paren">)</span> &#x2192; alias_api.AlConstructionEntity<a class="headerlink" href="#alias_api.next_construction_entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the next AlConstructionPlane object found, after the given entity, in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.next_pick_item">
+<code class="descclassname">alias_api.</code><code class="descname">next_pick_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.next_pick_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the pick list to reference the next object in the list.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="alias_api.open_file">
-<code class="descclassname">alias_api.</code><code class="descname">open_file</code><span class="sig-paren">(</span><em>path: unicode</em>, <em>new_stage: bool = False</em>, <em>delete_current: bool = False</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.open_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which opens a file in Alias.</p>
+<code class="descclassname">alias_api.</code><code class="descname">open_file</code><span class="sig-paren">(</span><em>path: unicode</em>, <em>new_stage: bool = False</em>, <em>delete_current: bool = False</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.open_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open a file in Alias.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.pick_by_name">
+<code class="descclassname">alias_api.</code><code class="descname">pick_by_name</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.pick_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add all objects that match the given string pattern to the pick list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.pop_pick_list">
+<code class="descclassname">alias_api.</code><code class="descname">pop_pick_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.pop_pick_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pops the pushed pick list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.prev_pick_item">
+<code class="descclassname">alias_api.</code><code class="descname">prev_pick_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.prev_pick_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the pick list to reference the previous object in the list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.push_pick_list">
+<code class="descclassname">alias_api.</code><code class="descname">push_pick_list</code><span class="sig-paren">(</span><em>copy: int</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.push_pick_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Push a new pick list onto the stack.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.redraw_screen">
+<code class="descclassname">alias_api.</code><code class="descname">redraw_screen</code><span class="sig-paren">(</span><em>redraw_flag: int = 3</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.redraw_screen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="alias_api.remove_message_handler">
+<code class="descclassname">alias_api.</code><code class="descname">remove_message_handler</code><span class="sig-paren">(</span><em>message_type: alias_api.AlMessageType</em>, <em>callback_id: int</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.remove_message_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the specific message handler for the message type and callback.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.remove_message_handlers">
+<code class="descclassname">alias_api.</code><code class="descname">remove_message_handlers</code><span class="sig-paren">(</span><em>message_type: alias_api.AlMessageType</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.remove_message_handlers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all message handlers for the message type.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.reset">
 <code class="descclassname">alias_api.</code><code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which resets the current session by deleting all the stages.</p>
+<dd><p>Deprecated - use ‘reset_stages’ instaed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.reset_stages">
+<code class="descclassname">alias_api.</code><code class="descname">reset_stages</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.reset_stages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the current session by deleting all the stages. OpenAlias will create default windows.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.save_file">
-<code class="descclassname">alias_api.</code><code class="descname">save_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.save_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which saves the current file.</p>
+<code class="descclassname">alias_api.</code><code class="descname">save_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.save_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the current file.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.save_file_as">
-<code class="descclassname">alias_api.</code><code class="descname">save_file_as</code><span class="sig-paren">(</span><em>arg0: unicode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#alias_api.save_file_as" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which saves the current file to a given location.</p>
+<code class="descclassname">alias_api.</code><code class="descname">save_file_as</code><span class="sig-paren">(</span><em>path: unicode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.save_file_as" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the current file to the given path.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.update_reference">
-<code class="descclassname">alias_api.</code><code class="descname">update_reference</code><span class="sig-paren">(</span><em>old_path: unicode</em>, <em>new_path: unicode</em><span class="sig-paren">)</span> &#x2192; object<a class="headerlink" href="#alias_api.update_reference" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function which updates a reference in Alias by a new one.</p>
+<code class="descclassname">alias_api.</code><code class="descname">update_reference</code><span class="sig-paren">(</span><em>old_path: unicode</em>, <em>new_path: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlReferenceFile<a class="headerlink" href="#alias_api.update_reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an AlReferenceFile path with the new path provided.</p>
 </dd></dl>
 
 <dl class="function">
@@ -301,17 +1036,25 @@
 <ol class="arabic simple">
 <li>zero_transform() -&gt; int</li>
 </ol>
-<p>A function that applies the zero transform to all dag nodes in the pick list.</p>
+<p>Apply zero transform to all dag nodes currently in the pick list.</p>
 <ol class="arabic simple" start="2">
-<li>zero_transform(nodeName: unicode, clearPickList: bool = False) -&gt; int</li>
+<li>zero_transform(node_name: unicode, clear_pick_list: bool = False) -&gt; int</li>
 </ol>
-<p>A function that applies the zero transform to all dag nodes in the pick list.</p>
+<p>Apply zero transform to all nodes that match the given name.</p>
+<ol class="arabic simple" start="3">
+<li>zero_transform(node: alias_api.AlDagNode) -&gt; int</li>
+</ol>
+<p>Apply the zero transform to the given dag node.</p>
+<ol class="arabic simple" start="4">
+<li>zero_transform(nodes: List[alias_api.AlDagNode]) -&gt; int</li>
+</ol>
+<p>Apply the zero transform to the given list of dag nodes.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="alias_api.zero_transform_top_level">
 <code class="descclassname">alias_api.</code><code class="descname">zero_transform_top_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.zero_transform_top_level" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function that applies the zero transform operation to the current pick list.</p>
+<dd><p>Apply zero transform to all top-level dag nodes in the universe.</p>
 </dd></dl>
 
 </div>
