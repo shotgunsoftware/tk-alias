@@ -20,9 +20,6 @@ class AliasEventWatcher(object):
         self.__scene_events = {}
         self.__is_watching = False
 
-        # register scene event callbacks
-        self.start_watching()
-
     @property
     def is_watching(self):
         return self.__is_watching
