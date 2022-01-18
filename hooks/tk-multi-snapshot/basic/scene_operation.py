@@ -65,11 +65,7 @@ class SceneOperation(HookClass):
                     self.parent.engine.execute_api_ops_and_defer_event_callbacks(
                         [
                             ("reset", [], {}),
-                            (
-                                "open_file",
-                                [file_path],
-                                {"new_stage": False, "delete_current": False},
-                            ),
+                            ("open_file", [file_path], {"new_stage": False},),
                         ],
                         alias_api.AlMessageType.StageActive,
                     )
