@@ -51,10 +51,28 @@ class SceneOperation(HookClass):
                 if open_in_current_stage == QtGui.QMessageBox.Cancel:
                     return
                 elif open_in_current_stage == QtGui.QMessageBox.No:
-                    alias_api.open_file(file_path, new_stage=False, delete_current=True)
+                    self.parent.engine.execute_api_ops_and_defer_event_callbacks(
+                        [
+                            (
+                                "open_file",
+                                [file_path],
+                                {"new_stage": False, "delete_current": True},
+                            ),
+                        ],
+                        alias_api.AlMessageType.StageActive,
+                    )
                 else:
-                    alias_api.reset()
-                    alias_api.open_file(file_path, new_stage=False)
+                    self.parent.engine.execute_api_ops_and_defer_event_callbacks(
+                        [
+                            ("reset", [], {}),
+                            (
+                                "open_file",
+                                [file_path],
+                                {"new_stage": False, "delete_current": False},
+                            ),
+                        ],
+                        alias_api.AlMessageType.StageActive,
+                    )
 
             elif operation == "save":
                 alias_api.save_file()
