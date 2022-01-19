@@ -436,6 +436,33 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="alias_api.apply_iterator_to_shaders">
+<code class="descclassname">alias_api.</code><code class="descname">apply_iterator_to_shaders</code><span class="sig-paren">(</span><em>iter: AlIterator</em>, <em>retcode: int</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.apply_iterator_to_shaders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the iterator to each AlShader.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iter</strong> (<a class="reference internal" href="classes.html#alias_api.AlIterator" title="alias_api.AlIterator"><em>AlIterator</em></a>) – the iterator to apply</li>
+<li><strong>retcode</strong> (<em>int</em>) – the return value of the last application of the iterator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The status code result
+Success - the iterator was successfully applied to each shader
+InvalidArgument - ‘iter’ was None
+Failure - AlUniverse was not initialized</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="alias_api.cleanup_geometry_model">
 <code class="descclassname">alias_api.</code><code class="descname">cleanup_geometry_model</code><span class="sig-paren">(</span><em>face_to_surf: bool = False</em>, <em>split_c1_breaks: bool = False</em>, <em>split_closed_basis: bool = False</em>, <em>shrink_closed_surf: bool = False</em>, <em>set_persistent_ids: bool = False</em>, <em>split_sphere: bool = False</em>, <em>picked_dags_only: bool = False</em>, <em>split_multiknots: bool = False</em>, <em>delete_null_nodes: bool = False</em>, <em>delete_degenerate_geo: bool = False</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.cleanup_geometry_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean up the geometry of the model.</p>
@@ -593,6 +620,12 @@ Defaults to True.</li>
 </dd></dl>
 
 <dl class="function">
+<dt id="alias_api.create_reference_alternative">
+<code class="descclassname">alias_api.</code><code class="descname">create_reference_alternative</code><span class="sig-paren">(</span><em>name: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlReferenceFileSet<a class="headerlink" href="#alias_api.create_reference_alternative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an AlReferenceFileSet with the given name.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="alias_api.create_shader">
 <code class="descclassname">alias_api.</code><code class="descname">create_shader</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.AlShader<a class="headerlink" href="#alias_api.create_shader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new AlShader in the Alias Universe.</p>
@@ -703,9 +736,33 @@ Defaults to True.</li>
 </dd></dl>
 
 <dl class="function">
+<dt id="alias_api.first_layer">
+<code class="descclassname">alias_api.</code><code class="descname">first_layer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.AlLayer<a class="headerlink" href="#alias_api.first_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first layer which refers to the default layer. This layer is always valid in the universe. None is returned if the universe is not initialized.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.first_layered_shader">
+<code class="descclassname">alias_api.</code><code class="descname">first_layered_shader</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.AlLayeredShader<a class="headerlink" href="#alias_api.first_layered_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first AlLayeredShader in the list of Alias AlLayeredShader objects. None is returned if the list is empty.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="alias_api.first_pick_item">
 <code class="descclassname">alias_api.</code><code class="descname">first_pick_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.first_pick_item" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the pick list to reference the first object in the list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.first_shader">
+<code class="descclassname">alias_api.</code><code class="descname">first_shader</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.AlShader<a class="headerlink" href="#alias_api.first_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first AlShader in the list of Alias AlShader objects. None is returned if the list is empty.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.first_switch_shader">
+<code class="descclassname">alias_api.</code><code class="descname">first_switch_shader</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; alias_api.AlSwitchShader<a class="headerlink" href="#alias_api.first_switch_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first AlSwitchShader in the list of Alias AlSwitchShader objects. None is returned if the list is empty.</p>
 </dd></dl>
 
 <dl class="function">
@@ -949,6 +1006,12 @@ Defaults to True.</li>
 </dd></dl>
 
 <dl class="function">
+<dt id="alias_api.import_reference">
+<code class="descclassname">alias_api.</code><code class="descname">import_reference</code><span class="sig-paren">(</span><em>filename: unicode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlReferenceFile<a class="headerlink" href="#alias_api.import_reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import the file and create an AlReferenceFile object from it.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="alias_api.import_subdiv">
 <code class="descclassname">alias_api.</code><code class="descname">import_subdiv</code><span class="sig-paren">(</span><em>filepath: unicode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.import_subdiv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Imports a file as a subdivision.</p>
@@ -1027,9 +1090,61 @@ Defaults to True.</li>
 </dd></dl>
 
 <dl class="function">
+<dt id="alias_api.next_layer">
+<code class="descclassname">alias_api.</code><code class="descname">next_layer</code><span class="sig-paren">(</span><em>cur_layer: alias_api.AlLayer</em><span class="sig-paren">)</span> &#x2192; alias_api.AlLayer<a class="headerlink" href="#alias_api.next_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the leaf layer following <cite>cur_layer</cite> in the graph of Alias AlLayer objects in a pre-order traversal.</p>
+<p>Note:  This function does not return layer folders (only leaf layers).</p>
+<p>None is returned if <cite>cur_layer</cite> has no next layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cur_layer</strong> (<a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><em>AlLayer</em></a>) – Layer from which to walk forward</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The leaf layer following <cite>cur_layer</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer">AlLayer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="alias_api.next_pick_item">
 <code class="descclassname">alias_api.</code><code class="descname">next_pick_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.next_pick_item" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the pick list to reference the next object in the list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.next_shader">
+<code class="descclassname">alias_api.</code><code class="descname">next_shader</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.next_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li>next_shader(cur_shader: alias_api.AlShader) -&gt; alias_api.AlShader</li>
+</ol>
+<p>Return the AlShader following <cite>cur_shader</cite> in the list of Alias AlShader objects.  None is returned if <cite>cur_shader</cite> has no next shader.</p>
+<ol class="arabic simple" start="2">
+<li>next_shader(cur_shader: alias_api.AlLayeredShader) -&gt; alias_api.AlLayeredShader</li>
+</ol>
+<p>Return the AlLayeredShader following <cite>cur_shader</cite> in the list of Alias AlLayeredShader objects.  None is returned if <cite>cur_shader</cite> has no next shader.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.next_switch_shader">
+<code class="descclassname">alias_api.</code><code class="descname">next_switch_shader</code><span class="sig-paren">(</span><em>cur_shader: alias_api.AlSwitchShader</em><span class="sig-paren">)</span> &#x2192; alias_api.AlSwitchShader<a class="headerlink" href="#alias_api.next_switch_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the AlSwitchShader following <cite>cur_shader</cite> in the list of Alias AlSwitchShader objects.  None is returned if <cite>cur_shader</cite> has no next shader.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.node_first_shader">
+<code class="descclassname">alias_api.</code><code class="descname">node_first_shader</code><span class="sig-paren">(</span><em>node: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; AlShader<a class="headerlink" href="#alias_api.node_first_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first shader used by the given dag node. Return None if no shader is used.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.node_switch_shader">
+<code class="descclassname">alias_api.</code><code class="descname">node_switch_shader</code><span class="sig-paren">(</span><em>node: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; AlSwitchShader<a class="headerlink" href="#alias_api.node_switch_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the switch shader used by the given dag node. Return None if no switch shader used.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1077,6 +1192,12 @@ Defaults to True.</li>
 <dt id="alias_api.remove_message_handlers">
 <code class="descclassname">alias_api.</code><code class="descname">remove_message_handlers</code><span class="sig-paren">(</span><em>message_type: alias_api.AlMessageType</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.remove_message_handlers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all message handlers for the message type.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alias_api.remove_reference">
+<code class="descclassname">alias_api.</code><code class="descname">remove_reference</code><span class="sig-paren">(</span><em>reference_file: alias_api.AlReferenceFile</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.remove_reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the AlReferenceFile from the Alias Universe.</p>
 </dd></dl>
 
 <dl class="function">

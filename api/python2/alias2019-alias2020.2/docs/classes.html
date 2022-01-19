@@ -861,15 +861,15 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlCameraNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlCameraNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlCameraNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlCameraNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlCameraNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlCameraNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlCameraNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlCameraNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1242,12 +1242,6 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlCluster.next_cluster_d">
-<code class="descname">next_cluster_d</code><span class="sig-paren">(</span><em>self: alias_api.AlCluster</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlCluster.next_cluster_d" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function destructively sets the object to point to the next cluster in the global cluster list, if the next cluster can be found. If not, the object is unaffected.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="alias_api.AlCluster.number_of_members">
 <code class="descname">number_of_members</code><span class="sig-paren">(</span><em>self: alias_api.AlCluster</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlCluster.number_of_members" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the number of members in this cluster.</p>
@@ -1257,12 +1251,6 @@ InvalidObject - the dag node was invalid</td>
 <dt id="alias_api.AlCluster.prev_cluster">
 <code class="descname">prev_cluster</code><span class="sig-paren">(</span><em>self: alias_api.AlCluster</em><span class="sig-paren">)</span> &#x2192; alias_api.AlCluster<a class="headerlink" href="#alias_api.AlCluster.prev_cluster" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a pointer to the cluster preceding this onei n the global cluster list.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="alias_api.AlCluster.prev_cluster_d">
-<code class="descname">prev_cluster_d</code><span class="sig-paren">(</span><em>self: alias_api.AlCluster</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlCluster.prev_cluster_d" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function destructively sets the object to point to the previous cluster in the global cluster list, if the next cluster can be found. If not, the object is unaffected.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1665,15 +1653,15 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlClusterNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlClusterNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlClusterNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlClusterNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlClusterNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlClusterNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlClusterNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlClusterNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2687,15 +2675,15 @@ AlCurveNodeJoinErrors.DuplicateCurve - tried joining a curve to itself.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlCurveNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlCurveNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlCurveNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlCurveNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlCurveNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlCurveNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlCurveNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlCurveNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -4192,15 +4180,15 @@ z [float] - the z world coordinate of the point</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlDagNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlDagNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlDagNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlDagNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlDagNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlDagNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlDagNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlDagNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -4666,33 +4654,15 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlFace.next_face_d">
-<code class="descname">next_face_d</code><span class="sig-paren">(</span><em>self: alias_api.AlFace</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlFace.next_face_d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Destructively points to current wrapper to the next face in the list of faces.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="alias_api.AlFace.next_shader">
 <code class="descname">next_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlFace</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; AlShader<a class="headerlink" href="#alias_api.AlFace.next_shader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the shader after the given shader in the shader list. Specify None as the shader parameter will return the first shader.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlFace.next_shader_d">
-<code class="descname">next_shader_d</code><span class="sig-paren">(</span><em>self: alias_api.AlFace</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlFace.next_shader_d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Destructively points the ‘shader’ to the shader after the given shader in the shader list.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="alias_api.AlFace.prev_face">
 <code class="descname">prev_face</code><span class="sig-paren">(</span><em>self: alias_api.AlFace</em><span class="sig-paren">)</span> &#x2192; alias_api.AlFace<a class="headerlink" href="#alias_api.AlFace.prev_face" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a pointer to the previous face in the list of faces.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="alias_api.AlFace.prev_face_d">
-<code class="descname">prev_face_d</code><span class="sig-paren">(</span><em>self: alias_api.AlFace</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlFace.prev_face_d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Destructively points to current wrapper to the previous face in the list of faces.</p>
 </dd></dl>
 
 <dl class="method">
@@ -5169,15 +5139,15 @@ AlCurveNodeJoinErrors.DuplicateCurve - tried joining a curve to itself.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlFaceNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlFaceNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlFaceNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlFaceNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlFaceNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlFaceNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlFaceNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlFaceNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -5772,12 +5742,6 @@ sInvalidObject - the groupnode was invalid</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlGroupNode.next_instance_d">
-<code class="descname">next_instance_d</code><span class="sig-paren">(</span><em>self: alias_api.AlGroupNode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlGroupNode.next_instance_d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Destructively points this wrapper to the object’s next sibling node in the list which is an instanced group node.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="alias_api.AlGroupNode.next_node">
 <code class="descname">next_node</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlDagNode<a class="headerlink" href="#alias_api.AlGroupNode.next_node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a pointer to the object’s next sibling AlDagNode or None if there is no next sibling.</p>
@@ -5799,12 +5763,6 @@ sInvalidObject - the groupnode was invalid</td>
 <dt id="alias_api.AlGroupNode.prev_instance">
 <code class="descname">prev_instance</code><span class="sig-paren">(</span><em>self: alias_api.AlGroupNode</em><span class="sig-paren">)</span> &#x2192; alias_api.AlGroupNode<a class="headerlink" href="#alias_api.AlGroupNode.prev_instance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a pointer to the object’s previous sibling node in the list which is an instanced group node.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="alias_api.AlGroupNode.prev_instance_d">
-<code class="descname">prev_instance_d</code><span class="sig-paren">(</span><em>self: alias_api.AlGroupNode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlGroupNode.prev_instance_d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Destructively points this wrapper to the object’s previous sibling node in the list which is an instanced group node.</p>
 </dd></dl>
 
 <dl class="method">
@@ -5832,15 +5790,15 @@ sInvalidObject - the groupnode was invalid</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlGroupNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlGroupNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlGroupNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlGroupNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlGroupNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlGroupNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlGroupNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlGroupNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -6331,22 +6289,56 @@ InvalidObject - the dag node was invalid</td>
 
 <dl class="method">
 <dt id="alias_api.AlLayer.assign_child">
-<code class="descname">assign_child</code><span class="sig-paren">(</span><em>self: alias_api.AlLayer</em>, <em>child_layer: alias_api.AlLayer</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlLayer.assign_child" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assign an Alias layer as child of the current layer.</p>
+<code class="descname">assign_child</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.AlLayer.assign_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p class="first">assign_child(self: alias_api.AlLayer, child_layer_number: int) -&gt; int</p>
+<blockquote>
+<div><p>Assign an Alias layer as child of the current layer.</p>
 <p>If this layer is not a folder layer, the operation will fail to
 assign the child layer.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>child_layer</strong> (<a class="reference internal" href="#alias_api.AlLayer" title="alias_api.AlLayer"><em>AlLayer</em></a>) – the child layer to assign to the layer</td>
+<tr class="field-odd field"><th class="field-name" colspan="2">param child_layer_number:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">the ID of the child layer which is to be assigned to the layer</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The status code result of the operation.</td>
+<tr class="field-even field"><th class="field-name" colspan="2">type child_layer_number:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Rype:</th><td class="field-body">int(AlStatusCode)</td>
+<tr class="field-odd field"><th class="field-name">return:</th><td class="field-body">The status code result of the operation.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">rype:</th><td class="field-body">int(AlStatusCode)</td>
 </tr>
 </tbody>
 </table>
+</div></blockquote>
+</li>
+<li><p class="first">assign_child(self: alias_api.AlLayer, child_layer: alias_api.AlLayer) -&gt; int</p>
+<blockquote>
+<div><p>Assign an Alias layer as child of the current layer.</p>
+<p>If this layer is not a folder layer, the operation will fail to
+assign the child layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">param child_layer:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">the child layer to assign to the layer</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">type child_layer:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">AlLayer</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">return:</th><td class="field-body">The status code result of the operation.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">rype:</th><td class="field-body">int(AlStatusCode)</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="method">
@@ -6423,8 +6415,95 @@ assign the child layer.</p>
 
 <dl class="method">
 <dt id="alias_api.AlLayer.create">
-<code class="descname">create</code><span class="sig-paren">(</span><em>self: alias_api.AlLayer</em>, <em>name: unicode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlLayer.create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize the AlLayer object in the Alias Universe.</p>
+<code class="descname">create</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.AlLayer.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p class="first">create(self: alias_api.AlLayer, name: unicode) -&gt; int</p>
+<blockquote>
+<div><p>Create a new layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body"><p class="first">The name of the new layer.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type name:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">return:</th><td class="field-body"><p class="first">The status code result
+Success - the layer was created
+Failure - the layer was not created because either the maximum number of layers were already created</p>
+<blockquote>
+<div><p>or the layer functionality is turned off.</p>
+</div></blockquote>
+<p>AlreadyCreated - object has already been created</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">rtype:</th><td class="field-body"><p class="first last">int(AlStatusCode)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first">create(self: alias_api.AlLayer, number: int) -&gt; int</p>
+<blockquote>
+<div><p>Create a new layer with the given number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param number:</th><td class="field-body"><p class="first">The number of the new layer.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type number:</th><td class="field-body"><p class="first">int</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">return:</th><td class="field-body"><p class="first">A tuple (status, number) where
+status - the status code result of the operation</p>
+<blockquote>
+<div><p>Success - the layer was created
+Failure - the layer was not created because either the maximum number of layers were already created</p>
+<blockquote>
+<div><p>or the layer functionality is turned off.</p>
+</div></blockquote>
+<p>AlreadyCreated - object has already been created</p>
+</div></blockquote>
+<p>number - the Id of the created layer</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">rtype:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlLayer.create_folder">
+<code class="descname">create_folder</code><span class="sig-paren">(</span><em>self: alias_api.AlLayer</em>, <em>name: unicode</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlLayer.create_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new layer folder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – The name of the new layer folder.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The status code result
+Success - the layer folder was created
+Failure - the layer folder was not created because either the maximum number of layers were already created<blockquote>
+<div>or the layer functionality is turned off.</div></blockquote>
+<p>AlreadyCreated - object has already been created</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int(<a class="reference internal" href="functions.html#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -6445,10 +6524,32 @@ assign the child layer.</p>
 <dd><p>Export the content of the layer to the given file path.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="alias_api.AlLayer.get_assigned_nodes">
+<code class="descname">get_assigned_nodes</code><span class="sig-paren">(</span><em>self: alias_api.AlLayer</em><span class="sig-paren">)</span> &#x2192; List[AlDagNode]<a class="headerlink" href="#alias_api.AlLayer.get_assigned_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of AlDagNodes that are assigned to this AlLayer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The list of dag nodes</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list&lt;AlDagNode&gt;</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="alias_api.AlLayer.invisible">
 <code class="descname">invisible</code><a class="headerlink" href="#alias_api.AlLayer.invisible" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or set the AlLayer visibility.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlLayer.is_assigned">
+<code class="descname">is_assigned</code><span class="sig-paren">(</span><em>self: alias_api.AlLayer</em>, <em>node: AlDagNode</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.AlLayer.is_assigned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node is assigned to the layer, else False.</p>
 </dd></dl>
 
 <dl class="method">
@@ -7275,15 +7376,15 @@ updated with the light node’s transformation matrix, if a light exists.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlLightNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlLightNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlLightNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlLightNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlLightNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlLightNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlLightNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlLightNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -7794,6 +7895,26 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="alias_api.AlMesh.assign_shader">
+<code class="descname">assign_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlMesh</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlMesh.assign_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns <cite>shader</cite> to the mesh.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shader</strong> (<a class="reference internal" href="#alias_api.AlShader" title="alias_api.AlShader"><em>AlShader</em></a>) – the shader to assign</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The status code result
+Success - The shader was successfully assigned to the mesh.
+InvalidArgument - <cite>shader</cite> is invalid.
+InvalidObject - The mesh was not created properly.
+Failure - Unable to process request.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="alias_api.AlMesh.copy_wrapper">
 <code class="descname">copy_wrapper</code><span class="sig-paren">(</span><em>self: alias_api.AlMesh</em><span class="sig-paren">)</span> &#x2192; alias_api.AlObject<a class="headerlink" href="#alias_api.AlMesh.copy_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an exact duplicate of this AlMesh wrapper.</p>
@@ -7805,10 +7926,80 @@ InvalidObject - the dag node was invalid</td>
 <dd><p>Delete the AlMesh from the Alias Universe and return the status of the performed operation.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="alias_api.AlMesh.first_shader">
+<code class="descname">first_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlMesh</em><span class="sig-paren">)</span> &#x2192; AlShader<a class="headerlink" href="#alias_api.AlMesh.first_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first shader that this mesh object references. The function will return 0 if there are no shaders or the mesh was not created properly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlMesh.layer_shader">
+<code class="descname">layer_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlMesh</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlMesh.layer_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Layers the <cite>shader</cite> on the mesh.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The status code result
+Success - the shader was successfully layered on the mesh.
+InvalidArgument - <cite>shader</cite> is invalid.
+InvalidObject - The mesh was not created properly.
+Failure - Unable to process request.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlMesh.mesh_node">
+<code class="descname">mesh_node</code><span class="sig-paren">(</span><em>self: alias_api.AlMesh</em><span class="sig-paren">)</span> &#x2192; AlMeshNode<a class="headerlink" href="#alias_api.AlMesh.mesh_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the AlMeshNode for this mesh. Return None if there is not an attached polyset node.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="alias_api.AlMesh.name">
 <code class="descname">name</code><a class="headerlink" href="#alias_api.AlMesh.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or set the AlMesh name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlMesh.next_shader">
+<code class="descname">next_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlMesh</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; AlShader<a class="headerlink" href="#alias_api.AlMesh.next_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the shader after the one specified by <cite>shader</cite>.</p>
+<dl class="docutils">
+<dt>The function will return 0 if:</dt>
+<dd><ul class="first last simple">
+<li>The end of the shading list has been reached.</li>
+<li>The argument, <cite>shader</cite>, is 0.</li>
+<li>the mesh was not created properly.</li>
+<li>There are no shaders.”</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shader</strong> (<a class="reference internal" href="#alias_api.AlShader" title="alias_api.AlShader"><em>AlShader</em></a>) – the shader to get the next one from</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The next shader, or 0 if it could not find a next shader.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AlShader | int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlMesh.number_of_triangles">
+<code class="descname">number_of_triangles</code><span class="sig-paren">(</span><em>self: alias_api.AlMesh</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlMesh.number_of_triangles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of triangles currently stored in the mesh. The function will return -1 if the mesh was not created properly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlMesh.number_of_vertices">
+<code class="descname">number_of_vertices</code><span class="sig-paren">(</span><em>self: alias_api.AlMesh</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlMesh.number_of_vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of vertices currently stored in the mesh. The function will return -1 if the mesh was not created properly.</p>
 </dd></dl>
 
 <dl class="method">
@@ -8185,15 +8376,15 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlMeshNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlMeshNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlMeshNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlMeshNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlMeshNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlMeshNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlMeshNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlMeshNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -9541,6 +9732,28 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="alias_api.AlShader.get_assigned_nodes">
+<code class="descname">get_assigned_nodes</code><span class="sig-paren">(</span><em>self: alias_api.AlShader</em><span class="sig-paren">)</span> &#x2192; List[alias_api.AlDagNode]<a class="headerlink" href="#alias_api.AlShader.get_assigned_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of AlDagNodes that are assigned to this AlShader.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The list of dag nodes</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list&lt;AlDagNode&gt;</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlShader.is_assigned">
+<code class="descname">is_assigned</code><span class="sig-paren">(</span><em>self: alias_api.AlShader</em>, <em>node: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#alias_api.AlShader.is_assigned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the node is assigned to the shader, else False.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="alias_api.AlShader.is_used">
 <code class="descname">is_used</code><span class="sig-paren">(</span><em>self: alias_api.AlShader</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlShader.is_used" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the AlShader is being used by another object.</p>
@@ -9682,6 +9895,30 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="alias_api.AlShell.assign_shader">
+<code class="descname">assign_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlShell</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlShell.assign_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign the given shader to the surface.</p>
+<p>If the surface already has shaders they will be removed from the surface. The surface
+must have a surface node for this method to succeed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shader</strong> (<a class="reference internal" href="#alias_api.AlShader" title="alias_api.AlShader"><em>AlShader</em></a>) – the shader which will be assigned to the surface.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The status code result
+Success - the shader was successfully assigned to the surface.
+InvalidArgument - ‘shader’ was invalid
+Failure - the shader was not created.
+InvalidObject - the surface is invalid</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int(<a class="reference internal" href="functions.html#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="alias_api.AlShell.copy_wrapper">
 <code class="descname">copy_wrapper</code><span class="sig-paren">(</span><em>self: alias_api.AlShell</em><span class="sig-paren">)</span> &#x2192; alias_api.AlObject<a class="headerlink" href="#alias_api.AlShell.copy_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an exact duplicate of this AlShell wrapper.</p>
@@ -9693,10 +9930,66 @@ InvalidObject - the dag node was invalid</td>
 <dd><p>Delete the object from the Alias Universe.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="alias_api.AlShell.first_shader">
+<code class="descname">first_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlShell</em><span class="sig-paren">)</span> &#x2192; AlShader<a class="headerlink" href="#alias_api.AlShell.first_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first shader that this surface object references. Return None if there are no shaders.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlShell.layer_shader">
+<code class="descname">layer_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlShell</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlShell.layer_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Layers the given shader on the surface.</p>
+<p>The surface must have a surface node for this method to succeed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shader</strong> – the shader which will be layered on the surface.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Tye shader:</th><td class="field-body">AlShader</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The status code result
+Success - the shader was successfully layered on the surface.
+InvalidArgument - ‘shader’ was invalid
+Failure - the shader was not created.
+InvalidObject - the surface is invalid</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int(<a class="reference internal" href="functions.html#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="alias_api.AlShell.name">
 <code class="descname">name</code><a class="headerlink" href="#alias_api.AlShell.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or set the object name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlShell.next_shader">
+<code class="descname">next_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlShell</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; AlShader<a class="headerlink" href="#alias_api.AlShell.next_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the shader after the given shader in the object’s shader list.</p>
+<p>Return None if there isn’t a next shader. Specifying None as parameter will return the first shader.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shader</strong> (<a class="reference internal" href="#alias_api.AlShader" title="alias_api.AlShader"><em>AlShader</em></a>) – the shader to get the next one from</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The next shader</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#alias_api.AlShader" title="alias_api.AlShader">AlShader</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlShell.shell_node">
+<code class="descname">shell_node</code><span class="sig-paren">(</span><em>self: alias_api.AlShell</em><span class="sig-paren">)</span> &#x2192; AlShellNode<a class="headerlink" href="#alias_api.AlShell.shell_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the AlShellNode for this surface.</p>
 </dd></dl>
 
 <dl class="method">
@@ -10067,15 +10360,15 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlShellNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlShellNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlShellNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlShellNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlShellNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlShellNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlShellNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlShellNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -10603,6 +10896,30 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="alias_api.AlSurface.assign_shader">
+<code class="descname">assign_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlSurface</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlSurface.assign_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign the given shader to the surface.</p>
+<p>If the surface already has shaders they will be removed from the surface. The surface
+must have a surface node for this method to succeed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shader</strong> (<a class="reference internal" href="#alias_api.AlShader" title="alias_api.AlShader"><em>AlShader</em></a>) – the shader which will be assigned to the surface.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The status code result
+Success - the shader was successfully assigned to the surface.
+InvalidArgument - ‘shader’ was invalid
+Failure - the shader was not created.
+InvalidObject - the surface is invalid</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int(<a class="reference internal" href="functions.html#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="alias_api.AlSurface.copy_wrapper">
 <code class="descname">copy_wrapper</code><span class="sig-paren">(</span><em>self: alias_api.AlSurface</em><span class="sig-paren">)</span> &#x2192; alias_api.AlObject<a class="headerlink" href="#alias_api.AlSurface.copy_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an exact duplicate of this AlSurface wrapper.</p>
@@ -10615,15 +10932,21 @@ InvalidObject - the dag node was invalid</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="alias_api.AlSurface.first_shader">
+<code class="descname">first_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlSurface</em><span class="sig-paren">)</span> &#x2192; AlShader<a class="headerlink" href="#alias_api.AlSurface.first_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first shader that this surface object references. Return None if there are no shaders.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="alias_api.AlSurface.get_curves_on_surface">
 <code class="descname">get_curves_on_surface</code><span class="sig-paren">(</span><em>self: alias_api.AlSurface</em><span class="sig-paren">)</span> &#x2192; List[alias_api.AlCurveOnSurface]<a class="headerlink" href="#alias_api.AlSurface.get_curves_on_surface" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list curve on surface</p>
+<dd><p>Return a list of curve on surface nodes.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="alias_api.AlSurface.get_shaders">
 <code class="descname">get_shaders</code><span class="sig-paren">(</span><em>self: alias_api.AlSurface</em><span class="sig-paren">)</span> &#x2192; List[AlShader]<a class="headerlink" href="#alias_api.AlSurface.get_shaders" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of shaders</p>
+<dd><p>Return a list of shaders.</p>
 </dd></dl>
 
 <dl class="method">
@@ -10632,10 +10955,54 @@ InvalidObject - the dag node was invalid</td>
 <dd><p>Returns True if this surface is the resulting surface of a construction history operation, else False.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="alias_api.AlSurface.layer_shader">
+<code class="descname">layer_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlSurface</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#alias_api.AlSurface.layer_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Layers the given shader on the surface.</p>
+<p>The surface must have a surface node for this method to succeed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shader</strong> – the shader which will be layered on the surface.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Tye shader:</th><td class="field-body">AlShader</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The status code result
+Success - the shader was successfully layered on the surface.
+InvalidArgument - ‘shader’ was invalid
+Failure - the shader was not created.
+InvalidObject - the surface is invalid</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int(<a class="reference internal" href="functions.html#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="alias_api.AlSurface.name">
 <code class="descname">name</code><a class="headerlink" href="#alias_api.AlSurface.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or set the AlSurface name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alias_api.AlSurface.next_shader">
+<code class="descname">next_shader</code><span class="sig-paren">(</span><em>self: alias_api.AlSurface</em>, <em>shader: AlShader</em><span class="sig-paren">)</span> &#x2192; AlShader<a class="headerlink" href="#alias_api.AlSurface.next_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the shader after the given shader in the object’s shader list.</p>
+<p>Return None if there isn’t a next shader. Specifying None as parameter will return the first shader.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shader</strong> (<a class="reference internal" href="#alias_api.AlShader" title="alias_api.AlShader"><em>AlShader</em></a>) – the shader to get the next one from</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The next shader</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#alias_api.AlShader" title="alias_api.AlShader">AlShader</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -11042,15 +11409,15 @@ Failure - the surface node was not created</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlSurfaceNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlSurfaceNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlSurfaceNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlSurfaceNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlSurfaceNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlSurfaceNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlSurfaceNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlSurfaceNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -11852,15 +12219,15 @@ InvalidObject - the surface node was invalid</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlTextureNode.rotation">
-<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlTextureNode.rotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
+<dt id="alias_api.AlTextureNode.rotate_pivot">
+<code class="descname">rotate_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlTextureNode.rotate_pivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="alias_api.AlTextureNode.rotation_pivot">
-<code class="descname">rotation_pivot</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, alPyMath::Vec3]<a class="headerlink" href="#alias_api.AlTextureNode.rotation_pivot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a vector that represents the rotation pivot position in world space.</p>
+<dt id="alias_api.AlTextureNode.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>self: alias_api.AlDagNode</em><span class="sig-paren">)</span> &#x2192; Tuple[int, float, float, float]<a class="headerlink" href="#alias_api.AlTextureNode.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amount of rotation (in degrees) about the x, y, and z axes.</p>
 </dd></dl>
 
 <dl class="method">
