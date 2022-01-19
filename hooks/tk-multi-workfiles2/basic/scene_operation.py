@@ -78,7 +78,7 @@ class SceneOperation(HookClass):
                 # if the current file is an empty file, we can erase it and open the new file instead
                 if alias_api.is_empty_file():
                     self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                        [("open_file", [file_path], {"new_stage": False})],
+                        [("open_file", None, [file_path], {"new_stage": False})],
                         alias_api.AlMessageType.StageActive,
                     )
                 # otherwise, ask the use what he'd like to do
@@ -90,15 +90,15 @@ class SceneOperation(HookClass):
                         return
                     elif open_in_current_stage == QtGui.QMessageBox.No:
                         self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                            [("open_file", [file_path], {"new_stage": True})],
+                            [("open_file", None, [file_path], {"new_stage": True})],
                             alias_api.AlMessageType.StageActive,
                         )
                     else:
                         # alias_api.reset()
                         self.parent.engine.execute_api_ops_and_defer_event_callbacks(
                             [
-                                ("reset", [], {}),
-                                ("open_file", [file_path], {"new_stage": False}),
+                                ("reset", None, [], {}),
+                                ("open_file", None, [file_path], {"new_stage": False}),
                             ],
                             alias_api.AlMessageType.StageActive,
                         )
@@ -116,7 +116,7 @@ class SceneOperation(HookClass):
                     return True
                 if alias_api.is_empty_file() and len(alias_api.get_stages()) == 1:
                     self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                        [("reset", [], {})], alias_api.AlMessageType.StageActive,
+                        [("reset", None, [], {})], alias_api.AlMessageType.StageActive,
                     )
                     return True
                 else:
@@ -128,12 +128,13 @@ class SceneOperation(HookClass):
                     elif open_in_current_stage == QtGui.QMessageBox.No:
                         stage_name = uuid.uuid4().hex
                         self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                            [("create_stage", [stage_name], {})],
+                            [("create_stage", None, [stage_name], {})],
                             alias_api.AlMessageType.StageActive,
                         )
                     else:
                         self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                            [("reset", [], {})], alias_api.AlMessageType.StageActive,
+                            [("reset", None, [], {})],
+                            alias_api.AlMessageType.StageActive,
                         )
                     return True
 

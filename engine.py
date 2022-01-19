@@ -366,6 +366,8 @@ class AliasEngine(sgtk.platform.Engine):
         :type alias_api_ops: list<AliasApiOp>, where AliasApiOp is of format:
             tuple<alias_api_func_name, func_args, func_keyword_args>
                 alias_api_func: str
+                obj: If None the alias_api_func is a function of the `alias_api` module.
+                     If not None, the alias_api_func is a method of the `obj`.
                 args: list
                 kwargs: dict
         :param event_types: The Alias event types to defer callbacks until the main
@@ -375,11 +377,12 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         # Check that all api functions exist, if not abort
-        for api_func, _, _ in alias_api_ops:
-            if not hasattr(alias_api, api_func):
+        for api_func, obj, _, _ in alias_api_ops:
+            obj = obj or alias_api
+            if not hasattr(obj, api_func):
                 self.logger.error(
-                    "Failed execute_api_ops_and_defer_event_callbcaks: Alias Python API function not found '{}'".format(
-                        api_func
+                    "Failed execute_api_ops_and_defer_event_callbcaks: Alias Python API function not found '{}.{}'".format(
+                        obj, api_func
                     )
                 )
                 return
@@ -389,16 +392,18 @@ class AliasEngine(sgtk.platform.Engine):
 
         if not self.event_watcher.is_watching:
             # If the event watcher is already paused, just execute the the operations normally.
-            for api_func, args, kwargs in alias_api_ops:
-                getattr(alias_api, api_func)(*args, **kwargs)
+            for api_func, obj, args, kwargs in alias_api_ops:
+                obj = obj or alias_api
+                getattr(obj, api_func)(*args, **kwargs)
 
         else:
             # Pause the event watcher
             self.event_watcher.stop_watching()
 
             # Execute all alias api operations in order
-            for api_func, args, kwargs in alias_api_ops:
-                getattr(alias_api, api_func)(*args, **kwargs)
+            for api_func, obj, args, kwargs in alias_api_ops:
+                obj = obj or alias_api
+                getattr(obj, api_func)(*args, **kwargs)
 
             # Enable the event watcher now that the operations have completed
             self.event_watcher.start_watching()

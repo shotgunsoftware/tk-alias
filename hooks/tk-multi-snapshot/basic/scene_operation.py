@@ -55,6 +55,7 @@ class SceneOperation(HookClass):
                         [
                             (
                                 "open_file",
+                                None,  # indicate this ia function of the api module
                                 [file_path],
                                 {"new_stage": False, "delete_current": True},
                             ),
@@ -64,8 +65,8 @@ class SceneOperation(HookClass):
                 else:
                     self.parent.engine.execute_api_ops_and_defer_event_callbacks(
                         [
-                            ("reset", [], {}),
-                            ("open_file", [file_path], {"new_stage": False},),
+                            ("reset", None, [], {}),
+                            ("open_file", None, [file_path], {"new_stage": False},),
                         ],
                         alias_api.AlMessageType.StageActive,
                     )
