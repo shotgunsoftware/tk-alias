@@ -345,7 +345,74 @@ class AliasEngine(sgtk.platform.Engine):
         self._contexts_by_stage_name[current_stage.name] = context
 
     #####################################################################################
-    # Alias Callbacks
+    # Alias Event Watcher & Callbacks
+
+    def execute_api_ops_and_defer_event_callbacks(self, alias_api_ops, event_types):
+        """
+        Call an Alias API function while blocking any Alias event callbacks until the
+        API function is done executing. Once finished, the registered Python callbacks
+        will be triggered for the event types provided. Any event types not provided
+        will not be triggered at all by the API function executed.
+
+        NOTE since the callbacks are deferred to after the event operation has completed,
+        we do not have access to the Alias callback return result that we normally get.
+
+        TODO implement this deferred event handling in the Alias Python API side, for now
+        we will just pass None for the message result to the Python callback function.
+        Implementing the deferred event handling will also improve the way we currently
+        ignore event callbacks by unregistering and re-registering events.
+
+        :param alias_api_ops: The name of the main Alias API function to execute.
+        :type alias_api_ops: list<AliasApiOp>, where AliasApiOp is of format:
+            tuple<alias_api_func_name, func_args, func_keyword_args>
+                alias_api_func: str
+                obj: If None the alias_api_func is a function of the `alias_api` module.
+                     If not None, the alias_api_func is a method of the `obj`.
+                args: list
+                kwargs: dict
+        :param event_types: The Alias event types to defer callbacks until the main
+                            operation is complete. Any event types that are not listed
+                            will not be triggered at all for for this operation.
+        :type event_types: list<AlMessageType>
+        """
+
+        # Check that all api functions exist, if not abort
+        for api_func, obj, _, _ in alias_api_ops:
+            obj = obj or alias_api
+            if not hasattr(obj, api_func):
+                self.logger.error(
+                    "Failed execute_api_ops_and_defer_event_callbcaks: Alias Python API function not found '{}.{}'".format(
+                        obj, api_func
+                    )
+                )
+                return
+
+        if not isinstance(event_types, list):
+            event_types = [event_types]
+
+        if not self.event_watcher.is_watching:
+            # If the event watcher is already paused, just execute the the operations normally.
+            for api_func, obj, args, kwargs in alias_api_ops:
+                obj = obj or alias_api
+                getattr(obj, api_func)(*args, **kwargs)
+
+        else:
+            # Pause the event watcher
+            self.event_watcher.stop_watching()
+
+            # Execute all alias api operations in order
+            for api_func, obj, args, kwargs in alias_api_ops:
+                obj = obj or alias_api
+                getattr(obj, api_func)(*args, **kwargs)
+
+            # Enable the event watcher now that the operations have completed
+            self.event_watcher.start_watching()
+
+            # Now manually trigger the registered callbacks for the event types
+            for event_type in event_types:
+                callback_fns = self.event_watcher.get_callbacks(event_type)
+                for callback_fn in callback_fns:
+                    callback_fn(msg=None)
 
     def on_plugin_init(self):
         """
