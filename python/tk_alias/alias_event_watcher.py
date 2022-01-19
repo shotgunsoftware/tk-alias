@@ -40,6 +40,19 @@ class AliasEventWatcher(object):
         """
         return self.__is_watching
 
+    def get_callbacks(self, scene_event):
+        """
+        Get the list of Python callback functions for the Alias event type.
+
+        :param scene_event: The Alias event type
+        :type scene_event: alias_api.AlMessageType
+
+        :return: The list of Python callback functions.
+        :rtype: list<callable>
+        """
+
+        return self.__scene_events.get(scene_event, {}).keys()
+
     def register_alias_callback(self, cb_fn, scene_events):
         """
         Add the given callback to the list of registered callbacks
