@@ -384,6 +384,26 @@ class AliasEngine(sgtk.platform.Engine):
         # Save context for the current stage that was updated
         self.save_context_for_stage()
 
+    def open_file(self, path):
+        """
+        Convenience function to call the Alias Python API to open a file and ensure
+        the context is saved for the current stage.
+
+        :param path: the file path to open.
+        :type path: str
+        """
+
+        status = alias_api.open_file(path)
+        if status != int(alias_api.AlStatusCode.Success):
+            self.logger.error(
+                "Alias Python API Error: open_file('{}') returned non-success status code {}".format(
+                    path, status
+                )
+            )
+
+        # Save context for the current stage that was updated
+        self.save_context_for_stage()
+
     #####################################################################################
     # Alias Event Watcher & Callbacks
 
@@ -462,7 +482,7 @@ class AliasEngine(sgtk.platform.Engine):
 
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
         if path:
-            alias_api.open_file(path)
+            self.open_file(path)
 
     def on_stage_selected(self):
         """
