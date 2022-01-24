@@ -261,7 +261,9 @@ class AliasSessionPublishPlugin(HookBaseClass):
                         "label": "Save to v%s" % (version,),
                         "tooltip": "Save to the next available version number, "
                         "v%s" % (version,),
-                        "callback": lambda: alias_api.save_file_as(next_version_path),
+                        "callback": lambda: publisher.engine.save_file_as(
+                            next_version_path
+                        ),
                     }
                 },
             )
@@ -299,7 +301,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
         path = sgtk.util.ShotgunPath.normalize(_session_path())
 
         # ensure the session is saved
-        alias_api.save_file()
+        self.parent.engine.save_file()
 
         # update the item with the saved session path
         item.properties["path"] = path
@@ -328,7 +330,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
 
         # bump the session file to the next version
         self._save_to_next_version(
-            item.properties["path"], item, alias_api.save_file_as
+            item.properties["path"], item, self.parent.engine.save_file_as
         )
 
 

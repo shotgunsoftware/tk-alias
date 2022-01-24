@@ -345,6 +345,46 @@ class AliasEngine(sgtk.platform.Engine):
         self._contexts_by_stage_name[current_stage.name] = context
 
     #####################################################################################
+    # Alias API Convenience Functions
+
+    def save_file(self):
+        """
+        Convenience function to call the Alias Python API to save the file and ensure
+        the context is saved for this stage.
+        """
+
+        status = alias_api.save_file()
+        if status != int(alias_api.AlStatusCode.Success):
+            self.logger.error(
+                "Alias Python API Error: save_file returned non-success status code {}".format(
+                    status
+                )
+            )
+
+        # Save context for the current stage that was updated
+        self.save_context_for_stage()
+
+    def save_file_as(self, path):
+        """
+        Convenience function to call the Alias Python API to save the file and ensure
+        the context is saved for this stage.
+
+        :param path: the file path to save.
+        :type path: str
+        """
+
+        status = alias_api.save_file_as(path)
+        if status != int(alias_api.AlStatusCode.Success):
+            self.logger.error(
+                "Alias Python API Error: save_file_as('{}') returned non-success status code {}".format(
+                    path, status
+                )
+            )
+
+        # Save context for the current stage that was updated
+        self.save_context_for_stage()
+
+    #####################################################################################
     # Alias Event Watcher & Callbacks
 
     def execute_api_ops_and_defer_event_callbacks(self, alias_api_ops, event_types):
@@ -494,7 +534,7 @@ class AliasEngine(sgtk.platform.Engine):
             path = "{0}.wire".format(path)
 
         if path:
-            alias_api.save_file_as(path)
+            self.save_file_as(path)
 
     def open_delete_stages_dialog(self, new_file=False):
         """
