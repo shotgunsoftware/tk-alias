@@ -207,6 +207,15 @@ class AliasSessionPublishPlugin(HookBaseClass):
             self.logger.error(error_msg, extra=_get_save_as_action())
             raise Exception(error_msg)
 
+        # ---- ensure all references exist
+
+        for reference in alias_api.get_references():
+            ref_path = reference.path
+            if not os.path.exists(ref_path):
+                self.logger.warning(
+                    "Reference path does not exist '{}'".format(ref_path)
+                )
+
         # ---- check the session against any attached work template
 
         # get the path in a normalized state. no trailing separator,
@@ -340,7 +349,7 @@ def _alias_find_additional_session_dependencies():
     references = []
     for reference in alias_api.get_references():
         path = reference.path
-        if path not in references:
+        if path not in references and os.path.exists(path):
             references.append(path)
 
     return references
