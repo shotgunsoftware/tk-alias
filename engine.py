@@ -350,7 +350,7 @@ class AliasEngine(sgtk.platform.Engine):
     def save_file(self):
         """
         Convenience function to call the Alias Python API to save the file and ensure
-        the context is saved for this stage.
+        the context is saved for the current stage.
         """
 
         status = alias_api.save_file()
@@ -367,7 +367,7 @@ class AliasEngine(sgtk.platform.Engine):
     def save_file_as(self, path):
         """
         Convenience function to call the Alias Python API to save the file and ensure
-        the context is saved for this stage.
+        the context is saved for the current stage.
 
         :param path: the file path to save.
         :type path: str
