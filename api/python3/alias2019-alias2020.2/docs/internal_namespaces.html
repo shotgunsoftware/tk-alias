@@ -229,81 +229,6 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4alPy11createLayerERKNSt6stringE">
-<span id="_CPPv3N4alPy11createLayerERKNSt6stringE"></span><span id="_CPPv2N4alPy11createLayerERKNSt6stringE"></span><span id="alPy::createLayer__ssCR"></span><span class="target" id="namespaceal_py_1a4b0c603c15b8bad315156f29cbf531df"></span><span class="n"><span class="pre">AlLayer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">createLayer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer_name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11createLayerERKNSt6stringE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Create a new Alias layer object in the Alias Universe. </p>
-<p>This is a convenience method. This functionality can be achieved by simply using the AlLayer constructor and create method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>layer_name</strong> – name for the layer to create.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The layer object. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4alPy17createLayerFolderERKNSt6stringE">
-<span id="_CPPv3N4alPy17createLayerFolderERKNSt6stringE"></span><span id="_CPPv2N4alPy17createLayerFolderERKNSt6stringE"></span><span id="alPy::createLayerFolder__ssCR"></span><span class="target" id="namespaceal_py_1aad7f099a9c5c37b50a26e82c74324048"></span><span class="n"><span class="pre">AlLayer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">createLayerFolder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">folder_name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17createLayerFolderERKNSt6stringE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Create a new Alias layer folder object in the Alias Universe. </p>
-<p>This is a convenience method. This functionality can be achieved by simply using the AlLayer constructor and create method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>folder_name</strong> – name of the layer folder to create.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The layer folder object. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4alPy9getLayersEv">
-<span id="_CPPv3N4alPy9getLayersEv"></span><span id="_CPPv2N4alPy9getLayersEv"></span><span id="alPy::getLayers"></span><span class="target" id="namespaceal_py_1a086fc0e4807da2970af5180bfa8b181f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">AlLayer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLayers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy9getLayersEv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Get all the layers in the Alias Universe. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A list of Layer objects that represents the Alias layers in the universe. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4alPy7isEmptyEP7AlLayer">
-<span id="_CPPv3N4alPy7isEmptyEP7AlLayer"></span><span id="_CPPv2N4alPy7isEmptyEP7AlLayer"></span><span id="alPy::isEmpty__AlLayerP"></span><span class="target" id="namespaceal_py_1a168665a4e8d762d54097af2f2db5e5fe"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isEmpty</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">AlLayer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">layer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy7isEmptyEP7AlLayer" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Check if the Alias layer has some associated geometry. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if the Alias layer is empty, False otherwise. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4alPy19exportContentToFileEP7AlLayerRKNSt6stringE">
-<span id="_CPPv3N4alPy19exportContentToFileEP7AlLayerRKNSt6stringE"></span><span id="_CPPv2N4alPy19exportContentToFileEP7AlLayerRKNSt6stringE"></span><span id="alPy::exportContentToFile__AlLayerP.ssCR"></span><span class="target" id="namespaceal_py_1a9ec63bdd02fa598de4c20b7093101a2f"></span><span class="n"><span class="pre">statusCode</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">exportContentToFile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">AlLayer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy19exportContentToFileEP7AlLayerRKNSt6stringE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Export the content of the Alias layer to a WIRE file. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> – the path to the file we want to export the layer content to. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4alPy15assignSelectionEP7AlLayer">
-<span id="_CPPv3N4alPy15assignSelectionEP7AlLayer"></span><span id="_CPPv2N4alPy15assignSelectionEP7AlLayer"></span><span id="alPy::assignSelection__AlLayerP"></span><span class="target" id="namespaceal_py_1ab186a03c194bcc609b92d3d838178b11"></span><span class="n"><span class="pre">statusCode</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">assignSelection</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">AlLayer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">layer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15assignSelectionEP7AlLayer" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Assign the current selection to the Alias layer. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N4alPy11assignChildEP7AlLayerP7AlLayer">
-<span id="_CPPv3N4alPy11assignChildEP7AlLayerP7AlLayer"></span><span id="_CPPv2N4alPy11assignChildEP7AlLayerP7AlLayer"></span><span id="alPy::assignChild__AlLayerP.AlLayerP"></span><span class="target" id="namespaceal_py_1a53efbf52620f3d0f798e73ce3fa4337b"></span><span class="n"><span class="pre">statusCode</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">assignChild</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">AlLayer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="n"><span class="pre">AlLayer</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">childLayer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11assignChildEP7AlLayerP7AlLayer" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Assign an Alias layer as child of the current layer. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N4alPy11defineLayerERN2py6moduleE">
 <span id="_CPPv3N4alPy11defineLayerERN2py6moduleE"></span><span id="_CPPv2N4alPy11defineLayerERN2py6moduleE"></span><span id="alPy::defineLayer__py::moduleR"></span><span class="target" id="namespaceal_py_1a33fd8b42938bb4c8ee2aba171473740f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">defineLayer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">py</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">module</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy11defineLayerERN2py6moduleE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -1006,11 +931,11 @@
 
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygennamespace: Cannot find namespace “alPyOA” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/d-shotgun_alias-python-api_PR-29/build/python3_AliasSurface2019/bin/Release/docs//doxygen/xml</p>
+<p>doxygennamespace: Cannot find namespace “alPyOA” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/d-shotgun_alias-python-api_PR-44/build/python3_AliasSurface2019/bin/Release/docs//doxygen/xml</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygennamespace: Cannot find namespace “alPyOM” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/d-shotgun_alias-python-api_PR-29/build/python3_AliasSurface2019/bin/Release/docs//doxygen/xml</p>
+<p>doxygennamespace: Cannot find namespace “alPyOM” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/d-shotgun_alias-python-api_PR-44/build/python3_AliasSurface2019/bin/Release/docs//doxygen/xml</p>
 </div>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv48alPyMath">
