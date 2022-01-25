@@ -207,7 +207,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
             self.logger.error(error_msg, extra=_get_save_as_action())
             raise Exception(error_msg)
 
-        # ---- ensure all references exist
+        # ---- check that references exist, display warning for invalid refs
 
         for reference in alias_api.get_references():
             ref_path = reference.path
