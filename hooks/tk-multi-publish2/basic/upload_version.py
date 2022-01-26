@@ -308,12 +308,6 @@ class UploadVersionPlugin(HookBaseClass):
             settings.
         """
 
-        import sys
-        sys.path.append("Z:\\python_libs")
-        import ptvsd
-        ptvsd.enable_attach(address=('192.168.56.106', 2222), redirect_output=True)
-        ptvsd.wait_for_attach()
-
         # defer Qt-related imports
         from sgtk.platform.qt import QtCore, QtGui
 
