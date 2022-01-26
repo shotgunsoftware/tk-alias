@@ -84,7 +84,7 @@ class UploadVersionPlugin(HookBaseClass):
         upload_version_settings = {
             "Version Type": {
                 "type": "str",
-                "default": self.VERSION_TYPE_OPTIONS[0],
+                "default": self.VERSION_TYPE_2D,
                 "description": "Generate a {options} or {last_option} Version".format(
                     options=", ".join(self.VERSION_TYPE_OPTIONS[:-1]),
                     last_option=self.VERSION_TYPE_OPTIONS[-1],
