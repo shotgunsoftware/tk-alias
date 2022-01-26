@@ -38,20 +38,17 @@ class UploadVersionPlugin(HookBaseClass):
 
     # Descriptions for Version Types
     VERSION_TYPE_DESCRIPTIONS = {
-        VERSION_TYPE_2D:
-            """
+        VERSION_TYPE_2D: """
                 Create a Version in ShotGrid for Review.<br/><br/>
                 A 2D Version (image or video representation of your file/scene) will be created in ShotGrid.
                 This Version can then be reviewed via ShotGrid's many review apps.
             """,
-        VERSION_TYPE_3D:
-            """
+        VERSION_TYPE_3D: """
                 Create a Version in ShotGrid for Review.<br/><br/>
                 A 3D Version (LMV translation of your file/scene's geometry) will be created in ShotGrid.
                 This Version can then be reviewed via ShotGrid's many review apps.
             """,
     }
-
 
     @property
     def icon(self):
@@ -90,7 +87,7 @@ class UploadVersionPlugin(HookBaseClass):
                 "default": self.VERSION_TYPE_OPTIONS[0],
                 "description": "Generate a {options} or {last_option} Version".format(
                     options=", ".join(self.VERSION_TYPE_OPTIONS[:-1]),
-                    last_option=self.VERSION_TYPE_OPTIONS[-1]
+                    last_option=self.VERSION_TYPE_OPTIONS[-1],
                 ),
             },
             "Upload": {
@@ -173,11 +170,17 @@ class UploadVersionPlugin(HookBaseClass):
         if version_type == self.VERSION_TYPE_3D:
             is_3d_viewer_enabled = self._is_3d_viewer_enabled()
             if is_3d_viewer_enabled is None:
-                self.logger.warning("Failed to check if 3D Review is enabled for your site.")
-                self.logger.warning("Please contact Autodesk support to access your site preference for 3D Review or use the 2D Version publish option instead.")
+                self.logger.warning(
+                    "Failed to check if 3D Review is enabled for your site."
+                )
+                self.logger.warning(
+                    "Please contact Autodesk support to access your site preference for 3D Review or use the 2D Version publish option instead."
+                )
             elif not is_3d_viewer_enabled:
                 self.logger.warning("Your site does not have 3D Review enabled.")
-                self.logger.warning("Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead.")
+                self.logger.warning(
+                    "Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead."
+                )
 
         framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
         if not framework_lmv:
@@ -291,7 +294,11 @@ class UploadVersionPlugin(HookBaseClass):
                 self.logger.debug("Deleting temporary folder")
                 shutil.rmtree(output_directory)
         else:
-            raise NotImplementedError("Failed to generate thumbnail for Version Type '{}'".format(version_type))
+            raise NotImplementedError(
+                "Failed to generate thumbnail for Version Type '{}'".format(
+                    version_type
+                )
+            )
 
     ############################################################################
     # Methods for creating/displaying custom plugin interface
@@ -338,7 +345,9 @@ class UploadVersionPlugin(HookBaseClass):
         version_type_combobox.addItems(self.VERSION_TYPE_OPTIONS)
         # Hook up the signal/slot to update the description according to the current version type
         version_type_combobox.currentIndexChanged.connect(
-            lambda index: self._on_version_type_changed(version_type_combobox.currentText(), description_label)
+            lambda index: self._on_version_type_changed(
+                version_type_combobox.currentText(), description_label
+            )
         )
 
         # Add all the minor widgets to the main widget
@@ -389,9 +398,13 @@ class UploadVersionPlugin(HookBaseClass):
             # if version_type_index >= 0 and version_type_index < len(self.VERSION_TYPE_OPTIONS):
             if 0 <= version_type_index < len(self.VERSION_TYPE_OPTIONS):
                 self.VERSION_TYPE_OPTIONS[version_type_index]
-                ui_settings["Version Type"] = self.VERSION_TYPE_OPTIONS[version_type_index]
+                ui_settings["Version Type"] = self.VERSION_TYPE_OPTIONS[
+                    version_type_index
+                ]
             else:
-                self.logger.debug("Invalid Version Type index {}".format(version_type_index))
+                self.logger.debug(
+                    "Invalid Version Type index {}".format(version_type_index)
+                )
 
         return ui_settings
 
@@ -446,15 +459,21 @@ class UploadVersionPlugin(HookBaseClass):
 
         version_type_combobox = widget.property("version_type_combobox")
         if not version_type_combobox:
-            self.logger.debug("Failed to retrieve Version Type combobox to set custom UI")
+            self.logger.debug(
+                "Failed to retrieve Version Type combobox to set custom UI"
+            )
             return
 
         description_label = widget.property("description_label")
         if not description_label:
-            self.logger.debug("Failed to retrieve Version Type combobox to set custom UI")
+            self.logger.debug(
+                "Failed to retrieve Version Type combobox to set custom UI"
+            )
 
         # Get the default setting for version type
-        default_value = self.settings.get("Version Type", {}).get("default", self.VERSION_TYPE_OPTIONS[0])
+        default_value = self.settings.get("Version Type", {}).get(
+            "default", self.VERSION_TYPE_OPTIONS[0]
+        )
 
         # Get the version type value from the settings, and set the combobox accordingly
         version_type_value = settings[0].get("Version Type", default_value)
@@ -467,7 +486,6 @@ class UploadVersionPlugin(HookBaseClass):
             self._on_version_type_changed(version_type_value, description_label)
         else:
             version_type_combobox.setCurrentIndex(version_type_index)
-
 
     def _on_version_type_changed(self, version_type, description_label):
         """
@@ -522,7 +540,9 @@ class UploadVersionPlugin(HookBaseClass):
                 """
 
         text = "{description}{note}".format(
-            description=self.VERSION_TYPE_DESCRIPTIONS.get(version_type, self.description),
+            description=self.VERSION_TYPE_DESCRIPTIONS.get(
+                version_type, self.description
+            ),
             note=note,
         )
         description_label.setText(text)
@@ -605,9 +625,9 @@ class UploadVersionPlugin(HookBaseClass):
 
         enable_3d_viewer_pref = "enable_3d_viewer"
         prefs = self.parent.shotgun.preferences_read(prefs=[enable_3d_viewer_pref])
-        
+
         if not prefs:
             # The 'enable_3d_viewer' site pref could not be accessed
             return None
-        
+
         return prefs[enable_3d_viewer_pref]
