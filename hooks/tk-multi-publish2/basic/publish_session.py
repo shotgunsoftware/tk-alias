@@ -207,6 +207,15 @@ class AliasSessionPublishPlugin(HookBaseClass):
             self.logger.error(error_msg, extra=_get_save_as_action())
             raise Exception(error_msg)
 
+        # ---- check that references exist, display warning for invalid refs
+
+        for reference in alias_api.get_references():
+            ref_path = reference.path
+            if not os.path.exists(ref_path):
+                self.logger.warning(
+                    "Reference path does not exist '{}'".format(ref_path)
+                )
+
         # ---- check the session against any attached work template
 
         # get the path in a normalized state. no trailing separator,
@@ -261,7 +270,9 @@ class AliasSessionPublishPlugin(HookBaseClass):
                         "label": "Save to v%s" % (version,),
                         "tooltip": "Save to the next available version number, "
                         "v%s" % (version,),
-                        "callback": lambda: alias_api.save_file_as(next_version_path),
+                        "callback": lambda: publisher.engine.save_file_as(
+                            next_version_path
+                        ),
                     }
                 },
             )
@@ -299,7 +310,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
         path = sgtk.util.ShotgunPath.normalize(_session_path())
 
         # ensure the session is saved
-        alias_api.save_file()
+        self.parent.engine.save_file()
 
         # update the item with the saved session path
         item.properties["path"] = path
@@ -328,7 +339,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
 
         # bump the session file to the next version
         self._save_to_next_version(
-            item.properties["path"], item, alias_api.save_file_as
+            item.properties["path"], item, self.parent.engine.save_file_as
         )
 
 
@@ -340,7 +351,7 @@ def _alias_find_additional_session_dependencies():
     references = []
     for reference in alias_api.get_references():
         path = reference.path
-        if path not in references:
+        if path not in references and os.path.exists(path):
             references.append(path)
 
     return references
