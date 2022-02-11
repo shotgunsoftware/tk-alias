@@ -172,7 +172,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             # validation will succeed.
             self.logger.warn(
                 "The Alias session has not been saved.",
-                extra=sgtk.platform.current_engine().open_save_as_dialog
+                extra=sgtk.platform.current_engine().open_save_as_dialog,
             )
 
         self.logger.info(
@@ -203,8 +203,8 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             # the session still requires saving. provide a save button.
             # validation fails.
             error_msg = "The Alias session has not been saved."
-            self.logger.error(error_msg,
-                extra=sgtk.platform.current_engine().open_save_as_dialog
+            self.logger.error(
+                error_msg, extra=sgtk.platform.current_engine().open_save_as_dialog
             )
             raise Exception(error_msg)
 
