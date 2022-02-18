@@ -268,7 +268,7 @@ class AliasActions(HookBaseClass):
         """
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
-        alias_api.create_texture_node(path)
+        alias_api.create_texture_node(path, True)
 
     def _import_subdivision(self, path):
         """
