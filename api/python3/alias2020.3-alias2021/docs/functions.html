@@ -438,6 +438,29 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.apply_iterator_to_shaders">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">apply_iterator_to_shaders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="classes.html#alias_api.AlIterator" title="alias_api.AlIterator"><span class="pre">AlIterator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">retcode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.apply_iterator_to_shaders" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the iterator to each AlShader.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iter</strong> (<a class="reference internal" href="classes.html#alias_api.AlIterator" title="alias_api.AlIterator"><em>AlIterator</em></a>) – the iterator to apply</p></li>
+<li><p><strong>retcode</strong> (<em>int</em>) – the return value of the last application of the iterator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result
+Success - the iterator was successfully applied to each shader
+InvalidArgument - ‘iter’ was None
+Failure - AlUniverse was not initialized</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.cleanup_geometry_model">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">cleanup_geometry_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">face_to_surf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_c1_breaks</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_closed_basis</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrink_closed_surf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_persistent_ids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_sphere</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picked_dags_only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_multiknots</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_null_nodes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_degenerate_geo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.cleanup_geometry_model" title="Permalink to this definition"></a></dt>
 <dd><p>Clean up the geometry of the model.</p>
@@ -590,6 +613,12 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.create_reference_alternative">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">create_reference_alternative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlReferenceFileSet" title="alias_api.AlReferenceFileSet"><span class="pre">alias_api.AlReferenceFileSet</span></a></span></span><a class="headerlink" href="#alias_api.create_reference_alternative" title="Permalink to this definition"></a></dt>
+<dd><p>Create an AlReferenceFileSet with the given name.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.create_shader">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">create_shader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlShader" title="alias_api.AlShader"><span class="pre">alias_api.AlShader</span></a></span></span><a class="headerlink" href="#alias_api.create_shader" title="Permalink to this definition"></a></dt>
 <dd><p>Create a new AlShader in the Alias Universe.</p>
@@ -693,9 +722,33 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.first_layer">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">first_layer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a></span></span><a class="headerlink" href="#alias_api.first_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Return the first layer which refers to the default layer. This layer is always valid in the universe. None is returned if the universe is not initialized.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.first_layered_shader">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">first_layered_shader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlLayeredShader" title="alias_api.AlLayeredShader"><span class="pre">alias_api.AlLayeredShader</span></a></span></span><a class="headerlink" href="#alias_api.first_layered_shader" title="Permalink to this definition"></a></dt>
+<dd><p>Return the first AlLayeredShader in the list of Alias AlLayeredShader objects. None is returned if the list is empty.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.first_pick_item">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">first_pick_item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.first_pick_item" title="Permalink to this definition"></a></dt>
 <dd><p>Set the pick list to reference the first object in the list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.first_shader">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">first_shader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlShader" title="alias_api.AlShader"><span class="pre">alias_api.AlShader</span></a></span></span><a class="headerlink" href="#alias_api.first_shader" title="Permalink to this definition"></a></dt>
+<dd><p>Return the first AlShader in the list of Alias AlShader objects. None is returned if the list is empty.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.first_switch_shader">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">first_switch_shader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlSwitchShader" title="alias_api.AlSwitchShader"><span class="pre">alias_api.AlSwitchShader</span></a></span></span><a class="headerlink" href="#alias_api.first_switch_shader" title="Permalink to this definition"></a></dt>
+<dd><p>Return the first AlSwitchShader in the list of Alias AlSwitchShader objects. None is returned if the list is empty.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -938,6 +991,12 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.import_reference">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">import_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlReferenceFile" title="alias_api.AlReferenceFile"><span class="pre">alias_api.AlReferenceFile</span></a></span></span><a class="headerlink" href="#alias_api.import_reference" title="Permalink to this definition"></a></dt>
+<dd><p>Import the file and create an AlReferenceFile object from it.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.import_subdiv">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">import_subdiv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.import_subdiv" title="Permalink to this definition"></a></dt>
 <dd><p>Imports a file as a subdivision.</p>
@@ -1016,9 +1075,60 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.next_layer">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">next_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_layer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a></span></span><a class="headerlink" href="#alias_api.next_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Return the leaf layer following <cite>cur_layer</cite> in the graph of Alias AlLayer objects in a pre-order traversal.</p>
+<p>Note:  This function does not return layer folders (only leaf layers).</p>
+<p>None is returned if <cite>cur_layer</cite> has no next layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cur_layer</strong> (<a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><em>AlLayer</em></a>) – Layer from which to walk forward</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The leaf layer following <cite>cur_layer</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer">AlLayer</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.next_pick_item">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">next_pick_item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.next_pick_item" title="Permalink to this definition"></a></dt>
 <dd><p>Set the pick list to reference the next object in the list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.next_shader">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">next_shader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.next_shader" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>next_shader(cur_shader: alias_api.AlShader) -&gt; alias_api.AlShader</p></li>
+</ol>
+<p>Return the AlShader following <cite>cur_shader</cite> in the list of Alias AlShader objects.  None is returned if <cite>cur_shader</cite> has no next shader.</p>
+<ol class="arabic simple" start="2">
+<li><p>next_shader(cur_shader: alias_api.AlLayeredShader) -&gt; alias_api.AlLayeredShader</p></li>
+</ol>
+<p>Return the AlLayeredShader following <cite>cur_shader</cite> in the list of Alias AlLayeredShader objects.  None is returned if <cite>cur_shader</cite> has no next shader.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.next_switch_shader">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">next_switch_shader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_shader</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="classes.html#alias_api.AlSwitchShader" title="alias_api.AlSwitchShader"><span class="pre">alias_api.AlSwitchShader</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlSwitchShader" title="alias_api.AlSwitchShader"><span class="pre">alias_api.AlSwitchShader</span></a></span></span><a class="headerlink" href="#alias_api.next_switch_shader" title="Permalink to this definition"></a></dt>
+<dd><p>Return the AlSwitchShader following <cite>cur_shader</cite> in the list of Alias AlSwitchShader objects.  None is returned if <cite>cur_shader</cite> has no next shader.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.node_first_shader">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">node_first_shader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode"><span class="pre">alias_api.AlDagNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlShader" title="alias_api.AlShader"><span class="pre">AlShader</span></a></span></span><a class="headerlink" href="#alias_api.node_first_shader" title="Permalink to this definition"></a></dt>
+<dd><p>Return the first shader used by the given dag node. Return None if no shader is used.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.node_switch_shader">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">node_switch_shader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode"><span class="pre">alias_api.AlDagNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlSwitchShader" title="alias_api.AlSwitchShader"><span class="pre">AlSwitchShader</span></a></span></span><a class="headerlink" href="#alias_api.node_switch_shader" title="Permalink to this definition"></a></dt>
+<dd><p>Return the switch shader used by the given dag node. Return None if no switch shader used.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1066,6 +1176,12 @@ Defaults to True.</p></li>
 <dt class="sig sig-object py" id="alias_api.remove_message_handlers">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">remove_message_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlMessageType" title="alias_api.AlMessageType"><span class="pre">alias_api.AlMessageType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.remove_message_handlers" title="Permalink to this definition"></a></dt>
 <dd><p>Remove all message handlers for the message type.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.remove_reference">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">remove_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="classes.html#alias_api.AlReferenceFile" title="alias_api.AlReferenceFile"><span class="pre">alias_api.AlReferenceFile</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.remove_reference" title="Permalink to this definition"></a></dt>
+<dd><p>Remove the AlReferenceFile from the Alias Universe.</p>
 </dd></dl>
 
 <dl class="py function">
