@@ -20,7 +20,7 @@ def import_alias_api():
     Import the right module according to some criteria:
     - the version of Alias
     - the version of Python
-    - the execution mode (interactive vs batch)
+    - the execution mode (interactive vs non-interactive)
     """
 
     alias_release_version = os.environ.get("TK_ALIAS_VERSION")
@@ -41,7 +41,7 @@ def import_alias_api():
     if not api_folder_name:
         return
 
-    # get the right file to import according to the running mode (interactive vs batch)
+    # get the right file to import according to the running mode (interactive vs non-interactive)
     module_name = "alias_api" if os.path.basename(sys.executable) == "Alias.exe" else "alias_api_om"
     module_path = os.path.normpath(
         os.path.join(
