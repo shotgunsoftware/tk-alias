@@ -35,10 +35,10 @@ class AliasSessionCollector(HookBaseClass):
                 "to publish plugins via the collected item's "
                 "properties. ",
             },
-            "Batch Processing": {
+            "Background Processing": {
                 "type": "bool",
                 "default": False,
-                "description": "Boolean to turn on/off the batch processing."
+                "description": "Boolean to turn on/off the background publishing process."
             },
         }
 
@@ -57,9 +57,9 @@ class AliasSessionCollector(HookBaseClass):
         publisher = self.parent
 
         # store the Batch Processing settings in the root item properties
-        batch_processing = settings.get("Batch Processing")
-        if batch_processing:
-            parent_item.properties["batch_processing"] = batch_processing.value
+        bg_processing = settings.get("Background Processing")
+        if bg_processing:
+            parent_item.properties["bg_processing"] = bg_processing.value
 
         # get the path to the current file
         path = alias_api.get_current_path()
