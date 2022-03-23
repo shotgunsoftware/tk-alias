@@ -35,6 +35,11 @@ class AliasSessionCollector(HookBaseClass):
                 "to publish plugins via the collected item's "
                 "properties. ",
             },
+            "Batch Processing": {
+                "type": "bool",
+                "default": False,
+                "description": "Boolean to turn on/off the batch processing."
+            },
         }
 
         collector_settings.update(alias_session_settings)
@@ -50,6 +55,11 @@ class AliasSessionCollector(HookBaseClass):
         :param parent_item: Root item instance
         """
         publisher = self.parent
+
+        # store the Batch Processing settings in the root item properties
+        batch_processing = settings.get("Batch Processing")
+        if batch_processing:
+            parent_item.properties["batch_processing"] = batch_processing.value
 
         # get the path to the current file
         path = alias_api.get_current_path()
