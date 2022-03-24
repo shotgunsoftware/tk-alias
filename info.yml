@@ -66,6 +66,12 @@ configuration:
         description:    "Disable warning about older versions of Alias"
         default_value:  True
 
+    hook_scene_validation:
+        type: hook
+        description: Specify a hook that to contain Alias validation functionality.
+        default_value: "{self}/scene_validation.py"
+
+
 # the Shotgun fields that this engine needs in order to operate correctly
 requires_shotgun_fields:
 
