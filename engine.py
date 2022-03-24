@@ -56,6 +56,16 @@ class AliasEngine(sgtk.platform.Engine):
         return dict(name="Alias", version="unknown")
 
     @property
+    def has_ui(self):
+        """
+        Detect and return if Alias is running in interactive/non-interactive mode
+        """
+        if os.path.basename(sys.executable) == "Alias.exe":
+            return True
+        else:
+            return False
+
+    @property
     def context_change_allowed(self):
         """
         Specifies that context changes are allowed by the engine.
@@ -86,9 +96,10 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("%s: Post context change...", self)
 
-        # Rebuild the menu only if we change of context
-        self._menu_generator.create_menu()
-        self._menu_generator.refresh()
+        # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
+        if self.has_ui:
+            self._menu_generator.create_menu()
+            self._menu_generator.refresh()
 
     def pre_app_init(self):
         """
@@ -125,13 +136,14 @@ class AliasEngine(sgtk.platform.Engine):
             QtCore.QCoreApplication.addLibraryPath(plugins_dir)
 
         # Init QT main loop
-        self.init_qt_app()
+        if self.has_ui:
+            self.init_qt_app()
 
         # import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
 
         # dialog parent handler
-        self._dialog_parent = self._tk_alias.DialogParent(engine=self)
+        self._dialog_parent = self._tk_alias.DialogParent(engine=self) if self.has_ui else None
 
         # event watcher
         self.__event_watcher = self._tk_alias.AliasEventWatcher()
@@ -150,7 +162,7 @@ class AliasEngine(sgtk.platform.Engine):
 
         if int(self.alias_version[0:4]) > self.get_setting(
             "compatibility_dialog_min_version", 2021
-        ):
+        ) and self.has_ui:
             from sgtk.platform.qt import QtGui
 
             msg = (
@@ -165,7 +177,7 @@ class AliasEngine(sgtk.platform.Engine):
             )
         elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
             "compatibility_dialog_old_version"
-        ):
+        ) and self.has_ui:
             from sgtk.platform.qt import QtGui
 
             msg = (
@@ -186,8 +198,9 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("%s: Post Initializing...", self)
 
         # init menu
-        self._menu_generator = self._tk_alias.AliasMenuGenerator(engine=self)
-        self._menu_generator.create_menu(clean_menu=False)
+        if self.has_ui:
+            self._menu_generator = self._tk_alias.AliasMenuGenerator(engine=self)
+            self._menu_generator.create_menu(clean_menu=False)
 
         self._run_app_instance_commands()
 
@@ -198,7 +211,8 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("%s: Destroying...", self)
 
         # Clean the menu
-        self._menu_generator.clean_menu()
+        if self.has_ui:
+            self._menu_generator.clean_menu()
 
         self.__event_watcher.stop_watching()
 
