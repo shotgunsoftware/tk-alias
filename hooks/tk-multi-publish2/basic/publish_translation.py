@@ -94,7 +94,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         # translator settings
         translator_settings = {
             "Translator Settings": {
-                "type": list,
+                "type": "list",
                 "default": [],
                 "description": "Translator settings used to set values like file release number for CATPArt, among "
                 "others. To see all the available options per format, you can look at the command line "
@@ -286,65 +286,71 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         :param item: Item to process
         """
 
-        publisher = self.parent
+        # get the publish "mode" stored inside of the root item properties
+        bg_processing = item.parent.properties.get("bg_processing", False)
+        in_bg_process = item.parent.properties.get("in_bg_process", False)
 
-        # get the path to create and publish
-        publish_path = self.get_publish_path(settings, item)
+        if not bg_processing or (bg_processing and in_bg_process):
 
-        # ensure the publish folder exists:
-        publish_folder = os.path.dirname(publish_path)
-        self.parent.ensure_folder_exists(publish_folder)
+            publisher = self.parent
 
-        # need to build a new instance of the translator for each translation because the type is changing
-        framework = self.load_framework("tk-framework-aliastranslations_v0.x.x")
-        tk_framework_aliastranslations = framework.import_module(
-            "tk_framework_aliastranslations"
-        )
-        translator = tk_framework_aliastranslations.Translator(
-            item.properties.path, publish_path
-        )
+            # get the path to create and publish
+            publish_path = self.get_publish_path(settings, item)
 
-        if (
-            settings.get("Translator Settings")
-            and settings.get("Translator Settings").value
-        ):
-            for setting in settings.get("Translator Settings").value:
-                translator.add_extra_param(setting.get("name"), setting.get("value"))
+            # ensure the publish folder exists:
+            publish_folder = os.path.dirname(publish_path)
+            self.parent.ensure_folder_exists(publish_folder)
 
-        try:
-            translator.execute()
-        except Exception as e:
-            self.logger.error("Failed to run translation: %s" % e)
-            return
+            # need to build a new instance of the translator for each translation because the type is changing
+            framework = self.load_framework("tk-framework-aliastranslations_v0.x.x")
+            tk_framework_aliastranslations = framework.import_module(
+                "tk_framework_aliastranslations"
+            )
+            translator = tk_framework_aliastranslations.Translator(
+                item.properties.path, publish_path
+            )
 
-        parent_sg_publish_data = item.parent.properties.get("sg_publish_data")
+            if (
+                settings.get("Translator Settings")
+                and settings.get("Translator Settings").value
+            ):
+                for setting in settings.get("Translator Settings").value:
+                    translator.add_extra_param(setting.get("name"), setting.get("value"))
 
-        if parent_sg_publish_data and not item.description:
-            item.description = parent_sg_publish_data["description"]
+            try:
+                translator.execute()
+            except Exception as e:
+                self.logger.error("Failed to run translation: %s" % e)
+                return
 
-        super(AliasTranslationPublishPlugin, self).publish(settings, item)
+            parent_sg_publish_data = item.parent.properties.get("sg_publish_data")
 
-        # If we have some parent publish data, share the thumbnail between the parent publish and it child
-        if parent_sg_publish_data:
-            request_timeout = 60
-            start_time = time.clock()
-            self.logger.debug("Sharing the thumbnail")
-            thumbnail_shared = False
-            while time.clock() - start_time <= request_timeout:
-                try:
-                    publisher.shotgun.share_thumbnail(
-                        entities=[item.properties.get("sg_publish_data")],
-                        source_entity=parent_sg_publish_data,
-                    )
-                    self.logger.debug("Thumbnail shared successfully")
-                    thumbnail_shared = True
-                    break
-                except Exception as e:
-                    pass
-                time.sleep(1)
+            if parent_sg_publish_data and not item.description:
+                item.description = parent_sg_publish_data["description"]
 
-            if not thumbnail_shared:
-                self.logger.debug("Thumbnail couln't be shared")
+            super(AliasTranslationPublishPlugin, self).publish(settings, item)
+
+            # If we have some parent publish data, share the thumbnail between the parent publish and it child
+            if parent_sg_publish_data:
+                request_timeout = 60
+                start_time = time.clock()
+                self.logger.debug("Sharing the thumbnail")
+                thumbnail_shared = False
+                while time.clock() - start_time <= request_timeout:
+                    try:
+                        publisher.shotgun.share_thumbnail(
+                            entities=[item.properties.get("sg_publish_data")],
+                            source_entity=parent_sg_publish_data,
+                        )
+                        self.logger.debug("Thumbnail shared successfully")
+                        thumbnail_shared = True
+                        break
+                    except Exception as e:
+                        pass
+                    time.sleep(1)
+
+                if not thumbnail_shared:
+                    self.logger.debug("Thumbnail couln't be shared")
 
     def finalize(self, settings, item):
         """
@@ -356,16 +362,23 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             instances.
         :param item: Item to process
         """
-        self.logger.info(
-            "Translation published successfully",
-            extra={
-                "action_show_in_shotgun": {
-                    "label": "Show Publish",
-                    "tooltip": "Reveal the published file in ShotGrid.",
-                    "entity": item.properties["sg_publish_data"],
-                }
-            },
-        )
+
+        # get the publish "mode" stored inside of the root item properties
+        bg_processing = item.parent.properties.get("bg_processing", False)
+        in_bg_process = item.parent.properties.get("in_bg_process", False)
+
+        if not bg_processing or (bg_processing and in_bg_process):
+
+            self.logger.info(
+                "Translation published successfully",
+                extra={
+                    "action_show_in_shotgun": {
+                        "label": "Show Publish",
+                        "tooltip": "Reveal the published file in ShotGrid.",
+                        "entity": item.properties["sg_publish_data"],
+                    }
+                },
+            )
 
     def get_publish_template(self, settings, item):
         """
