@@ -7,5 +7,3 @@
 # By accessing, using, copying or modifying this work you indicate your
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
-
-from .utils import *
