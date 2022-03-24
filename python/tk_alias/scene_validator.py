@@ -5,30 +5,73 @@
 # This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
 
-# FIXME use sgtk re import
-import re
-from tokenize import group
-
 import sgtk
 from tank_vendor import six
+from tank.util import sgre as re
 
 import alias_api
+from .api import dag_node as api_dag_node
+from .api import layer as api_layer
+from .api import pick_list as api_pick_list
 from .api import utils as api_utils
 
 
 class AliasSceneValidator(object):
     """
-    Alias scene validation functionality.
+    The Alias Scene Validator class provides the data and functionality to validate a scene in Alias.
+
+    The `get_validation_data` method returns the validation rules data set, which drives the scene
+    validation. Each rule in the validation data includes the necessary information to display the
+    validation rule, and the functions to perform the validation check and fix actions for the rule.
+
+    The validation rule check functions are the functions prefixed with `check_` and the fix functions
+    are prefixed with `fix_`.
     """
+
+    class CheckResult(object):
+        """
+        The result object returned by AliasSceneValidator check functions.
+        """
+
+        def __init__(self, is_valid=None, invalid_items=None, args=None, kwargs=None):
+            """
+            Initialize the result object with the given data.
+
+            :param is_valid: The success status that the check function reported
+            :type is_valid: bool
+            :param invalid_items: The invalid items the check function found
+            :type invalid_items: list
+            :param args: The arguments list the check function provided to pass to its corresponding fix function.
+            :type args: list
+            :param kwargs: The key-word arguments the check function provided to pass to its corresponding fix
+                function.
+            :type kargs: dict
+            """
+
+            if is_valid is None:
+                self.is_valid = not invalid_items
+            else:
+                self.is_valid = is_valid
+
+            invalid_items = invalid_items or []
+            self.invalid_items = [
+                {"id": item.name, "name": item.name, "type": item.type(),}
+                for item in invalid_items
+            ]
+
+            self.args = args or []
+            self.kwargs = kwargs or {}
+            self.kwargs["invalid_items"] = invalid_items
 
     def __init__(self):
         """
+        Initialize the validator and set up the properties required for validaiting an Alias scene.
         """
 
         bundle = sgtk.platform.current_bundle()
 
         camera_node_types = api_utils.camera_node_types()
-        light_node_types = api_utils.camera_node_types()
+        light_node_types = api_utils.light_node_types()
 
         # Store the validation data since this is static
         self.__validation_data = self.get_validation_data()
@@ -85,51 +128,11 @@ class AliasSceneValidator(object):
         self.__node_types_only_in_default_layer.update(light_node_types)
 
     # -------------------------------------------------------------------------------------------------------
-    # Static methods
-    # -------------------------------------------------------------------------------------------------------
-
-    @staticmethod
-    def result_object(success=None, invalid_items=None, args=None, kwargs=None):
-        """
-        Convenience method to return the result object for a check function.
-        """
-
-        success = success if success is not None else not invalid_items
-        invalid_items = invalid_items or []
-        args = args or []
-        kwargs = kwargs or {}
-
-        return (success, invalid_items, args, kwargs)
-
-    @staticmethod
-    def construct_invalid_items(items):
-        """
-        Convenience method to build the invalid items data list for check functions to return.
-        """
-
-        return [
-            {"id": item.name, "name": item.name, "type": item.type(),} for item in items
-        ]
-
-    @staticmethod
-    def get_or_update_kwargs_with_invalid_items(invalid_items, kwargs=None):
-        """
-        Convenience method to add the invalid items to the keyword arguments, which is meant to be returned
-        by the check function and consumed by the fix function.
-
-        The keyword arguments are updated with the invalid items data, or kwargs is created if not provied.
-        """
-
-        kwargs = kwargs or {}
-        kwargs["invalid_items"] = invalid_items
-        return kwargs
-
-    # -------------------------------------------------------------------------------------------------------
     # Public methods
     # -------------------------------------------------------------------------------------------------------
     #   Data and execute methods
     #
-    #   These are the main methods for the SceneValiation class.
+    #   These are the main methods for the AliasSceneValiation class.
     #
     #   The 'get_validation_data' method defines all the validation rules that apply to an Alias scene. The
     #   validation data provides all the necessary info to describe the validation rule, as well as the
@@ -145,6 +148,7 @@ class AliasSceneValidator(object):
 
         The data is a dictionay mapping of validation rule id to its validation rule data. The following
         validation rules are defined:
+
             group_has_single_level_hierarchy:
                 description: Groups are prohibited from containing more than one level of hierarchy (e.g. a Group 1 can have a group, Group 2, but Group 2 cannot contain another Group)
             layer_is_empty:
@@ -213,12 +217,23 @@ class AliasSceneValidator(object):
             error_msg:
                 type: str
                 value: Text to display when the validation rule fails.
+            actions:
+                type: list
+                value:
+                    type: dict
+                    value: An action that can be applied to an all the invalid items that were found after
+                        executing `check_func`.
+                    required keys:
+                        name (str) - The display text for the action
+                        callback (function) - The function to call when the action is invoked
+                    optional keys:
+                        tooltip (str) - Text to display as for the item action's tooltip help messages
             item_actions:
                 type: list
                 value:
                     type: dict
                     value: An action that can be applied to an "invalid item" that was found after executing
-                           `check_func`.
+                        `check_func`.
                     required keys:
                         name (str) - The display text for the action
                         callback (function) - The function to call when the action is invoked
@@ -260,10 +275,16 @@ class AliasSceneValidator(object):
                 "description": "Shaders must be from the Asset Library for compatibility with VRED.",
                 "check_func": self.check_shader_is_vred_compatible,
                 "error_msg": "Found shader(s) that are incompatible with VRED.",
+                "actions": [
+                    {
+                        "name": "Select All Shader Geometry",
+                        "callback": self.pick_nodes,
+                    },
+                ],
                 "item_actions": [
                     {
                         "name": "Select Shader Geometry",
-                        "callback": self.select_shader_geometry,
+                        "callback": self.pick_nodes_assigned_to_shaders,
                     },
                 ],
             },
@@ -283,12 +304,13 @@ class AliasSceneValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all construction history from all nodes.",
                 "error_msg": "Found node(s) with construction history.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {
                         "name": "Delete",
                         "callback": self.fix_node_has_construction_history,
                     },
-                    {"name": "Select", "callback": self.select_nodes,},
+                    {"name": "Select", "callback": self.pick_nodes,},
                 ],
             },
             "node_instances": {
@@ -299,9 +321,10 @@ class AliasSceneValidator(object):
                 "fix_name": "Expand All",
                 "fix_tooltip": "Remove Instances by expanding them.",
                 "error_msg": "Instance found.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {"name": "Expand", "callback": self.fix_node_instances,},
-                    {"name": "Select", "callback": self.select_nodes,},
+                    {"name": "Select", "callback": self.pick_nodes,},
                 ],
             },
             "node_pivots_at_origin": {
@@ -312,9 +335,10 @@ class AliasSceneValidator(object):
                 "fix_name": "Reset All",
                 "fix_tooltip": "All pivots will be moved to the origin.",
                 "error_msg": "Found pivots not set to the origin.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {"name": "Reset", "callback": self.fix_node_pivots_at_origin,},
-                    {"name": "Select", "callback": self.select_nodes,},
+                    {"name": "Select", "callback": self.pick_nodes,},
                 ],
             },
             "node_has_zero_transform": {
@@ -325,9 +349,10 @@ class AliasSceneValidator(object):
                 "fix_name": "Reset All",
                 "fix_tooltip": "Reset all transforms to zero.",
                 "error_msg": "Found node(s) with non-zero transform.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {"name": "Reset", "callback": self.fix_node_has_zero_transform,},
-                    {"name": "Select", "callback": self.select_nodes,},
+                    {"name": "Select", "callback": self.pick_nodes,},
                 ],
             },
             "node_is_not_in_default_layer": {
@@ -335,10 +360,11 @@ class AliasSceneValidator(object):
                 "description": "Only Light, Camera, Texture, and Group nodes can be in the default layer.",
                 "check_func": self.check_node_is_not_in_default_layer,
                 "error_msg": "Found invalid nodes in the default layer.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {
                         "name": "Select",
-                        "callback": self.select_default_layer_invalid_nodes,
+                        "callback": self.pick_nodes,
                         "tooltip": "Select invalid nodes that must be manually fixed.",
                     },
                 ],
@@ -351,9 +377,10 @@ class AliasSceneValidator(object):
                 "fix_name": "Move",
                 "fix_tooltip": "Move all Lights, Cameras, Texture nodes to the default layer.",
                 "error_msg": "Required objects not found in the default layer.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {"name": "Move", "callback": self.fix_node_is_in_default_layer,},
-                    {"name": "Select", "callback": self.select_nodes,},
+                    {"name": "Select", "callback": self.pick_nodes,},
                 ],
             },
             "node_name_matches_layer": {
@@ -364,9 +391,10 @@ class AliasSceneValidator(object):
                 "fix_name": "Rename All",
                 "fix_tooltip": "Rename Groups to match their respective Layer name.",
                 "error_msg": "Found Layer Group name mismatches.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {"name": "Rename", "callback": self.fix_node_name_matches_layer,},
-                    {"name": "Select", "callback": self.select_nodes,},
+                    {"name": "Select", "callback": self.pick_nodes,},
                 ],
             },
             "node_layer_matches_parent": {
@@ -377,12 +405,13 @@ class AliasSceneValidator(object):
                 "fix_name": "Reassign All",
                 "fix_tooltip": "Set each node's layer to match its parent's layer.",
                 "error_msg": "Found node(s) assigned to layer different than its parent.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {
                         "name": "Reassign",
                         "callback": self.fix_node_layer_matches_parent,
                     },
-                    {"name": "Select", "callback": self.select_nodes,},
+                    {"name": "Select", "callback": self.pick_nodes,},
                 ],
             },
             "node_dag_top_level": {
@@ -390,10 +419,11 @@ class AliasSceneValidator(object):
                 "description": "DAG top-level nodes must be of type: AlGroupNode, AlCurveNode, AlFaceNode, AlSurfaceNode. Nodes with parent nodes (non top-level nodes) must have the same layer as its parent node.",
                 "check_func": self.check_node_dag_top_level,
                 "error_msg": "Found invalid nodes in the top level of the DAG.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {
-                        "name": "Select Nodes",
-                        "callback": self.select_nodes,
+                        "name": "Select",
+                        "callback": self.pick_nodes,
                         "tooltip": "Select invalid nodes that must be manually fixed.",
                     },
                 ],
@@ -406,15 +436,22 @@ class AliasSceneValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete node's unused curve on surface",
                 "error_msg": "Found node(s) with unused curve(s) on surface",
+                "actions": [
+                    {"name": "Select All Nodes", "callback": self.pick_nodes,},
+                    {
+                        "name": "Select All COS",
+                        "callback": self.pick_curves_on_surface_from_nodes,
+                    },
+                ],
                 "item_actions": [
                     {
                         "name": "Delete",
                         "callback": self.fix_node_unused_curves_on_surface,
                     },
-                    {"name": "Select Nodes", "callback": self.select_nodes,},
+                    {"name": "Select Nodes", "callback": self.pick_nodes,},
                     {
                         "name": "Select COS",
-                        "callback": self.select_node_curves_on_surface,
+                        "callback": self.pick_curves_on_surface_from_nodes,
                     },
                 ],
             },
@@ -426,12 +463,13 @@ class AliasSceneValidator(object):
                 "fix_name": "Flatten All",
                 "fix_tooltip": "Flatten Groups with multiple hierarchy levels.",
                 "error_msg": "Found Groups with multiple hierarchy levels.",
+                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
                     {
                         "name": "Flatten",
                         "callback": self.fix_group_has_single_level_hierarchy,
                     },
-                    {"name": "Select Groups", "callback": self.select_nodes,},
+                    {"name": "Select", "callback": self.pick_nodes,},
                 ],
             },
             "layer_is_empty": {
@@ -442,9 +480,10 @@ class AliasSceneValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete empty layers and folders",
                 "error_msg": "Found empty layers or folders",
+                "actions": [{"name": "Select All", "callback": self.pick_layers,},],
                 "item_actions": [
                     {"name": "Delete", "callback": self.fix_layer_is_empty,},
-                    {"name": "Select", "callback": self.select_layers,},
+                    {"name": "Select", "callback": self.pick_layers,},
                 ],
             },
             "layer_has_single_shader": {
@@ -452,11 +491,12 @@ class AliasSceneValidator(object):
                 "description": "All nodes within a layer must use one single shader. Assign one shader to all nodes in the layer or split into multiple layers.",
                 "check_func": self.check_layer_has_single_shader,
                 "error_msg": "Found layer(s) using multiple shaders.",
+                "actions": [{"name": "Select All", "callback": self.pick_layers,},],
                 "item_actions": [
-                    {"name": "Select Layer", "callback": self.select_layers,},
+                    {"name": "Select Layer", "callback": self.pick_layers,},
                     {
                         "name": "Select Layer Geometry",
-                        "callback": self.select_layer_nodes,
+                        "callback": self.pick_nodes_assigned_to_layers,
                     },
                 ],
             },
@@ -468,9 +508,10 @@ class AliasSceneValidator(object):
                 "fix_name": "Turn Off All",
                 "fix_tooltip": "Turn off symmetry for all Layers and Layer Folders.",
                 "error_msg": "Found Layers with symmetry turned on.",
+                "actions": [{"name": "Select All", "callback": self.pick_layers,},],
                 "item_actions": [
                     {"name": "Turn Off", "callback": self.fix_layer_symmetry,},
-                    {"name": "Select", "callback": self.select_layers,},
+                    {"name": "Select", "callback": self.pick_layers,},
                 ],
             },
             "layer_has_single_item": {
@@ -481,9 +522,10 @@ class AliasSceneValidator(object):
                 "fix_name": "Collapse All",
                 "fix_tooltip": "Collapse all layer items into a single group, and rename the group to the name of the layer.",
                 "error_msg": "Found layers with more than one item.",
+                "actions": [{"name": "Select All", "callback": self.pick_layers,},],
                 "item_actions": [
                     {"name": "Collapse", "callback": self.fix_layer_has_single_item,},
-                    {"name": "Select", "callback": self.select_layers,},
+                    {"name": "Select", "callback": self.pick_layers,},
                 ],
             },
             "locators": {
@@ -494,9 +536,10 @@ class AliasSceneValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete locators",
                 "error_msg": "Found locator(s).",
+                "actions": [{"name": "Select All", "callback": self.pick_locators,},],
                 "item_actions": [
                     {"name": "Delete", "callback": self.fix_locators,},
-                    {"name": "Select", "callback": self.select_locators,},
+                    {"name": "Select", "callback": self.pick_locators,},
                 ],
             },
             "metadata": {
@@ -521,24 +564,58 @@ class AliasSceneValidator(object):
     def execute_check_action(self, rule_id, *args, **kwargs):
         """
         Execute the Alias scene validation check function.
+
+        :param rule_id: The unique id to get and run the validation check.
+        :type rule_id: str
+        :param args: The arguments list to pass to the check function.
+        :type args: list
+        :param kwargs: The key-word arguments dict to pass to the check function.
+        :type kwargs: dict
+
+        :return: The return value of the check function. See the `get_validation_data` function doc for more
+            details on the check function return value.
+        :rtype: tuple(bool,list,list,dict)
+
+        :raises NotImplementedError: if the validation data was not found for the `rule_id`
         """
 
         data = self.__validation_data.get(rule_id)
 
         if not data or not data.get("check_func"):
-            raise NotImplementedError()
+            raise NotImplementedError(
+                "{} does not support check action '{}'.".format(
+                    self.__class__.__name__
+                ),
+                rule_id,
+            )
 
         return data["check_func"](*args, **kwargs)
 
     def execute_fix_action(self, rule_id, *args, **kwargs):
         """
         Execute the Alias scene validation fix function.
+
+        :param rule_id: The unique id to get and run the validation check.
+        :type rule_id: str
+        :param args: The arguments list to pass to the check function.
+        :type args: list
+        :param kwargs: The key-word arguments dict to pass to the check function.
+        :type kwargs: dict
+
+        :return: The return value of the check function. See the `get_validation_data` function doc for more
+            details on the check function return value.
+        :rtype: tuple(bool,list,list,dict)
+
+        :raises NotImplementedError: if the validation data was not found for the `rule_id`
         """
 
         data = self.__validation_data.get(rule_id)
 
         if not data or not data.get("fix_func"):
-            raise NotImplementedError()
+            raise NotImplementedError(
+                "{} does not support fix action '{}'.".format(self.__class__.__name__),
+                rule_id,
+            )
 
         return data["fix_func"](*args, **kwargs)
 
@@ -546,11 +623,23 @@ class AliasSceneValidator(object):
     # Check & Fix Functions
     # -------------------------------------------------------------------------------------------------------
     #   These can be executed directly, but they are meant to be defined as a 'check_func' in the validation
-    #   data and executed using the validatino data rule item
+    #   data and executed using the validatino data rule item.
+    #
+    #   Guidelines to defining a check function:
+    #       - Function name should be prefixed with `check_`
+    #       - Takes an optional single parameter `fail_fast` which returned immediately once the check fails
+    #       - Returns a ValidationCheckResult object
+    #
+    #   Guidelines to defining a fix function:
+    #       - Function name should be prefixed with `fix_`
+    #       - Takes an optional single parameter `invalid_items` which are the items intended to be fixed.
+    #               The naming of the parameter is important since this is passed from the check function
+    #               return value)
+    #
     # -------------------------------------------------------------------------------------------------------
 
     @sgtk.LogManager.log_timing
-    def check_shader_unused(self, fail_fast=True):
+    def check_shader_unused(self, fail_fast=False):
         """
         Check for unused shaders (shaders that are not assigned to any geometry) in the current scene.
 
@@ -560,16 +649,16 @@ class AliasSceneValidator(object):
                           slower to execute.
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         unused_shaders = []
@@ -577,15 +666,13 @@ class AliasSceneValidator(object):
         for shader in alias_api.get_shaders():
             if shader.name in self.__skip_shaders:
                 continue
+
             if not shader.is_used():
                 if fail_fast:
-                    return self.result_object(success=False)
+                    return AliasSceneValidator.CheckResult(is_valid=False)
                 unused_shaders.append(shader)
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(unused_shaders),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(unused_shaders),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=unused_shaders)
 
     @sgtk.LogManager.log_timing
     def fix_shader_unused(self, invalid_items=None):
@@ -609,11 +696,9 @@ class AliasSceneValidator(object):
             if isinstance(shader, six.string_types):
                 if shader in self.__skip_shaders:
                     continue
-
                 shader = alias_api.get_shader_by_name(shader)
                 if not shader:
                     continue
-
             elif shader.name in self.__skip_shaders:
                 continue
 
@@ -621,7 +706,7 @@ class AliasSceneValidator(object):
                 shader.delete_object()
 
     @sgtk.LogManager.log_timing
-    def check_shader_is_vred_compatible(self, fail_fast=True):
+    def check_shader_is_vred_compatible(self, fail_fast=False):
         """
         Check for non-VRED shaders used in the current scene.
 
@@ -635,16 +720,16 @@ class AliasSceneValidator(object):
                           slower to execute.
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         non_vred_shaders = []
@@ -652,15 +737,13 @@ class AliasSceneValidator(object):
         for shader in alias_api.get_shaders():
             if shader.name in self.__skip_shaders:
                 continue
+
             if shader.is_used() and not alias_api.is_copy_of_vred_shader(shader):
                 if fail_fast:
-                    return self.result_object(success=False)
+                    return AliasSceneValidator.CheckResult(is_valid=False)
                 non_vred_shaders.append(shader)
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(non_vred_shaders),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(non_vred_shaders),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=non_vred_shaders)
 
     @sgtk.LogManager.log_timing
     def fix_node_is_null(self, invalid_items=None):
@@ -670,6 +753,8 @@ class AliasSceneValidator(object):
         :param invalid_items: (optional) The of nodes to process, if None, all nodes in the current
                               scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlDagNode>
+
+        :raises alias_api.AliasPythonException: if the attempting to delete specific nodes
         """
 
         if invalid_items is None:
@@ -681,53 +766,30 @@ class AliasSceneValidator(object):
             )
 
     @sgtk.LogManager.log_timing
-    def check_node_has_construction_history(self, fail_fast=True):
+    def check_node_has_construction_history(self, fail_fast=False):
         """
         Check for nodes with construction history in the current scene.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all invalid items found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
+        :param fail_fast: Not applicable
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
-        :param fail_fast: Set to True to return immediately once check fails. Set to False to check
-                                    the validity and return the list of nodes with history; note that this will
-                                    execute slower than when set to True.
-        :type fail_fast: bool
-
-        :return: A tuple containing:
-                    (1) True if the check passed, else False
-                    (2) A list of args to pass to the corresponding fix function
-                    (3) A dict of kwargs to pass to the corresponding fix function
-        :rtype: tuple<bool,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
-        if fail_fast:
-            has_nodes_with_history = api_utils.get_nodes_with_construction_history(
-                check_exists=True,
-                skip_node_types=self.__skip_node_types_construction_history,
-            )
-            return self.result_object(success=not has_nodes_with_history)
-
-        nodes_with_history = api_utils.get_nodes_with_construction_history(
+        nodes_with_history = api_dag_node.get_nodes_with_construction_history(
             skip_node_types=self.__skip_node_types_construction_history
         )
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(nodes_with_history),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(nodes_with_history),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=nodes_with_history)
 
     @sgtk.LogManager.log_timing
     def fix_node_has_construction_history(self, invalid_items=None):
@@ -746,7 +808,7 @@ class AliasSceneValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        nodes = api_utils.get_nodes_with_construction_history(
+        nodes = api_dag_node.get_nodes_with_construction_history(
             nodes=invalid_items,
             skip_node_types=self.__skip_node_types_construction_history,
         )
@@ -754,38 +816,28 @@ class AliasSceneValidator(object):
             alias_api.delete_history(node)
 
     @sgtk.LogManager.log_timing
-    def check_node_instances(self, fail_fast=True):
+    def check_node_instances(self, fail_fast=False):
         """
         Check for instanced nodes in the current scene.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all invalid items found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
+        :param fail_fast: Not applicable
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
-        if fail_fast:
-            has_instances = api_utils.get_instanced_nodes(check_exists=True)
-            return self.result_object(success=not has_instances)
+        invalid_nodes = api_dag_node.get_instanced_nodes()
 
-        invalid_nodes = api_utils.get_instanced_nodes()
-
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_instances(self, invalid_items=None):
@@ -799,12 +851,14 @@ class AliasSceneValidator(object):
         :param invalid_items: (optional) The list of nodes to process, if None, all nodes in the current
                               scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlDagNode>
+
+        :raises alias_api.AliasPythonException: if a node instance failed to expand
         """
 
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        nodes = api_utils.get_instanced_nodes(invalid_items)
+        nodes = api_dag_node.get_instanced_nodes(invalid_items)
 
         for node in nodes:
             status = alias_api.expand_instances(node)
@@ -814,25 +868,28 @@ class AliasSceneValidator(object):
                 )
 
     @sgtk.LogManager.log_timing
-    def check_node_pivots_at_origin(self, fail_fast=True):
+    def check_node_pivots_at_origin(self, fail_fast=False):
         """
-        Check whether all surfaces, curves and groups have their pivots set to (x=0, y=0, z=0)
+        Check for nodes that do not have their pivots set to the origin.
+
+        :param fail_fast: Not applicable
+        :type fail_fast: bool
+
+        :return: The check result object containing the data:
+                    (1) True if the check passed, else False
+                    (2) A list of data pertaining to the invalid items found
+                        dict with required keys: id, name
+                        This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function
+                        This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
-        # TODO this is the slowest check now at about ~3s for scene with ~40K nodes
+        invalid_nodes = api_dag_node.get_nodes_with_non_origin_pivot()
 
-        if fail_fast:
-            has_non_origin_pivots = api_utils.get_nodes_with_non_origin_pivot(
-                check_exists=True
-            )
-            return self.result_object(success=not has_non_origin_pivots)
-
-        invalid_nodes = api_utils.get_nodes_with_non_origin_pivot()
-
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_pivots_at_origin(self, invalid_items=None):
@@ -846,14 +903,16 @@ class AliasSceneValidator(object):
         :param invalid_items: (optional) The nodes to process, if None, all nodes in the current scene will
                               be processed. Default=None
         :type invalid_items: str | list<str> | list<AlDagNode>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's pivot to the origin
         """
 
-        # TODO this is the slowest fix by far now
+        # FIXME separate this out into two checks, one for scale and one for rotate?
 
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        nodes = api_utils.get_nodes_with_non_origin_pivot(invalid_items)
+        nodes = api_dag_node.get_nodes_with_non_origin_pivot(invalid_items)
         center = alias_api.Vec3(0.0, 0.0, 0.0)
 
         for node in nodes:
@@ -870,41 +929,29 @@ class AliasSceneValidator(object):
                 )
 
     @sgtk.LogManager.log_timing
-    def check_node_has_zero_transform(self, fail_fast=True):
+    def check_node_has_zero_transform(self, fail_fast=False):
         """
         Check for nodes with non-zero transforms in the current scene.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all invalid items found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
+        :param fail_fast: Not applicable
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
-        if fail_fast:
-            has_non_zero_transforms = api_utils.get_nodes_with_non_zero_transform(
-                check_exists=True, skip_node_types=self.__skip_node_types_zero_transform
-            )
-            return self.result_object(success=not has_non_zero_transforms)
-
-        invalid_nodes = api_utils.get_nodes_with_non_zero_transform(
+        invalid_nodes = api_dag_node.get_nodes_with_non_zero_transform(
             skip_node_types=self.__skip_node_types_zero_transform
         )
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_has_zero_transform(self, invalid_items=None):
@@ -917,26 +964,27 @@ class AliasSceneValidator(object):
         :param invalid_items: (optional) The nodes to process, if None, all nodes in the current
                               scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlDagNode>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
         """
 
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        nodes = api_utils.get_nodes_with_non_zero_transform(
+        nodes = api_dag_node.get_nodes_with_non_zero_transform(
             nodes=invalid_items, skip_node_types=self.__skip_node_types_zero_transform
         )
         for node in nodes:
             status = alias_api.zero_transform(node)
-
             if not api_utils.is_success(status):
                 raise alias_api.AliasPythonException(
                     "Failed to apply zero transform to node '{}'".format(node.name)
                 )
 
     @sgtk.LogManager.log_timing
-    def check_node_is_not_in_default_layer(self, fail_fast=True):
+    def check_node_is_not_in_default_layer(self, fail_fast=False):
         """
-        Check that the default layer contains only nodes of type:
+        Check that the default layer contains only nodes of type in the specified list:
             CameraEyeType
             CameraViewType
             CameraUpType
@@ -945,51 +993,46 @@ class AliasSceneValidator(object):
             LightLookAtNodeType
             LightUpNodeType
 
+        TODO allow this node type list to be configurable
+
         :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
                           entire data and return all invalid items found, and arguments that can be passed to
                           the corresponding fix function. Note that when set to False, this function will be
                           slower to execute.
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         default_layer = alias_api.get_layer_by_name(self.__default_layer_name)
         if default_layer is None:
             # No default layer found, let this check pass
-            return self.result_object(success=True)
+            return AliasSceneValidator.CheckResult(is_valid=True)
 
         invalid_nodes = []
 
         # NOTE get_assigned_nodes will not return the group nodes, only leaf nodes assigned to the layer
         nodes = default_layer.get_assigned_nodes()
 
-        while nodes:
-            node = nodes.pop()
-            if not node:
-                continue
-
+        for node in nodes:
             if node.type() not in self.__node_types_allowed_in_default_layer:
                 if fail_fast:
-                    return self.result_object(success=False)
+                    return AliasSceneValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
-    def check_node_is_in_default_layer(self, fail_fast=True):
+    def check_node_is_in_default_layer(self, fail_fast=False):
         """
         Check that the specified list of node types are only in the default layer:
             CameraEyeType
@@ -1000,39 +1043,34 @@ class AliasSceneValidator(object):
             LightLookAtNodeType
             LightUpNodeType
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all invalid items found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
+        TODO allow this node type list to be configurable
+
+        :param fail_fast: Not applicable
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         default_layer = alias_api.get_layer_by_name(self.__default_layer_name)
         if default_layer is None:
             # No default layer found, this check fails automatically
-            return self.result_object(success=False)
+            return AliasSceneValidator.CheckResult(is_valid=False)
 
         input_data = alias_api.TraverseDagInputData(
             default_layer, False, self.__node_types_only_in_default_layer, True
         )
         result = alias_api.search_dag(input_data)
-        invalid_nodes = result.nodes
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=result.nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_is_in_default_layer(self, invalid_items=None):
@@ -1075,7 +1113,7 @@ class AliasSceneValidator(object):
                 node.set_layer(default_layer)
 
     @sgtk.LogManager.log_timing
-    def check_node_name_matches_layer(self, fail_fast=True):
+    def check_node_name_matches_layer(self, fail_fast=False):
         """
         Check for naming mismatches between layer and its nodes, for all top-levle nodes in the current scene.
 
@@ -1088,23 +1126,19 @@ class AliasSceneValidator(object):
                           slower to execute.
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         invalid_nodes = []
-
-        # NOTE since only the top-levle nodes need to be processed, and no alias api function is called for
-        # each node, traverse_dag optimization may not be required -- this seems to perform ok getting the top
-        # dag nodes and iterating over them.
         nodes = alias_api.get_top_dag_nodes()
 
         for node in nodes:
@@ -1117,13 +1151,10 @@ class AliasSceneValidator(object):
             reg = r"^{}(#?\d)*$".format(layer.name)
             if not re.match(reg, node.name):
                 if fail_fast:
-                    return self.result_object(success=False)
+                    return AliasSceneValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_name_matches_layer(self, invalid_items=None):
@@ -1139,9 +1170,6 @@ class AliasSceneValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        # NOTE since only the top-levle nodes need to be processed, and no alias api function is called for
-        # each node, traverse_dag optimization may not be required -- this seems to perform ok getting the top
-        # dag nodes and iterating over them.
         nodes = invalid_items or alias_api.get_top_dag_nodes()
 
         for node in nodes:
@@ -1164,22 +1192,39 @@ class AliasSceneValidator(object):
                 node.name = node_layer_name
 
     @sgtk.LogManager.log_timing
-    def check_node_layer_matches_parent(self, fail_fast=True):
+    def check_node_layer_matches_parent(self, fail_fast=False):
         """
+        Check for nodes that do not have the layer as their parent node.
+
+        :param fail_fast: Not applicable
+        :type fail_fast: bool
+
+        :return: The check result object containing the data:
+                    (1) True if the check passed, else False
+                    (2) A list of data pertaining to the invalid items found
+                        dict with required keys: id, name
+                        This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function
+                        This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         input_data = alias_api.TraverseDagInputData()
         result = alias_api.search_node_layer_does_not_match_parent_layer(input_data)
-        invalid_nodes = result.nodes
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=result.nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_layer_matches_parent(self, invalid_items=None):
         """
+        Process all nodes in the current scene, or the specified nodes, and ensure that a node's layer is the
+        same as its parent node's layer.
+
+        :param invalid_items: (optional) The of nodes to process, if None, all nodes in the current
+                              scene will be processed. Default=None
+        :type invalid_items: str | list<str> | list<AlDagNode>
         """
 
         if isinstance(invalid_items, six.string_types):
@@ -1212,7 +1257,7 @@ class AliasSceneValidator(object):
                 node.set_layer(node.parent_node().layer())
 
     @sgtk.LogManager.log_timing
-    def check_node_dag_top_level(self, fail_fast=True):
+    def check_node_dag_top_level(self, fail_fast=False):
         """
         Check for invalid top-level nodes in the DAG of the current scene.
 
@@ -1221,6 +1266,7 @@ class AliasSceneValidator(object):
             FaceNodeType
             SurfaceNodeType
             GroupNodeType
+
         TODO make this configurable
 
         :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
@@ -1229,69 +1275,52 @@ class AliasSceneValidator(object):
                           slower to execute.
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         invalid_nodes = []
+        nodes = alias_api.get_top_dag_nodes()
 
-        # NOTE performance is ok just using the get_top_dag_nodes since it does not recurse onto all children
-        # in the DAG, and processing each node is inexpensive
-        top_level_nodes = alias_api.get_top_dag_nodes()
-
-        for node in top_level_nodes:
+        for node in nodes:
             if node.type() not in self.__node_types_allowed_in_dag_top_level:
                 if fail_fast:
-                    return self.result_object(success=False)
+                    return AliasSceneValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
-    def check_node_unused_curves_on_surface(self, fail_fast=True):
+    def check_node_unused_curves_on_surface(self, fail_fast=False):
         """
         Check for unused curves on surfaces in the current scene.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all invalid items found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
+        :param fail_fast: Not applicable
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
-        if fail_fast:
-            has_unused_curves = api_utils.get_nodes_with_unused_curves_on_surface(
-                check_exists=True
-            )
-            return self.result_object(success=not has_unused_curves)
+        invalid_nodes = api_dag_node.get_nodes_with_unused_curves_on_surface()
 
-        invalid_nodes = api_utils.get_nodes_with_unused_curves_on_surface()
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_unused_curves_on_surface(self, invalid_items=None):
@@ -1307,42 +1336,37 @@ class AliasSceneValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        api_utils.delete_unused_curves_on_surface_for_nodes(nodes=invalid_items)
+        unused_curves = api_dag_node.get_unused_curves_on_surface_for_nodes(
+            nodes=invalid_items
+        )
+
+        for curve in unused_curves:
+            curve.delete_object()
 
     @sgtk.LogManager.log_timing
-    def check_layer_is_empty(self, fail_fast=True):
+    def check_layer_is_empty(self, fail_fast=False):
         """
-        Check for contains empty layers or empty layer folders in the current scene.
+        Check for empty layers and layer folders in the current scene.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all invalid items found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
+        :param fail_fast: Not applicable
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
-        if fail_fast:
-            has_empty_layers = api_utils.get_empty_layers(
-                check_exists=True, skip_layers=self.__skip_layers
-            )
-            return self.result_object(success=not has_empty_layers)
+        include_folders = True
+        empty_layers = alias_api.get_empty_layers(include_folders, self.__skip_layers)
 
-        empty_layers = api_utils.get_empty_layers(skip_layers=self.__skip_layers)
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(empty_layers),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(empty_layers),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=empty_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_is_empty(self, invalid_items=None):
@@ -1355,48 +1379,51 @@ class AliasSceneValidator(object):
         :type layers: str | list<str> | list<AlLayer>
         """
 
-        if isinstance(invalid_items, six.string_types):
-            invalid_items = [invalid_items]
+        include_folders = True
+        empty_layers = alias_api.get_empty_layers(include_folders, self.__skip_layers)
 
-        empty_layers = api_utils.get_empty_layers(
-            layers=invalid_items, skip_layers=self.__skip_layers
-        )
+        # If a list of layers is specified, only delete those layers.
+        delete_only = []
+        if invalid_items:
+            if isinstance(invalid_items, six.string_types):
+                invalid_items = [invalid_items]
+
+            for layer in invalid_items:
+                if isinstance(layer, six.string_types):
+                    delete_only.append(layer)
+                else:
+                    delete_only.append(layer.name)
 
         for layer in empty_layers:
-            layer.delete_object()
+            if not delete_only or layer.name in delete_only:
+                layer.delete_object()
 
     @sgtk.LogManager.log_timing
-    def check_layer_has_single_shader(self, fail_fast=True):
+    def check_layer_has_single_shader(self, fail_fast=False):
         """
         Check that all nodes in a layer use the same single shader.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all invalid items found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
+        :param fail_fast: Not applicable
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         invalid_layers = alias_api.get_layers_using_multiple_shaders()
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_layers),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_layers),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_layers)
 
     @sgtk.LogManager.log_timing
-    def check_layer_symmetry(self, fail_fast=True):
+    def check_layer_symmetry(self, fail_fast=False):
         """
         Check for layers with symmetry turned on in the current scene.
 
@@ -1406,31 +1433,28 @@ class AliasSceneValidator(object):
                           slower to execute.
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         if fail_fast:
-            has_symmetric_layers = api_utils.get_symmetric_layers(
+            has_symmetric_layers = api_layer.get_symmetric_layers(
                 check_exists=True, skip_layers=self.__skip_layers
             )
-            return self.result_object(success=not has_symmetric_layers)
+            return AliasSceneValidator.CheckResult(is_valid=not has_symmetric_layers)
 
-        symmetric_layers = api_utils.get_symmetric_layers(
+        symmetric_layers = api_layer.get_symmetric_layers(
             skip_layers=self.__skip_layers
         )
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(symmetric_layers),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(symmetric_layers),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=symmetric_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_symmetry(self, invalid_items=None):
@@ -1448,22 +1472,15 @@ class AliasSceneValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        layers = api_utils.get_symmetric_layers(
+        layers = api_layer.get_symmetric_layers(
             layers=invalid_items, skip_layers=self.__skip_layers
         )
 
         for layer in layers:
-            if isinstance(layer, six.string_types):
-                layer = alias_api.get_layer_by_name(layer)
-
-            if not layer or layer.name in self.__skip_layers:
-                continue
-
-            if layer.symmetric:
-                layer.symmetric = False
+            layer.symmetric = False
 
     @sgtk.LogManager.log_timing
-    def check_layer_has_single_item(self, fail_fast=True):
+    def check_layer_has_single_item(self, fail_fast=False):
         """
         Check for layers that contain more than one top-level node (e.g. layers can only have a single node,
         for multiple nodes, they can have a group node that contains child nodes).
@@ -1474,25 +1491,22 @@ class AliasSceneValidator(object):
                           slower to execute.
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         invalid_layers = []
         processed_layers = set()
         marked_invalid_layers = set()
 
-        # NOTE since only the top-levle nodes need to be processed, and no expensive alias api functions are
-        # called for each node, traverse_dag optimization may not be required -- this seems to perform ok
-        # getting the top dag nodes and iterating over them.
         nodes = alias_api.get_top_dag_nodes()
 
         for node in nodes:
@@ -1509,16 +1523,13 @@ class AliasSceneValidator(object):
 
             if node_layer_name in processed_layers:
                 if fail_fast:
-                    return self.result_object(success=False)
+                    return AliasSceneValidator.CheckResult(is_valid=False)
                 invalid_layers.append(node_layer)
                 marked_invalid_layers.add(node_layer_name)
             else:
                 processed_layers.add(node_layer_name)
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_layers),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_layers),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_has_single_item(self, invalid_items=None):
@@ -1597,47 +1608,46 @@ class AliasSceneValidator(object):
                     group_node.add_child_node(node)
 
     @sgtk.LogManager.log_timing
-    def check_group_has_single_level_hierarchy(self, fail_fast=True):
+    def check_group_has_single_level_hierarchy(self, fail_fast=False):
         """
         Check for groups with more than one level of hierarchy in the current scene.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all invalid items found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
+        :param fail_fast: Not applicable
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         invalid_group_nodes = alias_api.get_nesting_groups()
 
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(invalid_group_nodes),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(invalid_group_nodes),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=invalid_group_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_group_has_single_level_hierarchy(self, invalid_items=None):
         """
         Process all nodes in the current scene, or the specified group nodes, and flatten each node such that
         it only has a single levele of hierarchy (e.g. parent->child but not parent->child->grandchild)
+
         NOTE that the groups in Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated scene.
 
         :param invalid_items: (optional) The list of group nodes to process, if None, all nodes in the
                               current scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlLayer>
+
+        :raises alias_api.AliasPythonException: if failed to flatten all groups
         """
+
+        status = api_utils.success_status()
 
         if invalid_items:
             if isinstance(invalid_items, six.string_types):
@@ -1652,7 +1662,9 @@ class AliasSceneValidator(object):
                     continue
 
                 groups_to_flatten.append(group_node)
-                status = alias_api.flatten_group_nodes(groups_to_flatten)
+                flatten_status = alias_api.flatten_group_nodes(groups_to_flatten)
+                if flatten_status != api_utils.success_status():
+                    status = flatten_status
 
         else:
             status = alias_api.flatten_group_nodes()
@@ -1661,7 +1673,7 @@ class AliasSceneValidator(object):
             raise alias_api.AliasPythonException("Failed to flatten group nodes")
 
     @sgtk.LogManager.log_timing
-    def check_locators(self, fail_fast=True):
+    def check_locators(self, fail_fast=False):
         """
         Check for locators in the current scene.
 
@@ -1671,27 +1683,24 @@ class AliasSceneValidator(object):
                           slower to execute.
         :type fail_fast: bool
 
-        :return: A tuple containing:
+        :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
-        :rtype: tuple<bool,list,list,dict>
+                        This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
         """
 
         if fail_fast:
             has_locators = api_utils.get_locators(check_exists=True)
-            return self.result_object(success=not has_locators)
+            return AliasSceneValidator.CheckResult(is_valid=not has_locators)
 
         locators = api_utils.get_locators()
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(locators),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(locators),
-        )
+        return AliasSceneValidator.CheckResult(invalid_items=locators)
 
     @sgtk.LogManager.log_timing
     def fix_locators(self, invalid_items=None):
@@ -1701,7 +1710,10 @@ class AliasSceneValidator(object):
         :param invalid_items: The list of locators to process, if None, all locators in current scene will
                               be processed. Default=None
         :type invalid_items: str | list<str> | list<AlCurveOnSurface>
+
+        :raises alias_api.AliasPythonException: if failed to delete locator object
         """
+
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
@@ -1711,43 +1723,37 @@ class AliasSceneValidator(object):
                     locator = alias_api.get_locator_by_name(locator)
 
                 if locator:
-                    # TODO check return status?
-                    locator.delete_object()
+                    status = locator.delete_object()
+                    if status != api_utils.success_status():
+                        raise alias_api.AliasPythonException("Failed to delete locator")
         else:
-            # TODO check return status?
-            alias_api.delete_all_locators()
+            status = alias_api.delete_all_locators()
+            if status != api_utils.success_status():
+                raise alias_api.AliasPythonException("Failed to delete all locators")
 
     @sgtk.LogManager.log_timing
-    def check_refererences_exist(self, fail_fast=True):
+    def check_refererences_exist(self, fail_fast=False):
         """
         Check for referenced geometry in the current scene.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all invalid items found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
+        :param fail_fast: Not applicable
         :type fail_fast: bool
 
         :return: A tuple containing:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
                         dict with required keys: id, name
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=True
+                        This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=True
+                        This will be an empty dict if fail_fast=False
         :rtype: tuple<bool,list,list,dict>
         """
 
-        if fail_fast:
-            return self.result_object(success=not alias_api.has_reference())
-
         references = alias_api.get_references()
-        return self.result_object(
-            invalid_items=self.construct_invalid_items(references),
-            kwargs=self.get_or_update_kwargs_with_invalid_items(references),
-        )
+
+        return AliasSceneValidator.CheckResult(invalid_items=references)
 
     @sgtk.LogManager.log_timing
     def fix_references_exist(self, invalid_items=None):
@@ -1761,6 +1767,8 @@ class AliasSceneValidator(object):
         :param invalid_items: (optional) The list of references to process, if None, all references in the
                               current scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlReferenceFile>
+
+        :raises alias_api.AliasPythonException: if failed to remove a reference
         """
 
         if isinstance(invalid_items, six.string_types):
@@ -1773,15 +1781,30 @@ class AliasSceneValidator(object):
                 reference = alias_api.get_reference_by_name(reference)
 
             if reference:
-                alias_api.remove_reference(reference)
+                status = alias_api.remove_reference(reference)
+                if status != api_utils.success_status():
+                    raise alias_api.AliasPythonException("Failed to remove reference")
 
     # -------------------------------------------------------------------------------------------------------
-    # Select/Pick Functions
+    # Pick Functions
+    # -------------------------------------------------------------------------------------------------------
+    #   These can be executed directly, but they are meant to be used as a validation rule item callback
+    #   to help fix an invalid item which cannot be automatically fixed.
+    #
+    #   Guidelines to defining a pick function:
+    #       - Function name should be prefixed with `pick_`
+    #       - Takes an optional single parameter `invalid_items` which are the items intended to be picked
+    #           (the naming of the parameter is important since this is passed from the check function
+    #           return value)
     # -------------------------------------------------------------------------------------------------------
 
     @sgtk.LogManager.log_timing
-    def select_nodes(self, invalid_items=None):
+    def pick_nodes(self, invalid_items=None):
         """
+        Pick the nodes specified in the invalid_items.
+
+        :param invalid_items: The node(s) to pick.
+        :type invalid_items: str | AlDagNode | list<str> | list<AlDagNode>
         """
 
         if not invalid_items:
@@ -1790,21 +1813,15 @@ class AliasSceneValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        # Clear the pick list first
-        alias_api.clear_pick_list()
-
-        for node in invalid_items:
-            if isinstance(node, six.string_types):
-                node = alias_api.find_dag_node_by_name(node)
-
-            if not node:
-                continue
-
-            node.pick()
+        api_pick_list.pick_nodes(invalid_items)
 
     @sgtk.LogManager.log_timing
-    def select_node_curves_on_surface(self, invalid_items=None):
+    def pick_curves_on_surface_from_nodes(self, invalid_items=None):
         """
+        Pick the curves on surface from the nodes specified in the invalid_items.
+
+        :param invalid_items: The node(s) to pick curves on surface from.
+        :type invalid_items: str | AlDagNode | list<str> | list<AlDagNode>
         """
 
         if not invalid_items:
@@ -1813,195 +1830,70 @@ class AliasSceneValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        # Clear the pick list first
-        alias_api.clear_pick_list()
-
-        unused_curves = api_utils.get_unused_curves_on_surface_for_nodes(
-            nodes=invalid_items
-        )
-        for curve in unused_curves:
-            curve.pick()
+        api_pick_list.pick_curves_on_surface_from_nodes(invalid_items)
 
     @sgtk.LogManager.log_timing
-    def select_shader_geometry(self, invalid_items):
+    def pick_nodes_assigned_to_shaders(self, invalid_items=None):
         """
-        Select the geometry linked to the given shaders.
+        Pick the nodes assigned to the shaders in the invalid items.
 
-        NOTE this will interact with the current Alias to clear the pick list, pick the shader's
-        geometry, and redraw the scene.
-
-        :param invalid_items: The shaders to select geometry from.
+        :param invalid_items: The shaders to get assigned nodes to pick.
         :type invalid_items: str | list<str> | list<AlShader>
         """
 
+        invalid_items = invalid_items or alias_api.get_shaders()
+
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        shaders = invalid_items or alias_api.get_shaders()
-
-        alias_api.clear_pick_list()
-
-        for shader in shaders:
-            if isinstance(shader, six.string_types):
-                if shader in self.__skip_shaders:
-                    continue
-
-                shader = alias_api.get_shader_by_name(shader)
-                if not shader:
-                    continue
-
-            elif shader.name in self.__skip_shaders:
-                continue
-
-            for node in shader.get_assigned_nodes():
-                node.pick()
-
-        alias_api.redraw_screen()
+        api_pick_list.pick_nodes_assigned_to_shaders(invalid_items)
 
     @sgtk.LogManager.log_timing
-    def select_layer_nodes(self, invalid_items):
+    def pick_nodes_assigned_to_layers(self, invalid_items=None):
         """
-        Select the geometry linked to the given layers.
+        Pick the nodes assigned to the layers in the invalid items.
 
-        NOTE this will interact with the current Alias to clear the pick list, pick the layer's
-        geometry, and redraw the scene.
-
-        :param invalid_items: (optional) The list of layers to process, if None, all layers in the current
-                              scene will be processed. Default=None
+        :param invalid_items: The layers to get assigned ndoes to pick.
         :type invalid_items: str | list<str> | list<AlLayer>
         """
 
+        invalid_items = invalid_items or alias_api.get_layers()
+
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        layers = invalid_items or alias_api.get_layers()
-
-        alias_api.clear_pick_list()
-
-        for layer in layers:
-            if isinstance(layer, six.string_types):
-                layer = alias_api.get_layer_by_name(layer)
-
-            if not layer:
-                continue
-
-            for node in layer.get_assigned_nodes():
-                node.pick()
-
-        alias_api.redraw_screen()
+        api_pick_list.pick_nodes_assigned_to_layers(invalid_items)
 
     @sgtk.LogManager.log_timing
-    def select_layers(self, invalid_items=None):
+    def pick_layers(self, invalid_items=None):
         """
-        Select layers that have symmetry turned on.
+        Pick the layers in the invalid items.
 
-        NOTE this will interact with the current Alias to clear the pick list, do the operation, and redraw.
-
-        :param invalid_items: The layers to check and select if symmetry is turned on.
+        :param invalid_items: The layers to pick.
         :type invalid_items: str | list<str> | list<AlLayer>
         """
 
+        invalid_items = invalid_items or alias_api.get_layers()
+
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        alias_api.clear_pick_list()
-
-        # NOTE does clear pick list unpick the layers for us already?
-
-        for layer in alias_api.get_layers():
-            layer.unpick()
-
-        layers = invalid_items or alias_api.get_layers()
-        for layer in layers:
-            if isinstance(layer, six.string_types):
-                layer = alias_api.get_layer_by_name(layer)
-
-            if layer:
-                layer.pick()
-
-        alias_api.redraw_screen()
+        api_pick_list.pick_layers(invalid_items)
 
     @sgtk.LogManager.log_timing
-    def select_default_layer_invalid_nodes(self, invalid_items=None):
+    def pick_locators(self, invalid_items=None):
         """
-        Select all the invalid nodes in the default layer. Invalid nodes are nodes that are not of type:
-            CameraEyeType
-            CameraViewType
-            CameraUpType
-            TextureNodeType
-            LightNodeType
-            LightLookAtNodeType
-            LightUpNodeType
+        Pick the locators.
 
-        NOTE this will interact with the current Alias to clear the pick list, do the operation, and redraw.
-
-        :param invalid_items: The nodes to select.
-        :type invalid_items: str | list<str> | list<AlDagNode>
+        :param invalid_items: The locators to pick. If None, all locators will be picked.
+        :type invalid_items: str | list<str> | list<AlLocator>
         """
 
-        if isinstance(invalid_items, six.string_types):
-            invalid_items = [invalid_items]
+        if not invalid_items:
+            api_pick_list.pick_locators(None, pick_all=True)
 
-        if invalid_items:
-            nodes = invalid_items
-            check_children = False
         else:
-            default_layer = alias_api.get_layer_by_name(self.__default_layer_name)
-            if not default_layer:
-                return
-            nodes = default_layer.get_assigned_nodes()
-            check_children = True
+            if isinstance(invalid_items, six.string_types):
+                invalid_items = [invalid_items]
 
-        alias_api.clear_pick_list()
-
-        while nodes:
-            node = nodes.pop()
-            if isinstance(node, six.string_types):
-                node = alias_api.find_dag_node_by_name(node)
-
-            if not node:
-                continue
-
-            node_layer = node.layer()
-            if not node_layer or node_layer.name != self.__default_layer_name:
-                continue
-
-            node_type = node.type()
-            if node_type not in self.__node_types_allowed_in_default_layer:
-                node.pick()
-
-            if check_children and api_utils.is_group_node(node):
-                nodes.extend(alias_api.get_children(node))
-
-            node.pick()
-
-        alias_api.redraw_screen()
-
-    @sgtk.LogManager.log_timing
-    def select_locators(self, invalid_items=None):
-        """
-        """
-
-        if isinstance(invalid_items, six.string_types):
-            invalid_items = [invalid_items]
-
-        pick_all = not invalid_items
-
-        # NOTE should we do this? or specify a param to unpick?
-        # Unpick any locators first
-        all_locators = api_utils.get_locators()
-        for locator in all_locators:
-            if pick_all:
-                locator.pick()
-            else:
-                locator.unpick()
-
-        if invalid_items:
-            for locator in invalid_items:
-                if isinstance(locator, six.string_types):
-                    locator = alias_api.get_locator_by_name(locator)
-
-                if locator:
-                    locator.pick()
-
-        alias_api.redraw_screen()
+            api_pick_list.pick_locators(invalid_items)
