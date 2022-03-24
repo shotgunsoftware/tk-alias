@@ -107,42 +107,55 @@ class AliasPublishVariantsPlugin(HookBaseClass):
             instances.
         :param item: Item to process
         """
-        self.logger.info("Publishing variants")
 
-        publisher = self.parent
-        version_data = item.properties.get("sg_version_data")
-        publish_data = item.properties["sg_publish_data"]
+        # get the publish "mode" stored inside of the root item properties
+        bg_processing = item.parent.properties.get("bg_processing", False)
+        in_bg_process = item.parent.properties.get("in_bg_process", False)
 
-        # Links, the note will be attached to published file by default
-        # if a version is created the note will be attached to this too
-        note_links = [publish_data]
+        # as the alias_api.get_variants() method doesn't work with OpenModel
+        # we need to get the variants locally
+        if not bg_processing or (bg_processing and not in_bg_process):
+            variants = []
+            for variant in alias_api.get_variants():
+                variants.append((variant.name, variant.path))
+            item.properties["alias_variants"] = variants
 
-        if version_data is not None:
-            note_links.append(version_data)
+        if not bg_processing or (bg_processing and in_bg_process):
 
-        for variant in alias_api.get_variants():
-            data = {
-                "project": item.context.project,
-                "user": item.context.user,
-                "subject": "Alias Variant",
-                "content": variant.name,
-                "note_links": note_links,
-            }
-            if item.context.task:
-                data["tasks"] = [item.context.task]
+            publisher = self.parent
+            version_data = item.properties.get("sg_version_data")
+            publish_data = item.properties["sg_publish_data"]
 
-            note = publisher.shotgun.create("Note", data)
-            publisher.shotgun.upload_thumbnail(
-                entity_type="Note", entity_id=note.get("id"), path=variant.path
-            )
+            # Links, the note will be attached to published file by default
+            # if a version is created the note will be attached to this too
+            note_links = [publish_data]
 
-            publisher.shotgun.upload(
-                entity_type="Note",
-                entity_id=note.get("id"),
-                path=variant.path,
-                field_name="attachments",
-                display_name="Variant Image",
-            )
+            if version_data is not None:
+                note_links.append(version_data)
+
+            for variant in item.properties["alias_variants"]:
+                data = {
+                    "project": item.context.project,
+                    "user": item.context.user,
+                    "subject": "Alias Variant",
+                    "content": variant[0],
+                    "note_links": note_links,
+                }
+                if item.context.task:
+                    data["tasks"] = [item.context.task]
+
+                note = publisher.shotgun.create("Note", data)
+                publisher.shotgun.upload_thumbnail(
+                    entity_type="Note", entity_id=note.get("id"), path=variant[1]
+                )
+
+                publisher.shotgun.upload(
+                    entity_type="Note",
+                    entity_id=note.get("id"),
+                    path=variant[1],
+                    field_name="attachments",
+                    display_name="Variant Image",
+                )
 
     def finalize(self, settings, item):
         """
@@ -154,4 +167,10 @@ class AliasPublishVariantsPlugin(HookBaseClass):
             instances.
         :param item: Item to process
         """
-        self.logger.info("Variants published successfully")
+
+        # get the publish "mode" stored inside of the root item properties
+        bg_processing = item.parent.properties.get("bg_processing", False)
+        in_bg_process = item.parent.properties.get("in_bg_process", False)
+
+        if not bg_processing or (bg_processing and in_bg_process):
+            self.logger.info("Variants published successfully")
