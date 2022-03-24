@@ -16,6 +16,10 @@ from . import traverse_dag as api_traverse_dag
 from . import utils as api_utils
 
 
+# -------------------------------------------------------------------------------------------------------
+# AlDagNode functions
+# -------------------------------------------------------------------------------------------------------
+
 def get_node_shader(node):
     """
     Get the shader assigned to the given node.
