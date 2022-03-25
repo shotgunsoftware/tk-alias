@@ -761,7 +761,7 @@ class AliasSceneValidator(object):
             alias_api.delete_null_nodes()
         else:
             # NOTE we could just delete the list of given nodes, but we cannot determine if a given node is null.
-            raise alias_api.AliasPythonException(
+            api_utils.raise_exception(
                 "Requires Alias C++ API function to determine if a node is null"
             )
 
@@ -863,8 +863,8 @@ class AliasSceneValidator(object):
         for node in nodes:
             status = alias_api.expand_instances(node)
             if not api_utils.is_success(status):
-                raise alias_api.AliasPythonException(
-                    "Failed to expand instanced node '{}'".format(node.name)
+                api_utils.raise_exception(
+                    "Failed to expand instanced node '{}'".format(node.name), status
                 )
 
     @sgtk.LogManager.log_timing
@@ -918,14 +918,14 @@ class AliasSceneValidator(object):
         for node in nodes:
             status = node.set_scale_pivot(center)
             if not api_utils.is_success(status):
-                raise alias_api.AliasPythonException(
-                    "Failed to set scale pivot for node '{}'".format(node.name)
+                api_utils.raise_exception(
+                    "Failed to set scale pivot for node '{}'".format(node.name), status
                 )
 
             status = node.set_rotate_pivot(center)
             if not api_utils.is_success(status):
-                raise alias_api.AliasPythonException(
-                    "Failed to set rotate pivot for node '{}'".format(node.name)
+                api_utils.raise_exception(
+                    "Failed to set rotate pivot for node '{}'".format(node.name), status
                 )
 
     @sgtk.LogManager.log_timing
@@ -977,8 +977,9 @@ class AliasSceneValidator(object):
         for node in nodes:
             status = alias_api.zero_transform(node)
             if not api_utils.is_success(status):
-                raise alias_api.AliasPythonException(
-                    "Failed to apply zero transform to node '{}'".format(node.name)
+                api_utils.raise_exception(
+                    "Failed to apply zero transform to node '{}'".format(node.name),
+                    status,
                 )
 
     @sgtk.LogManager.log_timing
@@ -1578,8 +1579,8 @@ class AliasSceneValidator(object):
                 group_node = alias_api.AlGroupNode()
                 status = group_node.create()
                 if not api_utils.is_success(status):
-                    raise alias_api.AliasPythonException(
-                        "Alias Python API: Failed to create group node for layer"
+                    api_utils.raise_exception(
+                        "Failed to create group node for layer", status
                     )
 
                 group_node.name = layer_name
@@ -1670,7 +1671,7 @@ class AliasSceneValidator(object):
             status = alias_api.flatten_group_nodes()
 
         if not api_utils.is_success(status):
-            raise alias_api.AliasPythonException("Failed to flatten group nodes")
+            api_utils.raise_exception("Failed to flatten group nodes", status)
 
     @sgtk.LogManager.log_timing
     def check_locators(self, fail_fast=False):
@@ -1724,12 +1725,12 @@ class AliasSceneValidator(object):
 
                 if locator:
                     status = locator.delete_object()
-                    if status != api_utils.success_status():
-                        raise alias_api.AliasPythonException("Failed to delete locator")
+                    if not api_utils.is_success(status):
+                        api_utils.raise_exception("Failed to delete locator", status)
         else:
             status = alias_api.delete_all_locators()
-            if status != api_utils.success_status():
-                raise alias_api.AliasPythonException("Failed to delete all locators")
+            if not api_utils.is_success(status):
+                api_utils.raise_exception("Failed to delete all locators", status)
 
     @sgtk.LogManager.log_timing
     def check_refererences_exist(self, fail_fast=False):
@@ -1782,8 +1783,8 @@ class AliasSceneValidator(object):
 
             if reference:
                 status = alias_api.remove_reference(reference)
-                if status != api_utils.success_status():
-                    raise alias_api.AliasPythonException("Failed to remove reference")
+                if not api_utils.is_success(status):
+                    api_utils.raise_exception("Failed to remove reference", status)
 
     # -------------------------------------------------------------------------------------------------------
     # Pick Functions

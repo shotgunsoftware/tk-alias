@@ -62,6 +62,25 @@ def is_success(alias_status):
 
     return alias_status == int(success)
 
+def raise_exception(msg, error_status=None):
+    """
+    Convenience function to raise an Alias Python Exception.
+
+    :param msg: The message to include in the raised exception.
+    :type msg: str
+    :param error_status: The Alias error status to report.
+    :type error_status: int
+
+    :raises alias_api.AliasPythonException: always
+    """
+
+    error_msg = msg
+
+    if error_status is not None:
+        error_msg += "\nError status {}".format(error_status)
+
+    raise alias_api.AliasPythonException(error_msg)
+
 def is_group_node(alias_object):
     """
     Check if the given `alias_object` is an Alias group node.
