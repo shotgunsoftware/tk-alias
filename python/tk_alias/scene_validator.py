@@ -192,7 +192,8 @@ class AliasSceneValidator(object):
             shader_unused:
                 description: Check for unused shaders in the scene
 
-        Each validation rule is a dict containing key-values:
+        Each validation rule is a dict (that can be used to create a ValidationRule object from the
+        tk-multi-data-validation App) containing key-values:
             name:
                 value: The display name of the validation rule.
                 type: str
