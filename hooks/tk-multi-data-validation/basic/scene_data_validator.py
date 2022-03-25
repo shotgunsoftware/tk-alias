@@ -13,7 +13,7 @@ import sgtk
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class SceneValidatorHook(HookBaseClass):
+class SceneDataValidatorHook(HookBaseClass):
     """
     Hook to define Alias scene validation functionality.
     """
@@ -29,7 +29,7 @@ class SceneValidatorHook(HookBaseClass):
         :rtype: dict
         """
 
-        return self.parent.engine.scene_validator.get_validation_data()
+        return self.parent.engine.scene_data_validator.get_validation_data()
 
     def execute_check_action(self, action_name, *args, **kwargs):
         """
@@ -43,10 +43,10 @@ class SceneValidatorHook(HookBaseClass):
         :type kwargs: dict
 
         :return: The result of the check function that was executed.
-        :rtype: AliasSceneValidator.CheckResult
+        :rtype: AliasSceneDataValidator.CheckResult
         """
 
-        return self.parent.engine.scene_validator.execute_check_action(
+        return self.parent.engine.scene_data_validator.execute_check_action(
             action_name, *args, **kwargs
         )
 
@@ -60,8 +60,11 @@ class SceneValidatorHook(HookBaseClass):
         :type args: list
         :param kwargs: The keyword arguments dict to pass to the check function.
         :type kwargs: dict
+
+        :return: The result of the fix function that was executed.
+        :rtype: any
         """
 
-        return self.parent.engine.scene_validator.execute_fix_action(
+        return self.parent.engine.scene_data_validator.execute_fix_action(
             action_name, *args, **kwargs
         )

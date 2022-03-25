@@ -11,4 +11,4 @@
 from .menu_generation import AliasMenuGenerator
 from .dialog_parent import DialogParent
 from .alias_event_watcher import AliasEventWatcher
-from .scene_validator import AliasSceneValidator
+from .scene_data_validator import AliasSceneDataValidator

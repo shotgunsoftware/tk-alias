@@ -16,7 +16,7 @@ from .api import pick_list as api_pick_list
 from .api import utils as api_utils
 
 
-class AliasSceneValidator(object):
+class AliasSceneDataValidator(object):
     """
     The Alias Scene Validator class provides the data and functionality to validate a scene in Alias.
 
@@ -30,7 +30,7 @@ class AliasSceneValidator(object):
 
     class CheckResult(object):
         """
-        The result object returned by AliasSceneValidator check functions.
+        The result object returned by AliasSceneDataValidator check functions.
         """
 
         def __init__(self, is_valid=None, invalid_items=None, args=None, kwargs=None):
@@ -670,10 +670,10 @@ class AliasSceneValidator(object):
 
             if not shader.is_used():
                 if fail_fast:
-                    return AliasSceneValidator.CheckResult(is_valid=False)
+                    return AliasSceneDataValidator.CheckResult(is_valid=False)
                 unused_shaders.append(shader)
 
-        return AliasSceneValidator.CheckResult(invalid_items=unused_shaders)
+        return AliasSceneDataValidator.CheckResult(invalid_items=unused_shaders)
 
     @sgtk.LogManager.log_timing
     def fix_shader_unused(self, invalid_items=None):
@@ -741,10 +741,10 @@ class AliasSceneValidator(object):
 
             if shader.is_used() and not alias_api.is_copy_of_vred_shader(shader):
                 if fail_fast:
-                    return AliasSceneValidator.CheckResult(is_valid=False)
+                    return AliasSceneDataValidator.CheckResult(is_valid=False)
                 non_vred_shaders.append(shader)
 
-        return AliasSceneValidator.CheckResult(invalid_items=non_vred_shaders)
+        return AliasSceneDataValidator.CheckResult(invalid_items=non_vred_shaders)
 
     @sgtk.LogManager.log_timing
     def fix_node_is_null(self, invalid_items=None):
@@ -790,7 +790,7 @@ class AliasSceneValidator(object):
             skip_node_types=self.__skip_node_types_construction_history
         )
 
-        return AliasSceneValidator.CheckResult(invalid_items=nodes_with_history)
+        return AliasSceneDataValidator.CheckResult(invalid_items=nodes_with_history)
 
     @sgtk.LogManager.log_timing
     def fix_node_has_construction_history(self, invalid_items=None):
@@ -838,7 +838,7 @@ class AliasSceneValidator(object):
 
         invalid_nodes = api_dag_node.get_instanced_nodes()
 
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_instances(self, invalid_items=None):
@@ -890,7 +890,7 @@ class AliasSceneValidator(object):
 
         invalid_nodes = api_dag_node.get_nodes_with_non_origin_pivot()
 
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_pivots_at_origin(self, invalid_items=None):
@@ -952,7 +952,7 @@ class AliasSceneValidator(object):
         invalid_nodes = api_dag_node.get_nodes_with_non_zero_transform(
             skip_node_types=self.__skip_node_types_zero_transform
         )
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_has_zero_transform(self, invalid_items=None):
@@ -1018,7 +1018,7 @@ class AliasSceneValidator(object):
         default_layer = alias_api.get_layer_by_name(self.__default_layer_name)
         if default_layer is None:
             # No default layer found, let this check pass
-            return AliasSceneValidator.CheckResult(is_valid=True)
+            return AliasSceneDataValidator.CheckResult(is_valid=True)
 
         invalid_nodes = []
 
@@ -1028,10 +1028,10 @@ class AliasSceneValidator(object):
         for node in nodes:
             if node.type() not in self.__node_types_allowed_in_default_layer:
                 if fail_fast:
-                    return AliasSceneValidator.CheckResult(is_valid=False)
+                    return AliasSceneDataValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
 
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def check_node_is_in_default_layer(self, fail_fast=False):
@@ -1065,14 +1065,14 @@ class AliasSceneValidator(object):
         default_layer = alias_api.get_layer_by_name(self.__default_layer_name)
         if default_layer is None:
             # No default layer found, this check fails automatically
-            return AliasSceneValidator.CheckResult(is_valid=False)
+            return AliasSceneDataValidator.CheckResult(is_valid=False)
 
         input_data = alias_api.TraverseDagInputData(
             default_layer, False, self.__node_types_only_in_default_layer, True
         )
         result = alias_api.search_dag(input_data)
 
-        return AliasSceneValidator.CheckResult(invalid_items=result.nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=result.nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_is_in_default_layer(self, invalid_items=None):
@@ -1153,10 +1153,10 @@ class AliasSceneValidator(object):
             reg = r"^{}(#?\d)*$".format(layer.name)
             if not re.match(reg, node.name):
                 if fail_fast:
-                    return AliasSceneValidator.CheckResult(is_valid=False)
+                    return AliasSceneDataValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
 
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_name_matches_layer(self, invalid_items=None):
@@ -1216,7 +1216,7 @@ class AliasSceneValidator(object):
         input_data = alias_api.TraverseDagInputData()
         result = alias_api.search_node_layer_does_not_match_parent_layer(input_data)
 
-        return AliasSceneValidator.CheckResult(invalid_items=result.nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=result.nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_layer_matches_parent(self, invalid_items=None):
@@ -1295,10 +1295,10 @@ class AliasSceneValidator(object):
         for node in nodes:
             if node.type() not in self.__node_types_allowed_in_dag_top_level:
                 if fail_fast:
-                    return AliasSceneValidator.CheckResult(is_valid=False)
+                    return AliasSceneDataValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
 
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def check_node_unused_curves_on_surface(self, fail_fast=False):
@@ -1322,7 +1322,7 @@ class AliasSceneValidator(object):
 
         invalid_nodes = api_dag_node.get_nodes_with_unused_curves_on_surface()
 
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_unused_curves_on_surface(self, invalid_items=None):
@@ -1368,7 +1368,7 @@ class AliasSceneValidator(object):
         include_folders = True
         empty_layers = alias_api.get_empty_layers(include_folders, self.__skip_layers)
 
-        return AliasSceneValidator.CheckResult(invalid_items=empty_layers)
+        return AliasSceneDataValidator.CheckResult(invalid_items=empty_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_is_empty(self, invalid_items=None):
@@ -1422,7 +1422,7 @@ class AliasSceneValidator(object):
 
         invalid_layers = alias_api.get_layers_using_multiple_shaders()
 
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_layers)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_layers)
 
     @sgtk.LogManager.log_timing
     def check_layer_symmetry(self, fail_fast=False):
@@ -1451,12 +1451,14 @@ class AliasSceneValidator(object):
             has_symmetric_layers = api_layer.get_symmetric_layers(
                 check_exists=True, skip_layers=self.__skip_layers
             )
-            return AliasSceneValidator.CheckResult(is_valid=not has_symmetric_layers)
+            return AliasSceneDataValidator.CheckResult(
+                is_valid=not has_symmetric_layers
+            )
 
         symmetric_layers = api_layer.get_symmetric_layers(
             skip_layers=self.__skip_layers
         )
-        return AliasSceneValidator.CheckResult(invalid_items=symmetric_layers)
+        return AliasSceneDataValidator.CheckResult(invalid_items=symmetric_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_symmetry(self, invalid_items=None):
@@ -1525,13 +1527,13 @@ class AliasSceneValidator(object):
 
             if node_layer_name in processed_layers:
                 if fail_fast:
-                    return AliasSceneValidator.CheckResult(is_valid=False)
+                    return AliasSceneDataValidator.CheckResult(is_valid=False)
                 invalid_layers.append(node_layer)
                 marked_invalid_layers.add(node_layer_name)
             else:
                 processed_layers.add(node_layer_name)
 
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_layers)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_has_single_item(self, invalid_items=None):
@@ -1631,7 +1633,7 @@ class AliasSceneValidator(object):
 
         invalid_group_nodes = alias_api.get_nesting_groups()
 
-        return AliasSceneValidator.CheckResult(invalid_items=invalid_group_nodes)
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_group_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_group_has_single_level_hierarchy(self, invalid_items=None):
@@ -1699,10 +1701,10 @@ class AliasSceneValidator(object):
 
         if fail_fast:
             has_locators = api_utils.get_locators(check_exists=True)
-            return AliasSceneValidator.CheckResult(is_valid=not has_locators)
+            return AliasSceneDataValidator.CheckResult(is_valid=not has_locators)
 
         locators = api_utils.get_locators()
-        return AliasSceneValidator.CheckResult(invalid_items=locators)
+        return AliasSceneDataValidator.CheckResult(invalid_items=locators)
 
     @sgtk.LogManager.log_timing
     def fix_locators(self, invalid_items=None):
@@ -1755,7 +1757,7 @@ class AliasSceneValidator(object):
 
         references = alias_api.get_references()
 
-        return AliasSceneValidator.CheckResult(invalid_items=references)
+        return AliasSceneDataValidator.CheckResult(invalid_items=references)
 
     @sgtk.LogManager.log_timing
     def fix_references_exist(self, invalid_items=None):
