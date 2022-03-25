@@ -429,7 +429,7 @@ class AliasSceneValidator(object):
                 ],
             },
             "node_unused_curves_on_surface": {
-                "name": "Unused Curve on Surfaces",
+                "name": "Unused Curves on Surface",
                 "description": "Check for nodes with unused curves on surfaces in the current scene.",
                 "check_func": self.check_node_unused_curves_on_surface,
                 "fix_func": self.fix_node_unused_curves_on_surface,
