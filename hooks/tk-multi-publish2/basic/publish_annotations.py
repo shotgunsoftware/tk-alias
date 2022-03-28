@@ -75,8 +75,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
-        annotations = alias_api.get_annotation_locators()
-        if not annotations:
+        if not alias_api.has_annotation_locator():
             self.logger.debug("There are not annotations to export")
             return {"accepted": False}
 
@@ -106,36 +105,42 @@ class PublishAnnotationsPlugin(HookBaseClass):
         :param item: Item to process
         """
 
-        self.logger.info("Publishing annotations")
+        # get the publish "mode" stored inside of the root item properties
+        bg_processing = item.parent.properties.get("bg_processing", False)
+        in_bg_process = item.parent.properties.get("in_bg_process", False)
 
-        # Links, the note will be attached to published file by default
-        # if a version is created the note will be attached to this too
-        publish_data = item.properties["sg_publish_data"]
-        version_data = item.properties.get("sg_version_data")
+        if not bg_processing or (bg_processing and in_bg_process):
 
-        note_links = [publish_data]
-        if version_data is not None:
-            note_links.append(version_data)
+            self.logger.info("Publishing annotations")
 
-        annotations = alias_api.get_annotation_locators()
+            # Links, the note will be attached to published file by default
+            # if a version is created the note will be attached to this too
+            publish_data = item.properties["sg_publish_data"]
+            version_data = item.properties.get("sg_version_data")
 
-        batch_data = []
-        for annotation in annotations:
-            note_data = {
-                "project": item.context.project,
-                "user": item.context.user,
-                "subject": "Alias Annotation",
-                "content": annotation,
-                "note_links": note_links,
-            }
-            if item.context.task:
-                note_data["tasks"] = [item.context.task]
-            batch_data.append(
-                {"request_type": "create", "entity_type": "Note", "data": note_data}
-            )
+            note_links = [publish_data]
+            if version_data is not None:
+                note_links.append(version_data)
 
-        if batch_data:
-            self.parent.shotgun.batch(batch_data)
+            annotations = alias_api.get_annotation_locators()
+
+            batch_data = []
+            for annotation in annotations:
+                note_data = {
+                    "project": item.context.project,
+                    "user": item.context.user,
+                    "subject": "Alias Annotation",
+                    "content": annotation,
+                    "note_links": note_links,
+                }
+                if item.context.task:
+                    note_data["tasks"] = [item.context.task]
+                batch_data.append(
+                    {"request_type": "create", "entity_type": "Note", "data": note_data}
+                )
+
+            if batch_data:
+                self.parent.shotgun.batch(batch_data)
 
     def finalize(self, settings, item):
         """
@@ -147,4 +152,10 @@ class PublishAnnotationsPlugin(HookBaseClass):
             instances.
         :param item: Item to process
         """
-        self.logger.info("Annotations published successfully")
+
+        # get the publish "mode" stored inside of the root item properties
+        bg_processing = item.parent.properties.get("bg_processing", False)
+        in_bg_process = item.parent.properties.get("in_bg_process", False)
+
+        if not bg_processing or (bg_processing and in_bg_process):
+            self.logger.info("Annotations published successfully")
