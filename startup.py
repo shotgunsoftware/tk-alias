@@ -28,7 +28,7 @@ class AliasLauncher(SoftwareLauncher):
     CODE_NAMES = {
         "AutoStudio": dict(flags="-a as", icon="icon_as_256.png"),
         "Surface": dict(flags="-a ss", icon="icon_ss_256.png"),
-        "Design": dict(flags="-a ds", icon="icon_ds_256.png"),
+        "Design": dict(flags="-a ds", icon="icon_cs_256.png"),
         "Concept": dict(flags="-a cs", icon="icon_cs_256.png"),
     }
 
