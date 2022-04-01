@@ -324,6 +324,12 @@ class AliasSessionPublishPlugin(HookBaseClass):
             # it will be used later in the background process to open the file before running the publishing actions
             if "session_path" not in item.parent.properties:
                 item.parent.properties["session_path"] = path
+                item.parent.properties["session_name"] = "Alias Session - {task_name}, {entity_type} {entity_name} - {file_name}".format(
+                    task_name=item.context.task["name"],
+                    entity_type=item.context.entity["type"],
+                    entity_name=item.context.entity["name"],
+                    file_name=os.path.basename(path)
+                )
 
         # update the item with the saved session path
         item.properties["path"] = path
