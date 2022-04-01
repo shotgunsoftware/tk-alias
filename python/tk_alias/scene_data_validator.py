@@ -28,6 +28,12 @@ class AliasSceneDataValidator(object):
     are prefixed with `fix_`.
     """
 
+    #
+    # Alias defaults
+    #
+    DEFAULT_LAYER_NAME = "DefaultLayer"
+    DEFAULT_SHADER_NAME = "DefaultShader"
+
     class CheckResult(object):
         """
         The result object returned by AliasSceneDataValidator check functions.
@@ -68,64 +74,11 @@ class AliasSceneDataValidator(object):
         Initialize the validator and set up the properties required for validaiting an Alias scene.
         """
 
-        bundle = sgtk.platform.current_bundle()
-
-        camera_node_types = api_utils.camera_node_types()
-        light_node_types = api_utils.light_node_types()
+        self._camera_node_types = api_utils.camera_node_types()
+        self._light_node_types = api_utils.light_node_types()
 
         # Store the validation data since this is static
         self.__validation_data = self.get_validation_data()
-
-        #
-        # TODO make these configurable hook/settings
-        #
-        self.__default_layer_name = "DefaultLayer"
-        self.__default_shader_name = "DefaultShader"
-
-        self.__skip_layers = set(
-            bundle.settings.get("skip_layers", [self.__default_layer_name])
-        )
-        self.__skip_shaders = set(
-            bundle.settings.get("skip_shaders", [self.__default_shader_name])
-        )
-
-        # Node types to skip when checking for construction history
-        self.__skip_node_types_construction_history = set(
-            [
-                alias_api.AlObjectType.CurveNodeType,
-                alias_api.AlObjectType.FaceNodeType,
-                alias_api.AlObjectType.TextureNodeType,
-            ]
-        )
-        self.__skip_node_types_construction_history.update(camera_node_types)
-
-        # Node types to skip when checking for zero transforms
-        self.__skip_node_types_zero_transform = set(camera_node_types)
-
-        # Node types to allow as top-level DAG nodes
-        self.__node_types_allowed_in_dag_top_level = [
-            alias_api.AlObjectType.CurveNodeType,
-            alias_api.AlObjectType.FaceNodeType,
-            alias_api.AlObjectType.SurfaceNodeType,
-            alias_api.AlObjectType.GroupNodeType,
-        ]
-
-        # Node types to allow in the default layer
-        self.__node_types_allowed_in_default_layer = set(
-            [
-                alias_api.AlObjectType.GroupNodeType,
-                alias_api.AlObjectType.TextureNodeType,
-            ]
-        )
-        self.__node_types_allowed_in_default_layer.update(camera_node_types)
-        self.__node_types_allowed_in_default_layer.update(light_node_types)
-
-        # Node types that are only allowed to be in the default layer
-        self.__node_types_only_in_default_layer = set(
-            [alias_api.AlObjectType.TextureNodeType,]
-        )
-        self.__node_types_only_in_default_layer.update(camera_node_types)
-        self.__node_types_only_in_default_layer.update(light_node_types)
 
     # -------------------------------------------------------------------------------------------------------
     # Public methods
@@ -164,17 +117,17 @@ class AliasSceneDataValidator(object):
             metadata:
                 description: Check for metadata
             node_dag_top_level:
-                description: Top-level DAG nodes must be of type: AlGroupNode, AlCurveNode, AlFaceNode, AlSurfaceNode. Nodes with parent nodes (non top-level nodes) must have the same layer as its parent node
+                description: Top-level DAG nodes must be of one of the specified types
             node_has_construction_history:
                 description: Check for construction history
             node_has_zero_transform:
                 description: Check for nodes with non-zero transformations
             node_is_null:
                 description": Check for null nodes in the scene
-            node_is_not_in_default_layer:
-                description: Only allows Lights, Cameras, and Texture Placements are allowed in the default layer
-            node_is_in_default_layer:
-                description: The required objects (Lights, Cameras, Texture Placements) must be in the default layer
+            node_is_not_in_layer:
+                description: Only the specified node types in the specified layer
+            node_is_in_layer:
+                description: The node types must only be in the specified layer
             node_instances:
                 description: Instances are prohibited
             node_layer_matches_parent:
@@ -203,12 +156,15 @@ class AliasSceneDataValidator(object):
             check_func:
                 type: function
                 value: The function to call to check the validation rule.
-            check_name:
-                type: str
-                value: Short text to describe what the `check_func` does (e.g. "Check").
             fix_func:
                 type: function
                 value: The function to call to fix the scene data such that the validation rule passes.
+            kwargs:
+                type: dict
+                value: The keyword arguments dict to pass to the check_func and fix_func
+            check_name:
+                type: str
+                value: Short text to describe what the `check_func` does (e.g. "Check").
             fix_name:
                 type: str
                 value: Short text to describe what the `fix_func` does (e.g. "Fix").
@@ -261,7 +217,7 @@ class AliasSceneDataValidator(object):
         return {
             "shader_unused": {
                 "name": "Unused Shaders",
-                "description": "Check for shaders that are not assigned to any geometry.",
+                "description": "Check for shaders that are not assigned to any geometry. The DefaultShader will be skipped.",
                 "error_msg": "Found unused Shaders",
                 "check_func": self.check_shader_unused,
                 "fix_func": self.fix_shader_unused,
@@ -270,10 +226,11 @@ class AliasSceneDataValidator(object):
                 "item_actions": [
                     {"name": "Delete", "callback": self.fix_shader_unused,},
                 ],
+                "kwargs": {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
             },
             "shader_is_vred_compatible": {
                 "name": "VRED Shaders",
-                "description": "Shaders must be from the Asset Library for compatibility with VRED.",
+                "description": "Shaders must be from the Asset Library for compatibility with VRED. The DefaultShader will be skipped.",
                 "check_func": self.check_shader_is_vred_compatible,
                 "error_msg": "Found shader(s) that are incompatible with VRED.",
                 "actions": [
@@ -288,6 +245,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes_assigned_to_shaders,
                     },
                 ],
+                "kwargs": {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
             },
             "node_is_null": {
                 "name": "Null Nodes",
@@ -313,6 +271,14 @@ class AliasSceneDataValidator(object):
                     },
                     {"name": "Select", "callback": self.pick_nodes,},
                 ],
+                "kwargs": {
+                    "skip_node_types": [
+                        alias_api.AlObjectType.GroupNodeType,
+                        alias_api.AlObjectType.CurveNodeType,
+                        alias_api.AlObjectType.FaceNodeType,
+                        alias_api.AlObjectType.TextureNodeType,
+                    ],
+                },
             },
             "node_instances": {
                 "name": "Instances",
@@ -344,7 +310,7 @@ class AliasSceneDataValidator(object):
             },
             "node_has_zero_transform": {
                 "name": "Zero Transforms",
-                "description": "Set all transforms to zero (the identity matrix).",
+                "description": "Set all node transforms to zero (the identity matrix). Camera and Light nodes will be skipped.",
                 "check_func": self.check_node_has_zero_transform,
                 "fix_func": self.fix_node_has_zero_transform,
                 "fix_name": "Reset All",
@@ -355,11 +321,17 @@ class AliasSceneDataValidator(object):
                     {"name": "Reset", "callback": self.fix_node_has_zero_transform,},
                     {"name": "Select", "callback": self.pick_nodes,},
                 ],
+                "kwargs": {
+                    "skip_node_types": [
+                        *self._camera_node_types,
+                        *self._light_node_types,
+                    ]
+                },
             },
-            "node_is_not_in_default_layer": {
+            "node_is_not_in_layer": {
                 "name": "Nodes Must Not Be In Default Layer",
                 "description": "Only Light, Camera, Texture, and Group nodes can be in the default layer.",
-                "check_func": self.check_node_is_not_in_default_layer,
+                "check_func": self.check_node_is_not_in_layer,
                 "error_msg": "Found invalid nodes in the default layer.",
                 "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
@@ -369,24 +341,41 @@ class AliasSceneDataValidator(object):
                         "tooltip": "Select invalid nodes that must be manually fixed.",
                     },
                 ],
+                "kwargs": {
+                    "layer_name": self.DEFAULT_LAYER_NAME,
+                    "accept_node_types": [
+                        alias_api.AlObjectType.GroupNodeType,
+                        alias_api.AlObjectType.TextureNodeType,
+                        *self._camera_node_types,  # NOTE: splat operator requires python 3
+                        *self._light_node_types,
+                    ],
+                },
             },
-            "node_is_in_default_layer": {
+            "node_is_in_layer": {
                 "name": "Nodes Must Be In Default Layer",
-                "description": "Lights, Cameras, Texture can only be in the default layer.",
-                "check_func": self.check_node_is_in_default_layer,
-                "fix_func": self.fix_node_is_in_default_layer,
+                "description": "All Lights, Cameras, Texture must only be in the default layer.",
+                "check_func": self.check_node_is_in_layer,
+                "fix_func": self.fix_node_is_in_layer,
                 "fix_name": "Move",
                 "fix_tooltip": "Move all Lights, Cameras, Texture nodes to the default layer.",
                 "error_msg": "Required objects not found in the default layer.",
                 "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
                 "item_actions": [
-                    {"name": "Move", "callback": self.fix_node_is_in_default_layer,},
+                    {"name": "Move", "callback": self.fix_node_is_in_layer,},
                     {"name": "Select", "callback": self.pick_nodes,},
                 ],
+                "kwargs": {
+                    "layer_name": self.DEFAULT_LAYER_NAME,
+                    "accept_node_types": [
+                        alias_api.AlObjectType.TextureNodeType,
+                        *self._camera_node_types,
+                        *self._light_node_types,
+                    ],
+                },
             },
             "node_name_matches_layer": {
                 "name": "Match Layer And Assigned Nodes' Names",
-                "description": "Layer name must match the name of each node that is assigned to it.",
+                "description": "Layer name must match the name of each node that is assigned to it. The DefaultLayer will be skipped.",
                 "check_func": self.check_node_name_matches_layer,
                 "fix_func": self.fix_node_name_matches_layer,
                 "fix_name": "Rename All",
@@ -397,9 +386,10 @@ class AliasSceneDataValidator(object):
                     {"name": "Rename", "callback": self.fix_node_name_matches_layer,},
                     {"name": "Select", "callback": self.pick_nodes,},
                 ],
+                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
             },
             "node_layer_matches_parent": {
-                "name": "Node Layer Matchces Parent Layer",
+                "name": "Node Layer Matches Parent Layer",
                 "description": "The layer assigned to a node must be the same as the parent node layer.",
                 "check_func": self.check_node_layer_matches_parent,
                 "fix_func": self.fix_node_layer_matches_parent,
@@ -417,7 +407,7 @@ class AliasSceneDataValidator(object):
             },
             "node_dag_top_level": {
                 "name": "Top-Level DAG Nodes",
-                "description": "DAG top-level nodes must be of type: AlGroupNode, AlCurveNode, AlFaceNode, AlSurfaceNode. Nodes with parent nodes (non top-level nodes) must have the same layer as its parent node.",
+                "description": "DAG top-level nodes must be of the specified types: AlGroupNode, AlCurveNode, AlFaceNode, AlSurfaceNode.",
                 "check_func": self.check_node_dag_top_level,
                 "error_msg": "Found invalid nodes in the top level of the DAG.",
                 "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
@@ -428,6 +418,14 @@ class AliasSceneDataValidator(object):
                         "tooltip": "Select invalid nodes that must be manually fixed.",
                     },
                 ],
+                "kwargs": {
+                    "accept_node_types": [
+                        alias_api.AlObjectType.CurveNodeType,
+                        alias_api.AlObjectType.FaceNodeType,
+                        alias_api.AlObjectType.SurfaceNodeType,
+                        alias_api.AlObjectType.GroupNodeType,
+                    ],
+                },
             },
             "node_unused_curves_on_surface": {
                 "name": "Unused Curves on Surface",
@@ -475,7 +473,7 @@ class AliasSceneDataValidator(object):
             },
             "layer_is_empty": {
                 "name": "Empty Layers",
-                "description": "Check for empty layers and folders in the scene.",
+                "description": "Check for empty layers and folders in the scene. The DefaultLayer will be skipped.",
                 "check_func": self.check_layer_is_empty,
                 "fix_func": self.fix_layer_is_empty,
                 "fix_name": "Delete All",
@@ -486,6 +484,7 @@ class AliasSceneDataValidator(object):
                     {"name": "Delete", "callback": self.fix_layer_is_empty,},
                     {"name": "Select", "callback": self.pick_layers,},
                 ],
+                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
             },
             "layer_has_single_shader": {
                 "name": "Layer Has Single Shader",
@@ -503,7 +502,7 @@ class AliasSceneDataValidator(object):
             },
             "layer_symmetry": {
                 "name": "Layer Symmetry",
-                "description": "Layers are prohibited from turning on symmetry.",
+                "description": "Layers are prohibited from turning on symmetry. The DefaultLayer will be skipped.",
                 "check_func": self.check_layer_symmetry,
                 "fix_func": self.fix_layer_symmetry,
                 "fix_name": "Turn Off All",
@@ -514,10 +513,11 @@ class AliasSceneDataValidator(object):
                     {"name": "Turn Off", "callback": self.fix_layer_symmetry,},
                     {"name": "Select", "callback": self.pick_layers,},
                 ],
+                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
             },
             "layer_has_single_item": {
                 "name": "Layer Has Single Item",
-                "description": "Layers are prohibited from containing more than one item (group hierarchy within a layer is prohibited, and should be flattened).",
+                "description": "Layers are prohibited from containing more than one item (group hierarchy within a layer is prohibited, and should be flattened). The DefaultLayer will be skipped.",
                 "check_func": self.check_layer_has_single_item,
                 "fix_func": self.fix_layer_has_single_item,
                 "fix_name": "Collapse All",
@@ -528,6 +528,7 @@ class AliasSceneDataValidator(object):
                     {"name": "Collapse", "callback": self.fix_layer_has_single_item,},
                     {"name": "Select", "callback": self.pick_layers,},
                 ],
+                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
             },
             "locators": {
                 "name": "Locators",
@@ -640,7 +641,7 @@ class AliasSceneDataValidator(object):
     # -------------------------------------------------------------------------------------------------------
 
     @sgtk.LogManager.log_timing
-    def check_shader_unused(self, fail_fast=False):
+    def check_shader_unused(self, fail_fast=False, skip_shaders=None):
         """
         Check for unused shaders (shaders that are not assigned to any geometry) in the current scene.
 
@@ -649,6 +650,8 @@ class AliasSceneDataValidator(object):
                           the corresponding fix function. Note that when set to False, this function will be
                           slower to execute.
         :type fail_fast: bool
+        :param skip_shaders: The specified shaders (by name) will not be checked.
+        :type skip_shaders: list<str>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -662,10 +665,11 @@ class AliasSceneDataValidator(object):
         :rtype: AliasSceneValidation.CheckResult
         """
 
+        skip_shaders = skip_shaders or []
         unused_shaders = []
 
         for shader in alias_api.get_shaders():
-            if shader.name in self.__skip_shaders:
+            if shader.name in skip_shaders:
                 continue
 
             if not shader.is_used():
@@ -676,7 +680,7 @@ class AliasSceneDataValidator(object):
         return AliasSceneDataValidator.CheckResult(invalid_items=unused_shaders)
 
     @sgtk.LogManager.log_timing
-    def fix_shader_unused(self, invalid_items=None):
+    def fix_shader_unused(self, invalid_items=None, skip_shaders=None):
         """
         Process all shaders in the current scene, or the specified shaders, and delete all unused shaders.
 
@@ -686,7 +690,11 @@ class AliasSceneDataValidator(object):
         :param invalid_items: (optional) The shaders to process, if None, all shaders in the current
                               scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlShader>
+        :param skip_shaders: The specified shaders (by name) will not be fixed.
+        :type skip_shaders: list<str>
         """
+
+        skip_shaders = skip_shaders or []
 
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
@@ -695,19 +703,19 @@ class AliasSceneDataValidator(object):
 
         for shader in shaders:
             if isinstance(shader, six.string_types):
-                if shader in self.__skip_shaders:
+                if shader in skip_shaders:
                     continue
                 shader = alias_api.get_shader_by_name(shader)
                 if not shader:
                     continue
-            elif shader.name in self.__skip_shaders:
+            elif shader.name in skip_shaders:
                 continue
 
             if not shader.is_used():
                 shader.delete_object()
 
     @sgtk.LogManager.log_timing
-    def check_shader_is_vred_compatible(self, fail_fast=False):
+    def check_shader_is_vred_compatible(self, fail_fast=False, skip_shaders=None):
         """
         Check for non-VRED shaders used in the current scene.
 
@@ -720,6 +728,8 @@ class AliasSceneDataValidator(object):
                           the corresponding fix function. Note that when set to False, this function will be
                           slower to execute.
         :type fail_fast: bool
+        :param skip_shaders: The specified shaders (by name) will not be checked.
+        :type skip_shaders: list<str>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -733,10 +743,11 @@ class AliasSceneDataValidator(object):
         :rtype: AliasSceneValidation.CheckResult
         """
 
+        skip_shaders = skip_shaders or []
         non_vred_shaders = []
 
         for shader in alias_api.get_shaders():
-            if shader.name in self.__skip_shaders:
+            if shader.name in skip_shaders:
                 continue
 
             if shader.is_used() and not alias_api.is_copy_of_vred_shader(shader):
@@ -767,12 +778,16 @@ class AliasSceneDataValidator(object):
             )
 
     @sgtk.LogManager.log_timing
-    def check_node_has_construction_history(self, fail_fast=False):
+    def check_node_has_construction_history(
+        self, fail_fast=False, skip_node_types=None
+    ):
         """
         Check for nodes with construction history in the current scene.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
+        :param skip_node_types: The specified node types will not be checked.
+        :type skip_node_types: list<alias_api.AlObjectType>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -786,14 +801,18 @@ class AliasSceneDataValidator(object):
         :rtype: AliasSceneValidation.CheckResult
         """
 
+        skip_node_types = skip_node_types or []
+
         nodes_with_history = api_dag_node.get_nodes_with_construction_history(
-            skip_node_types=self.__skip_node_types_construction_history
+            skip_node_types=set(skip_node_types),
         )
 
         return AliasSceneDataValidator.CheckResult(invalid_items=nodes_with_history)
 
     @sgtk.LogManager.log_timing
-    def fix_node_has_construction_history(self, invalid_items=None):
+    def fix_node_has_construction_history(
+        self, invalid_items=None, skip_node_types=None
+    ):
         """
         Process all nodes in the current scene, or the specified of nodes, and delete history from any nodes
         with history.
@@ -804,14 +823,17 @@ class AliasSceneDataValidator(object):
         :param invalid_items: (optional) The nodes to process, if None, all nodes in the current scene will
                        be processed. Default=None
         :type invalid_items: str | list<str> | list<AlDagNode>
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
         """
+
+        skip_node_types = skip_node_types or []
 
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
         nodes = api_dag_node.get_nodes_with_construction_history(
-            nodes=invalid_items,
-            skip_node_types=self.__skip_node_types_construction_history,
+            nodes=invalid_items, skip_node_types=set(skip_node_types),
         )
         for node in nodes:
             alias_api.delete_history(node)
@@ -821,7 +843,7 @@ class AliasSceneDataValidator(object):
         """
         Check for instanced nodes in the current scene.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
         :return: The check result object containing the data:
@@ -873,7 +895,7 @@ class AliasSceneDataValidator(object):
         """
         Check for nodes that do not have their pivots set to the origin.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
         :return: The check result object containing the data:
@@ -930,12 +952,14 @@ class AliasSceneDataValidator(object):
                 )
 
     @sgtk.LogManager.log_timing
-    def check_node_has_zero_transform(self, fail_fast=False):
+    def check_node_has_zero_transform(self, fail_fast=False, skip_node_types=None):
         """
         Check for nodes with non-zero transforms in the current scene.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
+        :param skip_node_types: The specified node types will not be checked.
+        :type skip_node_types: list<alias_api.AlObjectType>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -949,13 +973,16 @@ class AliasSceneDataValidator(object):
         :rtype: AliasSceneValidation.CheckResult
         """
 
+        skip_node_types = skip_node_types or []
+
         invalid_nodes = api_dag_node.get_nodes_with_non_zero_transform(
-            skip_node_types=self.__skip_node_types_zero_transform
+            skip_node_types=set(skip_node_types),
         )
+
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
-    def fix_node_has_zero_transform(self, invalid_items=None):
+    def fix_node_has_zero_transform(self, invalid_items=None, skip_node_types=None):
         """
         Process all nodes in the current scene, or the specified nodes, and reset all transforms to zero.
 
@@ -965,16 +992,21 @@ class AliasSceneDataValidator(object):
         :param invalid_items: (optional) The nodes to process, if None, all nodes in the current
                               scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlDagNode>
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
 
         :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
         """
+
+        skip_node_types = skip_node_types or []
 
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
         nodes = api_dag_node.get_nodes_with_non_zero_transform(
-            nodes=invalid_items, skip_node_types=self.__skip_node_types_zero_transform
+            nodes=invalid_items, skip_node_types=set(skip_node_types),
         )
+
         for node in nodes:
             status = alias_api.zero_transform(node)
             if not api_utils.is_success(status):
@@ -984,24 +1016,21 @@ class AliasSceneDataValidator(object):
                 )
 
     @sgtk.LogManager.log_timing
-    def check_node_is_not_in_default_layer(self, fail_fast=False):
+    def check_node_is_not_in_layer(
+        self, fail_fast=False, layer_name=None, accept_node_types=None
+    ):
         """
-        Check that the default layer contains only nodes of type in the specified list:
-            CameraEyeType
-            CameraViewType
-            CameraUpType
-            TextureNodeType
-            LightNodeType
-            LightLookAtNodeType
-            LightUpNodeType
-
-        TODO allow this node type list to be configurable
+        Check that the layer contains only nodes of type in the accepted list.
 
         :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
                           entire data and return all invalid items found, and arguments that can be passed to
                           the corresponding fix function. Note that when set to False, this function will be
                           slower to execute.
         :type fail_fast: bool
+        :param layer_name: The layer to check node membership. Default is the default layer in Alias.
+        :type layer_name: str
+        :param accept_node_types: Only the specified node types are accepted in the layer.
+        :type accept_node_types: list<alias_api.AlObjectType>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -1015,18 +1044,18 @@ class AliasSceneDataValidator(object):
         :rtype: AliasSceneValidation.CheckResult
         """
 
-        default_layer = alias_api.get_layer_by_name(self.__default_layer_name)
-        if default_layer is None:
-            # No default layer found, let this check pass
-            return AliasSceneDataValidator.CheckResult(is_valid=True)
+        layer = alias_api.get_layer_by_name(layer_name)
+        if layer is None:
+            api_utils.raise_exception("Layer not found '{}'".format(layer_name))
 
+        accept_node_types = accept_node_types or []
         invalid_nodes = []
 
         # NOTE get_assigned_nodes will not return the group nodes, only leaf nodes assigned to the layer
-        nodes = default_layer.get_assigned_nodes()
+        nodes = layer.get_assigned_nodes()
 
         for node in nodes:
-            if node.type() not in self.__node_types_allowed_in_default_layer:
+            if node.type() not in accept_node_types:
                 if fail_fast:
                     return AliasSceneDataValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
@@ -1034,21 +1063,22 @@ class AliasSceneDataValidator(object):
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
-    def check_node_is_in_default_layer(self, fail_fast=False):
+    def check_node_is_in_layer(
+        self, fail_fast=False, layer_name=None, accept_node_types=None
+    ):
         """
-        Check that the specified list of node types are only in the default layer:
-            CameraEyeType
-            CameraViewType
-            CameraUpType
-            TextureNodeType
-            LightNodeType
-            LightLookAtNodeType
-            LightUpNodeType
+        Check that the specified node types are in the layer.
 
-        TODO allow this node type list to be configurable
+        The whole DAG will be traversed to find nodes that are incorrectly placed in a layer that is not the
+        specified layer.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
+        :param layer_name: The layer that the specified node types belong to. Default is the default layer in
+            Alias.
+        :type layer_name: str
+        :param accept_node_types: The node types that must only be in the layer.
+        :type accept_node_types: list<alias_api.AlObjectType>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -1062,32 +1092,41 @@ class AliasSceneDataValidator(object):
         :rtype: AliasSceneValidation.CheckResult
         """
 
-        default_layer = alias_api.get_layer_by_name(self.__default_layer_name)
-        if default_layer is None:
-            # No default layer found, this check fails automatically
-            return AliasSceneDataValidator.CheckResult(is_valid=False)
+        layer = alias_api.get_layer_by_name(layer_name)
+        if layer is None:
+            api_utils.raise_exception("Layer not found '{}'".format(layer_name))
 
+        # Traverse the DAG to look for nodes that should be in the default layer, but are not.
+        accept_node_types = set(accept_node_types or [])
         input_data = alias_api.TraverseDagInputData(
-            default_layer, False, self.__node_types_only_in_default_layer, True
+            layer, False, accept_node_types, True
         )
         result = alias_api.search_dag(input_data)
 
         return AliasSceneDataValidator.CheckResult(invalid_items=result.nodes)
 
     @sgtk.LogManager.log_timing
-    def fix_node_is_in_default_layer(self, invalid_items=None):
+    def fix_node_is_in_layer(
+        self, invalid_items=None, layer_name=None, accept_node_types=None
+    ):
         """
-        Process all nodes in the current scene, or the specified nodes, and move any nodes to the
-        default layer that should be in the default layer.
+        Process all nodes in the current scene, or the specified nodes, and move any nodes found that are of
+        the specified node type but not in the specified layer.
 
         :param invalid_items: (optional) The of nodes to process, if None, all nodes in the current
                               scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlDagNode>
+        :param layer_name: The layer that the specified node types belong to. Default is the default layer in Alias.
+        :type layer_name: str
+        :param accept_node_types: The node types only accepted in the default layer.
+        :type accept_node_types: list<alias_api.AlObjectType>
         """
 
-        default_layer = alias_api.get_layer_by_name(self.__default_layer_name)
-        if default_layer is None:
-            return
+        layer = alias_api.get_layer_by_name(layer_name)
+        if layer is None:
+            api_utils.raise_exception("Layer not found '{}'".format(layer_name))
+
+        accept_node_types = accept_node_types or []
 
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
@@ -1101,21 +1140,24 @@ class AliasSceneDataValidator(object):
                     continue
 
                 node_layer = node.layer()
-                if not node_layer or node_layer.name != self.__default_layer_name:
-                    if node.type() in self.__node_types_only_in_default_layer:
-                        node.set_layer(default_layer)
+                if (not node_layer or node_layer.name != layer_name) and (
+                    not accept_node_types or node.type() in accept_node_types
+                ):
+                    node.set_layer(layer)
 
         else:
+            # Find nodes that should be in the default layer, but are not.
             input_data = alias_api.TraverseDagInputData(
-                default_layer, False, self.__node_types_only_in_default_layer, True
+                layer, False, set(accept_node_types), True
             )
             result = alias_api.search_dag(input_data)
 
+            # Place the nodes into their correct layer
             for node in result.nodes:
-                node.set_layer(default_layer)
+                node.set_layer(layer)
 
     @sgtk.LogManager.log_timing
-    def check_node_name_matches_layer(self, fail_fast=False):
+    def check_node_name_matches_layer(self, fail_fast=False, skip_layers=None):
         """
         Check for naming mismatches between layer and its nodes, for all top-levle nodes in the current scene.
 
@@ -1127,6 +1169,8 @@ class AliasSceneDataValidator(object):
                           the corresponding fix function. Note that when set to False, this function will be
                           slower to execute.
         :type fail_fast: bool
+        :param skip_layers: The specified layers (by name) will not be checked.
+        :type skip_layers: list<str>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -1145,7 +1189,7 @@ class AliasSceneDataValidator(object):
 
         for node in nodes:
             layer = node.layer()
-            if not layer or layer.name in self.__skip_layers:
+            if not layer or (skip_layers and layer.name in skip_layers):
                 continue
 
             # Check the layer and node names match, which means they are the same or the ndoe name is the
@@ -1159,7 +1203,7 @@ class AliasSceneDataValidator(object):
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
-    def fix_node_name_matches_layer(self, invalid_items=None):
+    def fix_node_name_matches_layer(self, invalid_items=None, skip_layers=None):
         """
         Process all nodes in the current scene, or the specified nodes, and rename any nodes that do not
         match its layer.
@@ -1167,6 +1211,8 @@ class AliasSceneDataValidator(object):
         :param invalid_items: (optional) The of nodes to process, if None, all nodes in the current
                               scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlDagNode>
+        :param skip_layers: Nodes in the specified layers (by name) will not be fixed.
+        :type skip_layers: list<str>
         """
 
         if isinstance(invalid_items, six.string_types):
@@ -1186,7 +1232,7 @@ class AliasSceneDataValidator(object):
                 continue
 
             node_layer_name = node_layer.name
-            if node_layer_name in self.__skip_layers:
+            if skip_layers and node_layer_name in skip_layers:
                 continue
 
             reg = r"^{}(#?\d)*$".format(node_layer_name)
@@ -1198,7 +1244,7 @@ class AliasSceneDataValidator(object):
         """
         Check for nodes that do not have the layer as their parent node.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
         :return: The check result object containing the data:
@@ -1259,23 +1305,17 @@ class AliasSceneDataValidator(object):
                 node.set_layer(node.parent_node().layer())
 
     @sgtk.LogManager.log_timing
-    def check_node_dag_top_level(self, fail_fast=False):
+    def check_node_dag_top_level(self, fail_fast=False, accept_node_types=None):
         """
         Check for invalid top-level nodes in the DAG of the current scene.
-
-        Top-level nodes must have a type in the allowed nodes list. Default allowed types:
-            CurveNodeType
-            FaceNodeType
-            SurfaceNodeType
-            GroupNodeType
-
-        TODO make this configurable
 
         :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
                           entire data and return all invalid items found, and arguments that can be passed to
                           the corresponding fix function. Note that when set to False, this function will be
                           slower to execute.
         :type fail_fast: bool
+        :param accept_node_types: Only the specified node types are accepted in the top level of the DAG.
+        :type accept_node_types: list<alias_api.AlObjectType>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -1289,11 +1329,12 @@ class AliasSceneDataValidator(object):
         :rtype: AliasSceneValidation.CheckResult
         """
 
+        accept_node_types = accept_node_types or []
         invalid_nodes = []
         nodes = alias_api.get_top_dag_nodes()
 
         for node in nodes:
-            if node.type() not in self.__node_types_allowed_in_dag_top_level:
+            if node.type() not in accept_node_types:
                 if fail_fast:
                     return AliasSceneDataValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
@@ -1305,7 +1346,7 @@ class AliasSceneDataValidator(object):
         """
         Check for unused curves on surfaces in the current scene.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
         :return: The check result object containing the data:
@@ -1346,12 +1387,14 @@ class AliasSceneDataValidator(object):
             curve.delete_object()
 
     @sgtk.LogManager.log_timing
-    def check_layer_is_empty(self, fail_fast=False):
+    def check_layer_is_empty(self, fail_fast=False, skip_layers=None):
         """
         Check for empty layers and layer folders in the current scene.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
+        :param skip_layers: The specified layers (by name) will not be checked.
+        :type skip_layers: list<str>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -1365,13 +1408,14 @@ class AliasSceneDataValidator(object):
         :rtype: AliasSceneValidation.CheckResult
         """
 
+        skip_layers = set(skip_layers or [])
         include_folders = True
-        empty_layers = alias_api.get_empty_layers(include_folders, self.__skip_layers)
+        empty_layers = alias_api.get_empty_layers(include_folders, skip_layers)
 
         return AliasSceneDataValidator.CheckResult(invalid_items=empty_layers)
 
     @sgtk.LogManager.log_timing
-    def fix_layer_is_empty(self, invalid_items=None):
+    def fix_layer_is_empty(self, invalid_items=None, skip_layers=None):
         """
         Process all layers in the current scene, or the list of layers if provided, and delete all the empty layers and layer
         folders.
@@ -1379,10 +1423,13 @@ class AliasSceneDataValidator(object):
         :param layers: (optiona) The layers to process, if None, all layers in the current scene will
                        be processed. Default=None
         :type layers: str | list<str> | list<AlLayer>
+        :param skip_layers: The specified layers (by name) will not be fixed.
+        :type skip_layers: list<str>
         """
 
+        skip_layers = set(skip_layers or [])
         include_folders = True
-        empty_layers = alias_api.get_empty_layers(include_folders, self.__skip_layers)
+        empty_layers = alias_api.get_empty_layers(include_folders, skip_layers)
 
         # If a list of layers is specified, only delete those layers.
         delete_only = []
@@ -1405,7 +1452,7 @@ class AliasSceneDataValidator(object):
         """
         Check that all nodes in a layer use the same single shader.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
         :return: The check result object containing the data:
@@ -1425,7 +1472,7 @@ class AliasSceneDataValidator(object):
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_layers)
 
     @sgtk.LogManager.log_timing
-    def check_layer_symmetry(self, fail_fast=False):
+    def check_layer_symmetry(self, fail_fast=False, skip_layers=None):
         """
         Check for layers with symmetry turned on in the current scene.
 
@@ -1434,6 +1481,8 @@ class AliasSceneDataValidator(object):
                           the corresponding fix function. Note that when set to False, this function will be
                           slower to execute.
         :type fail_fast: bool
+        :param skip_layers: The specified layers (by name) will not be checked.
+        :type skip_layers: list<str>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -1449,19 +1498,17 @@ class AliasSceneDataValidator(object):
 
         if fail_fast:
             has_symmetric_layers = api_layer.get_symmetric_layers(
-                check_exists=True, skip_layers=self.__skip_layers
+                check_exists=True, skip_layers=skip_layers
             )
             return AliasSceneDataValidator.CheckResult(
                 is_valid=not has_symmetric_layers
             )
 
-        symmetric_layers = api_layer.get_symmetric_layers(
-            skip_layers=self.__skip_layers
-        )
+        symmetric_layers = api_layer.get_symmetric_layers(skip_layers=skip_layers)
         return AliasSceneDataValidator.CheckResult(invalid_items=symmetric_layers)
 
     @sgtk.LogManager.log_timing
-    def fix_layer_symmetry(self, invalid_items=None):
+    def fix_layer_symmetry(self, invalid_items=None, skip_layers=None):
         """
         Process all layers in the current scene, or the specified layers, and turn off symmetry on layers.
 
@@ -1471,20 +1518,22 @@ class AliasSceneDataValidator(object):
         :param invalid_items: (optional) The layers to process, if None, all layers in the current
                               scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlLayer>
+        :param skip_layers: The specified layers (by name) will not be fixed.
+        :type skip_layers: list<str>
         """
 
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
         layers = api_layer.get_symmetric_layers(
-            layers=invalid_items, skip_layers=self.__skip_layers
+            layers=invalid_items, skip_layers=skip_layers
         )
 
         for layer in layers:
             layer.symmetric = False
 
     @sgtk.LogManager.log_timing
-    def check_layer_has_single_item(self, fail_fast=False):
+    def check_layer_has_single_item(self, fail_fast=False, skip_layers=None):
         """
         Check for layers that contain more than one top-level node (e.g. layers can only have a single node,
         for multiple nodes, they can have a group node that contains child nodes).
@@ -1494,6 +1543,8 @@ class AliasSceneDataValidator(object):
                           the corresponding fix function. Note that when set to False, this function will be
                           slower to execute.
         :type fail_fast: bool
+        :param skip_layers: The specified layers (by name) will not be checked.
+        :type skip_layers: list<str>
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
@@ -1520,9 +1571,8 @@ class AliasSceneDataValidator(object):
 
             node_layer_name = node_layer.name
             if (
-                node_layer_name in self.__skip_layers
-                or node_layer_name in marked_invalid_layers
-            ):
+                skip_layers and node_layer_name in skip_layers
+            ) or node_layer_name in marked_invalid_layers:
                 continue
 
             if node_layer_name in processed_layers:
@@ -1536,7 +1586,7 @@ class AliasSceneDataValidator(object):
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_layers)
 
     @sgtk.LogManager.log_timing
-    def fix_layer_has_single_item(self, invalid_items=None):
+    def fix_layer_has_single_item(self, invalid_items=None, skip_layers=None):
         """
         Process all layers in the current scene, or the list of layers if provided, and place all
         layer's contents into a single group.
@@ -1549,7 +1599,11 @@ class AliasSceneDataValidator(object):
         :param invalid_items: (optional) The list of layers to process, if None, all layers in the current
                               scene will be processed. Default=None
         :type invalid_items: str | list<str> | list<AlLayer>
+        :param skip_layers: The specified layers (by name) will not be fixed.
+        :type skip_layers: list<str>
         """
+
+        # TODO this algorithm to fix the layer could probably be cleaned up and optimized.
 
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
@@ -1564,6 +1618,9 @@ class AliasSceneDataValidator(object):
                 continue
 
             layer_name = layer.name
+            if skip_layers and layer_name in skip_layers:
+                continue
+
             group_node = None
 
             layer_top_level_nodes = []
@@ -1616,7 +1673,7 @@ class AliasSceneDataValidator(object):
         """
         Check for groups with more than one level of hierarchy in the current scene.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
         :return: The check result object containing the data:
@@ -1740,7 +1797,7 @@ class AliasSceneDataValidator(object):
         """
         Check for referenced geometry in the current scene.
 
-        :param fail_fast: Not applicable
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
         :return: A tuple containing:

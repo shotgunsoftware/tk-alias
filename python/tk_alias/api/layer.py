@@ -33,8 +33,6 @@ def get_symmetric_layers(layers=None, check_exists=False, skip_layers=None):
     :rtype: bool | list<AlLayer>
     """
 
-    skip_layers = skip_layers or set()
-
     symmetric_layers = []
     layers = layers or alias_api.get_layers()
 
@@ -42,7 +40,7 @@ def get_symmetric_layers(layers=None, check_exists=False, skip_layers=None):
         if isinstance(layer, six.string_types):
             layer = alias_api.get_layer_by_name(layer)
         
-        if layer and layer.name not in skip_layers and layer.symmetric:
+        if layer and (not skip_layers or layer.name not in skip_layers) and layer.symmetric:
             if check_exists:
                 return True
             symmetric_layers.append(layer)
