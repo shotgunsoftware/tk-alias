@@ -8,7 +8,6 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-import sgtk
 from tank_vendor import six
 
 import alias_api
@@ -20,7 +19,6 @@ from . import dag_node as api_dag_node
 # Pick functions
 # -------------------------------------------------------------------------------------------------------
 
-@sgtk.LogManager.log_timing
 def pick_nodes(nodes, clear_pick_list=True, redraw=True):
     """
     Pick the given nodes.
@@ -46,7 +44,6 @@ def pick_nodes(nodes, clear_pick_list=True, redraw=True):
     if redraw:
         alias_api.redraw_screen()
 
-@sgtk.LogManager.log_timing
 def pick_curves_on_surface_from_nodes(nodes, clear_pick_list=True, redraw=True):
     """
     Pick the curves on surface from the given nodes.
@@ -70,7 +67,6 @@ def pick_curves_on_surface_from_nodes(nodes, clear_pick_list=True, redraw=True):
     if redraw:
         alias_api.redraw_screen()
 
-@sgtk.LogManager.log_timing
 def pick_nodes_assigned_to_shader(shaders, clear_pick_list=True, redraw=True, skip_shaders=None):
     """
     Pick the nodes assigned to the given shaders.
@@ -108,7 +104,6 @@ def pick_nodes_assigned_to_shader(shaders, clear_pick_list=True, redraw=True, sk
     if redraw:
         alias_api.redraw_screen()
 
-@sgtk.LogManager.log_timing
 def pick_nodes_assigned_to_layers(layers, clear_pick_list=True, redraw=True):
     """
     Pick the nodes assigned to the given layers.
@@ -135,7 +130,6 @@ def pick_nodes_assigned_to_layers(layers, clear_pick_list=True, redraw=True):
     if redraw:
         alias_api.redraw_screen()
 
-@sgtk.LogManager.log_timing
 def pick_layers(layers=None, pick_all=False, clear_pick_list=True, redraw=True):
     """
     Pick the given layers.
@@ -172,7 +166,6 @@ def pick_layers(layers=None, pick_all=False, clear_pick_list=True, redraw=True):
     if redraw:
         alias_api.redraw_screen()
 
-@sgtk.LogManager.log_timing
 def pick_locators(locators, pick_all=False, clear_pick_list=True, redraw=True):
     """
     Pick the given locators.
