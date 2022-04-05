@@ -536,30 +536,43 @@ class AliasEngine(sgtk.platform.Engine):
 
     def open_save_as_dialog(self):
         """
-        Launch a Qt file browser to select a file, then save the supplied
-        project to that path.
+        Try to open tk-multi-workfiles2 Save As... dialog if it exists otherwise
+        launch a Qt file browser for the Save As...
         """
+        open_dialog_func = None
+        kwargs = {}
+        workfiles = self.apps.get("tk-multi-workfiles2", None)
 
-        from sgtk.platform.qt import QtGui
+        if workfiles:
+            if hasattr(workfiles, "show_file_save_dlg"):
+                open_dialog_func = workfiles.show_file_save_dlg
+                kwargs["use_modal_dialog"] = True
 
-        # Alias doesn't appear to have a "save as" dialog accessible via
-        # python. so open our own Qt file dialog.
-        file_dialog = QtGui.QFileDialog(
-            parent=self.get_parent_window(),
-            caption="Save As",
-            directory=os.path.expanduser("~"),
-            filter="Alias file (*.wire)",
-        )
-        file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
-        file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
-        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
-        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
-        if not file_dialog.exec_():
-            return
-        path = file_dialog.selectedFiles()[0]
+        if open_dialog_func:
+            open_dialog_func(**kwargs)
 
-        if os.path.splitext(path)[-1] != ".wire":
-            path = "{0}.wire".format(path)
+        else:
+            # Alias doesn't appear to have a "save as" dialog accessible via
+            # python. so open our own Qt file dialog.
+
+            from sgtk.platform.qt import QtGui
+
+            file_dialog = QtGui.QFileDialog(
+                parent=self.get_parent_window(),
+                caption="Save As",
+                directory=os.path.expanduser("~"),
+                filter="Alias file (*.wire)",
+            )
+            file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
+            file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
+            file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
+            file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
+            if not file_dialog.exec_():
+                return
+            path = file_dialog.selectedFiles()[0]
+
+            if os.path.splitext(path)[-1] != ".wire":
+                path = "{0}.wire".format(path)
 
         if path:
             self.save_file_as(path)
