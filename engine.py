@@ -143,7 +143,9 @@ class AliasEngine(sgtk.platform.Engine):
         self._tk_alias = self.import_module("tk_alias")
 
         # dialog parent handler
-        self._dialog_parent = self._tk_alias.DialogParent(engine=self) if self.has_ui else None
+        self._dialog_parent = (
+            self._tk_alias.DialogParent(engine=self) if self.has_ui else None
+        )
 
         # event watcher
         self.__event_watcher = self._tk_alias.AliasEventWatcher()
@@ -160,9 +162,11 @@ class AliasEngine(sgtk.platform.Engine):
             self.logger.debug("Couldn't get Alias version. Skip version comparison")
             return
 
-        if int(self.alias_version[0:4]) > self.get_setting(
-            "compatibility_dialog_min_version", 2021
-        ) and self.has_ui:
+        if (
+            int(self.alias_version[0:4])
+            > self.get_setting("compatibility_dialog_min_version", 2021)
+            and self.has_ui
+        ):
             from sgtk.platform.qt import QtGui
 
             msg = (
@@ -173,11 +177,15 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
+                self.get_parent_window(),
+                "Warning - ShotGrid Pipeline Toolkit!",
+                msg,
             )
-        elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
-            "compatibility_dialog_old_version"
-        ) and self.has_ui:
+        elif (
+            int(self.alias_version[0:4]) < 2021
+            and self.get_setting("compatibility_dialog_old_version")
+            and self.has_ui
+        ):
             from sgtk.platform.qt import QtGui
 
             msg = (
@@ -188,7 +196,9 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
+                self.get_parent_window(),
+                "Warning - ShotGrid Pipeline Toolkit!",
+                msg,
             )
 
     def post_app_init(self):
