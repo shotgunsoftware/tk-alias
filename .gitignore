@@ -1,6 +1,8 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+!alias_api.pyd
+!alias_api_om.pyd
 *$py.class
 
 # C extensions
