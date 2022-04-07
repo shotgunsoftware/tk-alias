@@ -161,7 +161,9 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
+                self.get_parent_window(),
+                "Warning - ShotGrid Pipeline Toolkit!",
+                msg,
             )
         elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
             "compatibility_dialog_old_version"
@@ -176,7 +178,9 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
+                self.get_parent_window(),
+                "Warning - ShotGrid Pipeline Toolkit!",
+                msg,
             )
 
     def post_app_init(self):
