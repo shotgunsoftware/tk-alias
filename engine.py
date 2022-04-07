@@ -103,14 +103,6 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("%s: Initializing..." % (self,))
 
-        import sys
-
-        sys.path.append("Z:\\python_libs")
-        import ptvsd
-
-        ptvsd.enable_attach(address=("192.168.56.106", 2222), redirect_output=True)
-        ptvsd.wait_for_attach()
-
         # unicode characters returned by the shotgun api need to be converted
         # to display correctly in all of the app windows
         # tell QT to interpret C strings as utf-8
