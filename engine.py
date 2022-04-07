@@ -32,7 +32,6 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_execpath = None
         self.alias_bindir = None
         self.alias_version = None
-        self._dialog_parent = None
         self.__event_watcher = None
 
         self._menu_generator = None
@@ -129,9 +128,6 @@ class AliasEngine(sgtk.platform.Engine):
 
         # import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
-
-        # dialog parent handler
-        self._dialog_parent = self._tk_alias.DialogParent(engine=self)
 
         # event watcher
         self.__event_watcher = self._tk_alias.AliasEventWatcher()
@@ -239,12 +235,6 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
         self._initialize_dark_look_and_feel()
-
-    def _get_dialog_parent(self):
-        """
-        Get Alias dialog parent
-        """
-        return self._dialog_parent.get_dialog_parent()
 
     def _run_app_instance_commands(self):
         """
