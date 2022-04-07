@@ -32,7 +32,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_execpath = None
         self.alias_bindir = None
         self.alias_version = None
-        self._dialog_parent = None
+        # self._dialog_parent = None
         self.__event_watcher = None
         self.__scene_data_validator = None
 
@@ -103,6 +103,14 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("%s: Initializing..." % (self,))
 
+        import sys
+
+        sys.path.append("Z:\\python_libs")
+        import ptvsd
+
+        ptvsd.enable_attach(address=("192.168.56.106", 2222), redirect_output=True)
+        ptvsd.wait_for_attach()
+
         # unicode characters returned by the shotgun api need to be converted
         # to display correctly in all of the app windows
         # tell QT to interpret C strings as utf-8
@@ -136,7 +144,7 @@ class AliasEngine(sgtk.platform.Engine):
         self._tk_alias = self.import_module("tk_alias")
 
         # dialog parent handler
-        self._dialog_parent = self._tk_alias.DialogParent(engine=self)
+        # self._dialog_parent = self._tk_alias.DialogParent(engine=self)
 
         # event watcher
         self.__event_watcher = self._tk_alias.AliasEventWatcher()
@@ -248,11 +256,11 @@ class AliasEngine(sgtk.platform.Engine):
         # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
         self._initialize_dark_look_and_feel()
 
-    def _get_dialog_parent(self):
-        """
-        Get Alias dialog parent
-        """
-        return self._dialog_parent.get_dialog_parent()
+    # def _get_dialog_parent(self):
+    #     """
+    #     Get Alias dialog parent
+    #     """
+    #     return self._dialog_parent.get_dialog_parent()
 
     def _run_app_instance_commands(self):
         """

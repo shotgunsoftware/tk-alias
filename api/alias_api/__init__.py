@@ -46,7 +46,7 @@ def import_alias_api():
     module_path = os.path.normpath(
         os.path.join(
             os.path.dirname(__file__),
-            "..",
+            # "..",
             "python{}".format(sys.version_info.major),
             api_folder_name,
             "{}.pyd".format(module_name)

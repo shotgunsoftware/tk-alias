@@ -1,10 +1,10 @@
-Alias Scene Data Validator
+Scene Data Validator
 ######################################
 
 Validate the data in your Alias scene.
 
-.. currentmodule:: scene_data_validator
+.. currentmodule:: tk_alias.scene_data_validator
 
-.. autoclass:: tk_alias.AliasSceneDataValidator
+.. autoclass:: AliasSceneDataValidator
     :show-inheritance:
     :members:

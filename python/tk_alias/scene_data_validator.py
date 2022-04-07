@@ -10,10 +10,10 @@ from tank_vendor import six
 from tank.util import sgre as re
 
 import alias_api
-from .api import dag_node as api_dag_node
-from .api import layer as api_layer
-from .api import pick_list as api_pick_list
-from .api import utils as api_utils
+import alias_py.dag_node
+import alias_py.layer
+import alias_py.pick_list
+import alias_py.utils
 
 
 class AliasSceneDataValidator(object):
@@ -74,8 +74,8 @@ class AliasSceneDataValidator(object):
         Initialize the validator and set up the properties required for validaiting an Alias scene.
         """
 
-        self._camera_node_types = api_utils.camera_node_types()
-        self._light_node_types = api_utils.light_node_types()
+        self._camera_node_types = alias_py.utils.camera_node_types()
+        self._light_node_types = alias_py.utils.light_node_types()
 
         # Store the validation data since this is static
         self.__validation_data = self.get_validation_data()
@@ -145,8 +145,7 @@ class AliasSceneDataValidator(object):
             shader_unused:
                 description: Check for unused shaders in the scene
 
-        Each validation rule is a dict (that can be used to create a ValidationRule object from the
-        tk-multi-data-validation App) containing key-values:
+        Each validation rule is a dict (that can be used to create a ValidationRule object from the tk-multi-data-validation App) containing key-values:
             name:
                 value: The display name of the validation rule.
                 type: str
@@ -176,39 +175,32 @@ class AliasSceneDataValidator(object):
                 value: Text to display when the validation rule fails.
             actions:
                 type: list
-                value:
-                    type: dict
-                    value: An action that can be applied to an all the invalid items that were found after
-                        executing `check_func`.
-                    required keys:
-                        name (str) - The display text for the action
-                        callback (function) - The function to call when the action is invoked
-                    optional keys:
-                        tooltip (str) - Text to display as for the item action's tooltip help messages
+                value: FIXME
+                type: dict
+                value: An action that can be applied to an all the invalid items that were found after executing `check_func`.
+                required keys: FIXME
+                name (str) - The display text for the action
+                callback (function) - The function to call when the action is invoked
+                optional keys: FIXME
+                tooltip (str) - Text to display as for the item action's tooltip help messages
             item_actions:
                 type: list
-                value:
-                    type: dict
-                    value: An action that can be applied to an "invalid item" that was found after executing
-                        `check_func`.
-                    required keys:
-                        name (str) - The display text for the action
-                        callback (function) - The function to call when the action is invoked
-                    optional keys:
-                        tooltip (str) - Text to display as for the item action's tooltip help messages
+                value: FIXME
+                type: dict
+                value: An action that can be applied to an "invalid item" that was found after executing `check_func`.
+                required keys: FIXME
+                name (str) - The display text for the action
+                callback (function) - The function to call when the action is invoked
+                optional keys: FIXME
+                tooltip (str) - Text to display as for the item action's tooltip help messages
 
         All `check_func` functions should return the following data:
             type: tuple
-            value:
-                (0) bool - True if the validation check passed, else False
-                (1) list - A list containing data pertaining to the invalid items found when running the
-                           validation check. The data should be a dict with keys: 'id', 'name', 'type', where
-                           'id' is the unique identifier, 'type' is the object type, and 'name' is the
-                           display text for the invalid item
-                (2) list - An arguments list that can be passed to the check function's corresponding fix
-                           function ('fix_func' defined for the validaiton rule)
-                (3) dict - A keyword arguments dict that can be passed to hte check function's corresponing
-                           fix function ('fix_func' defined for the validation rule)
+            value: FIXME
+            (0) bool - True if the validation check passed, else False
+            (1) list - A list containing data pertaining to the invalid items found when running the validation check. The data should be a dict with keys: 'id', 'name', 'type', where 'id' is the unique identifier, 'type' is the object type, and 'name' is the display text for the invalid item
+            (2) list - An arguments list that can be passed to the check function's corresponding fix function ('fix_func' defined for the validaiton rule)
+            (3) dict - A keyword arguments dict that can be passed to hte check function's corresponing fix function ('fix_func' defined for the validation rule)
 
         :return: The scene validation data.
         :rtype: dict
@@ -655,13 +647,9 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name. This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function. This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
@@ -734,12 +722,12 @@ class AliasSceneDataValidator(object):
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
                     (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
+                    dict with required keys: id, name
+                    This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
+                    This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
@@ -773,7 +761,7 @@ class AliasSceneDataValidator(object):
             alias_api.delete_null_nodes()
         else:
             # NOTE we could just delete the list of given nodes, but we cannot determine if a given node is null.
-            api_utils.raise_exception(
+            alias_py.utils.raise_exception(
                 "Requires Alias C++ API function to determine if a node is null"
             )
 
@@ -791,19 +779,15 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
         skip_node_types = skip_node_types or []
 
-        nodes_with_history = api_dag_node.get_nodes_with_construction_history(
+        nodes_with_history = alias_py.dag_node.get_nodes_with_construction_history(
             skip_node_types=set(skip_node_types),
         )
 
@@ -832,7 +816,7 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        nodes = api_dag_node.get_nodes_with_construction_history(
+        nodes = alias_py.dag_node.get_nodes_with_construction_history(
             nodes=invalid_items, skip_node_types=set(skip_node_types),
         )
         for node in nodes:
@@ -848,17 +832,13 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
-        invalid_nodes = api_dag_node.get_instanced_nodes()
+        invalid_nodes = alias_py.dag_node.get_instanced_nodes()
 
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
@@ -881,12 +861,12 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        nodes = api_dag_node.get_instanced_nodes(invalid_items)
+        nodes = alias_py.dag_node.get_instanced_nodes(invalid_items)
 
         for node in nodes:
             status = alias_api.expand_instances(node)
-            if not api_utils.is_success(status):
-                api_utils.raise_exception(
+            if not alias_py.utils.is_success(status):
+                alias_py.utils.raise_exception(
                     "Failed to expand instanced node '{}'".format(node.name), status
                 )
 
@@ -900,17 +880,13 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
-        invalid_nodes = api_dag_node.get_nodes_with_non_origin_pivot()
+        invalid_nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot()
 
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
@@ -935,19 +911,19 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        nodes = api_dag_node.get_nodes_with_non_origin_pivot(invalid_items)
+        nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot(invalid_items)
         center = alias_api.Vec3(0.0, 0.0, 0.0)
 
         for node in nodes:
             status = node.set_scale_pivot(center)
-            if not api_utils.is_success(status):
-                api_utils.raise_exception(
+            if not alias_py.utils.is_success(status):
+                alias_py.utils.raise_exception(
                     "Failed to set scale pivot for node '{}'".format(node.name), status
                 )
 
             status = node.set_rotate_pivot(center)
-            if not api_utils.is_success(status):
-                api_utils.raise_exception(
+            if not alias_py.utils.is_success(status):
+                alias_py.utils.raise_exception(
                     "Failed to set rotate pivot for node '{}'".format(node.name), status
                 )
 
@@ -963,19 +939,15 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
         skip_node_types = skip_node_types or []
 
-        invalid_nodes = api_dag_node.get_nodes_with_non_zero_transform(
+        invalid_nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
             skip_node_types=set(skip_node_types),
         )
 
@@ -1003,14 +975,14 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        nodes = api_dag_node.get_nodes_with_non_zero_transform(
+        nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
             nodes=invalid_items, skip_node_types=set(skip_node_types),
         )
 
         for node in nodes:
             status = alias_api.zero_transform(node)
-            if not api_utils.is_success(status):
-                api_utils.raise_exception(
+            if not alias_py.utils.is_success(status):
+                alias_py.utils.raise_exception(
                     "Failed to apply zero transform to node '{}'".format(node.name),
                     status,
                 )
@@ -1034,19 +1006,15 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
         layer = alias_api.get_layer_by_name(layer_name)
         if layer is None:
-            api_utils.raise_exception("Layer not found '{}'".format(layer_name))
+            alias_py.utils.raise_exception("Layer not found '{}'".format(layer_name))
 
         accept_node_types = accept_node_types or []
         invalid_nodes = []
@@ -1082,19 +1050,15 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
         layer = alias_api.get_layer_by_name(layer_name)
         if layer is None:
-            api_utils.raise_exception("Layer not found '{}'".format(layer_name))
+            alias_py.utils.raise_exception("Layer not found '{}'".format(layer_name))
 
         # Traverse the DAG to look for nodes that should be in the default layer, but are not.
         accept_node_types = set(accept_node_types or [])
@@ -1124,7 +1088,7 @@ class AliasSceneDataValidator(object):
 
         layer = alias_api.get_layer_by_name(layer_name)
         if layer is None:
-            api_utils.raise_exception("Layer not found '{}'".format(layer_name))
+            alias_py.utils.raise_exception("Layer not found '{}'".format(layer_name))
 
         accept_node_types = accept_node_types or []
 
@@ -1174,13 +1138,9 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
@@ -1249,13 +1209,9 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
@@ -1319,13 +1275,9 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
@@ -1351,17 +1303,13 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
-        invalid_nodes = api_dag_node.get_nodes_with_unused_curves_on_surface()
+        invalid_nodes = alias_py.dag_node.get_nodes_with_unused_curves_on_surface()
 
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
@@ -1379,7 +1327,7 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        unused_curves = api_dag_node.get_unused_curves_on_surface_for_nodes(
+        unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
             nodes=invalid_items
         )
 
@@ -1398,13 +1346,9 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
@@ -1457,13 +1401,9 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
@@ -1486,25 +1426,21 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
         if fail_fast:
-            has_symmetric_layers = api_layer.get_symmetric_layers(
+            has_symmetric_layers = alias_py.layer.get_symmetric_layers(
                 check_exists=True, skip_layers=skip_layers
             )
             return AliasSceneDataValidator.CheckResult(
                 is_valid=not has_symmetric_layers
             )
 
-        symmetric_layers = api_layer.get_symmetric_layers(skip_layers=skip_layers)
+        symmetric_layers = alias_py.layer.get_symmetric_layers(skip_layers=skip_layers)
         return AliasSceneDataValidator.CheckResult(invalid_items=symmetric_layers)
 
     @sgtk.LogManager.log_timing
@@ -1525,7 +1461,7 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        layers = api_layer.get_symmetric_layers(
+        layers = alias_py.layer.get_symmetric_layers(
             layers=invalid_items, skip_layers=skip_layers
         )
 
@@ -1548,13 +1484,9 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
@@ -1631,15 +1563,15 @@ class AliasSceneDataValidator(object):
 
                 layer_top_level_nodes.append(node)
 
-                if api_utils.is_group_node(node):
+                if alias_py.utils.is_group_node(node):
                     layer_group_nodes.append(node)
 
             # first case: no existing group node
             if not layer_group_nodes:
                 group_node = alias_api.AlGroupNode()
                 status = group_node.create()
-                if not api_utils.is_success(status):
-                    api_utils.raise_exception(
+                if not alias_py.utils.is_success(status):
+                    alias_py.utils.raise_exception(
                         "Failed to create group node for layer", status
                     )
 
@@ -1678,13 +1610,9 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
@@ -1708,7 +1636,7 @@ class AliasSceneDataValidator(object):
         :raises alias_api.AliasPythonException: if failed to flatten all groups
         """
 
-        status = api_utils.success_status()
+        status = alias_py.utils.success_status()
 
         if invalid_items:
             if isinstance(invalid_items, six.string_types):
@@ -1724,14 +1652,14 @@ class AliasSceneDataValidator(object):
 
                 groups_to_flatten.append(group_node)
                 flatten_status = alias_api.flatten_group_nodes(groups_to_flatten)
-                if flatten_status != api_utils.success_status():
+                if flatten_status != alias_py.utils.success_status():
                     status = flatten_status
 
         else:
             status = alias_api.flatten_group_nodes()
 
-        if not api_utils.is_success(status):
-            api_utils.raise_exception("Failed to flatten group nodes", status)
+        if not alias_py.utils.is_success(status):
+            alias_py.utils.raise_exception("Failed to flatten group nodes", status)
 
     @sgtk.LogManager.log_timing
     def check_locators(self, fail_fast=False):
@@ -1746,21 +1674,17 @@ class AliasSceneDataValidator(object):
 
         :return: The check result object containing the data:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: AliasSceneValidation.CheckResult
         """
 
         if fail_fast:
-            has_locators = api_utils.get_locators(check_exists=True)
+            has_locators = alias_py.utils.get_locators(check_exists=True)
             return AliasSceneDataValidator.CheckResult(is_valid=not has_locators)
 
-        locators = api_utils.get_locators()
+        locators = alias_py.utils.get_locators()
         return AliasSceneDataValidator.CheckResult(invalid_items=locators)
 
     @sgtk.LogManager.log_timing
@@ -1785,12 +1709,14 @@ class AliasSceneDataValidator(object):
 
                 if locator:
                     status = locator.delete_object()
-                    if not api_utils.is_success(status):
-                        api_utils.raise_exception("Failed to delete locator", status)
+                    if not alias_py.utils.is_success(status):
+                        alias_py.utils.raise_exception(
+                            "Failed to delete locator", status
+                        )
         else:
             status = alias_api.delete_all_locators()
-            if not api_utils.is_success(status):
-                api_utils.raise_exception("Failed to delete all locators", status)
+            if not alias_py.utils.is_success(status):
+                alias_py.utils.raise_exception("Failed to delete all locators", status)
 
     @sgtk.LogManager.log_timing
     def check_refererences_exist(self, fail_fast=False):
@@ -1802,13 +1728,9 @@ class AliasSceneDataValidator(object):
 
         :return: A tuple containing:
                     (1) True if the check passed, else False
-                    (2) A list of data pertaining to the invalid items found
-                        dict with required keys: id, name
-                        This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                        This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                        This will be an empty dict if fail_fast=False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
         :rtype: tuple<bool,list,list,dict>
         """
 
@@ -1843,8 +1765,8 @@ class AliasSceneDataValidator(object):
 
             if reference:
                 status = alias_api.remove_reference(reference)
-                if not api_utils.is_success(status):
-                    api_utils.raise_exception("Failed to remove reference", status)
+                if not alias_py.utils.is_success(status):
+                    alias_py.utils.raise_exception("Failed to remove reference", status)
 
     # -------------------------------------------------------------------------------------------------------
     # Pick Functions
@@ -1874,7 +1796,7 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        api_pick_list.pick_nodes(invalid_items)
+        alias_py.pick_list.pick_nodes(invalid_items)
 
     @sgtk.LogManager.log_timing
     def pick_curves_on_surface_from_nodes(self, invalid_items=None):
@@ -1891,7 +1813,7 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        api_pick_list.pick_curves_on_surface_from_nodes(invalid_items)
+        alias_py.pick_list.pick_curves_on_surface_from_nodes(invalid_items)
 
     @sgtk.LogManager.log_timing
     def pick_nodes_assigned_to_shaders(self, invalid_items=None):
@@ -1907,7 +1829,7 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        api_pick_list.pick_nodes_assigned_to_shaders(invalid_items)
+        alias_py.pick_list.pick_nodes_assigned_to_shaders(invalid_items)
 
     @sgtk.LogManager.log_timing
     def pick_nodes_assigned_to_layers(self, invalid_items=None):
@@ -1923,7 +1845,7 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        api_pick_list.pick_nodes_assigned_to_layers(invalid_items)
+        alias_py.pick_list.pick_nodes_assigned_to_layers(invalid_items)
 
     @sgtk.LogManager.log_timing
     def pick_layers(self, invalid_items=None):
@@ -1939,7 +1861,7 @@ class AliasSceneDataValidator(object):
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
-        api_pick_list.pick_layers(invalid_items)
+        alias_py.pick_list.pick_layers(invalid_items)
 
     @sgtk.LogManager.log_timing
     def pick_locators(self, invalid_items=None):
@@ -1951,10 +1873,10 @@ class AliasSceneDataValidator(object):
         """
 
         if not invalid_items:
-            api_pick_list.pick_locators(None, pick_all=True)
+            alias_py.pick_list.pick_locators(None, pick_all=True)
 
         else:
             if isinstance(invalid_items, six.string_types):
                 invalid_items = [invalid_items]
 
-            api_pick_list.pick_locators(invalid_items)
+            alias_py.pick_list.pick_locators(invalid_items)
