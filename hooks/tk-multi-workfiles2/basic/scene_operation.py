@@ -116,12 +116,13 @@ class SceneOperation(HookClass):
                     return True
                 if alias_api.is_empty_file() and len(alias_api.get_stages()) == 1:
                     self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                        [("reset", None, [], {})], alias_api.AlMessageType.StageActive,
+                        [("reset", None, [], {})],
+                        alias_api.AlMessageType.StageActive,
                     )
                     return True
                 else:
-                    open_in_current_stage = self.parent.engine.open_delete_stages_dialog(
-                        new_file=True
+                    open_in_current_stage = (
+                        self.parent.engine.open_delete_stages_dialog(new_file=True)
                     )
                     if open_in_current_stage == QtGui.QMessageBox.Cancel:
                         return False
