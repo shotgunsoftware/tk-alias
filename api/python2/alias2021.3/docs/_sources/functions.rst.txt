@@ -1,6 +1,0 @@
-Functions
-####################
-
-.. automodule:: alias_api
-    :members:
-    :exclude-members: AliasPythonException
