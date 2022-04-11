@@ -14,8 +14,6 @@ import sys
 import sgtk
 from sgtk.util import LocalFileStorageManager
 
-import alias_api
-
 
 class AliasEngine(sgtk.platform.Engine):
     """
@@ -108,11 +106,11 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("%s: Initializing..." % (self,))
 
+        from sgtk.platform.qt import QtCore, QtGui
+
         # unicode characters returned by the shotgun api need to be converted
         # to display correctly in all of the app windows
         # tell QT to interpret C strings as utf-8
-        from sgtk.platform.qt import QtCore
-
         utf8 = QtCore.QTextCodec.codecForName("utf-8")
         QtCore.QTextCodec.setCodecForCStrings(utf8)
         self.logger.debug("set utf-8 codec for widget text")
@@ -138,6 +136,23 @@ class AliasEngine(sgtk.platform.Engine):
         if self.has_ui:
             self.init_qt_app()
 
+        # Defer importing the Alias Python API until now so that a proper info message can be displayed to
+        # user if the api failed to import.
+        # NOTE: Ensure this check runs after the Qt app is created and before attempting to import the
+        # alias_api module, which means any engine functions that requires the alias_api module should import
+        # the module at the function declaration. TODO: move all alias_api functionality outside the engine
+        # and to its own module.
+        try:
+            import alias_api
+        except Exception as api_import_error:
+            error_msg = str(api_import_error)
+            self.logger.critical(error_msg)
+            QtGui.QMessageBox.critical(
+                self.get_parent_window(),
+                "Failed to import the Alias Python API",
+                error_msg,
+            )
+
         # import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
 
@@ -161,8 +176,6 @@ class AliasEngine(sgtk.platform.Engine):
             > self.get_setting("compatibility_dialog_min_version", 2021)
             and self.has_ui
         ):
-            from sgtk.platform.qt import QtGui
-
             msg = (
                 "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
                 "You can continue to use the Toolkit but you may experience bugs or "
@@ -345,6 +358,8 @@ class AliasEngine(sgtk.platform.Engine):
                          the current one.
         """
 
+        import alias_api
+
         if not context:
             context = self.context
 
@@ -364,6 +379,8 @@ class AliasEngine(sgtk.platform.Engine):
         Convenience function to call the Alias Python API to save the file and ensure
         the context is saved for the current stage.
         """
+
+        import alias_api
 
         status = alias_api.save_file()
         if status != int(alias_api.AlStatusCode.Success):
@@ -385,6 +402,8 @@ class AliasEngine(sgtk.platform.Engine):
         :type path: str
         """
 
+        import alias_api
+
         status = alias_api.save_file_as(path)
         if status != int(alias_api.AlStatusCode.Success):
             self.logger.error(
@@ -404,6 +423,8 @@ class AliasEngine(sgtk.platform.Engine):
         :param path: the file path to open.
         :type path: str
         """
+
+        import alias_api
 
         status = alias_api.open_file(path)
         if status != int(alias_api.AlStatusCode.Success):
@@ -447,6 +468,8 @@ class AliasEngine(sgtk.platform.Engine):
                             will not be triggered at all for for this operation.
         :type event_types: list<AlMessageType>
         """
+
+        import alias_api
 
         # Check that all api functions exist, if not abort
         for api_func, obj, _, _ in alias_api_ops:
@@ -500,6 +523,8 @@ class AliasEngine(sgtk.platform.Engine):
         """
         A callback happening when an Alias stage is selected.
         """
+
+        import alias_api
 
         current_stage = alias_api.get_current_stage()
 
