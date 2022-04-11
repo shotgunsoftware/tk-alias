@@ -70,6 +70,10 @@ def import_alias_api():
 
 
 if sys.version_info.major < 3:
-    raise Exception("Alias Python API supports Python version >= 3. Using Python version {}".format(sys.version))
+    error_msg = "Alias Python API only supports Python 3. You are using Python v{major}.{minor}. Please refer to this <a href='https://github.com/shotgunsoftware/tk-alias/wiki/Python-Version-Support'>page</a> for additional information.".format(
+        major=sys.version_info.major,
+        minor=sys.version_info.minor,
+    )
+    raise Exception(error_msg)
 
 import_alias_api()
