@@ -9,5 +9,4 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from .menu_generation import AliasMenuGenerator
-from .dialog_parent import DialogParent
 from .alias_event_watcher import AliasEventWatcher
