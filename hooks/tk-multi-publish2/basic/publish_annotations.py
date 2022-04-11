@@ -75,7 +75,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
-        annotations = alias_api.get_annotation_locators()
+        annotations = alias_api.get_annotation_locator_strings()
         if not annotations:
             self.logger.debug("There are not annotations to export")
             return {"accepted": False}
@@ -117,7 +117,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
         if version_data is not None:
             note_links.append(version_data)
 
-        annotations = alias_api.get_annotation_locators()
+        annotations = alias_api.get_annotation_locator_strings()
 
         batch_data = []
         for annotation in annotations:
