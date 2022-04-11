@@ -19,9 +19,14 @@ def import_alias_api():
     """
     Import the right module according to some criteria:
     - the version of Alias
-    - the version of Python
     - the execution mode (interactive vs non-interactive)
+
+    NOTE: The Alias Python API supports Python >= 3
     """
+
+    # Import requires python >= 3, place it inside this function so that the python version can be checked
+    # first, without failing to import.
+    import importlib.util
 
     alias_release_version = os.environ.get("TK_ALIAS_VERSION")
     if not alias_release_version:
@@ -46,8 +51,7 @@ def import_alias_api():
     module_path = os.path.normpath(
         os.path.join(
             os.path.dirname(__file__),
-            "..",
-            "python{}".format(sys.version_info.major),
+            "python3",
             api_folder_name,
             "{}.pyd".format(module_name)
         )
@@ -56,19 +60,16 @@ def import_alias_api():
     if not os.path.exists(module_path):
         return
 
-    # finally, import the alias_api module directly from the pyd file
-    if sys.version_info.major == 3:
-        import importlib.util
-        spec = importlib.util.spec_from_file_location(module_name, module_path)
-        alias_api = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(alias_api)
-    else:
-        import imp
-        alias_api = imp.load_source("alias_api", module_path)
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    alias_api = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(alias_api)
 
     # add the newly created module oject to sys.modules and remap the globals accessor to point at our new module
     sys.modules["alias_api"] = alias_api
     globals()["alias_api"] = sys.modules["alias_api"]
 
+
+if sys.version_info.major < 3:
+    raise Exception("Alias Python API supports Python version >= 3. Using Python version {}".format(sys.version))
 
 import_alias_api()
