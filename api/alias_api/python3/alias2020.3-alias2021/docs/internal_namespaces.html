@@ -80,6 +80,13 @@
 <span id="_CPPv3N4alPy17PythonCallbackFnsE"></span><span id="_CPPv2N4alPy17PythonCallbackFnsE"></span><span id="alPy::PythonCallbackFns"></span><span class="target" id="namespaceal_py_1afd766fed2772d7f1bd20e653c8f22e71"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4alPy16PythonCallbackFnE" title="alPy::PythonCallbackFn"><span class="n"><span class="pre">PythonCallbackFn</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PythonCallbackFns</span></span></span><a class="headerlink" href="#_CPPv4N4alPy17PythonCallbackFnsE" title="Permalink to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N4alPy27TraverseDagPythonCallbackFnE">
+<span id="_CPPv3N4alPy27TraverseDagPythonCallbackFnE"></span><span id="_CPPv2N4alPy27TraverseDagPythonCallbackFnE"></span><span id="alPy::TraverseDagPythonCallbackFn"></span><span class="target" id="namespaceal_py_1a8c0064440091751746b2588c3424ce01"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">statusCode</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">AlDagNode</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TraverseDagPythonCallbackFn</span></span></span><a class="headerlink" href="#_CPPv4N4alPy27TraverseDagPythonCallbackFnE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Define a type for function signatures of node traveral callbacks. </p>
+<p>Param 1: AlDagNode* The node currently being traversed Return: Alias statusCode </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
@@ -770,6 +777,11 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4alPy17defineTraverseDagERN2py6moduleE">
+<span id="_CPPv3N4alPy17defineTraverseDagERN2py6moduleE"></span><span id="_CPPv2N4alPy17defineTraverseDagERN2py6moduleE"></span><span id="alPy::defineTraverseDag__py::moduleR"></span><span class="target" id="namespaceal_py_1a00f6a4800341277a2d2d669bb0b485f7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">defineTraverseDag</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">py</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">module</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy17defineTraverseDagERN2py6moduleE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N4alPy15deleteNullNodesEv">
 <span id="_CPPv3N4alPy15deleteNullNodesEv"></span><span id="_CPPv2N4alPy15deleteNullNodesEv"></span><span id="alPy::deleteNullNodes"></span><span class="target" id="namespaceal_py_1a0a27fca7f3b884ae3a28f9c35db80ec7"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deleteNullNodes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4alPy15deleteNullNodesEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Delete all the null nodes of the current scene. </p>
@@ -922,6 +934,13 @@
 <dd><em>#include &lt;stage.h&gt;</em><p>Object encapsulating an Alias stage. </p>
 </dd></dl>
 
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N4alPy26TraverseDagPythonCallbacksE">
+<span id="_CPPv3N4alPy26TraverseDagPythonCallbacksE"></span><span id="_CPPv2N4alPy26TraverseDagPythonCallbacksE"></span><span id="alPy::TraverseDagPythonCallbacks"></span><span class="target" id="structal_py_1_1_traverse_dag_python_callbacks"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TraverseDagPythonCallbacks</span></span></span><a class="headerlink" href="#_CPPv4N4alPy26TraverseDagPythonCallbacksE" title="Permalink to this definition"></a><br /></dt>
+<dd><em>#include &lt;traverse_dag.h&gt;</em><p>Struct to hold Python callback functions to pass to the C++ traverse DAG function. </p>
+<p>groupNodeFunc The Python calback to trigger when traversing over a group node leafNodeFunc The Python calback to trigger when traversing over a non-group node </p>
+</dd></dl>
+
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N4alPy7VariantE">
 <span id="_CPPv3N4alPy7VariantE"></span><span id="_CPPv2N4alPy7VariantE"></span><span id="alPy::Variant"></span><span class="target" id="classal_py_1_1_variant"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Variant</span></span></span><br /></dt>
@@ -931,16 +950,54 @@
 
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygennamespace: Cannot find namespace “alPyOA” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/d-shotgun_alias-python-api_PR-44/build/python3_AliasSurface2020.3/bin/Release/docs//doxygen/xml</p>
+<p>doxygennamespace: Cannot find namespace “alPyOA” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/_shotgun_alias-python-api_master/build/python3_AliasSurface2020.3/bin/Release/docs//doxygen/xml</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygennamespace: Cannot find namespace “alPyOM” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/d-shotgun_alias-python-api_PR-44/build/python3_AliasSurface2020.3/bin/Release/docs//doxygen/xml</p>
+<p>doxygennamespace: Cannot find namespace “alPyOM” in doxygen xml output for project “alias-python-api” from directory: C:/Jenkins/workspace/_shotgun_alias-python-api_master/build/python3_AliasSurface2020.3/bin/Release/docs//doxygen/xml</p>
 </div>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv48alPyMath">
 <span id="_CPPv38alPyMath"></span><span id="_CPPv28alPyMath"></span><span id="alPyMath"></span><span class="target" id="namespaceal_py_math"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">alPyMath</span></span></span><a class="headerlink" href="#_CPPv48alPyMath" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8alPyMath7isCloseEdddd">
+<span id="_CPPv3N8alPyMath7isCloseEdddd"></span><span id="_CPPv2N8alPyMath7isCloseEdddd"></span><span id="alPyMath::isClose__double.double.double.double"></span><span class="target" id="namespaceal_py_math_1ad6af78ade8a7f764d91baab4536d8366"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isClose</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxDiff</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maxRelDiff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8alPyMath7isCloseEdddd" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Compare double precision floating point values. </p>
+<p>For reference, <a class="reference external" href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/">https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – The first double precision floating point value to compare </p></li>
+<li><p><strong>b</strong> – The second double precision floating point value to compare </p></li>
+<li><p><strong>maxDiff</strong> – The upper-bound value to determine if a and b are close </p></li>
+<li><p><strong>maxRelDiff</strong> – The relative multiplier value to determine if a and b are close</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true if a and b are close enough to be considered equal, else false. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8alPyMath6isZeroEd">
+<span id="_CPPv3N8alPyMath6isZeroEd"></span><span id="_CPPv2N8alPyMath6isZeroEd"></span><span id="alPyMath::isZero__double"></span><span class="target" id="namespaceal_py_math_1a1b003e0ecad5a26a46a935d91c52dd80"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isZero</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8alPyMath6isZeroEd" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Check if a double precision floating point value is zero. </p>
+<p>This is a convenience function that just calls isClose with b=0.0</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>a</strong> – The value to check </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true if a is close enough to zero to be considered equal to zero </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
 
 </section>
 
