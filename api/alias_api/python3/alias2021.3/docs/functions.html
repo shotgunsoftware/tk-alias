@@ -657,6 +657,23 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.delete_all_locators">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">delete_all_locators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.delete_all_locators" title="Permalink to this definition"></a></dt>
+<dd><p>Delete all locators.</p>
+<p>After this operation, all references to all AlLocators will be invalid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The status code result
+Success - everything was successfully deleted.
+Failure - the universe was not initialized or the deletion failed.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.delete_history">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">delete_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode"><span class="pre">alias_api.AlDagNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#alias_api.delete_history" title="Permalink to this definition"></a></dt>
 <dd><p>Delete the history from this dag node.</p>
@@ -693,6 +710,12 @@ Defaults to True.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The unique dag node name to search by.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dag node with the given name.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode">AlDagNode</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -734,6 +757,12 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.first_locator">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">first_locator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#id0" title="alias_api.AlLocator"><span class="pre">alias_api.AlLocator</span></a></span></span><a class="headerlink" href="#alias_api.first_locator" title="Permalink to this definition"></a></dt>
+<dd><p>Return the first AlLocator in the list of Alias AlLocator objects. None is returned if the list is empty.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.first_pick_item">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">first_pick_item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.first_pick_item" title="Permalink to this definition"></a></dt>
 <dd><p>Set the pick list to reference the first object in the list.</p>
@@ -752,6 +781,52 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.flatten_group_nodes">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">flatten_group_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.flatten_group_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>flatten_group_nodes() -&gt; int</p>
+<blockquote>
+<div><p>Flatten all top-level group nodes in the DAG.</p>
+<p>Any group nodes found in the top-level group nodes will have all its children moved to the
+top-level group node, and then be removed. The result is each group node specified will
+not contain any nested group nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">return</dt>
+<dd class="field-odd"><p>The status code result of the flatten operation.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>int(AlStatusCode)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>flatten_group_nodes(group_nodes: List[alias_api.AlGroupNode]) -&gt; int</p>
+<blockquote>
+<div><p>Flatten the specified group nodes.</p>
+<p>Any group nodes found in the specified group nodes will have all its children moved to the
+top-level group node, and then itself will be removed. The result is each group node
+specified will not contain any nested group nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param group_nodes</dt>
+<dd class="field-odd"><p>The group nodes to flatten.</p>
+</dd>
+<dt class="field-even">type group_nodes</dt>
+<dd class="field-even"><p>list&lt;AlGroupNode&gt;</p>
+</dd>
+<dt class="field-odd">return</dt>
+<dd class="field-odd"><p>The status code result of the flatten operation.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>int(AlStatusCode)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.get_alternative_by_name">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_alternative_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlReferenceFileSet" title="alias_api.AlReferenceFileSet"><span class="pre">alias_api.AlReferenceFileSet</span></a></span></span><a class="headerlink" href="#alias_api.get_alternative_by_name" title="Permalink to this definition"></a></dt>
 <dd><p>Return the AlReferenceFileSet matching the given name.</p>
@@ -764,9 +839,15 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.get_annotation_locator_strings">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_annotation_locator_strings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.get_annotation_locator_strings" title="Permalink to this definition"></a></dt>
+<dd><p>Return the string value for all annotation locators in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.get_annotation_locators">
-<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_annotation_locators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.get_annotation_locators" title="Permalink to this definition"></a></dt>
-<dd><p>Return all the annotation locators of the current file.</p>
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_annotation_locators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">alias_api.AlAnnotationLocator</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.get_annotation_locators" title="Permalink to this definition"></a></dt>
+<dd><p>Return all annotation locators in the Alias Universe.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -806,6 +887,23 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.get_empty_layers">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_empty_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_folders</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">set()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.get_empty_layers" title="Permalink to this definition"></a></dt>
+<dd><p>Return all empty layers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>skip_layers</strong> (<em>list&lt;str&gt;</em>) – List of layer names to skip when checking for empty ones.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The empty layers.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list&lt;AlLayer&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.get_layer_by_name">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_layer_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a></span></span><a class="headerlink" href="#alias_api.get_layer_by_name" title="Permalink to this definition"></a></dt>
 <dd><p>Return a layer given its name in the Alias Universe.</p>
@@ -837,8 +935,26 @@ Defaults to True.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alias_api.get_layers">
-<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_layers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.get_layers" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">set()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_numbers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">set()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_folders</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_non_folders</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.get_layers" title="Permalink to this definition"></a></dt>
 <dd><p>Return a list of all the layers in the Alias Universe.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.get_layers_using_multiple_shaders">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_layers_using_multiple_shaders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.get_layers_using_multiple_shaders" title="Permalink to this definition"></a></dt>
+<dd><p>Return layers whose geometry do not all use the one same shader.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.get_locator_by_name">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_locator_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#id0" title="alias_api.AlLocator"><span class="pre">alias_api.AlLocator</span></a></span></span><a class="headerlink" href="#alias_api.get_locator_by_name" title="Permalink to this definition"></a></dt>
+<dd><p>Return the AlLocator object for the given name.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.get_nesting_groups">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">get_nesting_groups</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="classes.html#alias_api.AlGroupNode" title="alias_api.AlGroupNode"><span class="pre">alias_api.AlGroupNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.get_nesting_groups" title="Permalink to this definition"></a></dt>
+<dd><p>Return the list of top-level group nodes that contain at least one group.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1094,6 +1210,24 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.next_locator">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">next_locator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cur_locator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="classes.html#id0" title="alias_api.AlLocator"><span class="pre">alias_api.AlLocator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#id0" title="alias_api.AlLocator"><span class="pre">alias_api.AlLocator</span></a></span></span><a class="headerlink" href="#alias_api.next_locator" title="Permalink to this definition"></a></dt>
+<dd><p>Return the AlLocator following cur_locator in the list of Alias AlLocator objects.</p>
+<p>None is returned if cur_locator has no next locator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cur_locator</strong> (<a class="reference internal" href="classes.html#id0" title="alias_api.AlLocator"><em>AlLocator</em></a>) – The locator from which to walk forward.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The locator following the <cite>cur_locator</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="classes.html#id0" title="alias_api.AlLocator">AlLocator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.next_pick_item">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">next_pick_item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.next_pick_item" title="Permalink to this definition"></a></dt>
 <dd><p>Set the pick list to reference the next object in the list.</p>
@@ -1206,6 +1340,247 @@ Defaults to True.</p></li>
 <dt class="sig sig-object py" id="alias_api.save_file_as">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">save_file_as</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.save_file_as" title="Permalink to this definition"></a></dt>
 <dd><p>Save the current file to the given path.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.search_dag">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">search_dag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">alias_api.TraverseDagInputData</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">alias_api.TraverseDagOutputData</span></span></span><a class="headerlink" href="#alias_api.search_dag" title="Permalink to this definition"></a></dt>
+<dd><p>Search the entire DAG validating each node with the provided input data.</p>
+<p>The input data will be used to filter the output data results. See <cite>TraverseDagInputData</cite>
+for more details on how to filter the output data.</p>
+<p>NOTE: this is a customized <cite>traverse_dag</cite> function optimized for this specific use case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_data</strong> (<em>TraverseDagInputData</em>) – The input data to pass to the DAG traversal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the traversal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.search_node_has_history">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">search_node_has_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">alias_api.TraverseDagInputData</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">alias_api.TraverseDagOutputData</span></span></span><a class="headerlink" href="#alias_api.search_node_has_history" title="Permalink to this definition"></a></dt>
+<dd><p>Search the entire DAG for nodes with construction history.</p>
+<p>The <cite>input_data</cite> will be used to filter the output data results. See <cite>TraverseDagInputData</cite>
+for more details on how to filter the output data.</p>
+<p>NOTE: this is a customized <cite>traverse_dag</cite> function optimized for this specific use case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_data</strong> (<em>TraverseDagInputData</em>) – The input data to pass to the DAG traversal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the traversal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.search_node_has_non_origin_pivot">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">search_node_has_non_origin_pivot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">alias_api.TraverseDagInputData</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">alias_api.TraverseDagOutputData</span></span></span><a class="headerlink" href="#alias_api.search_node_has_non_origin_pivot" title="Permalink to this definition"></a></dt>
+<dd><p>Search the entire DAG for nodes with scale or rotate pivots not positioned at the origin.</p>
+<p>The <cite>input_data</cite> will be used to filter the output data results. See <cite>TraverseDagInputData</cite>
+for more details on how to filter the output data.</p>
+<p>NOTE: this is a customized <cite>traverse_dag</cite> function optimized for this specific use case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_data</strong> (<em>TraverseDagInputData</em>) – The input data to pass to the DAG traversal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the traversal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.search_node_has_non_zero_transform">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">search_node_has_non_zero_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">alias_api.TraverseDagInputData</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">alias_api.TraverseDagOutputData</span></span></span><a class="headerlink" href="#alias_api.search_node_has_non_zero_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Search the entire DAG for nodes that do not have a zero transform.</p>
+<p>The <cite>input_data</cite> will be used to filter the output data results. See <cite>TraverseDagInputData</cite>
+for more details on how to filter the output data.</p>
+<p>NOTE: this is a customized <cite>traverse_dag</cite> function optimized for this specific use case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_data</strong> (<em>TraverseDagInputData</em>) – The input data to pass to the DAG traversal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the traversal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.search_node_is_instance">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">search_node_is_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">alias_api.TraverseDagInputData</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">alias_api.TraverseDagOutputData</span></span></span><a class="headerlink" href="#alias_api.search_node_is_instance" title="Permalink to this definition"></a></dt>
+<dd><p>Search the entire DAG for nodes that are instances.</p>
+<dl class="simple">
+<dt>A node is considered an instance if:</dt><dd><ul class="simple">
+<li><p>it is a group node</p></li>
+<li><p>it shares its children with another sibling group node; e.g. when groupNode.isInstanced() = true</p></li>
+<li><p>its previous sibling node is an instance; e.g. when groupNode.prevInstance() is not null</p></li>
+</ul>
+</dd>
+</dl>
+<p>The <cite>input_data</cite> will be used to filter the output data results. See <cite>TraverseDagInputData</cite>
+for more details on how to filter the output data.</p>
+<p>NOTE: this is a customized <cite>traverse_dag</cite> function optimized for this specific use case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_data</strong> (<em>TraverseDagInputData</em>) – The input data to pass to the DAG traversal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the traversal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.search_node_layer_does_not_match_parent_layer">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">search_node_layer_does_not_match_parent_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">alias_api.TraverseDagInputData</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">alias_api.TraverseDagOutputData</span></span></span><a class="headerlink" href="#alias_api.search_node_layer_does_not_match_parent_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Search the entire DAG for nodes that do not have the same layer assigned as their parent node.</p>
+<p>The <cite>input_data</cite> will be used to filter the output data results. See <cite>TraverseDagInputData</cite>
+for more details on how to filter the output data.</p>
+<p>NOTE: this is a customized <cite>traverse_dag</cite> function optimized for this specific use case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_data</strong> (<em>TraverseDagInputData</em>) – The input data to pass to the DAG traversal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the traversal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.search_node_unused_curves_on_surface">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">search_node_unused_curves_on_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">alias_api.TraverseDagInputData</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">alias_api.TraverseDagOutputData</span></span></span><a class="headerlink" href="#alias_api.search_node_unused_curves_on_surface" title="Permalink to this definition"></a></dt>
+<dd><p>Search the entire DAG for nodes that have unused curves on surface.</p>
+<p>A curve on surface is unused if it is not being used to trim the surface it is on.</p>
+<p>The <cite>input_data</cite> will be used to filter the output data results. See <cite>TraverseDagInputData</cite>
+for more details on how to filter the output data.</p>
+<p>NOTE: this is a customized <cite>traverse_dag</cite> function optimized for this specific use case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_data</strong> (<em>TraverseDagInputData</em>) – The input data to pass to the DAG traversal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the traversal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.traverse_dag">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">traverse_dag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.traverse_dag" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>traverse_dag(node_callback: Callable[[alias_api.AlDagNode], int]) -&gt; alias_api.TraverseDagOutputData</p>
+<blockquote>
+<div><p>Traverse the entire DAG and trigger the provided callback for each node.</p>
+<p>For each node in the DAG, the <cite>node_callback</cite> will be called with the current node being
+traversed. The <cite>node_callback</cite> will determine if the current node will be accepted (included)
+in the traversal output data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param node_callback</dt>
+<dd class="field-odd"><p>The node callback during traversal for all nodes</p>
+</dd>
+<dt class="field-even">type node_callback</dt>
+<dd class="field-even"><p>function(AlDagNode) -&gt; int(AlStatusCode)</p>
+</dd>
+<dt class="field-odd">return</dt>
+<dd class="field-odd"><p>The output data from the DAG traversal.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>TraverseDagOutputData</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>traverse_dag(group_node_callback: Callable[[alias_api.AlDagNode], int], leaf_node_callback: Callable[[alias_api.AlDagNode], int]) -&gt; alias_api.TraverseDagOutputData</p>
+<blockquote>
+<div><p>Traverse the entire DAG and trigger the provided callback for each node.</p>
+<p>For each node in the DAG, the one of the provided callbacks will be called with the current
+node being traversed. The callback will determine if the current node will be accepted
+(included) in the traversal output data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param group_node_callback</dt>
+<dd class="field-odd"><p>The node callback during traversal for group nodes</p>
+</dd>
+<dt class="field-even">type group_node_callback</dt>
+<dd class="field-even"><p>function(AlDagNode) -&gt; int(AlStatusCode)</p>
+</dd>
+<dt class="field-odd">param leaf_node_callback</dt>
+<dd class="field-odd"><p>The node callback during traversal for leaf nodes</p>
+</dd>
+<dt class="field-even">type leaf_node_callback</dt>
+<dd class="field-even"><p>function(AlDagNode) -&gt; int(AlStatusCode)</p>
+</dd>
+<dt class="field-odd">return</dt>
+<dd class="field-odd"><p>The output data from the DAG traversal.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>TraverseDagOutputData</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>traverse_dag(root: alias_api.AlDagNode, group_node_callback: Callable[[alias_api.AlDagNode], int], leaf_node_callback: Callable[[alias_api.AlDagNode], int]) -&gt; alias_api.TraverseDagOutputData</p>
+<blockquote>
+<div><p>Traverse the DAG starting at the <cite>root</cite> node, and trigger the provided callbacks for each node.</p>
+<p>For each node in the DAG, the one of the provided callbacks will be called with the current
+node being traversed. The callback will determine if the current node will be accepted
+(included) in the traversal output data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param root</dt>
+<dd class="field-odd"><p>The root node to start the traversal at</p>
+</dd>
+<dt class="field-even">type root</dt>
+<dd class="field-even"><p>AlDagNode</p>
+</dd>
+<dt class="field-odd">param group_node_callback</dt>
+<dd class="field-odd"><p>The node callback during traversal for group nodes</p>
+</dd>
+<dt class="field-even">type group_node_callback</dt>
+<dd class="field-even"><p>function(AlDagNode) -&gt; int(AlStatusCode)</p>
+</dd>
+<dt class="field-odd">param leaf_node_callback</dt>
+<dd class="field-odd"><p>The node callback during traversal for leaf nodes</p>
+</dd>
+<dt class="field-even">type leaf_node_callback</dt>
+<dd class="field-even"><p>function(AlDagNode) -&gt; int(AlStatusCode)</p>
+</dd>
+<dt class="field-odd">return</dt>
+<dd class="field-odd"><p>The output data from the DAG traversal.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>TraverseDagOutputData</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
