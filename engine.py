@@ -14,8 +14,6 @@ import sys
 import sgtk
 from sgtk.util import LocalFileStorageManager
 
-import alias_api
-
 
 class AliasEngine(sgtk.platform.Engine):
     """
@@ -32,7 +30,6 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_execpath = None
         self.alias_bindir = None
         self.alias_version = None
-        # self._dialog_parent = None
         self.__event_watcher = None
         self.__scene_data_validator = None
 
@@ -55,6 +52,16 @@ class AliasEngine(sgtk.platform.Engine):
                   dictionary. eg: {"name": "AfterFX", "version": "2017.1.1"}
         """
         return dict(name="Alias", version="unknown")
+
+    @property
+    def has_ui(self):
+        """
+        Detect and return if Alias is running in interactive/non-interactive mode
+        """
+        if os.path.basename(sys.executable) == "Alias.exe":
+            return True
+        else:
+            return False
 
     @property
     def context_change_allowed(self):
@@ -91,9 +98,10 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("%s: Post context change...", self)
 
-        # Rebuild the menu only if we change of context
-        self._menu_generator.create_menu()
-        self._menu_generator.refresh()
+        # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
+        if self.has_ui:
+            self._menu_generator.create_menu()
+            self._menu_generator.refresh()
 
     def pre_app_init(self):
         """
@@ -103,11 +111,11 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("%s: Initializing..." % (self,))
 
+        from sgtk.platform.qt import QtCore, QtGui
+
         # unicode characters returned by the shotgun api need to be converted
         # to display correctly in all of the app windows
         # tell QT to interpret C strings as utf-8
-        from sgtk.platform.qt import QtCore
-
         utf8 = QtCore.QTextCodec.codecForName("utf-8")
         QtCore.QTextCodec.setCodecForCStrings(utf8)
         self.logger.debug("set utf-8 codec for widget text")
@@ -130,13 +138,28 @@ class AliasEngine(sgtk.platform.Engine):
             QtCore.QCoreApplication.addLibraryPath(plugins_dir)
 
         # Init QT main loop
-        self.init_qt_app()
+        if self.has_ui:
+            self.init_qt_app()
+
+        # Defer importing the Alias Python API until now so that a proper info message can be displayed to
+        # user if the api failed to import.
+        # NOTE: Ensure this check runs after the Qt app is created and before attempting to import the
+        # alias_api module, which means any engine functions that requires the alias_api module should import
+        # the module at the function declaration. TODO: move all alias_api functionality outside the engine
+        # and to its own module.
+        try:
+            import alias_api
+        except Exception as api_import_error:
+            error_msg = str(api_import_error)
+            self.logger.critical(error_msg)
+            QtGui.QMessageBox.critical(
+                self.get_parent_window(),
+                "Failed to import the Alias Python API",
+                error_msg,
+            )
 
         # import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
-
-        # dialog parent handler
-        # self._dialog_parent = self._tk_alias.DialogParent(engine=self)
 
         # event watcher
         self.__event_watcher = self._tk_alias.AliasEventWatcher()
@@ -156,11 +179,11 @@ class AliasEngine(sgtk.platform.Engine):
             self.logger.debug("Couldn't get Alias version. Skip version comparison")
             return
 
-        if int(self.alias_version[0:4]) > self.get_setting(
-            "compatibility_dialog_min_version", 2021
+        if (
+            int(self.alias_version[0:4])
+            > self.get_setting("compatibility_dialog_min_version", 2021)
+            and self.has_ui
         ):
-            from sgtk.platform.qt import QtGui
-
             msg = (
                 "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
                 "You can continue to use the Toolkit but you may experience bugs or "
@@ -169,10 +192,14 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
+                self.get_parent_window(),
+                "Warning - ShotGrid Pipeline Toolkit!",
+                msg,
             )
-        elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
-            "compatibility_dialog_old_version"
+        elif (
+            int(self.alias_version[0:4]) < 2021
+            and self.get_setting("compatibility_dialog_old_version")
+            and self.has_ui
         ):
             from sgtk.platform.qt import QtGui
 
@@ -184,7 +211,9 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
+                self.get_parent_window(),
+                "Warning - ShotGrid Pipeline Toolkit!",
+                msg,
             )
 
     def post_app_init(self):
@@ -194,8 +223,9 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("%s: Post Initializing...", self)
 
         # init menu
-        self._menu_generator = self._tk_alias.AliasMenuGenerator(engine=self)
-        self._menu_generator.create_menu(clean_menu=False)
+        if self.has_ui:
+            self._menu_generator = self._tk_alias.AliasMenuGenerator(engine=self)
+            self._menu_generator.create_menu(clean_menu=False)
 
         self._run_app_instance_commands()
 
@@ -206,7 +236,8 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("%s: Destroying...", self)
 
         # Clean the menu
-        self._menu_generator.clean_menu()
+        if self.has_ui:
+            self._menu_generator.clean_menu()
 
         self.__event_watcher.stop_watching()
 
@@ -247,12 +278,6 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
         self._initialize_dark_look_and_feel()
-
-    # def _get_dialog_parent(self):
-    #     """
-    #     Get Alias dialog parent
-    #     """
-    #     return self._dialog_parent.get_dialog_parent()
 
     def _run_app_instance_commands(self):
         """
@@ -341,6 +366,8 @@ class AliasEngine(sgtk.platform.Engine):
                          the current one.
         """
 
+        import alias_api
+
         if not context:
             context = self.context
 
@@ -360,6 +387,8 @@ class AliasEngine(sgtk.platform.Engine):
         Convenience function to call the Alias Python API to save the file and ensure
         the context is saved for the current stage.
         """
+
+        import alias_api
 
         status = alias_api.save_file()
         if status != int(alias_api.AlStatusCode.Success):
@@ -381,6 +410,8 @@ class AliasEngine(sgtk.platform.Engine):
         :type path: str
         """
 
+        import alias_api
+
         status = alias_api.save_file_as(path)
         if status != int(alias_api.AlStatusCode.Success):
             self.logger.error(
@@ -400,6 +431,8 @@ class AliasEngine(sgtk.platform.Engine):
         :param path: the file path to open.
         :type path: str
         """
+
+        import alias_api
 
         status = alias_api.open_file(path)
         if status != int(alias_api.AlStatusCode.Success):
@@ -443,6 +476,8 @@ class AliasEngine(sgtk.platform.Engine):
                             will not be triggered at all for for this operation.
         :type event_types: list<AlMessageType>
         """
+
+        import alias_api
 
         # Check that all api functions exist, if not abort
         for api_func, obj, _, _ in alias_api_ops:
@@ -496,6 +531,8 @@ class AliasEngine(sgtk.platform.Engine):
         """
         A callback happening when an Alias stage is selected.
         """
+
+        import alias_api
 
         current_stage = alias_api.get_current_stage()
 

@@ -9,7 +9,5 @@
 # not expressly granted therein are reserved by Autodesk, Inc.
 
 from .menu_generation import AliasMenuGenerator
-
-# from .dialog_parent import DialogParent
 from .alias_event_watcher import AliasEventWatcher
 from .scene_data_validator import AliasSceneDataValidator
