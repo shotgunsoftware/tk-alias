@@ -20,6 +20,16 @@ from . import utils as api_utils
 # AlDagNode functions
 # -------------------------------------------------------------------------------------------------------
 
+def is_node_template(node):
+    """
+    Check if the node is set as a template.
+
+    :param node: The node to check.
+    :type node: AlDagNode
+    """
+
+    return bool(node.is_display_mode_set(alias_api.AlDisplayModeType.Template))
+
 def get_node_shader(node):
     """
     Get the shader assigned to the given node.

@@ -10,6 +10,7 @@
 
 import alias_api
 
+from . import dag_node as api_dag_node
 from . import utils as api_utils
 
 # -------------------------------------------------------------------------------------------------------
@@ -44,6 +45,24 @@ def node_is_instance(node):
         return api_utils.failure_status()
     
     if node.is_instanced() and node.prev_instance():
+        return api_utils.success_status()
+
+    return api_utils.failure_status()
+
+def node_is_template(node):
+    """
+    Return success if the given node set as a template.
+
+    This function can be used a node callback in a DAG traversal operation.
+
+    :return: Success status code if the node is an instance else Failure.
+    :rtype: AlStatusCode
+    """
+
+    if not node:
+        return api_utils.failure_status()
+    
+    if api_dag_node.is_node_template(node):
         return api_utils.success_status()
 
     return api_utils.failure_status()
