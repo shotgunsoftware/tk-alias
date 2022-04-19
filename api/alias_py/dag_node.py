@@ -288,3 +288,41 @@ def get_unused_curves_on_surface_for_nodes(nodes=None):
         unused_curves = result.curves_on_surface
 
     return unused_curves
+
+def get_nodes_by_type(node_types):
+    """
+    Get a list of all the nodes for the given types.
+
+    :param node_types: The list of types to get nodes of.
+    :type node_tyeps: list<AlObjectType>
+
+    :return: The list of nodes that are of the given types.
+    :rtype: list<AlDagNode>
+    """
+
+    accept_node_types = set(node_types)
+    input_data = alias_api.TraverseDagInputData(accept_node_types, True)
+    result = alias_api.search_dag(input_data)
+
+    return result.nodes
+
+def delete_nodes(nodes):
+    """
+    Convience function to delete the list of nodes.
+
+    :param nodes: The nodes to delete.
+    :type nodes: list<str> | list<AlDagNode>
+    """
+
+    if not nodes:
+        return
+
+    if isinstance(nodes, six.string_types):
+        nodes = [nodes]
+
+    for node in nodes:
+        if isinstance(node, six.string_types):
+            node = alias_api.find_dag_node_by_name(node)
+
+        if node:
+            node.delete_object()

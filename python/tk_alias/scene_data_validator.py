@@ -5,6 +5,7 @@
 # This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
 
+from operator import inv
 import sgtk
 from tank_vendor import six
 from tank.util import sgre as re
@@ -14,6 +15,7 @@ import alias_py.dag_node
 import alias_py.layer
 import alias_py.pick_list
 import alias_py.utils
+import alias_py.traverse_dag
 
 
 class AliasSceneDataValidator(object):
@@ -61,7 +63,11 @@ class AliasSceneDataValidator(object):
 
             invalid_items = invalid_items or []
             self.invalid_items = [
-                {"id": item.name, "name": item.name, "type": item.type(),}
+                {
+                    "id": item.name,
+                    "name": item.name,
+                    "type": item.type(),
+                }
                 for item in invalid_items
             ]
 
@@ -193,6 +199,9 @@ class AliasSceneDataValidator(object):
                 callback (function) - The function to call when the action is invoked
                 optional keys: FIXME
                 tooltip (str) - Text to display as for the item action's tooltip help messages
+            dependencies:
+                type: list<str>
+                values: The ids of the validation rules that this rule depends on. The validation rules in this dependencies list will ensure to be executed before this rule is executed. Only list direct dependencies (e.g. if A depnds on B and B depends on C, then only list B in A's dependencies, and C in B's)
 
         All `check_func` functions should return the following data:
             type: tuple
@@ -216,9 +225,16 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete unused Shaders",
                 "item_actions": [
-                    {"name": "Delete", "callback": self.fix_shader_unused,},
+                    {
+                        "name": "Delete",
+                        "callback": self.fix_shader_unused,
+                    },
                 ],
                 "kwargs": {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
+                "dependencies": [
+                    "node_is_null",
+                    "node_instances",
+                ],
             },
             "shader_is_vred_compatible": {
                 "name": "VRED Shaders",
@@ -246,6 +262,9 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all null nodes.",
                 "error_msg": "Found null node(s).",
+                "dependencies": [
+                    "node_has_construction_history",
+                ],
             },
             "node_has_construction_history": {
                 "name": "Node Construction History",
@@ -255,13 +274,21 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all construction history from all nodes.",
                 "error_msg": "Found node(s) with construction history.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
                 "item_actions": [
                     {
                         "name": "Delete",
                         "callback": self.fix_node_has_construction_history,
                     },
-                    {"name": "Select", "callback": self.pick_nodes,},
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
                 ],
                 "kwargs": {
                     "skip_node_types": [
@@ -280,11 +307,23 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Expand All",
                 "fix_tooltip": "Remove Instances by expanding them.",
                 "error_msg": "Instance found.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
-                "item_actions": [
-                    {"name": "Expand", "callback": self.fix_node_instances,},
-                    {"name": "Select", "callback": self.pick_nodes,},
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
                 ],
+                "item_actions": [
+                    {
+                        "name": "Expand",
+                        "callback": self.fix_node_instances,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "dependencies": ["node_has_construction_history", "node_is_null"],
             },
             "node_pivots_at_origin": {
                 "name": "Reset Pivots",
@@ -294,11 +333,23 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Reset All",
                 "fix_tooltip": "All pivots will be moved to the origin.",
                 "error_msg": "Found pivots not set to the origin.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
-                "item_actions": [
-                    {"name": "Reset", "callback": self.fix_node_pivots_at_origin,},
-                    {"name": "Select", "callback": self.pick_nodes,},
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
                 ],
+                "item_actions": [
+                    {
+                        "name": "Reset",
+                        "callback": self.fix_node_pivots_at_origin,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "dependencies": ["node_has_construction_history", "node_is_null"],
             },
             "node_has_zero_transform": {
                 "name": "Zero Transforms",
@@ -308,10 +359,21 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Reset All",
                 "fix_tooltip": "Reset all transforms to zero.",
                 "error_msg": "Found node(s) with non-zero transform.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
                 "item_actions": [
-                    {"name": "Reset", "callback": self.fix_node_has_zero_transform,},
-                    {"name": "Select", "callback": self.pick_nodes,},
+                    {
+                        "name": "Reset",
+                        "callback": self.fix_node_has_zero_transform,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
                 ],
                 "kwargs": {
                     "skip_node_types": [
@@ -319,13 +381,19 @@ class AliasSceneDataValidator(object):
                         *self._light_node_types,
                     ]
                 },
+                "dependencies": ["node_has_construction_history", "node_is_null"],
             },
             "node_is_not_in_layer": {
                 "name": "Nodes Must Not Be In Default Layer",
                 "description": "Only Light, Camera, Texture, and Group nodes can be in the default layer.",
                 "check_func": self.check_node_is_not_in_layer,
                 "error_msg": "Found invalid nodes in the default layer.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
                 "item_actions": [
                     {
                         "name": "Select",
@@ -342,6 +410,7 @@ class AliasSceneDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
+                "dependencies": ["node_is_null"],
             },
             "node_is_in_layer": {
                 "name": "Nodes Must Be In Default Layer",
@@ -351,10 +420,21 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Move",
                 "fix_tooltip": "Move all Lights, Cameras, Texture nodes to the default layer.",
                 "error_msg": "Required objects not found in the default layer.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
                 "item_actions": [
-                    {"name": "Move", "callback": self.fix_node_is_in_layer,},
-                    {"name": "Select", "callback": self.pick_nodes,},
+                    {
+                        "name": "Move",
+                        "callback": self.fix_node_is_in_layer,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
                 ],
                 "kwargs": {
                     "layer_name": self.DEFAULT_LAYER_NAME,
@@ -364,6 +444,7 @@ class AliasSceneDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
+                "dependencies": ["node_is_null"],
             },
             "node_name_matches_layer": {
                 "name": "Match Layer And Assigned Nodes' Names",
@@ -373,12 +454,24 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Rename All",
                 "fix_tooltip": "Rename Groups to match their respective Layer name.",
                 "error_msg": "Found Layer Group name mismatches.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
                 "item_actions": [
-                    {"name": "Rename", "callback": self.fix_node_name_matches_layer,},
-                    {"name": "Select", "callback": self.pick_nodes,},
+                    {
+                        "name": "Rename",
+                        "callback": self.fix_node_name_matches_layer,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "dependencies": ["node_is_in_layer", "node_is_not_in_layer"],
             },
             "node_layer_matches_parent": {
                 "name": "Node Layer Matches Parent Layer",
@@ -388,13 +481,26 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Reassign All",
                 "fix_tooltip": "Set each node's layer to match its parent's layer.",
                 "error_msg": "Found node(s) assigned to layer different than its parent.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
                 "item_actions": [
                     {
                         "name": "Reassign",
                         "callback": self.fix_node_layer_matches_parent,
                     },
-                    {"name": "Select", "callback": self.pick_nodes,},
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "dependencies": [
+                    "node_is_in_layer",
+                    "node_is_not_in_layer",
+                    "group_has_single_level_hierarchy",
                 ],
             },
             "node_dag_top_level": {
@@ -402,7 +508,12 @@ class AliasSceneDataValidator(object):
                 "description": "DAG top-level nodes must be of the specified types: AlGroupNode, AlCurveNode, AlFaceNode, AlSurfaceNode.",
                 "check_func": self.check_node_dag_top_level,
                 "error_msg": "Found invalid nodes in the top level of the DAG.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
                 "item_actions": [
                     {
                         "name": "Select",
@@ -419,6 +530,32 @@ class AliasSceneDataValidator(object):
                     ],
                 },
             },
+            "node_templates": {
+                "name": "Delete Templates",
+                "description": "Delete all geometry set as templates or reference geometry.",
+                "check_func": self.check_node_templates,
+                "fix_func": self.fix_node_templates,
+                "fix_name": "Delete All",
+                "fix_tooltip": "Delete nodes that are set as templates.",
+                "error_msg": "Found node(s) that are set as templates.",
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "item_actions": [
+                    {
+                        "name": "Delete",
+                        "callback": self.fix_node_templates,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "dependencies": ["node_has_construction_history", "node_is_null"],
+            },
             "node_unused_curves_on_surface": {
                 "name": "Unused Curves on Surface",
                 "description": "Check for nodes with unused curves on surfaces in the current scene.",
@@ -428,7 +565,10 @@ class AliasSceneDataValidator(object):
                 "fix_tooltip": "Delete node's unused curve on surface",
                 "error_msg": "Found node(s) with unused curve(s) on surface",
                 "actions": [
-                    {"name": "Select All Nodes", "callback": self.pick_nodes,},
+                    {
+                        "name": "Select All Nodes",
+                        "callback": self.pick_nodes,
+                    },
                     {
                         "name": "Select All COS",
                         "callback": self.pick_curves_on_surface_from_nodes,
@@ -439,11 +579,59 @@ class AliasSceneDataValidator(object):
                         "name": "Delete",
                         "callback": self.fix_node_unused_curves_on_surface,
                     },
-                    {"name": "Select Nodes", "callback": self.pick_nodes,},
+                    {
+                        "name": "Select Nodes",
+                        "callback": self.pick_nodes,
+                    },
                     {
                         "name": "Select COS",
                         "callback": self.pick_curves_on_surface_from_nodes,
                     },
+                ],
+                "dependencies": ["node_has_construction_history", "node_is_null"],
+            },
+            "curves": {
+                "name": "Delete Curves",
+                "description": "Check for curves in the current scene.",
+                "check_func": self.check_node_curves,
+                "fix_func": self.fix_node_curves,
+                "fix_name": "Delete All",
+                "fix_tooltip": "Delete all curves found.",
+                "error_msg": "Found curve(s).",
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "item_actions": [
+                    {
+                        "name": "Delete",
+                        "callback": self.fix_node_curves,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "dependencies": ["node_has_construction_history", "node_is_null"],
+            },
+            "set_empty": {
+                "name": "Delete Empty Sets",
+                "description": "Check for empty sets and delete them.",
+                "check_func": self.check_set_empty,
+                "fix_func": self.fix_set_empty,
+                "fix_name": "Delete All",
+                "fix_tooltip": "Delete empty sets found.",
+                "error_msg": "Found empty set(s).",
+                "item_actions": [
+                    {
+                        "name": "Delete",
+                        "callback": self.fix_set_empty,
+                    },
+                ],
+                "dependencies": [
+                    "node_is_null",
                 ],
             },
             "group_has_single_level_hierarchy": {
@@ -454,13 +642,25 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Flatten All",
                 "fix_tooltip": "Flatten Groups with multiple hierarchy levels.",
                 "error_msg": "Found Groups with multiple hierarchy levels.",
-                "actions": [{"name": "Select All", "callback": self.pick_nodes,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_nodes,
+                    },
+                ],
                 "item_actions": [
                     {
                         "name": "Flatten",
                         "callback": self.fix_group_has_single_level_hierarchy,
                     },
-                    {"name": "Select", "callback": self.pick_nodes,},
+                    {
+                        "name": "Select",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "dependencies": [
+                    "node_is_null",
+                    "layer_has_single_item",
                 ],
             },
             "layer_is_empty": {
@@ -471,25 +671,54 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete empty layers and folders",
                 "error_msg": "Found empty layers or folders",
-                "actions": [{"name": "Select All", "callback": self.pick_layers,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_layers,
+                    },
+                ],
                 "item_actions": [
-                    {"name": "Delete", "callback": self.fix_layer_is_empty,},
-                    {"name": "Select", "callback": self.pick_layers,},
+                    {
+                        "name": "Delete",
+                        "callback": self.fix_layer_is_empty,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_layers,
+                    },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "dependencies": [
+                    "node_is_null",
+                    "node_is_in_layer",
+                    "node_is_not_in_layer",
+                ],
             },
             "layer_has_single_shader": {
                 "name": "Layer Has Single Shader",
                 "description": "All nodes within a layer must use one single shader. Assign one shader to all nodes in the layer or split into multiple layers.",
                 "check_func": self.check_layer_has_single_shader,
                 "error_msg": "Found layer(s) using multiple shaders.",
-                "actions": [{"name": "Select All", "callback": self.pick_layers,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_layers,
+                    },
+                ],
                 "item_actions": [
-                    {"name": "Select Layer", "callback": self.pick_layers,},
+                    {
+                        "name": "Select Layer",
+                        "callback": self.pick_layers,
+                    },
                     {
                         "name": "Select Layer Geometry",
                         "callback": self.pick_nodes_assigned_to_layers,
                     },
+                ],
+                "dependencies": [
+                    "node_is_null",
+                    "node_is_in_layer",
+                    "node_is_not_in_layer",
                 ],
             },
             "layer_symmetry": {
@@ -500,10 +729,21 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Turn Off All",
                 "fix_tooltip": "Turn off symmetry for all Layers and Layer Folders.",
                 "error_msg": "Found Layers with symmetry turned on.",
-                "actions": [{"name": "Select All", "callback": self.pick_layers,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_layers,
+                    },
+                ],
                 "item_actions": [
-                    {"name": "Turn Off", "callback": self.fix_layer_symmetry,},
-                    {"name": "Select", "callback": self.pick_layers,},
+                    {
+                        "name": "Turn Off",
+                        "callback": self.fix_layer_symmetry,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_layers,
+                    },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
             },
@@ -515,12 +755,29 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Collapse All",
                 "fix_tooltip": "Collapse all layer items into a single group, and rename the group to the name of the layer.",
                 "error_msg": "Found layers with more than one item.",
-                "actions": [{"name": "Select All", "callback": self.pick_layers,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_layers,
+                    },
+                ],
                 "item_actions": [
-                    {"name": "Collapse", "callback": self.fix_layer_has_single_item,},
-                    {"name": "Select", "callback": self.pick_layers,},
+                    {
+                        "name": "Collapse",
+                        "callback": self.fix_layer_has_single_item,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_layers,
+                    },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "dependencies": [
+                    "layer_is_empty",
+                    "node_is_null",
+                    "node_is_in_layer",
+                    "node_is_not_in_layer",
+                ],
             },
             "locators": {
                 "name": "Locators",
@@ -530,10 +787,21 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete locators",
                 "error_msg": "Found locator(s).",
-                "actions": [{"name": "Select All", "callback": self.pick_locators,},],
+                "actions": [
+                    {
+                        "name": "Select All",
+                        "callback": self.pick_locators,
+                    },
+                ],
                 "item_actions": [
-                    {"name": "Delete", "callback": self.fix_locators,},
-                    {"name": "Select", "callback": self.pick_locators,},
+                    {
+                        "name": "Delete",
+                        "callback": self.fix_locators,
+                    },
+                    {
+                        "name": "Select",
+                        "callback": self.pick_locators,
+                    },
                 ],
             },
             "metadata": {
@@ -542,7 +810,7 @@ class AliasSceneDataValidator(object):
             },
             "placeholder": {
                 "name": "Placeholder",
-                "description": "Just a placeholder to an another manual check.",
+                "description": "Temporary for testing.",
             },
             "references_exist": {
                 "name": "Referenced Geometry",
@@ -817,7 +1085,8 @@ class AliasSceneDataValidator(object):
             invalid_items = [invalid_items]
 
         nodes = alias_py.dag_node.get_nodes_with_construction_history(
-            nodes=invalid_items, skip_node_types=set(skip_node_types),
+            nodes=invalid_items,
+            skip_node_types=set(skip_node_types),
         )
         for node in nodes:
             alias_api.delete_history(node)
@@ -906,8 +1175,6 @@ class AliasSceneDataValidator(object):
         :raises alias_api.AliasPythonException: if a failed to set a node's pivot to the origin
         """
 
-        # FIXME separate this out into two checks, one for scale and one for rotate?
-
         if isinstance(invalid_items, six.string_types):
             invalid_items = [invalid_items]
 
@@ -976,7 +1243,8 @@ class AliasSceneDataValidator(object):
             invalid_items = [invalid_items]
 
         nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
-            nodes=invalid_items, skip_node_types=set(skip_node_types),
+            nodes=invalid_items,
+            skip_node_types=set(skip_node_types),
         )
 
         for node in nodes:
@@ -1294,6 +1562,91 @@ class AliasSceneDataValidator(object):
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
+    def check_node_templates(self, fail_fast=False):
+        """
+        Check for nodes that are set as templates.
+
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
+        :type fail_fast: bool
+
+        :return: The check result object containing the data:
+                    (1) True if the check passed, else False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
+        """
+
+        result = alias_api.traverse_dag(alias_py.traverse_dag.node_is_template)
+        return AliasSceneDataValidator.CheckResult(invalid_items=result.nodes)
+
+    @sgtk.LogManager.log_timing
+    def fix_node_templates(self, invalid_items=None):
+        """
+        Process all nodes in the current scene, or the list of nodes if provided, and delete nodes that are
+        set as a template.
+
+        :param invalid_items: The list of nodes to process, if None, all nodes in the current scene will be
+            processed. Default=None
+        :type invalid_items: str | list<str> | list<AlDagNode>
+        """
+
+        # NOTE ask design - delete or untemplate?
+
+        if invalid_items:
+            alias_py.dag_node.delete_nodes(invalid_items)
+
+        else:
+            result = alias_api.traverse_dag(alias_py.traverse_dag.node_is_template)
+            for node in result.nodes:
+                node.delete_object()
+
+    @sgtk.LogManager.log_timing
+    def check_node_curves(self, fail_fast=False):
+        """
+        Check for nodes that represent a curve (ie. AlCurveNode objects).
+
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
+        :type fail_fast: bool
+
+        :return: The check result object containing the data:
+                    (1) True if the check passed, else False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
+        """
+
+        # Find all (and only) AlCurveNode objects
+        curve_nodes = alias_py.dag_node.get_nodes_by_type(
+            [alias_api.AlObjectType.CurveNodeType]
+        )
+
+        return AliasSceneDataValidator.CheckResult(invalid_items=curve_nodes)
+
+    @sgtk.LogManager.log_timing
+    def fix_node_curves(self, invalid_items=None):
+        """
+        Process all nodes in the current scene, or the list of nodes if provided, and delete all nodes that
+        represent a curve.
+
+        :param invalid_items: The list of nodes to process, if None, all nodes in the current scene will be
+            processed. Default=None
+        :type invalid_items: str | list<str> | list<AlDagNode>
+        """
+
+        if invalid_items:
+            alias_py.dag_node.delete_nodes(invalid_items)
+
+        else:
+            curve_nodes = alias_py.dag_node.get_nodes_by_type(
+                [alias_api.AlObjectType.CurveNodeType]
+            )
+
+            for node in curve_nodes:
+                node.delete_object()
+
+    @sgtk.LogManager.log_timing
     def check_node_unused_curves_on_surface(self, fail_fast=False):
         """
         Check for unused curves on surfaces in the current scene.
@@ -1333,6 +1686,65 @@ class AliasSceneDataValidator(object):
 
         for curve in unused_curves:
             curve.delete_object()
+
+    @sgtk.LogManager.log_timing
+    def check_set_empty(self, fail_fast=False):
+        """
+        Check for sets that empty.
+
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
+        :type fail_fast: bool
+
+        :return: The check result object containing the data:
+                    (1) True if the check passed, else False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
+        """
+
+        empty_sets = []
+        alias_set = alias_api.first_set()
+
+        while alias_set:
+            if alias_set.is_empty():
+                empty_sets.append(alias_set)
+            alias_set = alias_set.next_set()
+
+        return AliasSceneDataValidator.CheckResult(invalid_items=empty_sets)
+
+    @sgtk.LogManager.log_timing
+    def fix_set_empty(self, invalid_items=None):
+        """
+        Process all sets in the current scene, or the list of sets if provided, and delete all sets that are
+        empty.
+
+        :param invalid_items: The list of nodes to process, if None, all nodes in the current scene will be
+            processed. Default=None
+        :type invalid_items: str | list<str> | list<AlDagNode>
+        """
+
+        # The list of specifi set names to delete. Leave empty to delete all sets.
+        set_names = []
+        if invalid_items:
+            if isinstance(invalid_items, six.string_types):
+                set_names.append(invalid_items)
+            else:
+                for item in invalid_items:
+                    if isinstance(item, six.string_types):
+                        set_names.append(item)
+                    elif isinstance(item, alias_api.AlSet):
+                        set_names.append(item.name)
+
+        alias_set = alias_api.first_set()
+        while alias_set:
+            if alias_set.is_empty():
+                if not set_names or alias_set.name in set_names:
+                    alias_set.delete_object()
+            alias_set = alias_set.next_set()
+
+        if invalid_items:
+            alias_py.dag_node.delete_nodes(invalid_items)
 
     @sgtk.LogManager.log_timing
     def check_layer_is_empty(self, fail_fast=False, skip_layers=None):
@@ -1566,6 +1978,10 @@ class AliasSceneDataValidator(object):
                 if alias_py.utils.is_group_node(node):
                     layer_group_nodes.append(node)
 
+            if not layer_top_level_nodes:
+                # Skip empty layers
+                continue
+
             # first case: no existing group node
             if not layer_group_nodes:
                 group_node = alias_api.AlGroupNode()
@@ -1784,7 +2200,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def pick_nodes(self, invalid_items=None):
         """
-        Pick the nodes specified in the invalid_items.
+        Pick the nodes.
 
         :param invalid_items: The node(s) to pick.
         :type invalid_items: str | AlDagNode | list<str> | list<AlDagNode>
@@ -1801,7 +2217,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def pick_curves_on_surface_from_nodes(self, invalid_items=None):
         """
-        Pick the curves on surface from the nodes specified in the invalid_items.
+        Pick the curves on surface.
 
         :param invalid_items: The node(s) to pick curves on surface from.
         :type invalid_items: str | AlDagNode | list<str> | list<AlDagNode>
@@ -1818,7 +2234,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def pick_nodes_assigned_to_shaders(self, invalid_items=None):
         """
-        Pick the nodes assigned to the shaders in the invalid items.
+        Pick the nodes assigned to the shaders.
 
         :param invalid_items: The shaders to get assigned nodes to pick.
         :type invalid_items: str | list<str> | list<AlShader>
@@ -1834,7 +2250,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def pick_nodes_assigned_to_layers(self, invalid_items=None):
         """
-        Pick the nodes assigned to the layers in the invalid items.
+        Pick the nodes assigned to the layers.
 
         :param invalid_items: The layers to get assigned ndoes to pick.
         :type invalid_items: str | list<str> | list<AlLayer>
@@ -1850,7 +2266,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def pick_layers(self, invalid_items=None):
         """
-        Pick the layers in the invalid items.
+        Pick the layers.
 
         :param invalid_items: The layers to pick.
         :type invalid_items: str | list<str> | list<AlLayer>
