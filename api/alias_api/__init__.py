@@ -9,9 +9,10 @@ import os
 import sys
 
 ALIAS_API = {
-    "alias2021.3": {"min_version": "2021.3"},
-    "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.2.2"},
-    "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.2.2"},
+    "alias2022.2": {"min_version": "2022.2"},
+    "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
+    "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3.1"},
+    "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},
 }
 
 
@@ -39,7 +40,7 @@ def import_alias_api():
         max_version = ALIAS_API[api_folder].get("max_version")
         if min_version and alias_release_version < min_version:
             continue
-        if max_version and alias_release_version > max_version:
+        if max_version and alias_release_version >= max_version:
             continue
         api_folder_name = api_folder
 
