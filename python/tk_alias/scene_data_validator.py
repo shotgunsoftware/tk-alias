@@ -142,7 +142,7 @@ class AliasSceneDataValidator(object):
                 description": A node's name must match its assigned layer name
             node_pivots_at_origin:
                 description: Reset pivots to the origin (0,0,0)
-            node_unused_curves_on_surface:
+            curve_on_surface_unused:
                 description: Check for unused curve on surface nodes in the current scene
             references_exist:
                 description: Referenced geometry is prohibited
@@ -556,39 +556,77 @@ class AliasSceneDataValidator(object):
                 ],
                 "dependencies": ["node_has_construction_history", "node_is_null"],
             },
-            "node_unused_curves_on_surface": {
+            "curve_on_surface_unused": {
                 "name": "Unused Curves on Surface",
-                "description": "Check for nodes with unused curves on surfaces in the current scene.",
-                "check_func": self.check_node_unused_curves_on_surface,
-                "fix_func": self.fix_node_unused_curves_on_surface,
+                "description": "Check for unused curves on surface in the current scene.",
+                "check_func": self.check_curve_on_surface_unused,
+                "fix_func": self.fix_curve_on_surface_unused,
                 "fix_name": "Delete All",
-                "fix_tooltip": "Delete node's unused curve on surface",
-                "error_msg": "Found node(s) with unused curve(s) on surface",
+                "fix_tooltip": "Delete unused curve(s) on surface",
+                "error_msg": "Found unused curve(s) on surface.",
                 "actions": [
-                    {
-                        "name": "Select All Nodes",
-                        "callback": self.pick_nodes,
-                    },
                     {
                         "name": "Select All COS",
                         "callback": self.pick_curves_on_surface_from_nodes,
+                    },
+                    {
+                        "name": "Select All Nodes",
+                        "callback": self.pick_nodes,
                     },
                 ],
                 "item_actions": [
                     {
                         "name": "Delete",
-                        "callback": self.fix_node_unused_curves_on_surface,
-                    },
-                    {
-                        "name": "Select Nodes",
-                        "callback": self.pick_nodes,
+                        "callback": self.fix_curve_on_surface_unused,
                     },
                     {
                         "name": "Select COS",
                         "callback": self.pick_curves_on_surface_from_nodes,
                     },
+                    {
+                        "name": "Select Nodes",
+                        "callback": self.pick_nodes,
+                    },
                 ],
-                "dependencies": ["node_has_construction_history", "node_is_null"],
+                "dependencies": [
+                    "curve_on_surface_construction_history",
+                    "node_has_construction_history",
+                    "node_is_null",
+                ],
+            },
+            "curve_on_surface_construction_history": {
+                "name": "Delete Unused Curves on Surface Construction History",
+                "description": "Check for nodes with unused curves on surfaces with construction history in the current scene.",
+                "check_func": self.check_curve_on_surface_construction_history,
+                "fix_func": self.fix_curve_on_surface_construction_history,
+                "fix_name": "Delete All",
+                "fix_tooltip": "Delete construction history for unused curve on surface",
+                "error_msg": "Found construction history for unused curve(s) on surface.",
+                "actions": [
+                    {
+                        "name": "Select All COS",
+                        "callback": self.pick_curves_on_surface_from_nodes,
+                    },
+                    {
+                        "name": "Select All Nodes",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "item_actions": [
+                    {
+                        "name": "Delete",
+                        "callback": self.fix_curve_on_surface_unused,
+                    },
+                    {
+                        "name": "Select COS",
+                        "callback": self.pick_curves_on_surface_from_nodes,
+                    },
+                    {
+                        "name": "Select Nodes",
+                        "callback": self.pick_nodes,
+                    },
+                ],
+                "dependencies": ["node_has_construction_history"],
             },
             "curves": {
                 "name": "Delete Curves",
@@ -1647,7 +1685,7 @@ class AliasSceneDataValidator(object):
                 node.delete_object()
 
     @sgtk.LogManager.log_timing
-    def check_node_unused_curves_on_surface(self, fail_fast=False):
+    def check_curve_on_surface_unused(self, fail_fast=False):
         """
         Check for unused curves on surfaces in the current scene.
 
@@ -1667,7 +1705,7 @@ class AliasSceneDataValidator(object):
         return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
 
     @sgtk.LogManager.log_timing
-    def fix_node_unused_curves_on_surface(self, invalid_items=None):
+    def fix_curve_on_surface_unused(self, invalid_items=None):
         """
         Process all curves on surface current scene, or the list of curves on surface if provided, and delete
         unused curves on surface.
@@ -1686,6 +1724,53 @@ class AliasSceneDataValidator(object):
 
         for curve in unused_curves:
             curve.delete_object()
+
+    @sgtk.LogManager.log_timing
+    def check_curve_on_surface_construction_history(self, fail_fast=False):
+        """
+        Check for unused curves on surfaces that have construction history in the current scene.
+
+        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
+        :type fail_fast: bool
+
+        :return: The check result object containing the data:
+                    (1) True if the check passed, else False
+                    (2) A list of data pertaining to the invalid items found dict with required keys: id, name This will be an empty list if fail_fast=False
+                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
+        :rtype: AliasSceneValidation.CheckResult
+        """
+
+        unused_cos = alias_py.dag_node.get_unused_curves_on_surface_for_nodes()
+
+        invalid_nodes = []
+        for cos in unused_cos:
+            if alias_api.has_construction_history(cos):
+                invalid_nodes.append(cos.surface().surface_node())
+
+        return AliasSceneDataValidator.CheckResult(invalid_items=invalid_nodes)
+
+    @sgtk.LogManager.log_timing
+    def fix_curve_on_surface_construction_history(self, invalid_items=None):
+        """
+        Process all curves on surface current scene, or the list of curves on surface if provided, and delete
+        construction history for unused curves on surface.
+
+        :param invalid_items: The list of curves on surface to process, if None, all curves on surface
+                              current scene will be processed. Default=None
+        :type invalid_items: str | list<str> | list<AlCurveOnSurface>
+        """
+
+        if isinstance(invalid_items, six.string_types):
+            invalid_items = [invalid_items]
+
+        unused_cos = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
+            nodes=invalid_items
+        )
+
+        for cos in unused_cos:
+            if alias_api.has_construction_history(cos):
+                alias_api.delete_construction_history(cos)
 
     @sgtk.LogManager.log_timing
     def check_set_empty(self, fail_fast=False):
