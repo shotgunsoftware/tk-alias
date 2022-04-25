@@ -144,8 +144,8 @@ def pick_layers(layers=None, pick_all=False, clear_pick_list=True, redraw=True):
     :type redraw: bool
     """
 
-    if isinstance(invalid_items, six.string_types):
-        invalid_items = [invalid_items]
+    if isinstance(layers, six.string_types):
+        layers = [layers]
 
     if clear_pick_list or pick_all:
         # NOTE this does not clear the node pick list, this unpicks all the layers.
