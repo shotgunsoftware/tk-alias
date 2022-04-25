@@ -15,6 +15,8 @@ tk-multi-data-validation
 SceneDataValidatorHook
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+This hook will get the validation rule data from the :ref:`scene_data_validator` and pass it to the tk-multi-data-validation App.
+
 .. literalinclude:: ../hooks/tk-multi-data-validation/basic/scene_data_validator.py
     :language: python
 
