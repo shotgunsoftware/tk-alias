@@ -2502,7 +2502,7 @@ InvalidObject - the dag node was invalid</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alias_api.AlCurveNode.create">
-<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveNode" title="alias_api.AlCurveNode"><span class="pre">alias_api.AlCurveNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">curve</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">AlCurve</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveNode.create" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveNode" title="alias_api.AlCurveNode"><span class="pre">alias_api.AlCurveNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">curve</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">alias_api.AlCurve</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveNode.create" title="Permalink to this definition"></a></dt>
 <dd><p>Allocate the dag node for this object and attach it to the given AlCurve ‘curve’.</p>
 <p>This method should only be called once for any AlCurve. It is an error to this method
 twice or if the object has been read in from a wire file.</p>
@@ -2534,11 +2534,11 @@ AlStatusCode.InsufficientMemory - if not enough memory available</p>
 <span class="sig-name descname"><span class="pre">curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.AlCurveNode.curve" title="Permalink to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
-<li><p>curve(self: alias_api.AlCurveNode) -&gt; AlCurve</p></li>
+<li><p>curve(self: alias_api.AlCurveNode) -&gt; alias_api.AlCurve</p></li>
 </ol>
 <p>Return the curve data structure which can be used to acces the geometry of the curve.</p>
 <ol class="arabic" start="2">
-<li><p>curve(self: alias_api.AlCurveNode, tm: alias_api.AlTM) -&gt; AlCurve</p>
+<li><p>curve(self: alias_api.AlCurveNode, tm: alias_api.AlTM) -&gt; alias_api.AlCurve</p>
 <blockquote>
 <div><p>Return the curve data structure which can be used to acces the geometry of the curve.</p>
 <p>The AlTM ‘tm’ will be updated with the curve node’s transformation matrix, if a curve exists.</p>
@@ -3108,9 +3108,44 @@ InvalidObject - the dag node was invalid</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.control_point">
+<span class="sig-name descname"><span class="pre">control_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple[int,</span> <span class="pre">std::array&lt;double,4&gt;]</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.control_point" title="Permalink to this definition"></a></dt>
+<dd><p>Given a valid index, return the value of the control point in ‘point’.</p>
+<p>A valid index is one in the range 0 to numberOfControlPoints()-1.</p>
+<p>Note the control point is represented by the quadruple [u v 0.0 w],
+where “u” and “v” represent the control point in U-V parameter space,
+the “0.0” is unused, and the “w” is the homogeneous coordinate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – A valid index of the control point to return.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing (1) the status code result of the operation:</dt><dd><p>Success - the control point was returned
+InvalidArgument - the index was not valid or ‘point’ was NULL
+InvalidObject - the curve was invalid
+Failure - an error occurred</p>
+</dd>
+</dl>
+<p>and (2) the control point value.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.copy_wrapper">
 <span class="sig-name descname"><span class="pre">copy_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alias_api.AlObject" title="alias_api.AlObject"><span class="pre">alias_api.AlObject</span></a></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.copy_wrapper" title="Permalink to this definition"></a></dt>
 <dd><p>Return an exact duplicate of this AlCurveOnSurface wrapper.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.degree">
+<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.degree" title="Permalink to this definition"></a></dt>
+<dd><p>Return the degree of the curve. Return -1 if the curve is not valid.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3120,15 +3155,66 @@ InvalidObject - the dag node was invalid</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.form">
+<span class="sig-name descname"><span class="pre">form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="functions.html#alias_api.AlCurveFormType" title="alias_api.AlCurveFormType"><span class="pre">alias_api.AlCurveFormType</span></a></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.form" title="Permalink to this definition"></a></dt>
+<dd><p>Return the form of the curve, which is kOpen, kClosed or kPeriodic.</p>
+<p>If a curve on surface is periodic, it is tangent continuous at
+the point where it is closed. (If you use the “close” menu item
+in the interactive Alias pacakge, you actually make a curve
+periodic.) If a curve is periodic, it implies that it is closed.
+If a curve is kClosed, then it just means that its endpoints are
+coincident. Otherwise, the curve is kOpen.”</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.in_trim">
 <span class="sig-name descname"><span class="pre">in_trim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.in_trim" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True if this curve on surface is being used to trim the surface it is on, else False.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parametric_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.insert" title="Permalink to this definition"></a></dt>
+<dd><p>Insert an edit point into the curve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parametric_value</strong> (<em>float</em>) – The parametric value of the new edit point on the curve.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the operation:
+Success - the operation was successful
+InvalidObject - the given object is not valid
+InvalidArgument - parametric_value is out of bounds
+Failre - an error occurred</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="functions.html#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.is_picked">
 <span class="sig-name descname"><span class="pre">is_picked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPickable" title="alias_api.AlPickable"><span class="pre">alias_api.AlPickable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.is_picked" title="Permalink to this definition"></a></dt>
 <dd><p>Return True if the object is picked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.knot_value">
+<span class="sig-name descname"><span class="pre">knot_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.knot_value" title="Permalink to this definition"></a></dt>
+<dd><p>Given a valid knot index, return the value of the knot in ‘knotValue’.</p>
+<p>A valid knot index is one in the range of 0 - numberOfKnots()-1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – A valid index of hte knot value to return.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The value of the knot for the given index.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -3138,9 +3224,114 @@ InvalidObject - the dag node was invalid</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.next_curve_on_surface">
+<span class="sig-name descname"><span class="pre">next_curve_on_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.next_curve_on_surface" title="Permalink to this definition"></a></dt>
+<dd><p>Return the next curve on surface in the list of curves on surfaces that are attached to a specific surface. Return None if there is no next curve on surface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.number_of_control_points">
+<span class="sig-name descname"><span class="pre">number_of_control_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.number_of_control_points" title="Permalink to this definition"></a></dt>
+<dd><p>Return the number of control points.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.number_of_knots">
+<span class="sig-name descname"><span class="pre">number_of_knots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.number_of_knots" title="Permalink to this definition"></a></dt>
+<dd><p>Return the number of knots (just number of spans + 1). Return -1 if the curve is not valid.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.number_of_spans">
+<span class="sig-name descname"><span class="pre">number_of_spans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.number_of_spans" title="Permalink to this definition"></a></dt>
+<dd><p>Return the number of spans in the curve. Return -1 if the curve is not valid.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.pick">
 <span class="sig-name descname"><span class="pre">pick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPickable" title="alias_api.AlPickable"><span class="pre">alias_api.AlPickable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.pick" title="Permalink to this definition"></a></dt>
 <dd><p>Pick the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.prev_curve_on_surface">
+<span class="sig-name descname"><span class="pre">prev_curve_on_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.prev_curve_on_surface" title="Permalink to this definition"></a></dt>
+<dd><p>Return the previous curve on surface in the list of curves on surfaces that are attached to a specific surface. Return None if there is no next curve on surface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.real_number_of_knots">
+<span class="sig-name descname"><span class="pre">real_number_of_knots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.real_number_of_knots" title="Permalink to this definition"></a></dt>
+<dd><p>Return the actual number of knots on the curve. That is number_of_spans + 2*degree -1. Return -1 if the operation failed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.reverse">
+<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.reverse" title="Permalink to this definition"></a></dt>
+<dd><p>Reverse the direction of this curve on surface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.set_control_point">
+<span class="sig-name descname"><span class="pre">set_control_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self:</span> <span class="pre">alias_api.AlCurveOnSurface</span></em>, <em class="sig-param"><span class="pre">index:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">point:</span> <span class="pre">std::array&lt;double</span></em>, <em class="sig-param"><span class="pre">4&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.set_control_point" title="Permalink to this definition"></a></dt>
+<dd><p>Given a valid index, set the value of the control point in ‘point’.</p>
+<p>A valid index is one in the range 0 to numberOfControlPoints()-1.</p>
+<p>Note the control point is represented by the quadruple [u v 0.0 w],
+where “u” and “v” represent the control point in U-V parameter space,
+the “0.0” is unused, and the “w” is the homogeneous coordinate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – A valid index of the control point to set.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the operation:
+Success - the control point was returned
+InvalidArgument - the index was not valid or ‘point’ was NULL
+InvalidObject - the curve was invalid
+Failure - an error occurred</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="functions.html#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.set_knot_value">
+<span class="sig-name descname"><span class="pre">set_knot_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knot_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.set_knot_value" title="Permalink to this definition"></a></dt>
+<dd><p>Given a valid knot index, set the value of hte knot to be ‘knotValue’.</p>
+<p>A valid knot index is one in the range of 0 - numberOfKnots()-1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>int</em>) – A valid index of hte knot value to set.</p></li>
+<li><p><strong>knot_value</strong> (<em>float</em>) – The knot value to set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The status code result of the operation
+Success - the knot value was set
+InvalidArgument - the ‘index’ was not in the range 0…#knots-1
+InvalidObject - the curve was invalid
+AlreadyCreated - the curve was already in a trim
+Failure - an internal error occured</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="functions.html#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.set_visible">
+<span class="sig-name descname"><span class="pre">set_visible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">visible</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.set_visible" title="Permalink to this definition"></a></dt>
+<dd><p>Set the visibility of the curve on surface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.surface">
+<span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alias_api.AlSurface" title="alias_api.AlSurface"><span class="pre">AlSurface</span></a></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.surface" title="Permalink to this definition"></a></dt>
+<dd><p>Return the surface that this curve is on.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3153,6 +3344,12 @@ InvalidObject - the dag node was invalid</p>
 <dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.unpick">
 <span class="sig-name descname"><span class="pre">unpick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPickable" title="alias_api.AlPickable"><span class="pre">alias_api.AlPickable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.unpick" title="Permalink to this definition"></a></dt>
 <dd><p>Unpick the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlCurveOnSurface.visible">
+<span class="sig-name descname"><span class="pre">visible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurveOnSurface" title="alias_api.AlCurveOnSurface"><span class="pre">alias_api.AlCurveOnSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurveOnSurface.visible" title="Permalink to this definition"></a></dt>
+<dd><p>Return True if this curve is visible, else False if it is invisible.</p>
 </dd></dl>
 
 </dd></dl>
@@ -3697,7 +3894,7 @@ InvalidObject - the point is not valid</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="alias_api.AlCurvePoint.create">
-<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurvePoint" title="alias_api.AlCurvePoint"><span class="pre">alias_api.AlCurvePoint</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">curve</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">AlCurve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurvePoint.create" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlCurvePoint" title="alias_api.AlCurvePoint"><span class="pre">alias_api.AlCurvePoint</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">curve</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">alias_api.AlCurve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlCurvePoint.create" title="Permalink to this definition"></a></dt>
 <dd><p>Create a point on the given curve.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -5041,11 +5238,11 @@ InvalidObject - the dag node was invalid</p>
 <span class="sig-name descname"><span class="pre">curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.AlFaceNode.curve" title="Permalink to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
-<li><p>curve(self: alias_api.AlCurveNode) -&gt; AlCurve</p></li>
+<li><p>curve(self: alias_api.AlCurveNode) -&gt; alias_api.AlCurve</p></li>
 </ol>
 <p>Return the curve data structure which can be used to acces the geometry of the curve.</p>
 <ol class="arabic" start="2">
-<li><p>curve(self: alias_api.AlCurveNode, tm: alias_api.AlTM) -&gt; AlCurve</p>
+<li><p>curve(self: alias_api.AlCurveNode, tm: alias_api.AlTM) -&gt; alias_api.AlCurve</p>
 <blockquote>
 <div><p>Return the curve data structure which can be used to acces the geometry of the curve.</p>
 <p>The AlTM ‘tm’ will be updated with the curve node’s transformation matrix, if a curve exists.</p>
@@ -11575,6 +11772,12 @@ InvalidObject - the surface is invalid</p>
 <dd class="field-odd"><p><a class="reference internal" href="#alias_api.AlShader" title="alias_api.AlShader">AlShader</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlSurface.surface_node">
+<span class="sig-name descname"><span class="pre">surface_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlSurface" title="alias_api.AlSurface"><span class="pre">alias_api.AlSurface</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alias_api.AlSurfaceNode" title="alias_api.AlSurfaceNode"><span class="pre">AlSurfaceNode</span></a></span></span><a class="headerlink" href="#alias_api.AlSurface.surface_node" title="Permalink to this definition"></a></dt>
+<dd><p>Return the surface node for this surface. Return None if there is no surface node attached.</p>
 </dd></dl>
 
 <dl class="py method">

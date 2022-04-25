@@ -75,6 +75,7 @@
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -295,6 +296,8 @@
 </li>
       <li><a href="internal_namespaces.html#_CPPv4N4alPy23defineConstructionPlaneERN2py6moduleE">alPy::defineConstructionPlane (C++ function)</a>
 </li>
+      <li><a href="internal_namespaces.html#_CPPv4N4alPy11defineCurveERN2py6moduleE">alPy::defineCurve (C++ function)</a>
+</li>
       <li><a href="internal_namespaces.html#_CPPv4N4alPy15defineCurveNodeERN2py6moduleE">alPy::defineCurveNode (C++ function)</a>
 </li>
       <li><a href="internal_namespaces.html#_CPPv4N4alPy20defineCurveOnSurfaceERN2py6moduleE">alPy::defineCurveOnSurface (C++ function)</a>
@@ -358,6 +361,10 @@
       <li><a href="internal_namespaces.html#_CPPv4N4alPy13defineProductERN2py6moduleE">alPy::defineProduct (C++ function)</a>
 </li>
       <li><a href="internal_namespaces.html#_CPPv4N4alPy15defineReferenceERN2py6moduleE">alPy::defineReference (C++ function)</a>
+</li>
+      <li><a href="internal_namespaces.html#_CPPv4N4alPy9defineSetERN2py6moduleE">alPy::defineSet (C++ function)</a>
+</li>
+      <li><a href="internal_namespaces.html#_CPPv4N4alPy15defineSetMemberERN2py6moduleE">alPy::defineSetMember (C++ function)</a>
 </li>
       <li><a href="internal_namespaces.html#_CPPv4N4alPy12defineShaderERN2py6moduleE">alPy::defineShader (C++ function)</a>
 </li>
@@ -1927,6 +1934,8 @@
         <li><a href="classes.html#alias_api.AlTextureNode.comment">(alias_api.AlTextureNode method)</a>
 </li>
       </ul></li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.control_point">control_point() (alias_api.AlCurveOnSurface method)</a>
+</li>
       <li><a href="functions.html#alias_api.convert_face_node_to_trimmed_surface_node">convert_face_node_to_trimmed_surface_node() (in module alias_api)</a>
 </li>
       <li><a href="classes.html#alias_api.AlFaceNode.convert_to_trimmed_surface">convert_to_trimmed_surface() (alias_api.AlFaceNode method)</a>
@@ -2173,9 +2182,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes.html#alias_api.AlTM.decompose">decompose() (alias_api.AlTM method)</a>
 </li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.degree">degree() (alias_api.AlCurveOnSurface method)</a>
+</li>
       <li><a href="functions.html#alias_api.delete_all_construction_entities">delete_all_construction_entities() (in module alias_api)</a>
 </li>
       <li><a href="functions.html#alias_api.delete_all_locators">delete_all_locators() (in module alias_api)</a>
+</li>
+      <li><a href="functions.html#alias_api.delete_construction_history">delete_construction_history() (in module alias_api)</a>
 </li>
       <li><a href="functions.html#alias_api.delete_history">delete_history() (in module alias_api)</a>
 </li>
@@ -2327,11 +2340,13 @@
 </li>
       <li><a href="classes.html#alias_api.AlLight.first_linked_object">first_linked_object() (alias_api.AlLight method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functions.html#alias_api.first_locator">first_locator() (in module alias_api)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functions.html#alias_api.first_pick_item">first_pick_item() (in module alias_api)</a>
+</li>
+      <li><a href="functions.html#alias_api.first_set">first_set() (in module alias_api)</a>
 </li>
       <li><a href="classes.html#alias_api.AlFace.first_shader">first_shader() (alias_api.AlFace method)</a>
 
@@ -2348,6 +2363,8 @@
       <li><a href="functions.html#alias_api.first_switch_shader">first_switch_shader() (in module alias_api)</a>
 </li>
       <li><a href="functions.html#alias_api.flatten_group_nodes">flatten_group_nodes() (in module alias_api)</a>
+</li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.form">form() (alias_api.AlCurveOnSurface method)</a>
 </li>
       <li><a href="classes.html#alias_api.AlIterator.func">func() (alias_api.AlIterator method)</a>
 </li>
@@ -2535,6 +2552,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="functions.html#alias_api.has_annotation_locator">has_annotation_locator() (in module alias_api)</a>
 </li>
+      <li><a href="functions.html#alias_api.has_construction_history">has_construction_history() (in module alias_api)</a>
+</li>
       <li><a href="classes.html#alias_api.AlSurfaceNode.has_history">has_history() (alias_api.AlSurfaceNode method)</a>
 
       <ul>
@@ -2568,6 +2587,8 @@
       <li><a href="classes.html#alias_api.AlCurveOnSurface.in_trim">in_trim() (alias_api.AlCurveOnSurface method)</a>
 </li>
       <li><a href="functions.html#alias_api.initialize_universe">initialize_universe() (in module alias_api)</a>
+</li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.insert">insert() (alias_api.AlCurveOnSurface method)</a>
 </li>
       <li><a href="classes.html#alias_api.AlCopyOptions.instance_copy">instance_copy() (alias_api.AlCopyOptions method)</a>
 </li>
@@ -2849,6 +2870,14 @@
         <li><a href="classes.html#alias_api.AlFaceNode.join">(alias_api.AlFaceNode method)</a>
 </li>
       </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.knot_value">knot_value() (alias_api.AlCurveOnSurface method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -3182,6 +3211,8 @@
 </li>
       <li><a href="functions.html#alias_api.next_construction_entity">next_construction_entity() (in module alias_api)</a>
 </li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.next_curve_on_surface">next_curve_on_surface() (alias_api.AlCurveOnSurface method)</a>
+</li>
       <li><a href="classes.html#alias_api.AlFace.next_face">next_face() (alias_api.AlFace method)</a>
 </li>
       <li><a href="classes.html#alias_api.AlGroupNode.next_instance">next_instance() (alias_api.AlGroupNode method)</a>
@@ -3258,7 +3289,13 @@
 </li>
       <li><a href="classes.html#alias_api.AlLayer.number">number (alias_api.AlLayer property)</a>
 </li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.number_of_control_points">number_of_control_points() (alias_api.AlCurveOnSurface method)</a>
+</li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.number_of_knots">number_of_knots() (alias_api.AlCurveOnSurface method)</a>
+</li>
       <li><a href="classes.html#alias_api.AlCluster.number_of_members">number_of_members() (alias_api.AlCluster method)</a>
+</li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.number_of_spans">number_of_spans() (alias_api.AlCurveOnSurface method)</a>
 </li>
       <li><a href="classes.html#alias_api.AlMesh.number_of_triangles">number_of_triangles() (alias_api.AlMesh method)</a>
 </li>
@@ -3378,6 +3415,8 @@
 </li>
       <li><a href="classes.html#alias_api.AlCluster.prev_cluster">prev_cluster() (alias_api.AlCluster method)</a>
 </li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.prev_curve_on_surface">prev_curve_on_surface() (alias_api.AlCurveOnSurface method)</a>
+</li>
       <li><a href="classes.html#alias_api.AlFace.prev_face">prev_face() (alias_api.AlFace method)</a>
 </li>
       <li><a href="classes.html#alias_api.AlGroupNode.prev_instance">prev_instance() (alias_api.AlGroupNode method)</a>
@@ -3419,6 +3458,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="classes.html#alias_api.AlCurvePoint.radius">radius() (alias_api.AlCurvePoint method)</a>
+</li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.real_number_of_knots">real_number_of_knots() (alias_api.AlCurveOnSurface method)</a>
 </li>
       <li><a href="functions.html#alias_api.redraw_screen">redraw_screen() (in module alias_api)</a>
 </li>
@@ -3509,6 +3550,8 @@
       <li><a href="functions.html#alias_api.reset">reset() (in module alias_api)</a>
 </li>
       <li><a href="functions.html#alias_api.reset_stages">reset_stages() (in module alias_api)</a>
+</li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.reverse">reverse() (alias_api.AlCurveOnSurface method)</a>
 </li>
       <li><a href="classes.html#alias_api.AlTM.rotate">rotate() (alias_api.AlTM static method)</a>
 </li>
@@ -3766,6 +3809,8 @@
         <li><a href="classes.html#alias_api.AlTextureNode.set_comment">(alias_api.AlTextureNode method)</a>
 </li>
       </ul></li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.set_control_point">set_control_point() (alias_api.AlCurveOnSurface method)</a>
+</li>
       <li><a href="classes.html#alias_api.AlCopyOptions.set_copy_animation">set_copy_animation() (alias_api.AlCopyOptions method)</a>
 </li>
       <li><a href="classes.html#alias_api.AlCopyOptions.set_copy_clusters">set_copy_clusters() (alias_api.AlCopyOptions method)</a>
@@ -3795,6 +3840,8 @@
 </li>
       </ul></li>
       <li><a href="classes.html#alias_api.AlCopyOptions.set_instance_copy">set_instance_copy() (alias_api.AlCopyOptions method)</a>
+</li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.set_knot_value">set_knot_value() (alias_api.AlCurveOnSurface method)</a>
 </li>
       <li><a href="classes.html#alias_api.AlCameraNode.set_layer">set_layer() (alias_api.AlCameraNode method)</a>
 
@@ -4038,6 +4085,8 @@
         <li><a href="classes.html#alias_api.AlTextureNode.set_translation">(alias_api.AlTextureNode method)</a>
 </li>
       </ul></li>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.set_visible">set_visible() (alias_api.AlCurveOnSurface method)</a>
+</li>
       <li><a href="classes.html#alias_api.AlCameraNode.set_world_translation">set_world_translation() (alias_api.AlCameraNode method)</a>
 
       <ul>
@@ -4078,7 +4127,13 @@
 </li>
       <li><a href="classes.html#alias_api.MessageResult.str_value_1">str_value_1 (alias_api.MessageResult property)</a>
 </li>
-      <li><a href="classes.html#alias_api.AlSurfaceNode.surface">surface() (alias_api.AlSurfaceNode method)</a>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.surface">surface() (alias_api.AlCurveOnSurface method)</a>
+
+      <ul>
+        <li><a href="classes.html#alias_api.AlSurfaceNode.surface">(alias_api.AlSurfaceNode method)</a>
+</li>
+      </ul></li>
+      <li><a href="classes.html#alias_api.AlSurface.surface_node">surface_node() (alias_api.AlSurface method)</a>
 </li>
       <li><a href="classes.html#alias_api.AlLayer.symmetric">symmetric (alias_api.AlLayer property)</a>
 </li>
@@ -4352,6 +4407,10 @@
         <li><a href="classes.html#alias_api.AlTextureNode.version">(alias_api.AlTextureNode method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="classes.html#alias_api.AlCurveOnSurface.visible">visible() (alias_api.AlCurveOnSurface method)</a>
+</li>
   </ul></td>
 </tr></table>
 
