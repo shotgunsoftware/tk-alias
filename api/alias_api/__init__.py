@@ -11,6 +11,7 @@ import sys
 ALIAS_API = {
     "alias2022.2": {"min_version": "2022.2"},
     "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
+    # "alias2021.3": {"min_version": "2021.3"},
     "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3.1"},
     "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},
 }
