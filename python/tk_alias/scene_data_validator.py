@@ -217,7 +217,8 @@ class AliasSceneDataValidator(object):
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all null nodes.",
                 "error_msg": "Found null node(s).",
-                "dependencies": [
+                "warn_msg": "This validation check is not automated. Use the 'Delete All' fix function to ensure all null nodes are deleted.",
+                "dependency_ids": [
                     "node_has_construction_history",
                 ],
             },
@@ -799,7 +800,7 @@ class AliasSceneDataValidator(object):
             },
             "metadata": {
                 "name": "Delete Metadata",
-                "description": "Check for nodes with construction metadata.",
+                "description": "Check for nodes with metadata.",
             },
             "placeholder": {
                 "name": "Placeholder",
