@@ -186,7 +186,7 @@ class AliasSceneDataValidator(object):
                     },
                 ],
                 "kwargs": {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
-                "dependencies": [
+                "dependency_ids": [
                     "node_is_null",
                     "node_instances",
                 ],
@@ -278,7 +278,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependencies": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_has_construction_history", "node_is_null"],
             },
             "node_pivots_at_origin": {
                 "name": "Reset Pivots to Global Origin (Absolute)",
@@ -304,7 +304,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependencies": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_has_construction_history", "node_is_null"],
             },
             "node_has_zero_transform": {
                 "name": "Zero Transforms",
@@ -336,7 +336,7 @@ class AliasSceneDataValidator(object):
                         *self._light_node_types,
                     ]
                 },
-                "dependencies": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_has_construction_history", "node_is_null"],
             },
             "node_is_not_in_layer": {
                 "name": "Nodes Must Not Be In Default Layer",
@@ -365,7 +365,7 @@ class AliasSceneDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
-                "dependencies": ["node_is_null"],
+                "dependency_ids": ["node_is_null"],
             },
             "node_is_in_layer": {
                 "name": "Nodes Must Be In Default Layer",
@@ -399,7 +399,7 @@ class AliasSceneDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
-                "dependencies": ["node_is_null"],
+                "dependency_ids": ["node_is_null"],
             },
             "node_name_matches_layer": {
                 "name": "Match Layer And Assigned Nodes' Names",
@@ -426,7 +426,7 @@ class AliasSceneDataValidator(object):
                     },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
-                "dependencies": ["node_is_in_layer", "node_is_not_in_layer"],
+                "dependency_ids": ["node_is_in_layer", "node_is_not_in_layer"],
             },
             "node_layer_matches_parent": {
                 "name": "Node Layer Matches Parent Layer",
@@ -452,7 +452,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependencies": [
+                "dependency_ids": [
                     "node_is_in_layer",
                     "node_is_not_in_layer",
                     "group_has_single_level_hierarchy",
@@ -509,7 +509,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependencies": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_has_construction_history", "node_is_null"],
             },
             "cos_unused": {
                 "name": "Delete Unused COS",
@@ -543,7 +543,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependencies": [
+                "dependency_ids": [
                     "cos_construction_history",
                     "node_has_construction_history",
                     "node_is_null",
@@ -581,7 +581,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependencies": ["node_has_construction_history"],
+                "dependency_ids": ["node_has_construction_history"],
             },
             "curves": {
                 "name": "Delete Curves",
@@ -607,7 +607,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependencies": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_has_construction_history", "node_is_null"],
             },
             "set_empty": {
                 "name": "Delete Empty Sets",
@@ -623,7 +623,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.fix_set_empty,
                     },
                 ],
-                "dependencies": [
+                "dependency_ids": [
                     "node_is_null",
                 ],
             },
@@ -651,7 +651,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependencies": [
+                "dependency_ids": [
                     "node_is_null",
                     "layer_has_single_object",
                 ],
@@ -681,7 +681,7 @@ class AliasSceneDataValidator(object):
                     },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
-                "dependencies": [
+                "dependency_ids": [
                     "node_is_null",
                     "node_is_in_layer",
                     "node_is_not_in_layer",
@@ -708,7 +708,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes_assigned_to_layers,
                     },
                 ],
-                "dependencies": [
+                "dependency_ids": [
                     "node_is_null",
                     "node_is_in_layer",
                     "node_is_not_in_layer",
@@ -765,7 +765,7 @@ class AliasSceneDataValidator(object):
                     },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
-                "dependencies": [
+                "dependency_ids": [
                     "layer_is_empty",
                     "node_is_null",
                     "node_is_in_layer",
