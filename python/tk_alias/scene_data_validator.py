@@ -5,8 +5,6 @@
 # This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
 
-from operator import inv
-from tkinter import W
 import sgtk
 from tank_vendor import six
 from tank.util import sgre as re
