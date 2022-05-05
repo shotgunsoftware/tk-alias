@@ -17,7 +17,7 @@ The `OpenModel` version of the module is also included in the `alias_api` folder
 Reference
 ----------------------
 
-* `Alias 2019 - 2020.2 <_static/alias_api/python3/alias2019-alias2020.2/docs/index.html>`_
-* `Alias 2020.3 - 2021.3.0 <_static/alias_api/python3/alias2020.3-alias2021/docs/index.html>`_
-* `Alias 2021.3.1 <_static/alias_api/python3/alias2021.3/docs/index.html>`_
-
+* `Alias >= v2019   and < v2020.3 <_static/alias_api/python3/alias2019-alias2020.2/docs/index.html>`_
+* `Alias >= v2020.3 and < v2021.3 <_static/alias_api/python3/alias2020.3-alias2021/docs/index.html>`_
+* `Alias >= v2021.3 and < v2022.2 <_static/alias_api/python3/alias2021.3/docs/index.html>`_
+* `Alias >= v2022.2 <_static/alias_api/python3/alias2022.2/docs/index.html>`_
