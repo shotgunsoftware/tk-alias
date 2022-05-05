@@ -160,7 +160,7 @@ class AliasSceneDataValidator(object):
         .. literalinclude:: ../python/tk_alias/scene_data_validator.py
             :language: python
             :linenos:
-            :lines: 181-825
+            :lines: 171-815
 
         Each validation rule is a dictionary of data that can be used to create a :class:`~tk-multi-data-validation:data.ValidationRule`. See the :class:`~tk-multi-data-validation:data.ValidationRule` constructor for more details on the dictionary data format it accepts.
 
