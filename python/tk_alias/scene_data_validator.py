@@ -214,7 +214,7 @@ class AliasSceneDataValidator(object):
                 "fix_func": self.fix_node_is_null,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all null nodes.",
-                "warn_msg": "This validation check is not automated. Use the 'Delete All' fix function to ensure all null nodes are deleted.",
+                "warn_msg": 'This validation does not return a status. To ensure all null nodes are deleted, select "Delete All" or "Fix All."',
                 "dependency_ids": [
                     "node_has_construction_history",
                 ],
