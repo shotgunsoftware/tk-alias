@@ -15,6 +15,7 @@ import alias_api
 # General functions
 # -------------------------------------------------------------------------------------------------------
 
+
 def success_status(int_value=False):
     """
     Return the Alias Python API (APA) success status.
@@ -30,6 +31,7 @@ def success_status(int_value=False):
     if int_value:
         return int(status)
     return status
+
 
 def failure_status(int_value=False):
     """
@@ -47,6 +49,7 @@ def failure_status(int_value=False):
         return int(status)
     return status
 
+
 def is_success(alias_status):
     """
     Check if the given status is the Alias Python API (APA) success status.
@@ -61,6 +64,7 @@ def is_success(alias_status):
         return alias_status == success
 
     return alias_status == int(success)
+
 
 def raise_exception(msg, error_status=None):
     """
@@ -81,6 +85,7 @@ def raise_exception(msg, error_status=None):
 
     raise alias_api.AliasPythonException(error_msg)
 
+
 def is_group_node(alias_object):
     """
     Check if the given `alias_object` is an Alias group node.
@@ -94,6 +99,7 @@ def is_group_node(alias_object):
 
     return alias_object.type() == alias_api.AlObjectType.GroupNodeType
 
+
 def camera_node_types():
     """
     :return: The list of Alias node types for cameras.
@@ -105,6 +111,7 @@ def camera_node_types():
         alias_api.AlObjectType.CameraViewType,
         alias_api.AlObjectType.CameraUpType,
     ]
+
 
 def light_node_types():
     """
@@ -122,6 +129,7 @@ def light_node_types():
 # -------------------------------------------------------------------------------------------------------
 # Matrix functions
 # -------------------------------------------------------------------------------------------------------
+
 
 def is_close(a, b, rel_tol=1e-03, abs_tol=0.0):
     """
@@ -141,6 +149,7 @@ def is_close(a, b, rel_tol=1e-03, abs_tol=0.0):
     """
     return abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
+
 def is_zero(value):
     """
     Check if the value is approximately equal to zero.
@@ -153,6 +162,7 @@ def is_zero(value):
     """
 
     return is_close(value, 0.0)
+
 
 def is_origin(point):
     """
@@ -168,6 +178,7 @@ def is_origin(point):
     """
 
     return is_zero(point.x) and is_zero(point.y) and is_zero(point.z)
+
 
 def is_identity(matrix):
     """
@@ -227,6 +238,7 @@ def is_identity(matrix):
 # AlLocator functions
 # -------------------------------------------------------------------------------------------------------
 
+
 def get_locators(check_exists=False):
     """
     Get all Alias locators in the current scene.
@@ -251,5 +263,5 @@ def get_locators(check_exists=False):
         next_locator = alias_api.next_locator(locator)
         del locator
         locator = next_locator
-    
+
     return locators

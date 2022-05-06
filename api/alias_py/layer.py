@@ -17,6 +17,7 @@ import alias_api
 # AlLayer functions
 # -------------------------------------------------------------------------------------------------------
 
+
 def get_symmetric_layers(layers=None, check_exists=False, skip_layers=None):
     """
     Get the list of all layers with symmetry property turned on.
@@ -39,10 +40,14 @@ def get_symmetric_layers(layers=None, check_exists=False, skip_layers=None):
     for layer in layers:
         if isinstance(layer, six.string_types):
             layer = alias_api.get_layer_by_name(layer)
-        
-        if layer and (not skip_layers or layer.name not in skip_layers) and layer.symmetric:
+
+        if (
+            layer
+            and (not skip_layers or layer.name not in skip_layers)
+            and layer.symmetric
+        ):
             if check_exists:
                 return True
             symmetric_layers.append(layer)
-    
+
     return False if check_exists else symmetric_layers

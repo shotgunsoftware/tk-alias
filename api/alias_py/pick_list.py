@@ -19,6 +19,7 @@ from . import dag_node as api_dag_node
 # Pick functions
 # -------------------------------------------------------------------------------------------------------
 
+
 def pick_nodes(nodes, clear_pick_list=True, redraw=True):
     """
     Pick the given nodes.
@@ -40,9 +41,10 @@ def pick_nodes(nodes, clear_pick_list=True, redraw=True):
 
         if node:
             node.pick()
-    
+
     if redraw:
         alias_api.redraw_screen()
+
 
 def pick_curves_on_surface_from_nodes(nodes, clear_pick_list=True, redraw=True):
     """
@@ -67,7 +69,10 @@ def pick_curves_on_surface_from_nodes(nodes, clear_pick_list=True, redraw=True):
     if redraw:
         alias_api.redraw_screen()
 
-def pick_nodes_assigned_to_shader(shaders, clear_pick_list=True, redraw=True, skip_shaders=None):
+
+def pick_nodes_assigned_to_shader(
+    shaders, clear_pick_list=True, redraw=True, skip_shaders=None
+):
     """
     Pick the nodes assigned to the given shaders.
 
@@ -104,6 +109,7 @@ def pick_nodes_assigned_to_shader(shaders, clear_pick_list=True, redraw=True, sk
     if redraw:
         alias_api.redraw_screen()
 
+
 def pick_nodes_assigned_to_layers(layers, clear_pick_list=True, redraw=True):
     """
     Pick the nodes assigned to the given layers.
@@ -129,6 +135,7 @@ def pick_nodes_assigned_to_layers(layers, clear_pick_list=True, redraw=True):
 
     if redraw:
         alias_api.redraw_screen()
+
 
 def pick_layers(layers=None, pick_all=False, clear_pick_list=True, redraw=True):
     """
@@ -165,6 +172,7 @@ def pick_layers(layers=None, pick_all=False, clear_pick_list=True, redraw=True):
 
     if redraw:
         alias_api.redraw_screen()
+
 
 def pick_locators(locators, pick_all=False, clear_pick_list=True, redraw=True):
     """
