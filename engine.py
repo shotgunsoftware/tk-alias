@@ -31,6 +31,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_bindir = None
         self.alias_version = None
         self.__event_watcher = None
+        self.__scene_data_validator = None
 
         self._menu_generator = None
         self._contexts_by_stage_name = {}
@@ -72,6 +73,10 @@ class AliasEngine(sgtk.platform.Engine):
     @property
     def event_watcher(self):
         return self.__event_watcher
+
+    @property
+    def scene_data_validator(self):
+        return self.__scene_data_validator
 
     @staticmethod
     def get_current_engine():
@@ -159,6 +164,9 @@ class AliasEngine(sgtk.platform.Engine):
         # event watcher
         self.__event_watcher = self._tk_alias.AliasEventWatcher()
         self.__event_watcher.start_watching()
+
+        # scene validator
+        self.__scene_data_validator = self._tk_alias.AliasSceneDataValidator()
 
         # Env vars
         self.alias_execpath = os.getenv("TK_ALIAS_EXECPATH", None)

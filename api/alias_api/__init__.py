@@ -43,6 +43,7 @@ def import_alias_api():
     if not alias_release_version:
         return
 
+    # FIXME version comparison
     # get the name of the folder containing the files to import according to the version of Alias we want to use
     api_folder_name = None
     for api_folder in ALIAS_API:
