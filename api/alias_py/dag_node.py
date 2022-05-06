@@ -20,6 +20,7 @@ from . import utils as api_utils
 # AlDagNode functions
 # -------------------------------------------------------------------------------------------------------
 
+
 def is_node_template(node):
     """
     Check if the node is set as a template.
@@ -29,6 +30,7 @@ def is_node_template(node):
     """
 
     return bool(node.is_display_mode_set(alias_api.AlDisplayModeType.Template))
+
 
 def get_node_shader(node):
     """
@@ -45,6 +47,7 @@ def get_node_shader(node):
         return None
 
     return alias_api.node_first_shader(node)
+
 
 def get_instanced_nodes(nodes=None, check_exists=False):
     """
@@ -67,7 +70,7 @@ def get_instanced_nodes(nodes=None, check_exists=False):
         for node in nodes:
             if isinstance(node, six.string_types):
                 node = alias_api.find_dag_node_by_name(node)
-            
+
             if api_utils.is_success(api_traverse_dag.node_is_instance(node)):
                 if check_exists:
                     return True
@@ -81,7 +84,10 @@ def get_instanced_nodes(nodes=None, check_exists=False):
         result = alias_api.search_node_is_instance(input_data)
         return result.nodes
 
-def get_nodes_with_construction_history(nodes=None, check_exists=False, skip_node_types=None):
+
+def get_nodes_with_construction_history(
+    nodes=None, check_exists=False, skip_node_types=None
+):
     """
     Process all nodes in the current scene, or the specfied nodes, and check if they have construction
     history.
@@ -123,7 +129,10 @@ def get_nodes_with_construction_history(nodes=None, check_exists=False, skip_nod
         result = alias_api.search_node_has_history(input_data)
         return result.nodes
 
-def get_nodes_with_non_zero_transform(nodes=None, check_exists=False, skip_node_types=None):
+
+def get_nodes_with_non_zero_transform(
+    nodes=None, check_exists=False, skip_node_types=None
+):
     """
     Process all nodes in the current scene, or the specfied nodes, and check if they have a
     non-zero transform.
@@ -149,7 +158,7 @@ def get_nodes_with_non_zero_transform(nodes=None, check_exists=False, skip_node_
         for node in nodes:
             if isinstance(node, six.string_types):
                 node = alias_api.find_dag_node_by_name(node)
-            
+
             if not node or node.type() in skip_node_types:
                 continue
 
@@ -158,16 +167,19 @@ def get_nodes_with_non_zero_transform(nodes=None, check_exists=False, skip_node_
                 if check_exists:
                     return True
                 invalid_nodes.append(node)
-    
+
         return False if check_exists else invalid_nodes
-    
+
     else:
         # NOTE check_exists does not apply to traverse dag yet
         input_data = alias_api.TraverseDagInputData(skip_node_types, False)
         result = alias_api.search_node_has_non_zero_transform(input_data)
         return result.nodes
 
-def get_nodes_with_non_origin_pivot(nodes=None, check_exists=False, skip_node_types=None):
+
+def get_nodes_with_non_origin_pivot(
+    nodes=None, check_exists=False, skip_node_types=None
+):
     """
     Process all nodes in the current scene, or the specfied nodes, and check if they have their pivots
     not set to the origin.
@@ -201,7 +213,7 @@ def get_nodes_with_non_origin_pivot(nodes=None, check_exists=False, skip_node_ty
                 if check_exists:
                     return True
                 invalid_nodes.append(node)
-    
+
         return False if check_exists else invalid_nodes
 
     else:
@@ -209,6 +221,7 @@ def get_nodes_with_non_origin_pivot(nodes=None, check_exists=False, skip_node_ty
         input_data = alias_api.TraverseDagInputData(skip_node_types, False)
         result = alias_api.search_node_has_non_origin_pivot(input_data)
         return result.nodes
+
 
 def get_nodes_with_unused_curves_on_surface(nodes=None, check_exists=False):
     """
@@ -236,7 +249,9 @@ def get_nodes_with_unused_curves_on_surface(nodes=None, check_exists=False):
             if isinstance(node, six.string_types):
                 node = alias_api.find_dag_node_by_name(node)
 
-            status = api_traverse_dag.node_has_unused_curve_on_surface(node, check_exists=True)
+            status = api_traverse_dag.node_has_unused_curve_on_surface(
+                node, check_exists=True
+            )
             if api_utils.is_success(status):
                 if check_exists:
                     return True
@@ -249,6 +264,7 @@ def get_nodes_with_unused_curves_on_surface(nodes=None, check_exists=False):
         input_data = alias_api.TraverseDagInputData()
         result = alias_api.search_node_unused_curves_on_surface(input_data)
         return result.nodes
+
 
 def get_unused_curves_on_surface_for_nodes(nodes=None):
     """
@@ -289,6 +305,7 @@ def get_unused_curves_on_surface_for_nodes(nodes=None):
 
     return unused_curves
 
+
 def get_nodes_by_type(node_types):
     """
     Get a list of all the nodes for the given types.
@@ -305,6 +322,7 @@ def get_nodes_by_type(node_types):
     result = alias_api.search_dag(input_data)
 
     return result.nodes
+
 
 def delete_nodes(nodes):
     """
