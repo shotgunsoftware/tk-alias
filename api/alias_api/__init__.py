@@ -8,10 +8,21 @@
 import os
 import sys
 
+# The Alias Python API (APA) python module is decided based on the current version of Alias
+# that is running. Defined here is the Alias version grouping:
+# 
+#    < v2020.3              -- use APA from folder alias2019-alias2020.2
+#   >= v2020.3 & < v2021.3  -- use APA from folder alias2020.3-alias2021
+#   >= v2021.3 & < v2022.2  -- use APA from folder alias2021.3
+#   >= v2022.2              -- use APA from folder alias2022.2
+# 
+# TODO: update the APA folder names to be more accurate
+# 
 ALIAS_API = {
-    "alias2021.3": {"min_version": "2021.3"},
-    "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.2.2"},
-    "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.2.2"},
+    "alias2022.2": {"min_version": "2022.2"},
+    "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
+    "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3"},
+    "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},
 }
 
 
@@ -39,7 +50,7 @@ def import_alias_api():
         max_version = ALIAS_API[api_folder].get("max_version")
         if min_version and alias_release_version < min_version:
             continue
-        if max_version and alias_release_version > max_version:
+        if max_version and alias_release_version >= max_version:
             continue
         api_folder_name = api_folder
 
