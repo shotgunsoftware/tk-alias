@@ -689,9 +689,7 @@ class AliasSceneDataValidator(object):
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": [
-                    "node_is_null",
-                    #"node_is_in_layer",
-                    #"node_is_not_in_layer",
+                    "node_is_null"
                 ],
             },
             "layer_has_single_shader": {
@@ -1096,12 +1094,16 @@ class AliasSceneDataValidator(object):
         :rtype: AliasSceneValidation.CheckResult
         """
 
-        invalid_nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot()
+        skip_node_types = skip_node_types or []
+
+        invalid_nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot(
+            skip_node_types=set(skip_node_types),
+        )
 
         return AliasSceneDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
-    def fix_node_pivots_at_origin(self, errors=None):
+    def fix_node_pivots_at_origin(self, errors=None, skip_node_types=None):
         """
         Process all nodes in the current scene, or the specified nodes, and reset their scale and roate
         pivots such that they are centered around the origin.
@@ -1116,10 +1118,15 @@ class AliasSceneDataValidator(object):
         :raises alias_api.AliasPythonException: if a failed to set a node's pivot to the origin
         """
 
+        skip_node_types = skip_node_types or []
+
         if isinstance(errors, six.string_types):
             errors = [errors]
 
-        nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot(errors)
+        nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot(
+            nodes=errors,
+            skip_node_types=set(skip_node_types),
+        )
         center = alias_api.Vec3(0.0, 0.0, 0.0)
 
         for node in nodes:
