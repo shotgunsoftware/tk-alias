@@ -1079,7 +1079,7 @@ class AliasSceneDataValidator(object):
                 )
 
     @sgtk.LogManager.log_timing
-    def check_node_pivots_at_origin(self, fail_fast=False):
+    def check_node_pivots_at_origin(self, fail_fast=False, skip_node_types=None):
         """
         Check for nodes that do not have their pivots set to the origin.
 
