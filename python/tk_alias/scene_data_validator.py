@@ -280,11 +280,11 @@ class AliasSceneDataValidator(object):
             },
             "node_pivots_at_origin": {
                 "name": "Reset Pivots to Global Origin (Absolute)",
-                "description": "Reset pivots to the origin (0,0,0).",
+                "description": "Reset pivots to the origin (0,0,0). Camera and Light nodes will be skipped.",
                 "check_func": self.check_node_pivots_at_origin,
                 "fix_func": self.fix_node_pivots_at_origin,
                 "fix_name": "Reset All",
-                "fix_tooltip": "All pivots will be moved to the origin.",
+                "fix_tooltip": "All pivots will be moved to the origin. Camera and Light nodes will be skipped.",
                 "error_msg": "Found pivots not set to the origin.",
                 "actions": [
                     {
@@ -302,7 +302,16 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": [
+                    "node_has_construction_history",
+                    "node_is_null"
+                ],
+                "kwargs": {
+                    "skip_node_types": [
+                        *self._camera_node_types,
+                        *self._light_node_types,
+                    ]
+                },
             },
             "node_has_zero_transform": {
                 "name": "Zero Transforms",
@@ -681,8 +690,8 @@ class AliasSceneDataValidator(object):
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": [
                     "node_is_null",
-                    "node_is_in_layer",
-                    "node_is_not_in_layer",
+                    #"node_is_in_layer",
+                    #"node_is_not_in_layer",
                 ],
             },
             "layer_has_single_shader": {
