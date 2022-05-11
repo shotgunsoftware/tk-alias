@@ -27,7 +27,7 @@ class SceneDataValidatorHook(HookBaseClass):
         validation rules, override this hook method to modify the returned data dictionary.
 
         The dictionary returned by this function should be formated such that it can be passed
-        to the :class:`~tk-multi-data-validation:data.ValidationRule` class constructor to
+        to the :class:`~tk-multi-data-validation:api.data.ValidationRule` class constructor to
         create a new validation rule object.
 
         :return: The validation rules data set.
