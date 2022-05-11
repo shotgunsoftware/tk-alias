@@ -115,7 +115,7 @@ class AliasSceneDataValidator(object):
             node_instances
                 Check for node instances, and convert them to geometry.
             node_pivots_at_origin
-                Reset rotate and sclae pivots to the global origin (absolute).
+                Reset rotate and scale pivots to the global origin (absolute).
             node_has_zero_transform
                 Check for nodes with non-zero transforms, and apply the zero transform operation.
             node_templates
@@ -213,7 +213,7 @@ class AliasSceneDataValidator(object):
             },
             "node_is_null": {
                 "name": "Delete Null Nodes",
-                "description": "Check for null nodes in the scene.",
+                "description": "Check for null nodes.",
                 "fix_func": self.fix_node_is_null,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all null nodes.",
@@ -510,7 +510,7 @@ class AliasSceneDataValidator(object):
             },
             "node_templates": {
                 "name": "Delete Templates",
-                "description": "Delete all geometry set as templates.",
+                "description": "Check for templates.",
                 "check_func": self.check_node_templates,
                 "fix_func": self.fix_node_templates,
                 "fix_name": "Delete All",
@@ -536,7 +536,7 @@ class AliasSceneDataValidator(object):
             },
             "cos_unused": {
                 "name": "Delete Unused COS",
-                "description": "Check for unused COS in the current scene.",
+                "description": "Check for unused COS (Curves on Surface.)",
                 "check_func": self.check_curve_on_surface_unused,
                 "fix_func": self.fix_curve_on_surface_unused,
                 "fix_name": "Delete All",
@@ -574,7 +574,7 @@ class AliasSceneDataValidator(object):
             },
             "cos_construction_history": {
                 "name": "Delete Unused COS Construction History",
-                "description": "Check for nodes with unused COS with construction history in the current scene.",
+                "description": "Check for nodes with unused COS with construction history.",
                 "check_func": self.check_curve_on_surface_construction_history,
                 "fix_func": self.fix_curve_on_surface_construction_history,
                 "fix_name": "Delete All",
@@ -608,7 +608,7 @@ class AliasSceneDataValidator(object):
             },
             "curves": {
                 "name": "Delete Curves",
-                "description": "Check for curves in the current scene.",
+                "description": "Check for curves.",
                 "check_func": self.check_node_curves,
                 "fix_func": self.fix_node_curves,
                 "fix_name": "Delete All",
@@ -652,7 +652,8 @@ class AliasSceneDataValidator(object):
             },
             "group_has_single_level_hierarchy": {
                 "name": "Only One Level Per Group",
-                "description": "Groups are prohibited from containing more than one level of hierarchy (e.g. a Group 1 can have a group, Group 2, but Group 2 cannot contain another Group).",
+                "description": "Check Group hierarchy.<br>"
+                               "Groups are prohibited from containing more than one level of hierarchy (e.g. a Group 1 can have a group, Group 2, but Group 2 cannot contain another Group).",
                 "check_func": self.check_group_has_single_level_hierarchy,
                 "fix_func": self.fix_group_has_single_level_hierarchy,
                 "fix_name": "Flatten All",
@@ -681,7 +682,8 @@ class AliasSceneDataValidator(object):
             },
             "layer_is_empty": {
                 "name": "Delete Empty Layers and Folders",
-                "description": "Check for empty layers and folders in the scene. The DefaultLayer will be skipped.",
+                "description": "Check for empty layers and folders.<br>"
+                               "The DefaultLayer will be skipped.",
                 "check_func": self.check_layer_is_empty,
                 "fix_func": self.fix_layer_is_empty,
                 "fix_name": "Delete All",
@@ -710,7 +712,8 @@ class AliasSceneDataValidator(object):
             },
             "layer_has_single_shader": {
                 "name": "Layer Has Single Shader",
-                "description": "All nodes within a layer must use one single shader. Assign one shader to all nodes in the layer or split into multiple layers.",
+                "description": "Check layer members' shaders.<br>"
+                               "All nodes within a layer must use one single shader. Assign one shader to all nodes in the layer or split into multiple layers.",
                 "check_func": self.check_layer_has_single_shader,
                 "error_msg": "Found layer(s) using multiple shaders.",
                 "actions": [
@@ -737,7 +740,9 @@ class AliasSceneDataValidator(object):
             },
             "layer_symmetry": {
                 "name": "Turn Off (All) Layer Symmetry",
-                "description": "Layers may have symmetry ON which may lead to data not being where you expect it (across the symmetry plane in thic case.) The DefaultLayer will be skipped.",
+                "description": "Check layer symmetry.<br>"
+                               "Layers may have symmetry ON which may lead to data not being where you expect it (across the symmetry plane in thic case.)<br>"
+                               "The DefaultLayer will be skipped.",
                 "check_func": self.check_layer_symmetry,
                 "fix_func": self.fix_layer_symmetry,
                 "fix_name": "Turn Off All",
@@ -763,7 +768,9 @@ class AliasSceneDataValidator(object):
             },
             "layer_has_single_object": {
                 "name": "Layer Has Single Item",
-                "description": "Layers are prohibited from containing more than one item (group hierarchy within a layer is prohibited, and should be flattened). The DefaultLayer will be skipped.",
+                "description": "Check number of items in layer.<br>"
+                               "Layers are prohibited from containing more than one item (group hierarchy within a layer is prohibited, and should be flattened).<br>"
+                               "The DefaultLayer will be skipped.",
                 "check_func": self.check_layer_has_single_object,
                 "fix_func": self.fix_layer_has_single_object,
                 "fix_name": "Collapse All",
@@ -795,7 +802,7 @@ class AliasSceneDataValidator(object):
             },
             "locators": {
                 "name": "Delete Locators",
-                "description": "Check for locators in the scene.",
+                "description": "Check for locators.",
                 "check_func": self.check_locators,
                 "fix_func": self.fix_locators,
                 "fix_name": "Delete All",
@@ -828,11 +835,12 @@ class AliasSceneDataValidator(object):
             },
             "references_exist": {
                 "name": "Remove Referenced Geometry",
-                "description": "Referenced geometry is prohibited.",
+                "description": "Check if Reference Files exist.<br>"
+                               "Referenced geometry is prohibited.",
                 "check_func": self.check_refererences_exist,
                 "fix_func": self.fix_references_exist,
                 "fix_name": "Remove",
-                "fix_tooltip": "Remove all referenced geometry in the scene.",
+                "fix_tooltip": "Remove all referenced geometry.",
                 "error_msg": "Found referenced geometry.",
             },
         }
