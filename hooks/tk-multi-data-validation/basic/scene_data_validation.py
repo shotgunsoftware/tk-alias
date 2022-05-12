@@ -13,7 +13,7 @@ import sgtk
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class SceneDataValidatorHook(HookBaseClass):
+class SceneDataValidationHook(HookBaseClass):
     """
     Hook to define Alias scene validation functionality.
     """

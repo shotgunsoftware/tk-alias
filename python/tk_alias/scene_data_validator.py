@@ -157,7 +157,7 @@ class AliasSceneDataValidator(object):
 
         **The Validation Rule data:**
 
-        .. literalinclude:: ../python/tk_alias/scene_data_validator.py
+        .. literalinclude:: ../python/tk_alias/scene_data_validation.py
             :language: python
             :linenos:
             :lines: 171-815
