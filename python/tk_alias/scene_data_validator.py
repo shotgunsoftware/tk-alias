@@ -95,14 +95,11 @@ class AliasSceneDataValidator(object):
 
     def __init__(self):
         """
-        Initialize the validator and set up the properties required for validaiting an Alias scene.
+        Initialize the AliasSceneDataValidator object.
         """
 
         self._camera_node_types = alias_py.utils.camera_node_types()
         self._light_node_types = alias_py.utils.light_node_types()
-
-        # Store the validation data since this is static
-        self.__validation_data = self.get_validation_data()
 
     # -------------------------------------------------------------------------------------------------------
     # Public methods
