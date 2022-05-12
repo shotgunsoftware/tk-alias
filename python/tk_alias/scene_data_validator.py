@@ -41,22 +41,37 @@ class AliasSceneDataValidator(object):
 
     class CheckResult(object):
         """
-        The result object returned by AliasSceneDataValidator check functions.
+        The CheckResult object is the type returned by AliasSceneDataValidator check functions.
         """
 
         def __init__(self, is_valid=None, errors=None, args=None, kwargs=None):
             """
-            Initialize the result object with the given data.
+            Initialize the CheckResult object with the given data.
 
-            :param is_valid: The success status that the check function reported
+            :param is_valid: The success status that the check function reported. If not provided, the validity will be determined based on if there are any errors.
             :type is_valid: bool
-            :param errors: The data errors the check function found
+            :param errors: The data errors the check function found. This should be a list of Alias objects, but
+                can be a list of object as long as they follow the expected format.
             :type errors: list
             :param args: The arguments list the check function provided to pass to its corresponding fix function.
             :type args: list
             :param kwargs: The key-word arguments the check function provided to pass to its corresponding fix
                 function.
             :type kargs: dict
+
+            The CheckResult object will have the attributes:
+                is_valid
+                    :type: bool
+                    :description: True if the result is valid, else False
+                errors
+                    :type: list
+                    :description: This is the list of errors passed to create the result object. This is expected to be a list of Alias objects, but it can be any list of objects that have the expected format (required attributes: name (str), type (func => str), optional attributes: id (str))
+                args
+                    :type: list
+                    :description: A list of arguments that can be passed to a fix function
+                kwargs
+                    :type: dict
+                    :description: Keyword arguments that can be passed to a fix function. This will contain the errors passed in assigned to key 'error_items'.
             """
 
             if is_valid is None:
@@ -67,7 +82,7 @@ class AliasSceneDataValidator(object):
             errors = errors or []
             self.errors = [
                 {
-                    "id": item.name,
+                    "id": item.id if hasattr(item, "id") and item.id else item.name,
                     "name": item.name,
                     "type": item.type(),
                 }
@@ -80,14 +95,11 @@ class AliasSceneDataValidator(object):
 
     def __init__(self):
         """
-        Initialize the validator and set up the properties required for validaiting an Alias scene.
+        Initialize the AliasSceneDataValidator object.
         """
 
         self._camera_node_types = alias_py.utils.camera_node_types()
         self._light_node_types = alias_py.utils.light_node_types()
-
-        # Store the validation data since this is static
-        self.__validation_data = self.get_validation_data()
 
     # -------------------------------------------------------------------------------------------------------
     # Public methods
@@ -160,7 +172,7 @@ class AliasSceneDataValidator(object):
         .. literalinclude:: ../python/tk_alias/scene_data_validator.py
             :language: python
             :linenos:
-            :lines: 171-815
+            :lines: 187-830
 
         Each validation rule is a dictionary of data that can be used to create a :class:`~tk-multi-data-validation:data.ValidationRule`. See the :class:`~tk-multi-data-validation:data.ValidationRule` constructor for more details on the dictionary data format it accepts.
 
@@ -823,10 +835,6 @@ class AliasSceneDataValidator(object):
             "metadata": {
                 "name": "Delete Metadata",
                 "description": "Check for nodes with metadata.",
-            },
-            "placeholder": {
-                "name": "Placeholder",
-                "description": "Temporary for testing.",
             },
             "references_exist": {
                 "name": "Remove Referenced Geometry",
