@@ -82,7 +82,7 @@ class AliasSceneDataValidator(object):
             errors = errors or []
             self.errors = [
                 {
-                    "id": item.name,
+                    "id": item.id if hasattr(item, "id") and item.id else item.name,
                     "name": item.name,
                     "type": item.type(),
                 }
