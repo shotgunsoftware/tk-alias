@@ -634,7 +634,7 @@ class AliasSceneDataValidator(object):
             },
             "set_empty": {
                 "name": "Delete Empty Sets",
-                "description": "Check for empty sets and delete them.",
+                "description": "Check for empty sets.",
                 "check_func": self.check_set_empty,
                 "fix_func": self.fix_set_empty,
                 "fix_name": "Delete All",
