@@ -172,7 +172,7 @@ class AliasSceneDataValidator(object):
             "shader_unused": {
                 "name": "Delete Unused Shaders",
                 "description": "Check for shaders that are not assigned to any geometry.<br>"
-                               "The DefaultShader will be skipped.",
+                "The DefaultShader will be skipped.",
                 "error_msg": "Found unused shaders",
                 "check_func": self.check_shader_unused,
                 "fix_func": self.fix_shader_unused,
@@ -193,8 +193,8 @@ class AliasSceneDataValidator(object):
             "shader_is_vred_compatible": {
                 "name": "VRED Shaders",
                 "description": "Check for shaders not from the Asset Library.<br>"
-                               "Shaders must be from the Asset Library for compatibility with VRED.<br>"
-                               "The DefaultShader will be skipped.",
+                "Shaders must be from the Asset Library for compatibility with VRED.<br>"
+                "The DefaultShader will be skipped.",
                 "check_func": self.check_shader_is_vred_compatible,
                 "error_msg": "Found shader(s) that are incompatible with VRED.",
                 "actions": [
@@ -258,7 +258,7 @@ class AliasSceneDataValidator(object):
             "node_instances": {
                 "name": "Convert Instances to Geometry",
                 "description": "Check for instances.<br>"
-                               "Geometry instances may lead to data not being where you expect it.",
+                "Geometry instances may lead to data not being where you expect it.",
                 "check_func": self.check_node_instances,
                 "fix_func": self.fix_node_instances,
                 "fix_name": "Expand All",
@@ -285,8 +285,8 @@ class AliasSceneDataValidator(object):
             "node_pivots_at_origin": {
                 "name": "Reset Pivots to Global Origin (Absolute)",
                 "description": "Check node pivot information.<br>"
-                               "Reset pivots to the origin (0,0,0).<br>"
-                               "Camera, Light and Texture Placement nodes will be skipped.",
+                "Reset pivots to the origin (0,0,0).<br>"
+                "Camera, Light and Texture Placement nodes will be skipped.",
                 "check_func": self.check_node_pivots_at_origin,
                 "fix_func": self.fix_node_pivots_at_origin,
                 "fix_name": "Reset All",
@@ -308,10 +308,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": [
-                    "node_has_construction_history",
-                    "node_is_null"
-                ],
+                "dependency_ids": ["node_has_construction_history", "node_is_null"],
                 "kwargs": {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
@@ -323,8 +320,8 @@ class AliasSceneDataValidator(object):
             "node_has_zero_transform": {
                 "name": "Zero Transforms",
                 "description": "Check node transformation information.<br>"
-                               "Set all node transforms to zero (the identity matrix).<br>"
-                               "Camera, Light and Texture Placement nodes will be skipped.",
+                "Set all node transforms to zero (the identity matrix).<br>"
+                "Camera, Light and Texture Placement nodes will be skipped.",
                 "check_func": self.check_node_has_zero_transform,
                 "fix_func": self.fix_node_has_zero_transform,
                 "fix_name": "Reset All",
@@ -358,7 +355,7 @@ class AliasSceneDataValidator(object):
             "node_is_not_in_layer": {
                 "name": "Nodes Must Not Be In Default Layer",
                 "description": "Check node layer membership.<br>"
-                               "Only Light, Camera, Texture, and Group nodes can be in the default layer.",
+                "Only Light, Camera, Texture, and Group nodes can be in the default layer.",
                 "check_func": self.check_node_is_not_in_layer,
                 "error_msg": "Found nodes in the default layer that are not allowed.",
                 "actions": [
@@ -388,7 +385,7 @@ class AliasSceneDataValidator(object):
             "node_is_in_layer": {
                 "name": "Nodes Must Be In Default Layer",
                 "description": "Check node layer membership.<br>"
-                               "All Lights, Cameras, Texture must only be in the default layer.",
+                "All Lights, Cameras, Texture must only be in the default layer.",
                 "check_func": self.check_node_is_in_layer,
                 "fix_func": self.fix_node_is_in_layer,
                 "fix_name": "Move",
@@ -423,8 +420,8 @@ class AliasSceneDataValidator(object):
             "node_name_matches_layer": {
                 "name": "Match Layer And Assigned Nodes' Names",
                 "description": "Check naming of layer and top node.<br>"
-                               "Layer name must match the name of each node that is assigned to it.<br>"
-                               "The DefaultLayer will be skipped.",
+                "Layer name must match the name of each node that is assigned to it.<br>"
+                "The DefaultLayer will be skipped.",
                 "check_func": self.check_node_name_matches_layer,
                 "fix_func": self.fix_node_name_matches_layer,
                 "fix_name": "Rename All",
@@ -452,7 +449,7 @@ class AliasSceneDataValidator(object):
             "node_layer_matches_parent": {
                 "name": "Node Layer Matches Parent Layer",
                 "description": "Check layer assignment.<br>"
-                               "The layer assigned to a node must be the same as the parent node layer.",
+                "The layer assigned to a node must be the same as the parent node layer.",
                 "check_func": self.check_node_layer_matches_parent,
                 "fix_func": self.fix_node_layer_matches_parent,
                 "fix_name": "Reassign All",
@@ -483,7 +480,7 @@ class AliasSceneDataValidator(object):
             "node_dag_top_level": {
                 "name": "Top-Level DAG Nodes",
                 "description": "Check type of top-level dag node.<br>"
-                               "DAG top-level nodes must be of the specified types: AlGroupNode, AlCurveNode, AlFaceNode, AlSurfaceNode.",
+                "DAG top-level nodes must be of the specified types: AlGroupNode, AlCurveNode, AlFaceNode, AlSurfaceNode.",
                 "check_func": self.check_node_dag_top_level,
                 "error_msg": "Found nodes in the top level of the DAG that are not allowed.",
                 "actions": [
@@ -653,7 +650,7 @@ class AliasSceneDataValidator(object):
             "group_has_single_level_hierarchy": {
                 "name": "Only One Level Per Group",
                 "description": "Check Group hierarchy.<br>"
-                               "Groups are prohibited from containing more than one level of hierarchy (e.g. a Group 1 can have a group, Group 2, but Group 2 cannot contain another Group).",
+                "Groups are prohibited from containing more than one level of hierarchy (e.g. a Group 1 can have a group, Group 2, but Group 2 cannot contain another Group).",
                 "check_func": self.check_group_has_single_level_hierarchy,
                 "fix_func": self.fix_group_has_single_level_hierarchy,
                 "fix_name": "Flatten All",
@@ -683,7 +680,7 @@ class AliasSceneDataValidator(object):
             "layer_is_empty": {
                 "name": "Delete Empty Layers and Folders",
                 "description": "Check for empty layers and folders.<br>"
-                               "The DefaultLayer will be skipped.",
+                "The DefaultLayer will be skipped.",
                 "check_func": self.check_layer_is_empty,
                 "fix_func": self.fix_layer_is_empty,
                 "fix_name": "Delete All",
@@ -706,14 +703,12 @@ class AliasSceneDataValidator(object):
                     },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
-                "dependency_ids": [
-                    "node_is_null"
-                ],
+                "dependency_ids": ["node_is_null"],
             },
             "layer_has_single_shader": {
                 "name": "Layer Has Single Shader",
                 "description": "Check layer members' shaders.<br>"
-                               "All nodes within a layer must use one single shader. Assign one shader to all nodes in the layer or split into multiple layers.",
+                "All nodes within a layer must use one single shader. Assign one shader to all nodes in the layer or split into multiple layers.",
                 "check_func": self.check_layer_has_single_shader,
                 "error_msg": "Found layer(s) using multiple shaders.",
                 "actions": [
@@ -741,8 +736,8 @@ class AliasSceneDataValidator(object):
             "layer_symmetry": {
                 "name": "Turn Off (All) Layer Symmetry",
                 "description": "Check layer symmetry.<br>"
-                               "Layers may have symmetry ON which may lead to data not being where you expect it (across the symmetry plane in thic case.)<br>"
-                               "The DefaultLayer will be skipped.",
+                "Layers may have symmetry ON which may lead to data not being where you expect it (across the symmetry plane in thic case.)<br>"
+                "The DefaultLayer will be skipped.",
                 "check_func": self.check_layer_symmetry,
                 "fix_func": self.fix_layer_symmetry,
                 "fix_name": "Turn Off All",
@@ -769,8 +764,8 @@ class AliasSceneDataValidator(object):
             "layer_has_single_object": {
                 "name": "Layer Has Single Item",
                 "description": "Check number of items in layer.<br>"
-                               "Layers are prohibited from containing more than one item (group hierarchy within a layer is prohibited, and should be flattened).<br>"
-                               "The DefaultLayer will be skipped.",
+                "Layers are prohibited from containing more than one item (group hierarchy within a layer is prohibited, and should be flattened).<br>"
+                "The DefaultLayer will be skipped.",
                 "check_func": self.check_layer_has_single_object,
                 "fix_func": self.fix_layer_has_single_object,
                 "fix_name": "Collapse All",
@@ -836,7 +831,7 @@ class AliasSceneDataValidator(object):
             "references_exist": {
                 "name": "Remove Referenced Geometry",
                 "description": "Check if Reference Files exist.<br>"
-                               "Referenced geometry is prohibited.",
+                "Referenced geometry is prohibited.",
                 "check_func": self.check_refererences_exist,
                 "fix_func": self.fix_references_exist,
                 "fix_name": "Remove",
