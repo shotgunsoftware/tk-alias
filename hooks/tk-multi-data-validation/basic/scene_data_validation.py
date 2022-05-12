@@ -48,6 +48,7 @@ class SceneDataValidationHook(HookBaseClass):
         #
         #   Step (1) - define the necessary check, fix, and action callbacks that are required by your new rule.
         #   Step (2) - add your custom rule entry into the validation data dictionary `data`
+        #   Step (3) - add your custom rule id to your tk-multi-data-validation.yml config settings
         #
         # -------------------------------------------------------------------------------------------------------
         #
