@@ -21,13 +21,13 @@ def pytest_configure(config):
     file after command line options have been parsed.
     """
 
-    # Set the Alias version for testing
+    # Ensure the Alias version is set for testing. Default to 2022.2.
     if not os.environ.get("TK_ALIAS_VERSION"):
         os.environ["TK_ALIAS_VERSION"] = "2022.2"
     print("Testing with Alias v{}".format(os.environ.get("TK_ALIAS_VERSION")))
 
-    # Prepend Alias bin directory to the front of the Windows path
-    # NOTE This requires the build machines to have Alias installed at the hard coded location
+    # Get the Alias bin directory and prepend it to the front of the env path var
+    # NOTE This requires the build machines to have Alias installed at this location
     #
     alias_bin_path = os.environ.get(
         "TK_ALIAS_INSTALL_PATH",
@@ -62,6 +62,7 @@ def pytest_configure(config):
     try:
         import alias_api
 
+        # Successfully imported the Alias Python API, display its info
         print(
             "Alias Python API v{} (compiled with Alias v{})".format(
                 alias_api.__version__, alias_api.__alias_version__
@@ -72,10 +73,9 @@ def pytest_configure(config):
         alias_api.initialize_universe()
 
     except Exception as e:
-        # pytests do not have access to the alias_api, provid a mock module
+        # No access to the alias_api module, let's mock it.
         print("Failed to import the Alias Python API\n{}".format(e))
         print("Mocking the Alias Python API")
-
         sys.modules["alias_api"] = mock_alias_api_module()
 
 
