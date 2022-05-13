@@ -183,7 +183,6 @@ class AliasEngine(sgtk.platform.Engine):
         if (
             int(self.alias_version[0:4])
             > self.get_setting("compatibility_dialog_min_version", 2021)
-            and self.has_ui
         ):
             msg = (
                 "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
@@ -192,18 +191,16 @@ class AliasEngine(sgtk.platform.Engine):
                 % (self.alias_version, sgtk.support_url)
             )
             self.logger.warning(msg)
-            QtGui.QMessageBox.warning(
-                self.get_parent_window(),
-                "Warning - ShotGrid Pipeline Toolkit!",
-                msg,
-            )
+            if self.has_ui:
+                QtGui.QMessageBox.warning(
+                    self.get_parent_window(),
+                    "Warning - ShotGrid Pipeline Toolkit!",
+                    msg,
+                )
         elif (
             int(self.alias_version[0:4]) < 2021
             and self.get_setting("compatibility_dialog_old_version")
-            and self.has_ui
         ):
-            from sgtk.platform.qt import QtGui
-
             msg = (
                 "The ShotGrid Pipeline Toolkit is not fully capable with Alias %s. "
                 "You should consider upgrading to a more recent version of Alias. "
@@ -211,11 +208,12 @@ class AliasEngine(sgtk.platform.Engine):
                 % (self.alias_version, sgtk.support_url)
             )
             self.logger.warning(msg)
-            QtGui.QMessageBox.warning(
-                self.get_parent_window(),
-                "Warning - ShotGrid Pipeline Toolkit!",
-                msg,
-            )
+            if self.has_ui:
+                QtGui.QMessageBox.warning(
+                    self.get_parent_window(),
+                    "Warning - ShotGrid Pipeline Toolkit!",
+                    msg,
+                )
 
     def post_app_init(self):
         """
