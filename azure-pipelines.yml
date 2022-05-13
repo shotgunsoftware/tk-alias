@@ -28,9 +28,11 @@ variables:
 - group: deploy-secrets
 - name: 'PYTHONPATH'
   value: './api'
+- name: 'TK_ALIAS_VERSION'
+  value: 'docs'
 
 # Launch into the build pipeline.
 jobs:
 - template: build-pipeline.yml@templates
   parameters:
-    skip_tests: true
+    has_ui_tests: false

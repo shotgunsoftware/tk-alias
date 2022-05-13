@@ -10,7 +10,6 @@
 import os
 
 from tank_vendor import six
-from sgtk.platform.qt import QtGui, QtCore
 from sgtk.util import is_windows, is_macos, is_linux
 
 import alias_api
@@ -162,6 +161,10 @@ class AliasMenuGenerator(object):
         """
         Jump to ShotGrid, launch web browser
         """
+
+        # Defer import to avoid import error for unit tests
+        from sgtk.platform.qt import QtGui, QtCore
+
         url = self._engine.context.shotgun_url
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
 
