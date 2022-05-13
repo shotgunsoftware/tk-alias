@@ -8,10 +8,21 @@
 import os
 import sys
 
+# The Alias Python API (APA) python module is decided based on the current version of Alias
+# that is running. Defined here is the Alias version grouping:
+#
+#    < v2020.3              -- use APA from folder alias2019-alias2020.2
+#   >= v2020.3 & < v2021.3  -- use APA from folder alias2020.3-alias2021
+#   >= v2021.3 & < v2022.2  -- use APA from folder alias2021.3
+#   >= v2022.2              -- use APA from folder alias2022.2
+#
+# TODO: update the APA folder names to be more accurate
+#
 ALIAS_API = {
-    "alias2021.3": {"min_version": "2021.3"},
-    "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.2.2"},
-    "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.2.2"},
+    "alias2022.2": {"min_version": "2022.2"},
+    "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
+    "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3"},
+    "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},
 }
 
 
@@ -19,14 +30,20 @@ def import_alias_api():
     """
     Import the right module according to some criteria:
     - the version of Alias
-    - the version of Python
     - the execution mode (interactive vs non-interactive)
+
+    NOTE: The Alias Python API supports Python >= 3
     """
+
+    # Import requires python >= 3, place it inside this function so that the python version can be checked
+    # first, without failing to import.
+    import importlib.util
 
     alias_release_version = os.environ.get("TK_ALIAS_VERSION")
     if not alias_release_version:
         return
 
+    # FIXME version comparison
     # get the name of the folder containing the files to import according to the version of Alias we want to use
     api_folder_name = None
     for api_folder in ALIAS_API:
@@ -34,7 +51,7 @@ def import_alias_api():
         max_version = ALIAS_API[api_folder].get("max_version")
         if min_version and alias_release_version < min_version:
             continue
-        if max_version and alias_release_version > max_version:
+        if max_version and alias_release_version >= max_version:
             continue
         api_folder_name = api_folder
 
@@ -42,33 +59,37 @@ def import_alias_api():
         return
 
     # get the right file to import according to the running mode (interactive vs non-interactive)
-    module_name = "alias_api" if os.path.basename(sys.executable) == "Alias.exe" else "alias_api_om"
+    module_name = (
+        "alias_api"
+        if os.path.basename(sys.executable) == "Alias.exe"
+        else "alias_api_om"
+    )
     module_path = os.path.normpath(
         os.path.join(
             os.path.dirname(__file__),
-            "..",
-            "python{}".format(sys.version_info.major),
+            "python3",
             api_folder_name,
-            "{}.pyd".format(module_name)
+            "{}.pyd".format(module_name),
         )
     )
 
     if not os.path.exists(module_path):
         return
 
-    # finally, import the alias_api module directly from the pyd file
-    if sys.version_info.major == 3:
-        import importlib.util
-        spec = importlib.util.spec_from_file_location(module_name, module_path)
-        alias_api = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(alias_api)
-    else:
-        import imp
-        alias_api = imp.load_source("alias_api", module_path)
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    alias_api = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(alias_api)
 
     # add the newly created module oject to sys.modules and remap the globals accessor to point at our new module
     sys.modules["alias_api"] = alias_api
     globals()["alias_api"] = sys.modules["alias_api"]
 
+
+if sys.version_info.major < 3:
+    error_msg = "Alias Python API only supports Python 3. You are using Python v{major}.{minor}. Please refer to this <a href='https://github.com/shotgunsoftware/tk-alias/wiki/Python-Version-Support'>page</a> for additional information.".format(
+        major=sys.version_info.major,
+        minor=sys.version_info.minor,
+    )
+    raise Exception(error_msg)
 
 import_alias_api()
