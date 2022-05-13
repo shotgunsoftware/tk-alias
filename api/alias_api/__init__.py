@@ -43,7 +43,7 @@ def version_cmp(version1, version2):
          1 - version1 is greater than version2
          0 - version1 and version2 are equal
         -1 - version1 is less than version2
-    :rtype: ine
+    :rtype: int
     """
 
     # This will split both the versions by the '.' char to get the major, minor, patch values
