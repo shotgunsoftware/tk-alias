@@ -1,0 +1,20 @@
+# Copyright (c) 2020 Autodesk, Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Autodesk, Inc.
+#
+
+# All the bundles are relative to this repo, except for tk-shell, as there
+# is little chance it will need to be edited. All other repos are common
+# on dev machines.
+
+engines:
+  tk-alias:
+    location:
+      type: dev
+      path: $SHOTGUN_CURRENT_REPO_ROOT
