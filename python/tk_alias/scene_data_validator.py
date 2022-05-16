@@ -805,6 +805,7 @@ class AliasSceneDataValidator(object):
                     "node_is_null",
                     "node_is_in_layer",
                     "node_is_not_in_layer",
+                    "node_has_zero_transform",
                 ],
             },
             "locators": {
