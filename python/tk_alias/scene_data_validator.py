@@ -432,7 +432,7 @@ class AliasSceneDataValidator(object):
             "node_name_matches_layer": {
                 "name": "Match Layer And Assigned Nodes' Names",
                 "description": """Check naming of layer and top node.<br>
-                                Layer name must match the name of each node that is assigned to it.<br>"
+                                Layer name must match the name of each node that is assigned to it.<br>
                                 The DefaultLayer will be skipped.""",
                 "check_func": self.check_node_name_matches_layer,
                 "fix_func": self.fix_node_name_matches_layer,
