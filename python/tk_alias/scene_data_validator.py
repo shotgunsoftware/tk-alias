@@ -791,8 +791,12 @@ class AliasSceneDataValidator(object):
                 ],
                 "item_actions": [
                     {
-                        "name": "Select",
+                        "name": "Select Layer",
                         "callback": self.pick_layers,
+                    },
+                    {
+                        "name": "Select Layer Geometry",
+                        "callback": self.pick_nodes_assigned_to_layers,
                     },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
