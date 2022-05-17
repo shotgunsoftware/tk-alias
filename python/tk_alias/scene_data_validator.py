@@ -642,13 +642,13 @@ class AliasSceneDataValidator(object):
                 "dependency_ids": ["node_has_construction_history", "node_is_null"],
             },
             "set_empty": {
-                "name": "Delete Empty Sets",
-                "description": "Check for empty sets.",
+                "name": "Delete Empty Selection Sets",
+                "description": "Check for empty selection sets.",
                 "check_func": self.check_set_empty,
                 "fix_func": self.fix_set_empty,
                 "fix_name": "Delete All",
-                "fix_tooltip": "Delete empty sets found.",
-                "error_msg": "Found empty set(s).",
+                "fix_tooltip": "Delete empty selection sets found.",
+                "error_msg": "Found empty selection set(s).",
                 "item_actions": [
                     {
                         "name": "Delete",
