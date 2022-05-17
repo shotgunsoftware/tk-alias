@@ -776,7 +776,7 @@ class AliasSceneDataValidator(object):
             "layer_has_single_object": {
                 "name": "Layer Has Single Item",
                 "description": """Check number of items in layer.<br>
-                                Layers are prohibited from containing more than one item (group hierarchy within a layer is prohibited, and should be flattened).<br>
+                                Layers can only have a single top-level object. If it contains multiple objects, they will be placed into a single group.<br>
                                 The DefaultLayer will be skipped.""",
                 "check_func": self.check_layer_has_single_object,
                 "fix_func": self.fix_layer_has_single_object,
