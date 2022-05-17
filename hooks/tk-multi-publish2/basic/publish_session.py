@@ -175,7 +175,8 @@ class AliasSessionPublishPlugin(HookBaseClass):
             # provide a save button. the session will need to be saved before
             # validation will succeed.
             self.logger.warn(
-                "The Alias session has not been saved.", extra=_get_save_as_action()
+                "The Alias session has not been saved.",
+                extra=sgtk.platform.current_engine().open_save_as_dialog,
             )
 
         self.logger.info(
@@ -204,8 +205,19 @@ class AliasSessionPublishPlugin(HookBaseClass):
             # the session still requires saving. provide a save button.
             # validation fails.
             error_msg = "The Alias session has not been saved."
-            self.logger.error(error_msg, extra=_get_save_as_action())
+            self.logger.error(
+                error_msg, extra=sgtk.platform.current_engine().open_save_as_dialog
+            )
             raise Exception(error_msg)
+
+        # ---- check that references exist, display warning for invalid refs
+
+        for reference in alias_api.get_references():
+            ref_path = reference.path
+            if not os.path.exists(ref_path):
+                self.logger.warning(
+                    "Reference path does not exist '{}'".format(ref_path)
+                )
 
         # ---- check the session against any attached work template
 
@@ -220,19 +232,19 @@ class AliasSessionPublishPlugin(HookBaseClass):
         work_template = item.properties.get("work_template")
         if work_template:
             if not work_template.validate(path):
+                error_msg = "The current session does not match the configured work file template."
                 self.logger.warning(
-                    "The current session does not match the configured work "
-                    "file template.",
+                    error_msg,
                     extra={
                         "action_button": {
                             "label": "Save File",
                             "tooltip": "Save the current Alias session to a "
                             "different file name",
-                            # will launch wf2 if configured
-                            "callback": _get_save_as_action(),
+                            "callback": sgtk.platform.current_engine().open_save_as_dialog,
                         }
                     },
                 )
+                raise Exception(error_msg)
             else:
                 self.logger.debug("Work template configured and matches session file.")
         else:
@@ -261,7 +273,9 @@ class AliasSessionPublishPlugin(HookBaseClass):
                         "label": "Save to v%s" % (version,),
                         "tooltip": "Save to the next available version number, "
                         "v%s" % (version,),
-                        "callback": lambda: alias_api.save_file_as(next_version_path),
+                        "callback": lambda: publisher.engine.save_file_as(
+                            next_version_path
+                        ),
                     }
                 },
             )
@@ -299,7 +313,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
         path = sgtk.util.ShotgunPath.normalize(_session_path())
 
         # ensure the session is saved
-        alias_api.save_file()
+        self.parent.engine.save_file()
 
         # update the item with the saved session path
         item.properties["path"] = path
@@ -328,7 +342,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
 
         # bump the session file to the next version
         self._save_to_next_version(
-            item.properties["path"], item, alias_api.save_file_as
+            item.properties["path"], item, self.parent.engine.save_file_as
         )
 
 
@@ -340,7 +354,7 @@ def _alias_find_additional_session_dependencies():
     references = []
     for reference in alias_api.get_references():
         path = reference.path
-        if path not in references:
+        if path not in references and os.path.exists(path):
             references.append(path)
 
     return references
@@ -353,28 +367,3 @@ def _session_path():
     """
 
     return alias_api.get_current_path()
-
-
-def _get_save_as_action():
-    """
-    Simple helper for returning a log action dict for saving the session
-    """
-
-    engine = sgtk.platform.current_engine()
-
-    # default save callback
-    callback = engine.open_save_as_dialog
-
-    # if workfiles2 is configured, use that for file save
-    if "tk-multi-workfiles2" in engine.apps:
-        app = engine.apps["tk-multi-workfiles2"]
-        if hasattr(app, "show_file_save_dlg"):
-            callback = app.show_file_save_dlg
-
-    return {
-        "action_button": {
-            "label": "Save As...",
-            "tooltip": "Save the current session",
-            "callback": callback,
-        }
-    }

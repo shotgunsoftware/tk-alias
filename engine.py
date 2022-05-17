@@ -14,8 +14,6 @@ import sys
 import sgtk
 from sgtk.util import LocalFileStorageManager
 
-import alias_api
-
 
 class AliasEngine(sgtk.platform.Engine):
     """
@@ -32,7 +30,8 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_execpath = None
         self.alias_bindir = None
         self.alias_version = None
-        self._dialog_parent = None
+        self.__event_watcher = None
+        self.__scene_data_validator = None
 
         self._menu_generator = None
         self._contexts_by_stage_name = {}
@@ -55,11 +54,29 @@ class AliasEngine(sgtk.platform.Engine):
         return dict(name="Alias", version="unknown")
 
     @property
+    def has_ui(self):
+        """
+        Detect and return if Alias is running in interactive/non-interactive mode
+        """
+        if os.path.basename(sys.executable) == "Alias.exe":
+            return True
+        else:
+            return False
+
+    @property
     def context_change_allowed(self):
         """
         Specifies that context changes are allowed by the engine.
         """
         return True
+
+    @property
+    def event_watcher(self):
+        return self.__event_watcher
+
+    @property
+    def scene_data_validator(self):
+        return self.__scene_data_validator
 
     @staticmethod
     def get_current_engine():
@@ -81,9 +98,10 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("%s: Post context change...", self)
 
-        # Rebuild the menu only if we change of context
-        self._menu_generator.create_menu()
-        self._menu_generator.refresh()
+        # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
+        if self.has_ui:
+            self._menu_generator.create_menu()
+            self._menu_generator.refresh()
 
     def pre_app_init(self):
         """
@@ -93,11 +111,11 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("%s: Initializing..." % (self,))
 
+        from sgtk.platform.qt import QtCore, QtGui
+
         # unicode characters returned by the shotgun api need to be converted
         # to display correctly in all of the app windows
         # tell QT to interpret C strings as utf-8
-        from sgtk.platform.qt import QtCore
-
         utf8 = QtCore.QTextCodec.codecForName("utf-8")
         QtCore.QTextCodec.setCodecForCStrings(utf8)
         self.logger.debug("set utf-8 codec for widget text")
@@ -120,13 +138,35 @@ class AliasEngine(sgtk.platform.Engine):
             QtCore.QCoreApplication.addLibraryPath(plugins_dir)
 
         # Init QT main loop
-        self.init_qt_app()
+        if self.has_ui:
+            self.init_qt_app()
+
+        # Defer importing the Alias Python API until now so that a proper info message can be displayed to
+        # user if the api failed to import.
+        # NOTE: Ensure this check runs after the Qt app is created and before attempting to import the
+        # alias_api module, which means any engine functions that requires the alias_api module should import
+        # the module at the function declaration. TODO: move all alias_api functionality outside the engine
+        # and to its own module.
+        try:
+            import alias_api
+        except Exception as api_import_error:
+            error_msg = str(api_import_error)
+            self.logger.critical(error_msg)
+            QtGui.QMessageBox.critical(
+                self.get_parent_window(),
+                "Failed to import the Alias Python API",
+                error_msg,
+            )
 
         # import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
 
-        # dialog parent handler
-        self._dialog_parent = self._tk_alias.DialogParent(engine=self)
+        # event watcher
+        self.__event_watcher = self._tk_alias.AliasEventWatcher()
+        self.__event_watcher.start_watching()
+
+        # scene validator
+        self.__scene_data_validator = self._tk_alias.AliasSceneDataValidator()
 
         # Env vars
         self.alias_execpath = os.getenv("TK_ALIAS_EXECPATH", None)
@@ -139,11 +179,11 @@ class AliasEngine(sgtk.platform.Engine):
             self.logger.debug("Couldn't get Alias version. Skip version comparison")
             return
 
-        if int(self.alias_version[0:4]) > self.get_setting(
-            "compatibility_dialog_min_version", 2021
+        if (
+            int(self.alias_version[0:4])
+            > self.get_setting("compatibility_dialog_min_version", 2021)
+            and self.has_ui
         ):
-            from sgtk.platform.qt import QtGui
-
             msg = (
                 "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
                 "You can continue to use the Toolkit but you may experience bugs or "
@@ -152,10 +192,14 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
+                self.get_parent_window(),
+                "Warning - ShotGrid Pipeline Toolkit!",
+                msg,
             )
-        elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
-            "compatibility_dialog_old_version"
+        elif (
+            int(self.alias_version[0:4]) < 2021
+            and self.get_setting("compatibility_dialog_old_version")
+            and self.has_ui
         ):
             from sgtk.platform.qt import QtGui
 
@@ -167,7 +211,9 @@ class AliasEngine(sgtk.platform.Engine):
             )
             self.logger.warning(msg)
             QtGui.QMessageBox.warning(
-                self.get_parent_window(), "Warning - ShotGrid Pipeline Toolkit!", msg,
+                self.get_parent_window(),
+                "Warning - ShotGrid Pipeline Toolkit!",
+                msg,
             )
 
     def post_app_init(self):
@@ -177,8 +223,9 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("%s: Post Initializing...", self)
 
         # init menu
-        self._menu_generator = self._tk_alias.AliasMenuGenerator(engine=self)
-        self._menu_generator.create_menu(clean_menu=False)
+        if self.has_ui:
+            self._menu_generator = self._tk_alias.AliasMenuGenerator(engine=self)
+            self._menu_generator.create_menu(clean_menu=False)
 
         self._run_app_instance_commands()
 
@@ -189,7 +236,10 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("%s: Destroying...", self)
 
         # Clean the menu
-        self._menu_generator.clean_menu()
+        if self.has_ui:
+            self._menu_generator.clean_menu()
+
+        self.__event_watcher.stop_watching()
 
         # Close all Shotgun app dialogs that are still opened since
         # some apps do threads cleanup in their onClose event handler
@@ -228,12 +278,6 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
         self._initialize_dark_look_and_feel()
-
-    def _get_dialog_parent(self):
-        """
-        Get Alias dialog parent
-        """
-        return self._dialog_parent.get_dialog_parent()
 
     def _run_app_instance_commands(self):
         """
@@ -322,16 +366,156 @@ class AliasEngine(sgtk.platform.Engine):
                          the current one.
         """
 
+        import alias_api
+
         if not context:
             context = self.context
 
         current_stage = alias_api.get_current_stage()
+        if not current_stage:
+            return
+
         if current_stage.path:
             self._contexts_by_path[current_stage.path] = context
         self._contexts_by_stage_name[current_stage.name] = context
 
     #####################################################################################
-    # Alias Callbacks
+    # Alias API Convenience Functions
+
+    def save_file(self):
+        """
+        Convenience function to call the Alias Python API to save the file and ensure
+        the context is saved for the current stage.
+        """
+
+        import alias_api
+
+        status = alias_api.save_file()
+        if status != int(alias_api.AlStatusCode.Success):
+            self.logger.error(
+                "Alias Python API Error: save_file returned non-success status code {}".format(
+                    status
+                )
+            )
+
+        # Save context for the current stage that was updated
+        self.save_context_for_stage()
+
+    def save_file_as(self, path):
+        """
+        Convenience function to call the Alias Python API to save the file and ensure
+        the context is saved for the current stage.
+
+        :param path: the file path to save.
+        :type path: str
+        """
+
+        import alias_api
+
+        status = alias_api.save_file_as(path)
+        if status != int(alias_api.AlStatusCode.Success):
+            self.logger.error(
+                "Alias Python API Error: save_file_as('{}') returned non-success status code {}".format(
+                    path, status
+                )
+            )
+
+        # Save context for the current stage that was updated
+        self.save_context_for_stage()
+
+    def open_file(self, path):
+        """
+        Convenience function to call the Alias Python API to open a file and ensure
+        the context is saved for the current stage.
+
+        :param path: the file path to open.
+        :type path: str
+        """
+
+        import alias_api
+
+        status = alias_api.open_file(path)
+        if status != int(alias_api.AlStatusCode.Success):
+            self.logger.error(
+                "Alias Python API Error: open_file('{}') returned non-success status code {}".format(
+                    path, status
+                )
+            )
+
+        # Save context for the current stage that was updated
+        self.save_context_for_stage()
+
+    #####################################################################################
+    # Alias Event Watcher & Callbacks
+
+    def execute_api_ops_and_defer_event_callbacks(self, alias_api_ops, event_types):
+        """
+        Call an Alias API function while blocking any Alias event callbacks until the
+        API function is done executing. Once finished, the registered Python callbacks
+        will be triggered for the event types provided. Any event types not provided
+        will not be triggered at all by the API function executed.
+
+        NOTE since the callbacks are deferred to after the event operation has completed,
+        we do not have access to the Alias callback return result that we normally get.
+
+        TODO implement this deferred event handling in the Alias Python API side, for now
+        we will just pass None for the message result to the Python callback function.
+        Implementing the deferred event handling will also improve the way we currently
+        ignore event callbacks by unregistering and re-registering events.
+
+        :param alias_api_ops: The name of the main Alias API function to execute.
+        :type alias_api_ops: list<AliasApiOp>, where AliasApiOp is of format:
+            tuple<alias_api_func_name, func_args, func_keyword_args>
+                alias_api_func: str
+                obj: If None the alias_api_func is a function of the `alias_api` module.
+                     If not None, the alias_api_func is a method of the `obj`.
+                args: list
+                kwargs: dict
+        :param event_types: The Alias event types to defer callbacks until the main
+                            operation is complete. Any event types that are not listed
+                            will not be triggered at all for for this operation.
+        :type event_types: list<AlMessageType>
+        """
+
+        import alias_api
+
+        # Check that all api functions exist, if not abort
+        for api_func, obj, _, _ in alias_api_ops:
+            obj = obj or alias_api
+            if not hasattr(obj, api_func):
+                self.logger.error(
+                    "Failed execute_api_ops_and_defer_event_callbcaks: Alias Python API function not found '{}.{}'".format(
+                        obj, api_func
+                    )
+                )
+                return
+
+        if not isinstance(event_types, list):
+            event_types = [event_types]
+
+        if not self.event_watcher.is_watching:
+            # If the event watcher is already paused, just execute the the operations normally.
+            for api_func, obj, args, kwargs in alias_api_ops:
+                obj = obj or alias_api
+                getattr(obj, api_func)(*args, **kwargs)
+
+        else:
+            # Pause the event watcher
+            self.event_watcher.stop_watching()
+
+            # Execute all alias api operations in order
+            for api_func, obj, args, kwargs in alias_api_ops:
+                obj = obj or alias_api
+                getattr(obj, api_func)(*args, **kwargs)
+
+            # Enable the event watcher now that the operations have completed
+            self.event_watcher.start_watching()
+
+            # Now manually trigger the registered callbacks for the event types
+            for event_type in event_types:
+                callback_fns = self.event_watcher.get_callbacks(event_type)
+                for callback_fn in callback_fns:
+                    callback_fn(msg=None)
 
     def on_plugin_init(self):
         """
@@ -341,12 +525,14 @@ class AliasEngine(sgtk.platform.Engine):
 
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
         if path:
-            alias_api.open_file(path)
+            self.open_file(path)
 
     def on_stage_selected(self):
         """
         A callback happening when an Alias stage is selected.
         """
+
+        import alias_api
 
         current_stage = alias_api.get_current_stage()
 
@@ -387,33 +573,46 @@ class AliasEngine(sgtk.platform.Engine):
 
     def open_save_as_dialog(self):
         """
-        Launch a Qt file browser to select a file, then save the supplied
-        project to that path.
+        Try to open tk-multi-workfiles2 Save As... dialog if it exists otherwise
+        launch a Qt file browser for the Save As...
         """
+        open_dialog_func = None
+        kwargs = {}
+        workfiles = self.apps.get("tk-multi-workfiles2", None)
 
-        from sgtk.platform.qt import QtGui
+        if workfiles:
+            if hasattr(workfiles, "show_file_save_dlg"):
+                open_dialog_func = workfiles.show_file_save_dlg
+                kwargs["use_modal_dialog"] = True
 
-        # Alias doesn't appear to have a "save as" dialog accessible via
-        # python. so open our own Qt file dialog.
-        file_dialog = QtGui.QFileDialog(
-            parent=self.get_parent_window(),
-            caption="Save As",
-            directory=os.path.expanduser("~"),
-            filter="Alias file (*.wire)",
-        )
-        file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
-        file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
-        file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
-        file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
-        if not file_dialog.exec_():
-            return
-        path = file_dialog.selectedFiles()[0]
+        if open_dialog_func:
+            open_dialog_func(**kwargs)
 
-        if os.path.splitext(path)[-1] != ".wire":
-            path = "{0}.wire".format(path)
+        else:
+            # Alias doesn't appear to have a "save as" dialog accessible via
+            # python. so open our own Qt file dialog.
+
+            from sgtk.platform.qt import QtGui
+
+            file_dialog = QtGui.QFileDialog(
+                parent=self.get_parent_window(),
+                caption="Save As",
+                directory=os.path.expanduser("~"),
+                filter="Alias file (*.wire)",
+            )
+            file_dialog.setLabelText(QtGui.QFileDialog.Accept, "Save")
+            file_dialog.setLabelText(QtGui.QFileDialog.Reject, "Cancel")
+            file_dialog.setOption(QtGui.QFileDialog.DontResolveSymlinks)
+            file_dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog)
+            if not file_dialog.exec_():
+                return
+            path = file_dialog.selectedFiles()[0]
+
+            if os.path.splitext(path)[-1] != ".wire":
+                path = "{0}.wire".format(path)
 
         if path:
-            alias_api.save_file_as(path)
+            self.save_file_as(path)
 
     def open_delete_stages_dialog(self, new_file=False):
         """
@@ -617,10 +816,13 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         for pc in pipeline_configurations:
-            if (
-                pc["project_id"] == project_id
-                and pc["name"] == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME
-            ):
-                return pc
-
+            try:
+                if (
+                    pc["project_id"] == project_id
+                    and pc["name"]
+                    == sgtk.commands.constants.PRIMARY_PIPELINE_CONFIG_NAME
+                ):
+                    return pc
+            except KeyError:
+                self.logger.warning("No project_id key for {}.".format(pc))
         return None

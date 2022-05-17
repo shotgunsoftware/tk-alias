@@ -28,7 +28,7 @@ class AliasLauncher(SoftwareLauncher):
     CODE_NAMES = {
         "AutoStudio": dict(flags="-a as", icon="icon_as_256.png"),
         "Surface": dict(flags="-a ss", icon="icon_ss_256.png"),
-        "Design": dict(flags="-a ds", icon="icon_ds_256.png"),
+        "Design": dict(flags="-a ds", icon="icon_cs_256.png"),
         "Concept": dict(flags="-a cs", icon="icon_cs_256.png"),
     }
 
@@ -68,12 +68,6 @@ class AliasLauncher(SoftwareLauncher):
             "max_version": "2020.1",
             "python_major_version": 2,
         },
-    }
-
-    ALIAS_API = {
-        "alias2021.3": {"min_version": "2021.3"},
-        "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.2.2"},
-        "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.2.2"},
     }
 
     # This dictionary defines a list of executable template strings for each
@@ -133,8 +127,11 @@ class AliasLauncher(SoftwareLauncher):
         startup_path = os.path.join(self.disk_location, "startup")
         sgtk.util.append_path_to_env_var("PYTHONPATH", startup_path)
 
-        # setup the PYTHONPATH according to Alias version
-        self.__setup_pythonpath(tk_alias_codename, exec_path)
+        # Add the root path of the Alias Python API to the PYTHONPATH
+        # The right module will be loaded at import time according to some criteria
+        # (the Alias version, the Python version and the execution mode)
+        alias_api_path = os.path.join(self.disk_location, "api")
+        sgtk.util.append_path_to_env_var("PYTHONPATH", alias_api_path)
 
         # We're going to append all of this Python process's sys.path to the
         # PYTHONPATH environment variable. This will ensure that we have access
@@ -175,40 +172,6 @@ class AliasLauncher(SoftwareLauncher):
 
     ##########################################################################################
     # private methods
-
-    def __setup_pythonpath(self, alias_code_name, alias_exec_path):
-        """
-        Setup the PYTHONPATH to access Alias API according to Alias and Python versions
-        :return:
-        """
-
-        alias_code_name = alias_code_name or self.FALLBACK_CODE_NAME
-        alias_release_version = self._get_release_version(
-            alias_exec_path, alias_code_name
-        )
-        python_major_version = self._get_python_version()
-
-        api_folder_name = None
-        for api_folder in self.ALIAS_API:
-            min_version = self.ALIAS_API[api_folder].get("min_version")
-            max_version = self.ALIAS_API[api_folder].get("max_version")
-            if min_version and alias_release_version < min_version:
-                continue
-            if max_version and alias_release_version > max_version:
-                continue
-            api_folder_name = api_folder
-
-        if not api_folder_name:
-            return
-
-        python_path = os.path.join(
-            self.disk_location,
-            "api",
-            "python{major_version}".format(major_version=python_major_version),
-            api_folder_name,
-        )
-
-        sgtk.util.append_path_to_env_var("PYTHONPATH", python_path)
 
     def _icon_from_executable(self, code_name):
         """
@@ -330,7 +293,7 @@ class AliasLauncher(SoftwareLauncher):
                     if max_version and release_version > max_version:
                         continue
 
-                    if python_major_version != self._get_python_version():
+                    if python_major_version != sys.version_info.major:
                         continue
 
                 # appends found *.plugin file path in plugins.lst file
@@ -345,9 +308,6 @@ class AliasLauncher(SoftwareLauncher):
             args = re.sub(" +", " ", args).strip()
 
         return args
-
-    def _get_python_version(self):
-        return sys.version_info.major
 
     def _get_release_version(self, exec_path, code_name):
         alias_bindir = os.path.dirname(exec_path)

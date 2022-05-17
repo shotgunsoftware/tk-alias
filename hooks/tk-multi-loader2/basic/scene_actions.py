@@ -219,9 +219,17 @@ class AliasActions(HookBaseClass):
 
         # then, get the reference template and the source template to be able to extract fields and build the path to
         # the translated file
-        reference_template = self.parent.engine.get_reference_template(
-            tk, sg_publish_data
-        )
+        try:
+            reference_template = self.parent.engine.get_reference_template(
+                tk, sg_publish_data
+            )
+        except AttributeError:
+            raise Exception(
+                "There is an issue with Pipeline Configurations for the Linked Project<br>"
+                " Please see the guidelines <a href=https://github.com/shotgunsoftware/tk-alias/wiki/Loading#import-as-reference-from-another-project><b>here.</b></a>"
+            )
+            return
+
         source_template = tk.template_from_path(path)
 
         # get the path to the reference, using the templates if it's possible otherwise using the source path
@@ -259,7 +267,7 @@ class AliasActions(HookBaseClass):
         """
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
-        alias_api.create_texture_node(path)
+        alias_api.create_texture_node(path, True)
 
     def _import_subdivision(self, path):
         """

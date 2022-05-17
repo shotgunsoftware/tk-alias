@@ -134,7 +134,8 @@ class AliasStartVersionControlPlugin(HookBaseClass):
             # provide a save button. the session will need to be saved before
             # validation will succeed.
             self.logger.warn(
-                "The Alias session has not been saved.", extra=_get_save_as_action()
+                "The Alias session has not been saved.",
+                extra=sgtk.platform.current_engine().open_save_as_dialog,
             )
 
         self.logger.info(
@@ -167,7 +168,9 @@ class AliasStartVersionControlPlugin(HookBaseClass):
             # the session still requires saving. provide a save button.
             # validation fails
             error_msg = "The Alias session has not been saved."
-            self.logger.error(error_msg, extra=_get_save_as_action())
+            self.logger.error(
+                error_msg, extra=sgtk.platform.current_engine().open_save_as_dialog
+            )
             raise Exception(error_msg)
 
         # NOTE: If the plugin is attached to an item, that means no version
@@ -183,7 +186,9 @@ class AliasStartVersionControlPlugin(HookBaseClass):
                 "A file already exists with a version number. Please "
                 "choose another name."
             )
-            self.logger.error(error_msg, extra=_get_save_as_action())
+            self.logger.error(
+                error_msg, extra=sgtk.platform.current_engine().open_save_as_dialog
+            )
             raise Exception(error_msg)
 
         return True
@@ -205,13 +210,13 @@ class AliasStartVersionControlPlugin(HookBaseClass):
         path = sgtk.util.ShotgunPath.normalize(_session_path())
 
         # ensure the session is saved in its current state
-        alias_api.save_file()
+        publisher.engine.save_file()
 
         # get the path to a versioned copy of the file.
         version_path = publisher.util.get_version_path(path, "v001")
 
         # save to the new version path
-        alias_api.save_file_as(version_path)
+        publisher.engine.save_file_as(version_path)
         self.logger.info("A version number has been added to the Alias file...")
         self.logger.info("  Alias file path: %s" % (version_path,))
 
@@ -272,32 +277,6 @@ def _session_path():
     """
 
     return alias_api.get_current_path()
-
-
-def _get_save_as_action():
-    """
-
-    Simple helper for returning a log action dict for saving the session
-    """
-
-    engine = sgtk.platform.current_engine()
-
-    # default save callback
-    callback = engine.open_save_as_dialog
-
-    # if workfiles2 is configured, use that for file save
-    if "tk-multi-workfiles2" in engine.apps:
-        app = engine.apps["tk-multi-workfiles2"]
-        if hasattr(app, "show_file_save_dlg"):
-            callback = app.show_file_save_dlg
-
-    return {
-        "action_button": {
-            "label": "Save As...",
-            "tooltip": "Save the current session",
-            "callback": callback,
-        }
-    }
 
 
 def _get_version_docs_action():
