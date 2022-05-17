@@ -791,10 +791,6 @@ class AliasSceneDataValidator(object):
                 ],
                 "item_actions": [
                     {
-                        "name": "Collapse",
-                        "callback": self.fix_layer_has_single_object,
-                    },
-                    {
                         "name": "Select",
                         "callback": self.pick_layers,
                     },
