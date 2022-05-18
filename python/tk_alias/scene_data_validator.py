@@ -174,7 +174,7 @@ class AliasSceneDataValidator(object):
             :linenos:
             :lines: 187-830
 
-        Each validation rule is a dictionary of data that can be used to create a :class:`~tk-multi-data-validation:data.ValidationRule`. See the :class:`~tk-multi-data-validation:data.ValidationRule` constructor for more details on the dictionary data format it accepts.
+        Each validation rule is a dictionary of data that can be used to create a :class:`~tk-multi-data-validation:api.data.ValidationRule`. See the :class:`~tk-multi-data-validation:api.data.ValidationRule` constructor for more details on the dictionary data format it accepts.
 
         :return: The validation rules data set.
         :rtype: dict
