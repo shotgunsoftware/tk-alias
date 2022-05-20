@@ -337,7 +337,7 @@ class AliasSceneDataValidator(object):
                 "check_func": self.check_node_has_zero_transform,
                 "fix_func": self.fix_node_has_zero_transform,
                 "fix_name": "Reset All",
-                "fix_tooltip": "Reset all transforms to zero (except Cameras, Lights and Texture Placements.)",
+                "fix_tooltip": "Reset all transforms to zero (except Cameras, Lights and Texture Placements).",
                 "error_msg": "Found node(s) with non-zero transform.",
                 "actions": [
                     {
@@ -545,7 +545,7 @@ class AliasSceneDataValidator(object):
             },
             "cos_unused": {
                 "name": "Delete Unused COS",
-                "description": "Check for unused COS (Curves on Surface.)",
+                "description": "Check for unused COS (Curves on Surface).",
                 "check_func": self.check_curve_on_surface_unused,
                 "fix_func": self.fix_curve_on_surface_unused,
                 "fix_name": "Delete All",
@@ -748,7 +748,7 @@ class AliasSceneDataValidator(object):
             "layer_symmetry": {
                 "name": "Turn Off (All) Layer Symmetry",
                 "description": """Check layer symmetry.<br>
-                                Layers may have symmetry ON which may lead to data not being where you expect it (across the symmetry plane in thic case.)<br>
+                                Layers may have symmetry ON which may lead to data not being where you expect it (across the symmetry plane in this case).<br>
                                 The DefaultLayer will be skipped.""",
                 "check_func": self.check_layer_symmetry,
                 "fix_func": self.fix_layer_symmetry,
