@@ -337,7 +337,7 @@ class AliasSceneDataValidator(object):
                 "check_func": self.check_node_has_zero_transform,
                 "fix_func": self.fix_node_has_zero_transform,
                 "fix_name": "Reset All",
-                "fix_tooltip": "Reset all transforms to zero (except Cameras, Lights and Texture Placements.)",
+                "fix_tooltip": "Reset all transforms to zero (except Cameras, Lights and Texture Placements).",
                 "error_msg": "Found node(s) with non-zero transform.",
                 "actions": [
                     {
@@ -545,7 +545,7 @@ class AliasSceneDataValidator(object):
             },
             "cos_unused": {
                 "name": "Delete Unused COS",
-                "description": "Check for unused COS (Curves on Surface.)",
+                "description": "Check for unused COS (Curves on Surface).",
                 "check_func": self.check_curve_on_surface_unused,
                 "fix_func": self.fix_curve_on_surface_unused,
                 "fix_name": "Delete All",
@@ -642,13 +642,13 @@ class AliasSceneDataValidator(object):
                 "dependency_ids": ["node_has_construction_history", "node_is_null"],
             },
             "set_empty": {
-                "name": "Delete Empty Sets",
-                "description": "Check for empty sets.",
+                "name": "Delete Empty Selection Sets",
+                "description": "Check for empty selection sets.",
                 "check_func": self.check_set_empty,
                 "fix_func": self.fix_set_empty,
                 "fix_name": "Delete All",
-                "fix_tooltip": "Delete empty sets found.",
-                "error_msg": "Found empty set(s).",
+                "fix_tooltip": "Delete empty selection sets found.",
+                "error_msg": "Found empty selection set(s).",
                 "item_actions": [
                     {
                         "name": "Delete",
@@ -748,7 +748,7 @@ class AliasSceneDataValidator(object):
             "layer_symmetry": {
                 "name": "Turn Off (All) Layer Symmetry",
                 "description": """Check layer symmetry.<br>
-                                Layers may have symmetry ON which may lead to data not being where you expect it (across the symmetry plane in thic case.)<br>
+                                Layers may have symmetry ON which may lead to data not being where you expect it (across the symmetry plane in this case).<br>
                                 The DefaultLayer will be skipped.""",
                 "check_func": self.check_layer_symmetry,
                 "fix_func": self.fix_layer_symmetry,
@@ -776,7 +776,7 @@ class AliasSceneDataValidator(object):
             "layer_has_single_object": {
                 "name": "Layer Has Single Item",
                 "description": """Check number of items in layer.<br>
-                                Layers are prohibited from containing more than one item (group hierarchy within a layer is prohibited, and should be flattened).<br>
+                                Layers can only have a single top-level object. If it contains multiple objects, they will be placed into a single group.<br>
                                 The DefaultLayer will be skipped.""",
                 "check_func": self.check_layer_has_single_object,
                 "fix_func": self.fix_layer_has_single_object,
@@ -791,12 +791,12 @@ class AliasSceneDataValidator(object):
                 ],
                 "item_actions": [
                     {
-                        "name": "Collapse",
-                        "callback": self.fix_layer_has_single_object,
+                        "name": "Select Layer",
+                        "callback": self.pick_layers,
                     },
                     {
-                        "name": "Select",
-                        "callback": self.pick_layers,
+                        "name": "Select Layer Geometry",
+                        "callback": self.pick_nodes_assigned_to_layers,
                     },
                 ],
                 "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
@@ -805,6 +805,7 @@ class AliasSceneDataValidator(object):
                     "node_is_null",
                     "node_is_in_layer",
                     "node_is_not_in_layer",
+                    "node_has_zero_transform",
                 ],
             },
             "locators": {
