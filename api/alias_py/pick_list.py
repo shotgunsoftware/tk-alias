@@ -70,7 +70,7 @@ def pick_curves_on_surface_from_nodes(nodes, clear_pick_list=True, redraw=True):
         alias_api.redraw_screen()
 
 
-def pick_nodes_assigned_to_shader(
+def pick_nodes_assigned_to_shaders(
     shaders, clear_pick_list=True, redraw=True, skip_shaders=None
 ):
     """
