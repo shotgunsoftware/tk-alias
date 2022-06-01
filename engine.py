@@ -690,7 +690,9 @@ class AliasEngine(sgtk.platform.Engine):
                 break
         # in case we can't find an existing widget, create a new one
         else:
-            widget_instance = self.show_dialog(title, bundle, widget_class, *args, **kwargs)
+            widget_instance = self.show_dialog(
+                title, bundle, widget_class, *args, **kwargs
+            )
             widget_instance.setObjectName(panel_id)
 
         return widget_instance
