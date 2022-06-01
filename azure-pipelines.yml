@@ -1,3 +1,13 @@
+# Copyright (c) 2022 Autodesk, Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the ShotGrid Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Autodesk, Inc.
+
 # Imports the shared Azure CI tools from the master branch of shotgunsoftware/tk-ci-tools
 resources:
   repositories:
@@ -28,9 +38,11 @@ variables:
 - group: deploy-secrets
 - name: 'PYTHONPATH'
   value: './api'
+- name: 'TK_ALIAS_VERSION'
+  value: 'docs'
 
 # Launch into the build pipeline.
 jobs:
 - template: build-pipeline.yml@templates
   parameters:
-    skip_tests: true
+    has_ui_tests: false
