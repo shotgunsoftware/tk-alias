@@ -315,7 +315,9 @@ class AliasTranslationPublishPlugin(HookBaseClass):
                 and settings.get("Translator Settings").value
             ):
                 for setting in settings.get("Translator Settings").value:
-                    translator.add_extra_param(setting.get("name"), setting.get("value"))
+                    translator.add_extra_param(
+                        setting.get("name"), setting.get("value")
+                    )
 
             try:
                 translator.execute()

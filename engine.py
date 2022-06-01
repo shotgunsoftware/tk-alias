@@ -180,9 +180,8 @@ class AliasEngine(sgtk.platform.Engine):
             self.logger.debug("Couldn't get Alias version. Skip version comparison")
             return
 
-        if (
-            int(self.alias_version[0:4])
-            > self.get_setting("compatibility_dialog_min_version", 2021)
+        if int(self.alias_version[0:4]) > self.get_setting(
+            "compatibility_dialog_min_version", 2021
         ):
             msg = (
                 "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
@@ -197,9 +196,8 @@ class AliasEngine(sgtk.platform.Engine):
                     "Warning - ShotGrid Pipeline Toolkit!",
                     msg,
                 )
-        elif (
-            int(self.alias_version[0:4]) < 2021
-            and self.get_setting("compatibility_dialog_old_version")
+        elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
+            "compatibility_dialog_old_version"
         ):
             msg = (
                 "The ShotGrid Pipeline Toolkit is not fully capable with Alias %s. "

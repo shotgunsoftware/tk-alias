@@ -38,7 +38,7 @@ class AliasSessionCollector(HookBaseClass):
             "Background Processing": {
                 "type": "bool",
                 "default": False,
-                "description": "Boolean to turn on/off the background publishing process."
+                "description": "Boolean to turn on/off the background publishing process.",
             },
         }
 
