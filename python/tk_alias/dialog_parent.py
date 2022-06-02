@@ -14,8 +14,6 @@ set of win32 functions used by Alias engine to manage toolkit UI under windows
 import ctypes
 from ctypes import wintypes
 
-from sgtk.platform.qt import QtCore
-from sgtk.platform.qt import QtGui
 from sgtk.util import is_windows
 
 # user32.dll
@@ -179,6 +177,8 @@ def qwidget_winid_to_hwnd(id):
     :param id: qtwidget winid to convert
     :returns: window handle
     """
+    from sgtk.platform.qt import QtCore
+
     if QtCore.__version__.startswith("5."):
         hwnd = id
     else:
@@ -222,6 +222,8 @@ class DialogParent(object):
         will be parented to the main Alias application.  Creates the proxy window
         if it doesn't already exist.
         """
+        from sgtk.platform.qt import QtGui
+
         if not self._proxy_window:
             main_hwnd = self.get_main_hwnd()
 
