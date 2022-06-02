@@ -8,7 +8,11 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
+from sgtk.util import is_windows
+
+if is_windows():
+    from .dialog_parent import DialogParent
+
 from .menu_generation import AliasMenuGenerator
-from .dialog_parent import DialogParent
 from .alias_event_watcher import AliasEventWatcher
 from .scene_data_validator import AliasSceneDataValidator
