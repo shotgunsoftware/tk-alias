@@ -649,6 +649,51 @@ class AliasEngine(sgtk.platform.Engine):
         # TODO: improve Alias API to redirect the logs to the Alias Promptline
         pass
 
+    ##########################################################################################
+    # panel support
+
+    def show_panel(self, panel_id, title, bundle, widget_class, *args, **kwargs):
+        """
+        Show a dialog as panel in Alias as they are not properly supported. In case the widget has already been opened,
+        do not create a second widget but use the existing one instead.
+
+        :param panel_id: Unique identifier for the panel, as obtained by register_panel().
+        :param title: The title of the panel
+        :param bundle: The app, engine or framework object that is associated with this window
+        :param widget_class: The class of the UI to be constructed. This must derive from QWidget.
+
+        Additional parameters specified will be passed through to the widget_class constructor.
+
+        :returns: the created widget_class instance
+        """
+
+        self.logger.debug("Begin showing panel {}".format(panel_id))
+
+        if not self.has_ui:
+            self.logger.error(
+                "Sorry, this environment does not support UI display! Cannot show "
+                "the requested window '{}'.".format(title)
+            )
+            return None
+
+        # try to find existing window in order to avoid having many instances of the same app opened at the same time
+        for qt_dialog in self.created_qt_dialogs:
+            if not hasattr(qt_dialog, "_widget"):
+                continue
+            if qt_dialog._widget.objectName() == panel_id:
+                widget_instance = qt_dialog
+                widget_instance.raise_()
+                widget_instance.activateWindow()
+                break
+        # in case we can't find an existing widget, create a new one
+        else:
+            widget_instance = self.show_dialog(
+                title, bundle, widget_class, *args, **kwargs
+            )
+            widget_instance.setObjectName(panel_id)
+
+        return widget_instance
+
     #####################################################################################
     # Utils
 
