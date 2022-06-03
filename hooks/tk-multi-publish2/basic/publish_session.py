@@ -174,7 +174,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
             # the session has not been saved before (no path determined).
             # provide a save button. the session will need to be saved before
             # validation will succeed.
-            self.logger.warn(
+            self.logger.warning(
                 "The Alias session has not been saved.",
                 extra=sgtk.platform.current_engine().open_save_as_dialog,
             )
@@ -308,23 +308,43 @@ class AliasSessionPublishPlugin(HookBaseClass):
         :param item: Item to process
         """
 
+        # get the publish "mode" stored inside of the root item properties
+        bg_processing = item.parent.properties.get("bg_processing", False)
+        in_bg_process = item.parent.properties.get("in_bg_process", False)
+
         # get the path in a normalized state. no trailing separator, separators
         # are appropriate for current os, no double separators, etc.
         path = sgtk.util.ShotgunPath.normalize(_session_path())
 
         # ensure the session is saved
-        self.parent.engine.save_file()
+        # we need to do this action locally to be sure the background process could access the work file
+        if not bg_processing or (bg_processing and not in_bg_process):
+            self.parent.engine.save_file()
+            # store the current session path in the root item properties
+            # it will be used later in the background process to open the file before running the publishing actions
+            if "session_path" not in item.parent.properties:
+                item.parent.properties["session_path"] = path
+                item.parent.properties[
+                    "session_name"
+                ] = "Alias Session - {task_name}, {entity_type} {entity_name} - {file_name}".format(
+                    task_name=item.context.task["name"],
+                    entity_type=item.context.entity["type"],
+                    entity_name=item.context.entity["name"],
+                    file_name=os.path.basename(path),
+                )
 
         # update the item with the saved session path
         item.properties["path"] = path
 
-        # add dependencies for the base class to register when publishing
-        item.properties[
-            "publish_dependencies"
-        ] = _alias_find_additional_session_dependencies()
+        if not bg_processing or (bg_processing and in_bg_process):
 
-        # let the base class register the publish
-        super(AliasSessionPublishPlugin, self).publish(settings, item)
+            # add dependencies for the base class to register when publishing
+            item.properties[
+                "publish_dependencies"
+            ] = _alias_find_additional_session_dependencies()
+
+            # let the base class register the publish
+            super(AliasSessionPublishPlugin, self).publish(settings, item)
 
     def finalize(self, settings, item):
         """
@@ -337,13 +357,19 @@ class AliasSessionPublishPlugin(HookBaseClass):
         :param item: Item to process
         """
 
-        # do the base class finalization
-        super(AliasSessionPublishPlugin, self).finalize(settings, item)
+        # get the publish "mode" stored inside of the root item properties
+        bg_processing = item.parent.properties.get("bg_processing", False)
+        in_bg_process = item.parent.properties.get("in_bg_process", False)
+
+        if not bg_processing or (bg_processing and in_bg_process):
+            # do the base class finalization
+            super(AliasSessionPublishPlugin, self).finalize(settings, item)
 
         # bump the session file to the next version
-        self._save_to_next_version(
-            item.properties["path"], item, self.parent.engine.save_file_as
-        )
+        if not bg_processing or (bg_processing and not in_bg_process):
+            self._save_to_next_version(
+                item.properties["path"], item, self.parent.engine.save_file_as
+            )
 
 
 def _alias_find_additional_session_dependencies():

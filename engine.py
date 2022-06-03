@@ -30,6 +30,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_execpath = None
         self.alias_bindir = None
         self.alias_version = None
+        self._dialog_parent = None
         self.__event_watcher = None
         self.__scene_data_validator = None
 
@@ -152,14 +153,20 @@ class AliasEngine(sgtk.platform.Engine):
         except Exception as api_import_error:
             error_msg = str(api_import_error)
             self.logger.critical(error_msg)
-            QtGui.QMessageBox.critical(
-                self.get_parent_window(),
-                "Failed to import the Alias Python API",
-                error_msg,
-            )
+            if self.has_ui:
+                QtGui.QMessageBox.critical(
+                    self.get_parent_window(),
+                    "Failed to import the Alias Python API",
+                    error_msg,
+                )
 
         # import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
+
+        # dialog parent handler
+        self._dialog_parent = (
+            self._tk_alias.DialogParent(engine=self) if self.has_ui else None
+        )
 
         # event watcher
         self.__event_watcher = self._tk_alias.AliasEventWatcher()
@@ -179,10 +186,8 @@ class AliasEngine(sgtk.platform.Engine):
             self.logger.debug("Couldn't get Alias version. Skip version comparison")
             return
 
-        if (
-            int(self.alias_version[0:4])
-            > self.get_setting("compatibility_dialog_min_version", 2021)
-            and self.has_ui
+        if int(self.alias_version[0:4]) > self.get_setting(
+            "compatibility_dialog_min_version", 2021
         ):
             msg = (
                 "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
@@ -191,18 +196,15 @@ class AliasEngine(sgtk.platform.Engine):
                 % (self.alias_version, sgtk.support_url)
             )
             self.logger.warning(msg)
-            QtGui.QMessageBox.warning(
-                self.get_parent_window(),
-                "Warning - ShotGrid Pipeline Toolkit!",
-                msg,
-            )
-        elif (
-            int(self.alias_version[0:4]) < 2021
-            and self.get_setting("compatibility_dialog_old_version")
-            and self.has_ui
+            if self.has_ui:
+                QtGui.QMessageBox.warning(
+                    self.get_parent_window(),
+                    "Warning - ShotGrid Pipeline Toolkit!",
+                    msg,
+                )
+        elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
+            "compatibility_dialog_old_version"
         ):
-            from sgtk.platform.qt import QtGui
-
             msg = (
                 "The ShotGrid Pipeline Toolkit is not fully capable with Alias %s. "
                 "You should consider upgrading to a more recent version of Alias. "
@@ -210,11 +212,12 @@ class AliasEngine(sgtk.platform.Engine):
                 % (self.alias_version, sgtk.support_url)
             )
             self.logger.warning(msg)
-            QtGui.QMessageBox.warning(
-                self.get_parent_window(),
-                "Warning - ShotGrid Pipeline Toolkit!",
-                msg,
-            )
+            if self.has_ui:
+                QtGui.QMessageBox.warning(
+                    self.get_parent_window(),
+                    "Warning - ShotGrid Pipeline Toolkit!",
+                    msg,
+                )
 
     def post_app_init(self):
         """
@@ -278,6 +281,12 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
         self._initialize_dark_look_and_feel()
+
+    def _get_dialog_parent(self):
+        """
+        Get Alias dialog parent
+        """
+        return self._dialog_parent.get_dialog_parent()
 
     def _run_app_instance_commands(self):
         """
@@ -651,6 +660,51 @@ class AliasEngine(sgtk.platform.Engine):
         """
         # TODO: improve Alias API to redirect the logs to the Alias Promptline
         pass
+
+    ##########################################################################################
+    # panel support
+
+    def show_panel(self, panel_id, title, bundle, widget_class, *args, **kwargs):
+        """
+        Show a dialog as panel in Alias as they are not properly supported. In case the widget has already been opened,
+        do not create a second widget but use the existing one instead.
+
+        :param panel_id: Unique identifier for the panel, as obtained by register_panel().
+        :param title: The title of the panel
+        :param bundle: The app, engine or framework object that is associated with this window
+        :param widget_class: The class of the UI to be constructed. This must derive from QWidget.
+
+        Additional parameters specified will be passed through to the widget_class constructor.
+
+        :returns: the created widget_class instance
+        """
+
+        self.logger.debug("Begin showing panel {}".format(panel_id))
+
+        if not self.has_ui:
+            self.logger.error(
+                "Sorry, this environment does not support UI display! Cannot show "
+                "the requested window '{}'.".format(title)
+            )
+            return None
+
+        # try to find existing window in order to avoid having many instances of the same app opened at the same time
+        for qt_dialog in self.created_qt_dialogs:
+            if not hasattr(qt_dialog, "_widget"):
+                continue
+            if qt_dialog._widget.objectName() == panel_id:
+                widget_instance = qt_dialog
+                widget_instance.raise_()
+                widget_instance.activateWindow()
+                break
+        # in case we can't find an existing widget, create a new one
+        else:
+            widget_instance = self.show_dialog(
+                title, bundle, widget_class, *args, **kwargs
+            )
+            widget_instance.setObjectName(panel_id)
+
+        return widget_instance
 
     #####################################################################################
     # Utils
