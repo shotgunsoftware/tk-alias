@@ -44,30 +44,12 @@ class AliasLauncher(SoftwareLauncher):
     # Fallback code name to use when none is given
     FALLBACK_CODE_NAME = "AutoStudio"
 
-    # ShotGrid default plugins
-    DEFAULT_PLUGINS = {
-        "shotgrid.plugin": {"min_version": "2022.2", "python_major_version": 3},
-        "shotgrid_py2.plugin": {"min_version": "2022.2", "python_major_version": 2},
-        "shotgun.plugin": {
-            "min_version": "2020.2",
-            "max_version": "2022.1",
-            "python_major_version": 3,
-        },
-        "shotgun_py2.plugin": {
-            "min_version": "2020.2",
-            "max_version": "2022.1",
-            "python_major_version": 2,
-        },
-        "shotgun_legacy.plugin": {
-            "min_version": "2019",
-            "max_version": "2020.1",
-            "python_major_version": 3,
-        },
-        "shotgun_legacy_py2.plugin": {
-            "min_version": "2019",
-            "max_version": "2020.1",
-            "python_major_version": 2,
-        },
+    # # ShotGrid default plugins
+    ALIAS_PLUGINS = {
+        "alias2022.2": {"min_version": "2022.2"},
+        "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
+        "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3"},
+        "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},
     }
 
     # This dictionary defines a list of executable template strings for each
@@ -252,56 +234,64 @@ class AliasLauncher(SoftwareLauncher):
         :code_name: alias code name
         :return: plugins.lst path
         """
-        # if code name is None, then use the fallback
-        code_name = code_name or self.FALLBACK_CODE_NAME
 
-        # get plugins folder
         plugins_directory = os.path.join(self.disk_location, "plugins")
-
-        # plugins folder exists?
         if not os.path.isdir(plugins_directory):
             return None
 
-        # Get release version
+        code_name = code_name or self.FALLBACK_CODE_NAME
         release_version = self._get_release_version(exec_path, code_name)
+
+        plugin_folder_name = None
+        for plugin_folder in self.ALIAS_PLUGINS:
+            min_version = self.ALIAS_PLUGINS[plugin_folder].get("min_version")
+            max_version = self.ALIAS_PLUGINS[plugin_folder].get("max_version")
+
+            if min_version and version_cmp(release_version, min_version) < 0:
+                continue
+
+            if max_version and version_cmp(release_version, max_version) >= 0:
+                continue
+
+            plugin_folder_name = plugin_folder
+            break
+
+        if not plugin_folder_name:
+            self.logger.error("Failed to find plugin folder.")
+            return
+
+        plugin_file_basename = (
+            "shotgun" if version_cmp(release_version, "2022.2") < 0 else "shotgrid"
+        )
 
         # Set plugins list file to the user TEMP directory
         plugin_temp_file_directory = os.environ["TEMP"]
         plugins_list_file = os.path.join(plugin_temp_file_directory, "plugins.lst")
-        plugins_number = 0
+        python_major_version = sys.version_info.major
 
+        if python_major_version < 3:
+            raise Exception(
+                "Alias ShotGrid plugin does not support Python version {}.{}.{}".format(
+                    sys.version_info.major,
+                    sys.version_info.minor,
+                    sys.version_info.micro,
+                )
+            )
+
+        success = False
         with open(plugins_list_file, "w") as plf:
-            # loops plugins folder searching for *.plugin files
-            for plugin_file_name in os.listdir(plugins_directory):
-                if not plugin_file_name.endswith(".plugin"):
-                    continue
-
-                # build *.plugin file path
-                plugin_file_path = os.path.join(plugins_directory, plugin_file_name)
-
-                # if the plugin is a preconfigured
-                if plugin_file_name in self.DEFAULT_PLUGINS:
-                    plugin_data = self.DEFAULT_PLUGINS.get(plugin_file_name)
-                    min_version = plugin_data.get("min_version")
-                    max_version = plugin_data.get("max_version")
-                    python_major_version = plugin_data.get("python_major_version")
-
-                    # check constraints
-                    if min_version and release_version < min_version:
-                        continue
-
-                    if max_version and release_version > max_version:
-                        continue
-
-                    if python_major_version != sys.version_info.major:
-                        continue
-
-                # appends found *.plugin file path in plugins.lst file
-                plf.write("{0}\n".format(plugin_file_path))
-                plugins_number += 1
+            plugin_file_path = os.path.join(
+                plugins_directory,
+                "python3",
+                plugin_folder_name,
+                "{}.plugin".format(plugin_file_basename),
+            )
+            # Overwrite the lst file with the plugin file path found
+            plf.write("{}\n".format(plugin_file_path))
+            success = True
 
         # returns plugins.lst path or None
-        return plugins_list_file if plugins_number else None
+        return plugins_list_file if success else None
 
     def _clean_args(self, args):
         if args:
@@ -326,3 +316,47 @@ class AliasLauncher(SoftwareLauncher):
         release_version = release_info[len(release_prefix) :].strip()
 
         return release_version
+
+
+def version_cmp(version1, version2):
+    """
+    Compare the version strings.
+
+    :param version1: A version string to compare against version2 e.g. 2022.2
+    :param version2: A version string to compare against version1 e.g. 2021.3.1
+
+    :return: The result of the comparison:
+         1 - version1 is greater than version2
+         0 - version1 and version2 are equal
+        -1 - version1 is less than version2
+    :rtype: int
+    """
+
+    # This will split both the versions by the '.' char to get the major, minor, patch values
+    arr1 = version1.split(".")
+    arr2 = version2.split(".")
+    n = len(arr1)
+    m = len(arr2)
+
+    # Converts to integer from string
+    arr1 = [int(i) for i in arr1]
+    arr2 = [int(i) for i in arr2]
+
+    # Compares which list is bigger and fills the smaller list with zero (for unequal
+    # delimeters)
+    if n > m:
+        for i in range(m, n):
+            arr2.append(0)
+    elif m > n:
+        for i in range(n, m):
+            arr1.append(0)
+
+    # Returns 1 if version1 is greater
+    # Returns -1 if version2 is greater
+    # Returns 0 if they are equal
+    for i in range(len(arr1)):
+        if arr1[i] > arr2[i]:
+            return 1
+        elif arr2[i] > arr1[i]:
+            return -1
+    return 0
