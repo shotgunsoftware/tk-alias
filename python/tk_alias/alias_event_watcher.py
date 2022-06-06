@@ -13,6 +13,54 @@ class AliasEventWatcher(object):
     Python object used to manage Alias callbacks.
     """
 
+    class ContextManager:
+        """
+        A custom context manager to handle Alias events triggering Python callbacks.
+
+        The purpose of this context manager is to ensure that Alias operations and Python
+        callbacks triggered from Alias message events do not conflict. The entry method
+        ensures that any Python callbacks triggered by Alias message events are queued
+        (not executed immediately), and will be executed once the exit method is called.
+
+        .. code-block:: python
+
+            with AliasEventWatch.ContextManager():
+                alias_api.open_file(file_path)
+
+        This way of managing executing Python callbacks is preferred to using the
+        AliasEventWAtcher watcher methods `start_watching` and `stop_watching`.
+        """
+
+        def __enter__(self):
+            """
+            Set up the context manager.
+
+            This entry method just calls the Alias Python API function to indicate to start
+            queuing any callbacks triggered by Alias message events. This means that any
+            Python callback that would be triggered by an Alias event, is not executed until
+            the Alias Python API function is called to execute the callbacks that have been
+            queued.
+            """
+
+            alias_api.queue_events(True)
+
+        def __exit__(self, exc_type, exc_value, exc_tb):
+            """
+            Set up the context manager.
+
+            This exit method calls the Alias Python API function to execute the Python
+            callbacks that have been added to the queue. The queue will become empty after
+            this API call.
+
+            :param exc_type: The exception class
+            :param exc_value: The exception instance
+            :param exc_tb: The traceback object
+            """
+
+            # TODO handle exceptions
+
+            alias_api.queue_events(False)
+
     def __init__(self):
         """
         Class constructor.
