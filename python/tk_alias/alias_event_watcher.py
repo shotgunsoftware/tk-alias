@@ -45,6 +45,17 @@ class AliasEventWatcher(object):
         AliasEventWAtcher watcher methods `start_watching` and `stop_watching`.
         """
 
+        def __init__(self, ignore_events=False):
+            """
+            Initialize the context manager.
+
+            :param ignore_events: Set to True to avoid triggering Python callbacks for any
+                Alias message events that occur.
+            :type ignore_events: bool
+            """
+
+            self.ignore_events = ignore_events
+
         def __enter__(self):
             """
             Set up the context manager.
@@ -73,7 +84,13 @@ class AliasEventWatcher(object):
 
             # TODO handle exceptions
 
-            alias_api.queue_events(False)
+            if self.ignore_events:
+                # Clear the queued events, but do not trigger their callacks.
+                alias_api.clear_queued_events()
+            else:
+                # Trigger any Python callbacks for the queued events. The queue will become
+                # empty after this.
+                alias_api.queue_events(False)
 
     def __init__(self):
         """
