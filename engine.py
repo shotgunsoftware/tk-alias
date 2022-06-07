@@ -17,7 +17,7 @@ from sgtk.util import LocalFileStorageManager
 
 class AliasEngine(sgtk.platform.Engine):
     """
-    An Alias DC engine for Shotgun Toolkit.
+    An Alias DCC engine for Shotgun Toolkit.
     """
 
     def __init__(self, tk, context, engine_instance_name, env):
@@ -43,6 +43,35 @@ class AliasEngine(sgtk.platform.Engine):
             sys.argv = [""]
 
         super(AliasEngine, self).__init__(tk, context, engine_instance_name, env)
+
+    # -------------------------------------------------------------------------------------------------------
+    # Static methods
+    # -------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_current_engine():
+        """
+        Return the engine that Toolkit is currently running. This is used by the Alias
+        C++ Plugin to ensure that its reference to the engine is not stale (e.g. the
+        plugin's reference will become stale after the engine has been reloaded).
+        """
+
+        return sgtk.platform.current_engine()
+
+    @staticmethod
+    def get_parent_window():
+        """
+        Return the current active window Qt window.
+
+        This is a fallback method to get the main window, if `_get_dialog_parent` cannot be used.
+        """
+        from sgtk.platform.qt import QtGui
+
+        return QtGui.QApplication.activeWindow()
+
+    # -------------------------------------------------------------------------------------------------------
+    # Properties
+    # -------------------------------------------------------------------------------------------------------
 
     @property
     def host_info(self):
@@ -73,41 +102,22 @@ class AliasEngine(sgtk.platform.Engine):
 
     @property
     def event_watcher(self):
+        """Get the AliasEventWatcher object to help manager Alias message events and Python callbacks."""
         return self.__event_watcher
 
     @property
     def scene_data_validator(self):
+        """Get the AliasSceneDataValidator object to help validate the Alias scene data."""
         return self.__scene_data_validator
 
-    @staticmethod
-    def get_current_engine():
-        """
-        Return the engine that Toolkit is currently running. This is used by the Alias
-        C++ Plugin to ensure that its reference to the engine is not stale (e.g. the
-        plugin's reference will become stale after the engine has been reloaded).
-        """
-
-        return sgtk.platform.current_engine()
-
-    def post_context_change(self, old_context, new_context):
-        """
-        Runs after a context change has occurred.
-
-        :param old_context: The previous context.
-        :param new_context: The current context.
-        """
-
-        self.logger.debug("%s: Post context change...", self)
-
-        # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
-        if self.has_ui:
-            self._menu_generator.create_menu()
-            self._menu_generator.refresh()
+    # -------------------------------------------------------------------------------------------------------
+    # Override base Engine class methods
+    # -------------------------------------------------------------------------------------------------------
 
     def pre_app_init(self):
         """
-        Sets up the engine into an operational state. This method called before
-        any apps are loaded.
+        Sets up the engine into an operational state. Executed by the system and typically
+        implemented by deriving classes. This method called before any apps are loaded.
         """
 
         self.logger.debug("%s: Initializing..." % (self,))
@@ -140,7 +150,7 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Init QT main loop
         if self.has_ui:
-            self.init_qt_app()
+            self._init_qt_app()
 
         # Defer importing the Alias Python API until now so that a proper info message can be displayed to
         # user if the api failed to import.
@@ -169,7 +179,7 @@ class AliasEngine(sgtk.platform.Engine):
         )
 
         # event watcher
-        self.__event_watcher = self.init_alias_event_watcher()
+        self.__event_watcher = self._init_alias_event_watcher()
 
         # scene validator
         self.__scene_data_validator = self._tk_alias.AliasSceneDataValidator()
@@ -220,8 +230,10 @@ class AliasEngine(sgtk.platform.Engine):
 
     def post_app_init(self):
         """
-        Runs after all apps have been initialized.
+        Executed by the system and typically implemented by deriving classes.
+        This method called after all apps have been loaded.
         """
+
         self.logger.debug("%s: Post Initializing...", self)
 
         # init menu
@@ -235,6 +247,7 @@ class AliasEngine(sgtk.platform.Engine):
         """
         Called when the engine should tear down itself and all its apps.
         """
+
         self.logger.debug("%s: Destroying...", self)
 
         # Clean the menu
@@ -253,7 +266,74 @@ class AliasEngine(sgtk.platform.Engine):
         for dialog in dialogs_still_opened:
             dialog.close()
 
-    def init_qt_app(self):
+    def show_panel(self, panel_id, title, bundle, widget_class, *args, **kwargs):
+        """
+        Show a dialog as panel in Alias as they are not properly supported. In case the widget has already been opened,
+        do not create a second widget but use the existing one instead.
+
+        :param panel_id: Unique identifier for the panel, as obtained by register_panel().
+        :param title: The title of the panel
+        :param bundle: The app, engine or framework object that is associated with this window
+        :param widget_class: The class of the UI to be constructed. This must derive from QWidget.
+
+        Additional parameters specified will be passed through to the widget_class constructor.
+
+        :returns: the created widget_class instance
+        """
+
+        self.logger.debug("Begin showing panel {}".format(panel_id))
+
+        if not self.has_ui:
+            self.logger.error(
+                "Sorry, this environment does not support UI display! Cannot show "
+                "the requested window '{}'.".format(title)
+            )
+            return None
+
+        # try to find existing window in order to avoid having many instances of the same app opened at the same time
+        for qt_dialog in self.created_qt_dialogs:
+            if not hasattr(qt_dialog, "_widget"):
+                continue
+            if qt_dialog._widget.objectName() == panel_id:
+                widget_instance = qt_dialog
+                widget_instance.raise_()
+                widget_instance.activateWindow()
+                break
+        # in case we can't find an existing widget, create a new one
+        else:
+            widget_instance = self.show_dialog(
+                title, bundle, widget_class, *args, **kwargs
+            )
+            widget_instance.setObjectName(panel_id)
+
+        return widget_instance
+
+    def _get_dialog_parent(self):
+        """
+        Get Alias dialog parent window.
+        """
+
+        return self._dialog_parent.get_dialog_parent()
+
+    def _emit_log_message(self, handler, record):
+        """
+        Called by the engine to log messages in Alias Terminal.
+        All log messages from the toolkit logging namespace will be passed to this method.
+
+        :param handler: Log handler that this message was dispatched from.
+                        Its default format is "[levelname basename] message".
+        :type handler: :class:`~python.logging.LogHandler`
+        :param record: Standard python logging record.
+        :type record: :class:`~python.logging.LogRecord`
+        """
+        # TODO: improve Alias API to redirect the logs to the Alias Promptline
+        pass
+
+    # -------------------------------------------------------------------------------------------------------
+    # Protected methods
+    # -------------------------------------------------------------------------------------------------------
+
+    def _init_qt_app(self):
         """
         Initialize QT application.
         """
@@ -281,22 +361,35 @@ class AliasEngine(sgtk.platform.Engine):
         # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
         self._initialize_dark_look_and_feel()
 
-    def on_plugin_init(self):
+    def _init_alias_event_watcher(self):
         """
-        This function is called by the Alias ShotGrid Plugin on initialization.
+        Initialize the Alis event watcher.
 
-        This is called once, and only once when Alias starts up.
+        Register any initial Alias message event callbacks, and start watching for events immediately.
+
+        :return: The Alias event watcher object.
+        :rtype: AliasEventWatcher
         """
 
-        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
-        if path:
-            self.open_file(path)
+        import alias_api
 
-    def _get_dialog_parent(self):
-        """
-        Get Alias dialog parent
-        """
-        return self._dialog_parent.get_dialog_parent()
+        event_watcher = self._tk_alias.AliasEventWatcher()
+
+        # Register event callbacks
+        # NOTE: cannot call engine class methods directly, must use lambda in order to have
+        # access to the engine object to call its class methods. The event callbacks must
+        # take one parameter, which is the result passed from the Alias Python API for the
+        # Alias event
+        event_watcher.register_alias_callback(
+            lambda result, engine=self: engine.on_stage_created(result),
+            alias_api.AlMessageType.StageCreated,
+        )
+
+        # Now start watching the events. This should be called after registering events to
+        # ensure the event watcher starts listening.
+        event_watcher.start_watching()
+
+        return event_watcher
 
     def _run_app_instance_commands(self):
         """
@@ -375,6 +468,36 @@ class AliasEngine(sgtk.platform.Engine):
         for command in commands_to_run:
             command()
 
+    # -------------------------------------------------------------------------------------------------------
+    # Public methods
+    # -------------------------------------------------------------------------------------------------------
+
+    def on_plugin_init(self):
+        """
+        This function is called by the Alias ShotGrid Plugin on initialization.
+
+        This is called once, and only once when Alias starts up.
+        """
+
+        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
+        if path:
+            self.open_file(path)
+
+    def post_context_change(self, old_context, new_context):
+        """
+        Runs after a context change has occurred.
+
+        :param old_context: The previous context.
+        :param new_context: The current context.
+        """
+
+        self.logger.debug("%s: Post context change...", self)
+
+        # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
+        if self.has_ui:
+            self._menu_generator.create_menu()
+            self._menu_generator.refresh()
+
     def save_context_for_stage(self, context=None):
         """
         Save the context associated to the current Alias stage.
@@ -399,7 +522,7 @@ class AliasEngine(sgtk.platform.Engine):
         self._contexts_by_stage_name[current_stage.name] = context
 
     #####################################################################################
-    # Alias API Convenience Functions
+    # File I/O
 
     def save_file(self):
         """
@@ -465,35 +588,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.save_context_for_stage()
 
     #####################################################################################
-    # Alias Event Watcher & Callbacks
-
-    def init_alias_event_watcher(self):
-        """
-        Initialize the Alis event watcher.
-
-        :return: The Alias event watcher object.
-        :rtype: AliasEventWatcher
-        """
-
-        import alias_api
-
-        event_watcher = self._tk_alias.AliasEventWatcher()
-
-        # Register event callbacks
-        # NOTE: cannot call engine class methods directly, must use lambda in order to have
-        # access to the engine object to call its class methods. The event callbacks must
-        # take one parameter, which is the result passed from the Alias Python API for the
-        # Alias event
-        event_watcher.register_alias_callback(
-            lambda result, engine=self: engine.on_stage_created(result),
-            alias_api.AlMessageType.StageCreated,
-        )
-
-        # Now start watching the events. This should be called after registering events to
-        # ensure the event watcher starts listening.
-        event_watcher.start_watching()
-
-        return event_watcher
+    # AliasEventWatcher callbacks
 
     def on_stage_created(self, result):
         """
@@ -532,15 +627,6 @@ class AliasEngine(sgtk.platform.Engine):
 
     #####################################################################################
     # QT Utils
-
-    @staticmethod
-    def get_parent_window():
-        """
-        Return current active window as parent
-        """
-        from sgtk.platform.qt import QtGui
-
-        return QtGui.QApplication.activeWindow()
 
     def open_save_as_dialog(self):
         """
@@ -605,68 +691,6 @@ class AliasEngine(sgtk.platform.Engine):
         )
 
         return answer
-
-    #####################################################################################
-    # Logging
-
-    def _emit_log_message(self, handler, record):
-        """
-        Called by the engine to log messages in Alias Terminal.
-        All log messages from the toolkit logging namespace will be passed to this method.
-
-        :param handler: Log handler that this message was dispatched from.
-                        Its default format is "[levelname basename] message".
-        :type handler: :class:`~python.logging.LogHandler`
-        :param record: Standard python logging record.
-        :type record: :class:`~python.logging.LogRecord`
-        """
-        # TODO: improve Alias API to redirect the logs to the Alias Promptline
-        pass
-
-    ##########################################################################################
-    # panel support
-
-    def show_panel(self, panel_id, title, bundle, widget_class, *args, **kwargs):
-        """
-        Show a dialog as panel in Alias as they are not properly supported. In case the widget has already been opened,
-        do not create a second widget but use the existing one instead.
-
-        :param panel_id: Unique identifier for the panel, as obtained by register_panel().
-        :param title: The title of the panel
-        :param bundle: The app, engine or framework object that is associated with this window
-        :param widget_class: The class of the UI to be constructed. This must derive from QWidget.
-
-        Additional parameters specified will be passed through to the widget_class constructor.
-
-        :returns: the created widget_class instance
-        """
-
-        self.logger.debug("Begin showing panel {}".format(panel_id))
-
-        if not self.has_ui:
-            self.logger.error(
-                "Sorry, this environment does not support UI display! Cannot show "
-                "the requested window '{}'.".format(title)
-            )
-            return None
-
-        # try to find existing window in order to avoid having many instances of the same app opened at the same time
-        for qt_dialog in self.created_qt_dialogs:
-            if not hasattr(qt_dialog, "_widget"):
-                continue
-            if qt_dialog._widget.objectName() == panel_id:
-                widget_instance = qt_dialog
-                widget_instance.raise_()
-                widget_instance.activateWindow()
-                break
-        # in case we can't find an existing widget, create a new one
-        else:
-            widget_instance = self.show_dialog(
-                title, bundle, widget_class, *args, **kwargs
-            )
-            widget_instance.setObjectName(panel_id)
-
-        return widget_instance
 
     #####################################################################################
     # Utils
