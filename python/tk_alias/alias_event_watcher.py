@@ -13,7 +13,18 @@ import alias_api
 
 class AliasEventWatcher(object):
     """
-    Python object used to manage Alias callbacks.
+    An object to manage Alias message events and callbacks.
+
+    This class provides methods to register and unregister Alias message event callbacks.
+    The events and their callbacks are stored in the class object so that they can be
+    managed, including removing the callbacks on application shutdown.
+
+    An Alias message event can be registered, which adds the message handler using the
+    Alias Python API. The callbacks associated with the events will be triggered when
+    this object is `watching` for Alias message events.
+
+    Similarly, an Alias message event can be unregistered, meaning that the Python callback
+    will no longer be triggered for the Alias message event.
     """
 
     class ContextManager:
@@ -66,30 +77,47 @@ class AliasEventWatcher(object):
 
     def __init__(self):
         """
-        Class constructor.
+        Initialize the Alias event watcher.
         """
 
-        # used to store the registered callbacks
-        # need to be formatted like this
-        # self.__scene_events = {
-        #   AliasEventType : {
-        #       cb_fn1: cb_id1,
-        #       cb_fn2: cb_id2
+        # Store the Alias message event callbacks that have been registered. For example,
+        #
+        #   self.__scene_events = {
+        #       AliasEventType : {
+        #           cb_fn1: cb_id1,
+        #           ...
+        #       },
+        #       ...
         #   }
-        # }
-        # where :
-        # - AliasEventType is an alias_api.AlMessageType object
-        # - cn_fn is the python callback we want to execute
-        # - cb_id is the id of the registered callback in Alias
+        #
+        # , such that:
+        #   - AliasEventType is an alias_api.AlMessageType object
+        #   - cn_fn is the python callback we want to execute
+        #   - cb_id is the id of the registered callback in Alias
         self.__scene_events = {}
+
+        # Property flag indicating whether or not the event watching is currently watching for
+        # Alias message events. When set to True, Python callbacks will be triggered, else
+        # when False, Python callbacks will not be triggered.
         self.__is_watching = False
+
+    # -------------------------------------------------------------------------------------------------------
+    # Properties
+    # -------------------------------------------------------------------------------------------------------
 
     @property
     def is_watching(self):
         """
-        Return True if the EventWatcher is actually watching for the even, False otherwise.
+        Get the property indicating if the event watcher is watching for Alias events.
+
+        Python callbacks registered for Alias message events will only be triggered when this
+        proeprty is True. Python callbacks will be ignored when this property is False.
         """
         return self.__is_watching
+
+    # -------------------------------------------------------------------------------------------------------
+    # Public methods
+    # -------------------------------------------------------------------------------------------------------
 
     def get_callbacks(self, scene_event):
         """
@@ -99,7 +127,7 @@ class AliasEventWatcher(object):
         :type scene_event: alias_api.AlMessageType
 
         :return: The list of Python callback functions.
-        :rtype: list<callable>
+        :rtype: list<function>
         """
 
         return self.__scene_events.get(scene_event, {}).keys()
@@ -109,9 +137,11 @@ class AliasEventWatcher(object):
         Add the given callback to the list of registered callbacks
         If we're currently watching, register this callback in Alias.
 
-        :param cb_fn: Python callback we want to register
+        :param cb_fn: Python callback we want to register.
+        :type cb_fn: function
         :param scene_events: Single Alias event or list of Alias events we want to register
-            this callback for
+            this callback for.
+        :type scene_events: list<alias_api.AlMessageType>
         """
 
         callback_id = None
@@ -134,9 +164,11 @@ class AliasEventWatcher(object):
         Remove the given callback to the list of registered callbacks
         If we're currently watching, unregister this callback in Alias.
 
-        :param cb_fn: Python callback we want to unregister
+        :param cb_fn: Python c.allback we want to unregister
+        :type cb_fn: function
         :param scene_events: Single Alias event or list of Alias events we want to unregister
-            this callback for
+            this callback for.
+        :type scene_events: list<alias_api.AlMessageType>
         """
 
         if not isinstance(scene_events, list):
@@ -149,22 +181,19 @@ class AliasEventWatcher(object):
             if self.is_watching:
                 alias_api.remove_message_handler(ev, callback_id)
 
-    def __is_callback_registered(self, scene_event, cb_fn):
-        """
-        Check if a callback is already registered
-
-        :param scene_event: Type of the Alias Event the callback is linked to
-        :param cb_fn: Callback to check
-        :returns: True if the callback is already registered, False otherwise
-        """
-        for fn in self.__scene_events.get(scene_event, {}).keys():
-            if cb_fn == fn:
-                return True
-        return False
-
     def start_watching(self):
         """
-        Starts watching for scene events.
+        Starts watching for Alias scene events.
+
+        The registered Alias message events are being watched by adding the message handler
+        that triggers the Python callback when the event occurs. When Alias message events
+        are being watched, this means that the associated Python callbacks will be triggered.
+
+        NOTE: start and stop watching methods were created before adding the custom
+        context manager class `AliasEventWatcher.ContextManager`. The context manager is the
+        preferred way to managing calling Alias Python API functions to perform Alias
+        operations, while ensuring that Python callbacks triggered by Alias message events
+        do not conflict. These methods still exist for back supporting
         """
 
         # if we're already watching, just exit
@@ -185,7 +214,11 @@ class AliasEventWatcher(object):
 
     def stop_watching(self, force=False):
         """
-        Stops watching the scene events.
+        Stops watching for Alias scene events.
+
+        The registered Alias message events are ignored by removing the message handler that
+        triggers the Python callback when the event occurs. When Alias message events are
+        being ignored, this means that the associated Python callbacks will not be triggered.
 
         :param force: Set to True to perform stop watching operations regardless of current
             watching state, else False to only perform stop watching operations if currently
@@ -212,3 +245,25 @@ class AliasEventWatcher(object):
 
         self.stop_watching(force=True)
         self.__scene_events = None
+
+    # -------------------------------------------------------------------------------------------------------
+    # Private methods
+    # -------------------------------------------------------------------------------------------------------
+
+    def __is_callback_registered(self, scene_event, cb_fn):
+        """
+        Check if a callback is already registered
+
+        :param scene_event: Type of the Alias Event the callback is linked to
+        :type scene_event: alias_api.AlMessageType
+        :param cb_fn: Callback to check
+        :type cb_fn: function
+
+        :return: True if the callback is already registered, False otherwise
+        :rtype: bool
+        """
+
+        for fn in self.__scene_events.get(scene_event, {}).keys():
+            if cb_fn == fn:
+                return True
+        return False
