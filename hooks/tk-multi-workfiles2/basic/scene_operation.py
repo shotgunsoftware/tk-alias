@@ -67,7 +67,7 @@ class SceneOperation(HookClass):
                                 all others     - None
         """
 
-        self.parent.engine._stop_watching = True
+        self.parent.engine._pause_context_switch = True
 
         try:
 
@@ -125,6 +125,6 @@ class SceneOperation(HookClass):
                     return True
 
         finally:
-            self.parent.engine._stop_watching = False
+            self.parent.engine._pause_context_switch = False
             if operation in ["save_as", "prepare_new", "open"]:
                 self.parent.engine.save_context_for_stage(context)

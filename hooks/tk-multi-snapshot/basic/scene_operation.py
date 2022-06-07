@@ -39,7 +39,7 @@ class SceneOperation(HookClass):
                     all others     - None
         """
 
-        self.parent.engine._stop_watching = True
+        self.parent.engine._pause_context_switch = True
 
         try:
 
@@ -63,6 +63,6 @@ class SceneOperation(HookClass):
                 alias_api.save_file()
 
         finally:
-            self.parent.engine._stop_watching = False
+            self.parent.engine._pause_context_switch = False
             if operation in ["open", "save"]:
                 self.parent.engine.save_context_for_stage()
