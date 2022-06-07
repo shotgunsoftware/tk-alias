@@ -873,6 +873,9 @@ class AliasEngine(sgtk.platform.Engine):
 
     def execute_api_ops_and_defer_event_callbacks(self, alias_api_ops, event_types):
         """
+        Marked as deprecated and to be removed in v3.0.0. Use AliasEventWatcher.ContextManager to handle
+        triggering Python callbacks to ensure there is no conflict while performing Alias operations.
+
         Call an Alias API function while blocking any Alias event callbacks until the
         API function is done executing. Once finished, the registered Python callbacks
         will be triggered for the event types provided. Any event types not provided
