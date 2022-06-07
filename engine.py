@@ -367,6 +367,9 @@ class AliasEngine(sgtk.platform.Engine):
 
         Register any initial Alias message event callbacks, and start watching for events immediately.
 
+        NOTE: registering callback for event AlMessageType.DagNameModified causes a crash on startup.
+        This looks like a bug where Alias is not ready to handle events yet but we can register them.
+
         :return: The Alias event watcher object.
         :rtype: AliasEventWatcher
         """
