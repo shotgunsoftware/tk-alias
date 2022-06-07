@@ -37,7 +37,7 @@ class AliasEngine(sgtk.platform.Engine):
         self._menu_generator = None
         self._contexts_by_stage_name = {}
         self._contexts_by_path = {}
-        self._stop_watching = False
+        self._pause_context_switch = False
 
         if not hasattr(sys, "argv"):
             sys.argv = [""]
@@ -604,7 +604,7 @@ class AliasEngine(sgtk.platform.Engine):
 
         # sometimes, we need to stop switching the context on stage selection as some Alias operations need to change
         # current stage but this action must not affect Shotgun Context switch behaviour
-        if self._stop_watching:
+        if self._pause_context_switch:
             return
 
         if not current_stage:
