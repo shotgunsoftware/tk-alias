@@ -594,6 +594,8 @@ class AliasEngine(sgtk.platform.Engine):
         """
         This is a callback that is triggered by Alias "StageCreated" events.
 
+        Update the ShotGrid context baed on the new current stage.
+
         :param result: The result of the Alias stage created event.
         :type result: alias_api.PythonCallbackMessageResult
         """
