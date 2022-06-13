@@ -254,7 +254,6 @@ class DialogParent(object):
         Get the QWidget parent for all dialogs created through
         show_dialog & show_modal.
         """
-        return self._engine.get_parent_window()
         # determine the parent widget to use:
         if is_windows():
             # for windows, we create a proxy window parented to the
