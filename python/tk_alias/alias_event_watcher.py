@@ -132,9 +132,14 @@ class AliasEventWatcher(object):
 
         self.__is_watching = True
 
-    def stop_watching(self):
+    def stop_watching(self, force=False):
         """
         Stops watching the scene events.
+
+        :param force: Set to True to perform stop watching operations regardless of current
+            watching state, else False to only perform stop watching operations if currently
+            watching events.
+        :type force: bool
         """
 
         if not self.is_watching:
@@ -148,3 +153,11 @@ class AliasEventWatcher(object):
                 self.__scene_events[ev][cb_fn] = None
 
         self.__is_watching = False
+
+    def shutdown(self):
+        """
+        Shut down the event watcher.
+        """
+
+        self.stop_watching(force=True)
+        self.__scene_events = None

@@ -169,8 +169,7 @@ class AliasEngine(sgtk.platform.Engine):
         )
 
         # event watcher
-        self.__event_watcher = self._tk_alias.AliasEventWatcher()
-        self.__event_watcher.start_watching()
+        self.__event_watcher = self.init_alias_event_watcher()
 
         # scene validator
         self.__scene_data_validator = self._tk_alias.AliasSceneDataValidator()
@@ -242,7 +241,7 @@ class AliasEngine(sgtk.platform.Engine):
         if self.has_ui:
             self._menu_generator.clean_menu()
 
-        self.__event_watcher.stop_watching()
+        self.event_watcher.shutdown()
 
         # Close all Shotgun app dialogs that are still opened since
         # some apps do threads cleanup in their onClose event handler
@@ -281,6 +280,17 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
         self._initialize_dark_look_and_feel()
+
+    def on_plugin_init(self):
+        """
+        This function is called by the Alias ShotGrid Plugin on initialization.
+
+        This is called once, and only once when Alias starts up.
+        """
+
+        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
+        if path:
+            self.open_file(path)
 
     def _get_dialog_parent(self):
         """
@@ -457,6 +467,34 @@ class AliasEngine(sgtk.platform.Engine):
     #####################################################################################
     # Alias Event Watcher & Callbacks
 
+    def init_alias_event_watcher(self):
+        """
+        Initialize the Alis event watcher.
+
+        :return: The Alias event watcher object.
+        :rtype: AliasEventWatcher
+        """
+
+        import alias_api
+
+        event_watcher = self._tk_alias.AliasEventWatcher()
+
+        # Register event callbacks
+        # NOTE: cannot call engine class methods directly, must use lambda in order to have
+        # access to the engine object to call its class methods. The event callbacks must
+        # take one parameter, which is the result passed from the Alias Python API for the
+        # Alias event
+        event_watcher.register_alias_callback(
+            lambda result, engine=self: engine.on_stage_created(result),
+            alias_api.AlMessageType.StageCreated,
+        )
+
+        # Now start watching the events. This should be called after registering events to
+        # ensure the event watcher starts listening.
+        event_watcher.start_watching()
+
+        return event_watcher
+
     def execute_api_ops_and_defer_event_callbacks(self, alias_api_ops, event_types):
         """
         Call an Alias API function while blocking any Alias event callbacks until the
@@ -526,19 +564,12 @@ class AliasEngine(sgtk.platform.Engine):
                 for callback_fn in callback_fns:
                     callback_fn(msg=None)
 
-    def on_plugin_init(self):
+    def on_stage_created(self, result):
         """
-        A callback happening when the Alias Shotgun plugin is initialized. It happens once and only once when Alias
-        starts.
-        """
+        This is a callback that is triggered by Alias "StageCreated" events.
 
-        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
-        if path:
-            self.open_file(path)
-
-    def on_stage_selected(self):
-        """
-        A callback happening when an Alias stage is selected.
+        :param result: The result of the Alias stage created event.
+        :type result: alias_api.PythonCallbackMessageResult
         """
 
         import alias_api
