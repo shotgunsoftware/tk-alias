@@ -8,6 +8,8 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
+# Styles the code properly
+# List of super useful formatters.
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
@@ -34,6 +36,6 @@ repos:
     - id: black
       language_version: python3
 
-# Exclude api folder from pre-commit checks
-exclude: (^docs/|^api/docs/|^api/alias_api/python3/)
+# Exclude folders and file types from code style
+exclude: (^docs/|^api/docs|^api/alias_api/python3/)
 exclude_types: [ui, py$]
