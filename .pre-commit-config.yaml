@@ -9,8 +9,6 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 # Styles the code properly
-# Exclude the UI files, as they are auto-generated.
-exclude: "ui\/.*py$"
 # List of super useful formatters.
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -37,5 +35,7 @@ repos:
     hooks:
     - id: black
       language_version: python3
-# Exclude api folder from pre-commit checks
-exclude: (^docs/|^api/alias_api/python3/)
+
+# Exclude folders and file types from code style
+exclude: (^docs/|^api/docs|^api/alias_api/python3/)
+exclude_types: [ui, py$]
