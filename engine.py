@@ -383,8 +383,8 @@ class AliasEngine(sgtk.platform.Engine):
         # take one parameter, which is the result passed from the Alias Python API for the
         # Alias event
         event_watcher.register_alias_callback(
-            lambda result, engine=self: engine.on_stage_created(result),
-            alias_api.AlMessageType.StageCreated,
+            lambda result, engine=self: engine.on_stage_active(result),
+            alias_api.AlMessageType.StageActive,
         )
 
         # Now start watching the events. This should be called after registering events to
@@ -592,7 +592,7 @@ class AliasEngine(sgtk.platform.Engine):
     #####################################################################################
     # AliasEventWatcher callbacks
 
-    def on_stage_created(self, result):
+    def on_stage_active(self, result):
         """
         This is a callback that is triggered by Alias "StageCreated" events.
 
