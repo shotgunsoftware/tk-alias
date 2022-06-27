@@ -37,7 +37,6 @@ class AliasEngine(sgtk.platform.Engine):
         self._menu_generator = None
         self._contexts_by_stage_name = {}
         self._contexts_by_path = {}
-        self._pause_context_switch = False
 
         if not hasattr(sys, "argv"):
             sys.argv = [""]
@@ -597,7 +596,7 @@ class AliasEngine(sgtk.platform.Engine):
         """
         This is a callback that is triggered by Alias "StageCreated" events.
 
-        Update the ShotGrid context baed on the new current stage.
+        Update the ShotGrid context according to the current stage (since it may have changed).
 
         :param result: The result of the Alias stage created event.
         :type result: alias_api.PythonCallbackMessageResult
@@ -607,28 +606,29 @@ class AliasEngine(sgtk.platform.Engine):
 
         current_stage = alias_api.get_current_stage()
 
-        # sometimes, we need to stop switching the context on stage selection as some Alias operations need to change
-        # current stage but this action must not affect Shotgun Context switch behaviour
-        if self._pause_context_switch:
+        # Do nothing if the current stage is invalid
+        if not current_stage or (not current_stage.name and not current_stage.path):
             return
 
-        if not current_stage:
-            return
-        if not current_stage.name and not current_stage.path:
+        # Do nothing if there are no SG contexts saved for Alias stages yet
+        if not self._contexts_by_path and not self._contexts_by_stage_name:
             return
 
-        # try to get the context from the file path
+        # Attempt to get the saved SG context for the current Alias stage
+        context = None
         if current_stage.path and current_stage.path in self._contexts_by_path:
-            self.change_context(self._contexts_by_path[current_stage.path])
-        # otherwise, try to get the context from the stage name
+            # Found the context form the stage path
+            context = self._contexts_by_path[current_stage.path]
         elif current_stage.name and current_stage.name in self._contexts_by_stage_name:
-            self.change_context(self._contexts_by_stage_name[current_stage.name])
-        # finally, use the project context as the default one
+            # Found the context form the stage name
+            context = self._contexts_by_stage_name[current_stage.name]
         else:
-            project_context = self.sgtk.context_from_entity_dictionary(
-                self.context.project
-            )
-            self.change_context(project_context)
+            # Context not found, reset to the project context
+            context = self.sgtk.context_from_entity_dictionary(self.context.project)
+
+        # Only change the context if we found one and it is not the current context
+        if context and context != self.context:
+            self.change_context(context)
 
     #####################################################################################
     # QT Utils
