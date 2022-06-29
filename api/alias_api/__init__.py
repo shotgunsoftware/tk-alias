@@ -14,12 +14,14 @@ import sys
 #    < v2020.3              -- use APA from folder alias2019-alias2020.2
 #   >= v2020.3 & < v2021.3  -- use APA from folder alias2020.3-alias2021
 #   >= v2021.3 & < v2022.2  -- use APA from folder alias2021.3
-#   >= v2022.2              -- use APA from folder alias2022.2
+#   >= v2022.2 & < v2023.0  -- use APA from folder alias2022.2
+#   >= v2023.0              -- use APA from folder alias2023
 #
 # TODO: update the APA folder names to be more accurate
 #
 ALIAS_API = {
-    "alias2022.2": {"min_version": "2022.2"},
+    "alias2023.0": {"min_version": "2023.0"},
+    "alias2022.2": {"min_version": "2022.2", "max_version": "2023.0"},
     "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
     "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3"},
     "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},

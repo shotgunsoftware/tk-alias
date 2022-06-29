@@ -17,7 +17,7 @@ from sgtk.util import LocalFileStorageManager
 
 class AliasEngine(sgtk.platform.Engine):
     """
-    An Alias DC engine for Shotgun Toolkit.
+    An Alias DCC engine for Shotgun Toolkit.
     """
 
     def __init__(self, tk, context, engine_instance_name, env):
@@ -37,12 +37,40 @@ class AliasEngine(sgtk.platform.Engine):
         self._menu_generator = None
         self._contexts_by_stage_name = {}
         self._contexts_by_path = {}
-        self._stop_watching = False
 
         if not hasattr(sys, "argv"):
             sys.argv = [""]
 
         super(AliasEngine, self).__init__(tk, context, engine_instance_name, env)
+
+    # -------------------------------------------------------------------------------------------------------
+    # Static methods
+    # -------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_current_engine():
+        """
+        Return the engine that Toolkit is currently running. This is used by the Alias
+        C++ Plugin to ensure that its reference to the engine is not stale (e.g. the
+        plugin's reference will become stale after the engine has been reloaded).
+        """
+
+        return sgtk.platform.current_engine()
+
+    @staticmethod
+    def get_parent_window():
+        """
+        Return the current active window Qt window.
+
+        This is a fallback method to get the main window, if `_get_dialog_parent` cannot be used.
+        """
+        from sgtk.platform.qt import QtGui
+
+        return QtGui.QApplication.activeWindow()
+
+    # -------------------------------------------------------------------------------------------------------
+    # Properties
+    # -------------------------------------------------------------------------------------------------------
 
     @property
     def host_info(self):
@@ -73,41 +101,22 @@ class AliasEngine(sgtk.platform.Engine):
 
     @property
     def event_watcher(self):
+        """Get the AliasEventWatcher object to help manager Alias message events and Python callbacks."""
         return self.__event_watcher
 
     @property
     def scene_data_validator(self):
+        """Get the AliasSceneDataValidator object to help validate the Alias scene data."""
         return self.__scene_data_validator
 
-    @staticmethod
-    def get_current_engine():
-        """
-        Return the engine that Toolkit is currently running. This is used by the Alias
-        C++ Plugin to ensure that its reference to the engine is not stale (e.g. the
-        plugin's reference will become stale after the engine has been reloaded).
-        """
-
-        return sgtk.platform.current_engine()
-
-    def post_context_change(self, old_context, new_context):
-        """
-        Runs after a context change has occurred.
-
-        :param old_context: The previous context.
-        :param new_context: The current context.
-        """
-
-        self.logger.debug("%s: Post context change...", self)
-
-        # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
-        if self.has_ui:
-            self._menu_generator.create_menu()
-            self._menu_generator.refresh()
+    # -------------------------------------------------------------------------------------------------------
+    # Override base Engine class methods
+    # -------------------------------------------------------------------------------------------------------
 
     def pre_app_init(self):
         """
-        Sets up the engine into an operational state. This method called before
-        any apps are loaded.
+        Sets up the engine into an operational state. Executed by the system and typically
+        implemented by deriving classes. This method called before any apps are loaded.
         """
 
         self.logger.debug("%s: Initializing..." % (self,))
@@ -140,7 +149,7 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Init QT main loop
         if self.has_ui:
-            self.init_qt_app()
+            self._init_qt_app()
 
         # Defer importing the Alias Python API until now so that a proper info message can be displayed to
         # user if the api failed to import.
@@ -169,7 +178,7 @@ class AliasEngine(sgtk.platform.Engine):
         )
 
         # event watcher
-        self.__event_watcher = self.init_alias_event_watcher()
+        self.__event_watcher = self._init_alias_event_watcher()
 
         # scene validator
         self.__scene_data_validator = self._tk_alias.AliasSceneDataValidator()
@@ -220,8 +229,10 @@ class AliasEngine(sgtk.platform.Engine):
 
     def post_app_init(self):
         """
-        Runs after all apps have been initialized.
+        Executed by the system and typically implemented by deriving classes.
+        This method called after all apps have been loaded.
         """
+
         self.logger.debug("%s: Post Initializing...", self)
 
         # init menu
@@ -235,6 +246,7 @@ class AliasEngine(sgtk.platform.Engine):
         """
         Called when the engine should tear down itself and all its apps.
         """
+
         self.logger.debug("%s: Destroying...", self)
 
         # Clean the menu
@@ -253,7 +265,74 @@ class AliasEngine(sgtk.platform.Engine):
         for dialog in dialogs_still_opened:
             dialog.close()
 
-    def init_qt_app(self):
+    def show_panel(self, panel_id, title, bundle, widget_class, *args, **kwargs):
+        """
+        Show a dialog as panel in Alias as they are not properly supported. In case the widget has already been opened,
+        do not create a second widget but use the existing one instead.
+
+        :param panel_id: Unique identifier for the panel, as obtained by register_panel().
+        :param title: The title of the panel
+        :param bundle: The app, engine or framework object that is associated with this window
+        :param widget_class: The class of the UI to be constructed. This must derive from QWidget.
+
+        Additional parameters specified will be passed through to the widget_class constructor.
+
+        :returns: the created widget_class instance
+        """
+
+        self.logger.debug("Begin showing panel {}".format(panel_id))
+
+        if not self.has_ui:
+            self.logger.error(
+                "Sorry, this environment does not support UI display! Cannot show "
+                "the requested window '{}'.".format(title)
+            )
+            return None
+
+        # try to find existing window in order to avoid having many instances of the same app opened at the same time
+        for qt_dialog in self.created_qt_dialogs:
+            if not hasattr(qt_dialog, "_widget"):
+                continue
+            if qt_dialog._widget.objectName() == panel_id:
+                widget_instance = qt_dialog
+                widget_instance.raise_()
+                widget_instance.activateWindow()
+                break
+        # in case we can't find an existing widget, create a new one
+        else:
+            widget_instance = self.show_dialog(
+                title, bundle, widget_class, *args, **kwargs
+            )
+            widget_instance.setObjectName(panel_id)
+
+        return widget_instance
+
+    def _get_dialog_parent(self):
+        """
+        Get Alias dialog parent window.
+        """
+
+        return self._dialog_parent.get_dialog_parent()
+
+    def _emit_log_message(self, handler, record):
+        """
+        Called by the engine to log messages in Alias Terminal.
+        All log messages from the toolkit logging namespace will be passed to this method.
+
+        :param handler: Log handler that this message was dispatched from.
+                        Its default format is "[levelname basename] message".
+        :type handler: :class:`~python.logging.LogHandler`
+        :param record: Standard python logging record.
+        :type record: :class:`~python.logging.LogRecord`
+        """
+        # TODO: improve Alias API to redirect the logs to the Alias Promptline
+        pass
+
+    # -------------------------------------------------------------------------------------------------------
+    # Protected methods
+    # -------------------------------------------------------------------------------------------------------
+
+    def _init_qt_app(self):
         """
         Initialize QT application.
         """
@@ -281,22 +360,38 @@ class AliasEngine(sgtk.platform.Engine):
         # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
         self._initialize_dark_look_and_feel()
 
-    def on_plugin_init(self):
+    def _init_alias_event_watcher(self):
         """
-        This function is called by the Alias ShotGrid Plugin on initialization.
+        Initialize the Alis event watcher.
 
-        This is called once, and only once when Alias starts up.
+        Register any initial Alias message event callbacks, and start watching for events immediately.
+
+        NOTE: registering callback for event AlMessageType.DagNameModified causes a crash on startup.
+        This looks like a bug where Alias is not ready to handle events yet but we can register them.
+
+        :return: The Alias event watcher object.
+        :rtype: AliasEventWatcher
         """
 
-        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
-        if path:
-            self.open_file(path)
+        import alias_api
 
-    def _get_dialog_parent(self):
-        """
-        Get Alias dialog parent
-        """
-        return self._dialog_parent.get_dialog_parent()
+        event_watcher = self._tk_alias.AliasEventWatcher()
+
+        # Register event callbacks
+        # NOTE: cannot call engine class methods directly, must use lambda in order to have
+        # access to the engine object to call its class methods. The event callbacks must
+        # take one parameter, which is the result passed from the Alias Python API for the
+        # Alias event
+        event_watcher.register_alias_callback(
+            lambda result, engine=self: engine.on_stage_active(result),
+            alias_api.AlMessageType.StageActive,
+        )
+
+        # Now start watching the events. This should be called after registering events to
+        # ensure the event watcher starts listening.
+        event_watcher.start_watching()
+
+        return event_watcher
 
     def _run_app_instance_commands(self):
         """
@@ -375,6 +470,36 @@ class AliasEngine(sgtk.platform.Engine):
         for command in commands_to_run:
             command()
 
+    # -------------------------------------------------------------------------------------------------------
+    # Public methods
+    # -------------------------------------------------------------------------------------------------------
+
+    def on_plugin_init(self):
+        """
+        This function is called by the Alias ShotGrid Plugin on initialization.
+
+        This is called once, and only once when Alias starts up.
+        """
+
+        path = os.environ.get("SGTK_FILE_TO_OPEN", None)
+        if path:
+            self.open_file(path)
+
+    def post_context_change(self, old_context, new_context):
+        """
+        Runs after a context change has occurred.
+
+        :param old_context: The previous context.
+        :param new_context: The current context.
+        """
+
+        self.logger.debug("%s: Post context change...", self)
+
+        # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
+        if self.has_ui:
+            self._menu_generator.create_menu()
+            self._menu_generator.refresh()
+
     def save_context_for_stage(self, context=None):
         """
         Save the context associated to the current Alias stage.
@@ -399,7 +524,7 @@ class AliasEngine(sgtk.platform.Engine):
         self._contexts_by_stage_name[current_stage.name] = context
 
     #####################################################################################
-    # Alias API Convenience Functions
+    # File I/O
 
     def save_file(self):
         """
@@ -465,108 +590,13 @@ class AliasEngine(sgtk.platform.Engine):
         self.save_context_for_stage()
 
     #####################################################################################
-    # Alias Event Watcher & Callbacks
+    # AliasEventWatcher callbacks
 
-    def init_alias_event_watcher(self):
-        """
-        Initialize the Alis event watcher.
-
-        :return: The Alias event watcher object.
-        :rtype: AliasEventWatcher
-        """
-
-        import alias_api
-
-        event_watcher = self._tk_alias.AliasEventWatcher()
-
-        # Register event callbacks
-        # NOTE: cannot call engine class methods directly, must use lambda in order to have
-        # access to the engine object to call its class methods. The event callbacks must
-        # take one parameter, which is the result passed from the Alias Python API for the
-        # Alias event
-        event_watcher.register_alias_callback(
-            lambda result, engine=self: engine.on_stage_created(result),
-            alias_api.AlMessageType.StageCreated,
-        )
-
-        # Now start watching the events. This should be called after registering events to
-        # ensure the event watcher starts listening.
-        event_watcher.start_watching()
-
-        return event_watcher
-
-    def execute_api_ops_and_defer_event_callbacks(self, alias_api_ops, event_types):
-        """
-        Call an Alias API function while blocking any Alias event callbacks until the
-        API function is done executing. Once finished, the registered Python callbacks
-        will be triggered for the event types provided. Any event types not provided
-        will not be triggered at all by the API function executed.
-
-        NOTE since the callbacks are deferred to after the event operation has completed,
-        we do not have access to the Alias callback return result that we normally get.
-
-        TODO implement this deferred event handling in the Alias Python API side, for now
-        we will just pass None for the message result to the Python callback function.
-        Implementing the deferred event handling will also improve the way we currently
-        ignore event callbacks by unregistering and re-registering events.
-
-        :param alias_api_ops: The name of the main Alias API function to execute.
-        :type alias_api_ops: list<AliasApiOp>, where AliasApiOp is of format:
-            tuple<alias_api_func_name, func_args, func_keyword_args>
-                alias_api_func: str
-                obj: If None the alias_api_func is a function of the `alias_api` module.
-                     If not None, the alias_api_func is a method of the `obj`.
-                args: list
-                kwargs: dict
-        :param event_types: The Alias event types to defer callbacks until the main
-                            operation is complete. Any event types that are not listed
-                            will not be triggered at all for for this operation.
-        :type event_types: list<AlMessageType>
-        """
-
-        import alias_api
-
-        # Check that all api functions exist, if not abort
-        for api_func, obj, _, _ in alias_api_ops:
-            obj = obj or alias_api
-            if not hasattr(obj, api_func):
-                self.logger.error(
-                    "Failed execute_api_ops_and_defer_event_callbcaks: Alias Python API function not found '{}.{}'".format(
-                        obj, api_func
-                    )
-                )
-                return
-
-        if not isinstance(event_types, list):
-            event_types = [event_types]
-
-        if not self.event_watcher.is_watching:
-            # If the event watcher is already paused, just execute the the operations normally.
-            for api_func, obj, args, kwargs in alias_api_ops:
-                obj = obj or alias_api
-                getattr(obj, api_func)(*args, **kwargs)
-
-        else:
-            # Pause the event watcher
-            self.event_watcher.stop_watching()
-
-            # Execute all alias api operations in order
-            for api_func, obj, args, kwargs in alias_api_ops:
-                obj = obj or alias_api
-                getattr(obj, api_func)(*args, **kwargs)
-
-            # Enable the event watcher now that the operations have completed
-            self.event_watcher.start_watching()
-
-            # Now manually trigger the registered callbacks for the event types
-            for event_type in event_types:
-                callback_fns = self.event_watcher.get_callbacks(event_type)
-                for callback_fn in callback_fns:
-                    callback_fn(msg=None)
-
-    def on_stage_created(self, result):
+    def on_stage_active(self, result):
         """
         This is a callback that is triggered by Alias "StageCreated" events.
+
+        Update the ShotGrid context according to the current stage (since it may have changed).
 
         :param result: The result of the Alias stage created event.
         :type result: alias_api.PythonCallbackMessageResult
@@ -576,40 +606,32 @@ class AliasEngine(sgtk.platform.Engine):
 
         current_stage = alias_api.get_current_stage()
 
-        # sometimes, we need to stop switching the context on stage selection as some Alias operations need to change
-        # current stage but this action must not affect Shotgun Context switch behaviour
-        if self._stop_watching:
+        # Do nothing if the current stage is invalid
+        if not current_stage or (not current_stage.name and not current_stage.path):
             return
 
-        if not current_stage:
-            return
-        if not current_stage.name and not current_stage.path:
+        # Do nothing if there are no SG contexts saved for Alias stages yet
+        if not self._contexts_by_path and not self._contexts_by_stage_name:
             return
 
-        # try to get the context from the file path
+        # Attempt to get the saved SG context for the current Alias stage
+        context = None
         if current_stage.path and current_stage.path in self._contexts_by_path:
-            self.change_context(self._contexts_by_path[current_stage.path])
-        # otherwise, try to get the context from the stage name
+            # Found the context form the stage path
+            context = self._contexts_by_path[current_stage.path]
         elif current_stage.name and current_stage.name in self._contexts_by_stage_name:
-            self.change_context(self._contexts_by_stage_name[current_stage.name])
-        # finally, use the project context as the default one
+            # Found the context form the stage name
+            context = self._contexts_by_stage_name[current_stage.name]
         else:
-            project_context = self.sgtk.context_from_entity_dictionary(
-                self.context.project
-            )
-            self.change_context(project_context)
+            # Context not found, reset to the project context
+            context = self.sgtk.context_from_entity_dictionary(self.context.project)
+
+        # Only change the context if we found one and it is not the current context
+        if context and context != self.context:
+            self.change_context(context)
 
     #####################################################################################
     # QT Utils
-
-    @staticmethod
-    def get_parent_window():
-        """
-        Return current active window as parent
-        """
-        from sgtk.platform.qt import QtGui
-
-        return QtGui.QApplication.activeWindow()
 
     def open_save_as_dialog(self):
         """
@@ -674,68 +696,6 @@ class AliasEngine(sgtk.platform.Engine):
         )
 
         return answer
-
-    #####################################################################################
-    # Logging
-
-    def _emit_log_message(self, handler, record):
-        """
-        Called by the engine to log messages in Alias Terminal.
-        All log messages from the toolkit logging namespace will be passed to this method.
-
-        :param handler: Log handler that this message was dispatched from.
-                        Its default format is "[levelname basename] message".
-        :type handler: :class:`~python.logging.LogHandler`
-        :param record: Standard python logging record.
-        :type record: :class:`~python.logging.LogRecord`
-        """
-        # TODO: improve Alias API to redirect the logs to the Alias Promptline
-        pass
-
-    ##########################################################################################
-    # panel support
-
-    def show_panel(self, panel_id, title, bundle, widget_class, *args, **kwargs):
-        """
-        Show a dialog as panel in Alias as they are not properly supported. In case the widget has already been opened,
-        do not create a second widget but use the existing one instead.
-
-        :param panel_id: Unique identifier for the panel, as obtained by register_panel().
-        :param title: The title of the panel
-        :param bundle: The app, engine or framework object that is associated with this window
-        :param widget_class: The class of the UI to be constructed. This must derive from QWidget.
-
-        Additional parameters specified will be passed through to the widget_class constructor.
-
-        :returns: the created widget_class instance
-        """
-
-        self.logger.debug("Begin showing panel {}".format(panel_id))
-
-        if not self.has_ui:
-            self.logger.error(
-                "Sorry, this environment does not support UI display! Cannot show "
-                "the requested window '{}'.".format(title)
-            )
-            return None
-
-        # try to find existing window in order to avoid having many instances of the same app opened at the same time
-        for qt_dialog in self.created_qt_dialogs:
-            if not hasattr(qt_dialog, "_widget"):
-                continue
-            if qt_dialog._widget.objectName() == panel_id:
-                widget_instance = qt_dialog
-                widget_instance.raise_()
-                widget_instance.activateWindow()
-                break
-        # in case we can't find an existing widget, create a new one
-        else:
-            widget_instance = self.show_dialog(
-                title, bundle, widget_class, *args, **kwargs
-            )
-            widget_instance.setObjectName(panel_id)
-
-        return widget_instance
 
     #####################################################################################
     # Utils
@@ -911,3 +871,76 @@ class AliasEngine(sgtk.platform.Engine):
             except KeyError:
                 self.logger.warning("No project_id key for {}.".format(pc))
         return None
+
+    # -------------------------------------------------------------------------------------------------------
+    # Deprecated methods - to be removed in next major version v3.0.0
+    # -------------------------------------------------------------------------------------------------------
+
+    def execute_api_ops_and_defer_event_callbacks(self, alias_api_ops, event_types):
+        """
+        Marked as deprecated and to be removed in v3.0.0. Use AliasEventWatcher.ContextManager to handle
+        triggering Python callbacks to ensure there is no conflict while performing Alias operations.
+
+        Call an Alias API function while blocking any Alias event callbacks until the
+        API function is done executing. Once finished, the registered Python callbacks
+        will be triggered for the event types provided. Any event types not provided
+        will not be triggered at all by the API function executed.
+        NOTE since the callbacks are deferred to after the event operation has completed,
+        we do not have access to the Alias callback return result that we normally get.
+        TODO implement this deferred event handling in the Alias Python API side, for now
+        we will just pass None for the message result to the Python callback function.
+        Implementing the deferred event handling will also improve the way we currently
+        ignore event callbacks by unregistering and re-registering events.
+        :param alias_api_ops: The name of the main Alias API function to execute.
+        :type alias_api_ops: list<AliasApiOp>, where AliasApiOp is of format:
+            tuple<alias_api_func_name, func_args, func_keyword_args>
+                alias_api_func: str
+                obj: If None the alias_api_func is a function of the `alias_api` module.
+                     If not None, the alias_api_func is a method of the `obj`.
+                args: list
+                kwargs: dict
+        :param event_types: The Alias event types to defer callbacks until the main
+                            operation is complete. Any event types that are not listed
+                            will not be triggered at all for for this operation.
+        :type event_types: list<AlMessageType>
+        """
+
+        import alias_api
+
+        # Check that all api functions exist, if not abort
+        for api_func, obj, _, _ in alias_api_ops:
+            obj = obj or alias_api
+            if not hasattr(obj, api_func):
+                self.logger.error(
+                    "Failed execute_api_ops_and_defer_event_callbcaks: Alias Python API function not found '{}.{}'".format(
+                        obj, api_func
+                    )
+                )
+                return
+
+        if not isinstance(event_types, list):
+            event_types = [event_types]
+
+        if not self.event_watcher.is_watching:
+            # If the event watcher is already paused, just execute the the operations normally.
+            for api_func, obj, args, kwargs in alias_api_ops:
+                obj = obj or alias_api
+                getattr(obj, api_func)(*args, **kwargs)
+
+        else:
+            # Pause the event watcher
+            self.event_watcher.stop_watching()
+
+            # Execute all alias api operations in order
+            for api_func, obj, args, kwargs in alias_api_ops:
+                obj = obj or alias_api
+                getattr(obj, api_func)(*args, **kwargs)
+
+            # Enable the event watcher now that the operations have completed
+            self.event_watcher.start_watching()
+
+            # Now manually trigger the registered callbacks for the event types
+            for event_type in event_types:
+                callback_fns = self.event_watcher.get_callbacks(event_type)
+                for callback_fn in callback_fns:
+                    callback_fn(msg=None)

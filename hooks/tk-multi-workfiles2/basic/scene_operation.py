@@ -67,80 +67,64 @@ class SceneOperation(HookClass):
                                 all others     - None
         """
 
-        self.parent.engine._stop_watching = True
+        # Use the event watcher context manager to queue any callbacks triggered by Alias
+        # events while performing any scene operations. This ensures that all Alias file I/O
+        # operations are complete before executing any event callbacks that may interfere
+        # with Alias
+        with self.parent.engine.event_watcher.ContextManager():
+            try:
+                if operation == "current_path":
+                    return alias_api.get_current_path()
 
-        try:
-
-            if operation == "current_path":
-                return alias_api.get_current_path()
-
-            elif operation == "open":
-                # if the current file is an empty file, we can erase it and open the new file instead
-                if alias_api.is_empty_file():
-                    self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                        [("open_file", None, [file_path], {"new_stage": False})],
-                        alias_api.AlMessageType.StageActive,
-                    )
-                # otherwise, ask the use what he'd like to do
-                else:
-                    open_in_current_stage = (
-                        self.parent.engine.open_delete_stages_dialog()
-                    )
-                    if open_in_current_stage == QtGui.QMessageBox.Cancel:
-                        return
-                    elif open_in_current_stage == QtGui.QMessageBox.No:
-                        self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                            [("open_file", None, [file_path], {"new_stage": True})],
-                            alias_api.AlMessageType.StageActive,
-                        )
+                if operation == "open":
+                    if alias_api.is_empty_file():
+                        alias_api.open_file(file_path, new_stage=False)
                     else:
-                        # alias_api.reset()
-                        self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                            [
-                                ("reset", None, [], {}),
-                                ("open_file", None, [file_path], {"new_stage": False}),
-                            ],
-                            alias_api.AlMessageType.StageActive,
+                        open_in_current_stage = (
+                            self.parent.engine.open_delete_stages_dialog()
                         )
+                        if open_in_current_stage == QtGui.QMessageBox.Cancel:
+                            return
 
-            elif operation == "save":
-                alias_api.save_file()
+                        if open_in_current_stage == QtGui.QMessageBox.No:
+                            alias_api.open_file(file_path, new_stage=True)
+                        else:
+                            alias_api.reset()
+                            alias_api.open_file(file_path, new_stage=False)
 
-            elif operation == "save_as":
-                alias_api.save_file_as(file_path)
+                elif operation == "save":
+                    alias_api.save_file()
 
-            elif operation == "reset":
-                # do not reset the file if we try to open another one as we have to deal with the stages an resetting
-                # the current session will delete all the stages
-                if parent_action == "open_file":
-                    return True
-                if alias_api.is_empty_file() and len(alias_api.get_stages()) == 1:
-                    self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                        [("reset", None, [], {})],
-                        alias_api.AlMessageType.StageActive,
-                    )
-                    return True
-                else:
+                elif operation == "save_as":
+                    alias_api.save_file_as(file_path)
+
+                elif operation == "reset":
+                    # do not reset the file if we try to open another one as we have to deal with the stages an resetting
+                    # the current session will delete all the stages
+                    if parent_action == "open_file":
+                        return True
+
+                    if alias_api.is_empty_file() and len(alias_api.get_stages()) == 1:
+                        alias_api.reset()
+                        return True
+
                     open_in_current_stage = (
                         self.parent.engine.open_delete_stages_dialog(new_file=True)
                     )
                     if open_in_current_stage == QtGui.QMessageBox.Cancel:
                         return False
-                    elif open_in_current_stage == QtGui.QMessageBox.No:
+
+                    if open_in_current_stage == QtGui.QMessageBox.No:
                         stage_name = uuid.uuid4().hex
-                        self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                            [("create_stage", None, [stage_name], {})],
-                            alias_api.AlMessageType.StageActive,
-                        )
+                        alias_api.create_stage(stage_name)
                     else:
-                        self.parent.engine.execute_api_ops_and_defer_event_callbacks(
-                            [("reset", None, [], {})],
-                            alias_api.AlMessageType.StageActive,
-                        )
+                        alias_api.reset()
+
                     return True
-
-        finally:
-
-            self.parent.engine._stop_watching = False
-            if operation in ["save_as", "prepare_new", "open"]:
-                self.parent.engine.save_context_for_stage(context)
+            finally:
+                if operation in ["save_as", "prepare_new", "open"]:
+                    # It is important that this method is executed before the event watcher
+                    # context manager exits to ensure that the current context is saved for
+                    # this Alias stage, before any event callbacks are triggered (whcih may
+                    # require the contexts to be updated).
+                    self.parent.engine.save_context_for_stage(context)
