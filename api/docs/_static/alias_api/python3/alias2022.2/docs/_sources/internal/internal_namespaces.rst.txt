@@ -1,0 +1,10 @@
+Namespaces
+####################
+
+.. doxygennamespace:: alPy
+
+.. doxygennamespace:: alPyOA
+
+.. doxygennamespace:: alPyOM
+
+.. doxygennamespace:: alPyMath
