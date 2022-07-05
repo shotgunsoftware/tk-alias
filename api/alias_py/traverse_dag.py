@@ -89,7 +89,7 @@ def node_has_non_zero_transform(node):
 
     status, transform_matrix = node.global_transformation_matrix()
     if not api_utils.is_success(status):
-        raise alias_api.AliasPythonExcept(
+        raise alias_api.AliasPythonException(
             "Failed to retrieve node global transformation matrix."
         )
 
@@ -116,14 +116,14 @@ def node_has_non_origin_pivot(node):
 
     status, pivot = node.scale_pivot()
     if not api_utils.is_success(status):
-        raise alias_api.AliasPythonExcept("Failed to retrieve node scale pivot.")
+        raise alias_api.AliasPythonException("Failed to retrieve node scale pivot.")
 
     if not api_utils.is_origin(pivot):
         return api_utils.success_status()
 
     status, pivot = node.rotate_pivot()
     if not api_utils.is_success(status):
-        raise alias_api.AliasPythonExcept("Failed to retrieve node rotate pivot.")
+        raise alias_api.AliasPythonException("Failed to retrieve node rotate pivot.")
 
     if not api_utils.is_origin(pivot):
         return api_utils.success_status()
