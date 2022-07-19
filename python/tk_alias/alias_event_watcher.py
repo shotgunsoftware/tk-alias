@@ -256,12 +256,10 @@ class AliasEventWatcher(object):
         self.__is_watching = False
 
     def shutdown(self):
-        """
-        Shut down the event watcher.
-        """
+        """Shut down the event watcher."""
 
         self.stop_watching(force=True)
-        self.__scene_events = None
+        self.__scene_events = {}
 
     # -------------------------------------------------------------------------------------------------------
     # Private methods

@@ -196,7 +196,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.fix_shader_unused,
                     },
                 ],
-                "kwargs": {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
+                "get_kwargs": lambda: {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
                 "dependency_ids": [
                     "node_is_null",
                     "node_instances",
@@ -220,7 +220,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes_assigned_to_shaders,
                     },
                 ],
-                "kwargs": {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
+                "get_kwargs": lambda: {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
             },
             "node_is_null": {
                 "name": "Delete Null Nodes",
@@ -259,7 +259,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.GroupNodeType,
                         alias_api.AlObjectType.CurveNodeType,
@@ -322,7 +322,7 @@ class AliasSceneDataValidator(object):
                     },
                 ],
                 "dependency_ids": ["node_has_construction_history", "node_is_null"],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
                         *self._camera_node_types,
@@ -356,7 +356,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
                         *self._camera_node_types,
@@ -383,7 +383,7 @@ class AliasSceneDataValidator(object):
                         "tooltip": "Select nodes to manually fix data errors.",
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "layer_name": self.DEFAULT_LAYER_NAME,
                     "accept_node_types": [
                         alias_api.AlObjectType.GroupNodeType,
@@ -419,7 +419,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "layer_name": self.DEFAULT_LAYER_NAME,
                     "accept_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
@@ -427,6 +427,7 @@ class AliasSceneDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
+                "get_kwargs": lambda: {"first_arg": 1, "second_arg": 2},
                 "dependency_ids": ["node_is_null"],
             },
             "node_name_matches_layer": {
@@ -454,7 +455,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": ["node_is_in_layer", "node_is_not_in_layer"],
             },
             "node_layer_matches_parent": {
@@ -507,7 +508,7 @@ class AliasSceneDataValidator(object):
                         "tooltip": "Select nodes to manually fix data errors.",
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "accept_node_types": [
                         alias_api.AlObjectType.CurveNodeType,
                         alias_api.AlObjectType.FaceNodeType,
@@ -719,7 +720,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_layers,
                     },
                 ],
-                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": ["node_is_null"],
             },
             "layer_has_single_shader": {
@@ -774,7 +775,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_layers,
                     },
                 ],
-                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
             },
             "layer_has_single_object": {
                 "name": "Layer Has Single Item",
@@ -801,7 +802,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes_assigned_to_layers,
                     },
                 ],
-                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": [
                     "layer_is_empty",
                     "node_is_null",
