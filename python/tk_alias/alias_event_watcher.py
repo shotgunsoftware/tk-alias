@@ -194,9 +194,11 @@ class AliasEventWatcher(object):
         for ev in scene_events:
             if not self.__is_callback_registered(ev, cb_fn):
                 continue
+
+            # Remove the callback from the list, and use the callback id to remove
+            # the Alias message handler.
             callback_id = self.__scene_events[ev].pop(cb_fn)
-            if self.is_watching:
-                alias_api.remove_message_handler(ev, callback_id)
+            alias_api.remove_message_handler(ev, callback_id)
 
     def start_watching(self):
         """
