@@ -9,6 +9,9 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import os
 import shutil
+import subprocess
+import tempfile
+
 import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -276,16 +279,19 @@ class UploadVersionPlugin(HookBaseClass):
                         field_name="sg_uploaded_movie",
                     )
                 else:
-                    use_framework_translator = (
-                        settings.get("Translation Worker").value
-                        == self.TRANSLATION_WORKER_FRAMEWORK
-                    )
-                    self.logger.debug("Converting file to LMV to extract thumbnails")
-                    output_directory, thumbnail_path = self._get_thumbnail_from_lmv(
-                        item, use_framework_translator
-                    )
+                    # use_framework_translator = (
+                    #     settings.get("Translation Worker").value
+                    #     == self.TRANSLATION_WORKER_FRAMEWORK
+                    # )
+                    # self.logger.debug("Converting file to LMV to extract thumbnails")
+                    # output_directory, thumbnail_path = self._get_thumbnail_from_lmv(
+                    #     item, use_framework_translator
+                    # )
+                    self.logger.debug("Extracting thumbnail from wire file.")
+                    thumbnail_path = self._get_thumbnail_from_wire(item)
+
                     if thumbnail_path:
-                        self.logger.info("Uploading LMV thumbnail file to ShotGrid")
+                        self.logger.info("Uploading thumbnail file to ShotGrid")
                         self.parent.shotgun.upload(
                             entity_type="Version",
                             entity_id=item.properties["sg_version_data"]["id"],
@@ -297,8 +303,6 @@ class UploadVersionPlugin(HookBaseClass):
                             entity_id=item.properties["sg_version_data"]["id"],
                             path=thumbnail_path,
                         )
-                    self.logger.debug("Deleting temporary folder")
-                    shutil.rmtree(output_directory)
             else:
                 raise NotImplementedError(
                     "Failed to generate thumbnail for Version Type '{}'".format(
@@ -631,6 +635,32 @@ class UploadVersionPlugin(HookBaseClass):
             return lmv_translator.output_directory
 
         return lmv_translator.output_directory, thumbnail_path
+
+    def _get_thumbnail_from_wire(self, item):
+        """
+        Extract the thumbnail from the source .wire file
+
+        :param item: Item to process
+        :returns: The path to the thumbnail or None if not found
+        """
+        # Find the standalone thumbnail.exe relative to Alias' location
+        thumbnail_tool = self.parent.engine.alias_bindir + os.path.sep + "thumbnail.exe"
+        input_file = item.properties["path"]
+        thumbnail_path = tempfile.NamedTemporaryFile(
+            suffix=".jpg", prefix="sgtk_thumb", delete=False
+        ).name
+        thumbnail_command = subprocess.check_output(
+            [
+                thumbnail_tool,
+                "x",
+                input_file,
+                thumbnail_path
+            ]
+        )
+        if thumbnail_command:
+            return thumbnail_path
+        else:
+            return None
 
     def _is_3d_viewer_enabled(self):
         """
