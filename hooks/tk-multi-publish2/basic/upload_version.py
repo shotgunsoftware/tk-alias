@@ -242,7 +242,6 @@ class UploadVersionPlugin(HookBaseClass):
                 # translate the file to lmv and upload the corresponding package to the Version
                 (
                     package_path,
-                    thumbnail_path,
                     output_directory,
                 ) = self._translate_file_to_lmv(item, use_framework_translator)
                 self.logger.info("Uploading LMV files to ShotGrid")
@@ -257,8 +256,9 @@ class UploadVersionPlugin(HookBaseClass):
                     path=package_path,
                     field_name="sg_uploaded_movie",
                 )
-                # if the Version thumbnail is empty, update it with the newly created thumbnail
-                if not item.get_thumbnail_as_path() and thumbnail_path:
+                # if the Version thumbnail is empty, update it with Alias thumbnail
+                if not item.get_thumbnail_as_path():
+                    thumbnail_path = self._get_thumbnail_from_wire(item)
                     self.parent.shotgun.upload_thumbnail(
                         entity_type="Version",
                         entity_id=item.properties["sg_version_data"]["id"],
@@ -270,8 +270,8 @@ class UploadVersionPlugin(HookBaseClass):
 
             elif version_type == self.VERSION_TYPE_2D:
                 thumbnail_path = item.get_thumbnail_as_path()
-                self.logger.debug("Using thumbnail image as Version media")
                 if thumbnail_path:
+                    self.logger.debug("Using thumbnail image as Version media")
                     self.parent.shotgun.upload(
                         entity_type="Version",
                         entity_id=item.properties["sg_version_data"]["id"],
@@ -279,25 +279,17 @@ class UploadVersionPlugin(HookBaseClass):
                         field_name="sg_uploaded_movie",
                     )
                 else:
-                    # use_framework_translator = (
-                    #     settings.get("Translation Worker").value
-                    #     == self.TRANSLATION_WORKER_FRAMEWORK
-                    # )
-                    # self.logger.debug("Converting file to LMV to extract thumbnails")
-                    # output_directory, thumbnail_path = self._get_thumbnail_from_lmv(
-                    #     item, use_framework_translator
-                    # )
                     self.logger.debug("Extracting thumbnail from wire file.")
                     thumbnail_path = self._get_thumbnail_from_wire(item)
-
                     if thumbnail_path:
-                        self.logger.info("Uploading thumbnail file to ShotGrid")
+                        self.logger.info("Uploading thumbnail file to ShotGrid as Version")
                         self.parent.shotgun.upload(
                             entity_type="Version",
                             entity_id=item.properties["sg_version_data"]["id"],
                             path=thumbnail_path,
                             field_name="sg_uploaded_movie",
                         )
+                        self.logger.info("Uploading thumbnail file to ShotGrid as thumbnail")
                         self.parent.shotgun.upload_thumbnail(
                             entity_type="Version",
                             entity_id=item.properties["sg_version_data"]["id"],
@@ -600,12 +592,11 @@ class UploadVersionPlugin(HookBaseClass):
 
         # package it up
         self.logger.info("Packaging LMV files")
-        package_path, thumbnail_path = lmv_translator.package(
+        package_path = lmv_translator.package(
             svf_file_name=str(item.properties["sg_version_data"]["id"]),
-            thumbnail_path=item.get_thumbnail_as_path(),
         )
 
-        return package_path, thumbnail_path, lmv_translator.output_directory
+        return package_path, lmv_translator.output_directory
 
     def _get_thumbnail_from_lmv(self, item, use_framework_translator):
         """
