@@ -253,7 +253,7 @@ class UploadVersionPlugin(HookBaseClass):
                 self.parent.shotgun.upload(
                     entity_type="Version",
                     entity_id=item.properties["sg_version_data"]["id"],
-                    path=package_path,
+                    path=package_path[0],
                     field_name="sg_uploaded_movie",
                 )
                 # if the Version thumbnail is empty, update it with Alias thumbnail
