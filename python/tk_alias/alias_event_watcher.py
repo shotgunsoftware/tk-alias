@@ -280,6 +280,9 @@ class AliasEventWatcher(object):
         :rtype: bool
         """
 
+        if not self.__scene_events:
+            return False
+
         for fn in self.__scene_events.get(scene_event, {}).keys():
             if cb_fn == fn:
                 return True
