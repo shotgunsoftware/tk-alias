@@ -13,6 +13,9 @@ import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
+FORGE_OPTION1 = True
+FORGE_OPTION2 = True
+
 
 class UploadVersionPlugin(HookBaseClass):
     """
@@ -89,6 +92,11 @@ class UploadVersionPlugin(HookBaseClass):
                     options=", ".join(self.VERSION_TYPE_OPTIONS[:-1]),
                     last_option=self.VERSION_TYPE_OPTIONS[-1],
                 ),
+            },
+            "Translation Worker": {
+                "type": "str",
+                "default": "local",
+                "description": "Use local libraries or Forge Cloud Services for translations.",
             },
             "Upload": {
                 "type": "bool",
@@ -586,22 +594,58 @@ class UploadVersionPlugin(HookBaseClass):
             - The path to the temporary folder where the LMV files have been processed
         """
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
-        translator = framework_lmv.import_module("translator")
+        package_path = None
+        thumbnail_path = None
+        output_directory = None
+
+        if translation_worker == "local":
+            framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
+            translator = framework_lmv.import_module("translator")
+
+            # translate the file to lmv
+            lmv_translator = translator.LMVTranslator(item.properties.path)
+            self.logger.info("Converting file to LMV")
+            lmv_translator.translate()
+
+            # package it up
+            self.logger.info("Packaging LMV files")
+            package_path, thumbnail_path = lmv_translator.package(
+                svf_file_name=str(item.properties["sg_version_data"]["id"]),
+                thumbnail_path=item.get_thumbnail_as_path(),
+            )
+            output_directory = lmv_translator.output_directory
+
+        elif translation_worker == "forge":
+            framework_forge = self.load_framework("tk-framework-forge_v0.1.x")
+            # forge_api = framework_forge.import_module("forge_api")
+            model_derivative_module = framework_forge.import_module("model_derivative")
+            model_derivative = model_derivative_module.ModelDerivative()
+
+            urn = model_derivative.translate_source(item.name, item.properties.path)
+
+            if FORGE_OPTION1:
+                # Forge Option #1:
+                # Set custom field on Version for "URN" value for SG to load in Forge Viewer
+                # Pro: fast operation to translate -- job is sent to Forge and we're free to go on
+                # Con: requires SG code change to load using URN, in addition to local URL. As well,
+                # a Forge App/credentials needs to be shared between Toolkit and SG
+                self.parent.shotgun.update(
+                    entity_type="Version",
+                    entity_id=item.properties["sg_version_data"]["id"],
+                    data={"sg_urn": urn},
+                )
 
         # translate the file to lmv
         lmv_translator = translator.LMVTranslator(item.properties.path)
         self.logger.info("Converting file to LMV")
         lmv_translator.translate(use_framework_translator=use_framework_translator)
 
-        # package it up
-        self.logger.info("Packaging LMV files")
-        package_path, thumbnail_path = lmv_translator.package(
-            svf_file_name=str(item.properties["sg_version_data"]["id"]),
-            thumbnail_path=item.get_thumbnail_as_path(),
-        )
+        else:
+            self.logger.error(
+                "Failed to tranalate file: unknown Translation Worker Type"
+            )
 
-        return package_path, thumbnail_path, lmv_translator.output_directory
+        return package_path, thumbnail_path, output_directory
 
     def _get_thumbnail_from_lmv(self, item, use_framework_translator):
         """
@@ -628,7 +672,6 @@ class UploadVersionPlugin(HookBaseClass):
             self.logger.warning(
                 "Couldn't retrieve thumbnail data from LMV. Version won't have any associated media"
             )
-            return lmv_translator.output_directory
 
         return lmv_translator.output_directory, thumbnail_path
 
