@@ -25,9 +25,14 @@ class UploadVersionPlugin(HookBaseClass):
     # Translation workers are responsible for performing the LMV translation.
     # 'local': a local translator will be used, determined based on file type and current engine
     # 'framework':  the tk-framework-lmv translator will be used (default)
-    TRANSLATION_WORKER_LOCAL = "local"
-    TRANSLATION_WORKER_FRAMEWORK = "framework"
-    TRANSLATION_WORKERS = [TRANSLATION_WORKER_LOCAL, TRANSLATION_WORKER_FRAMEWORK]
+    TRANSLATION_WORKER_LOCAL = "Local"
+    TRANSLATION_WORKER_LMV = "LMV"
+    TRANSLATION_WORKER_FORGE = "Forge"
+    TRANSLATION_WORKERS = [
+        TRANSLATION_WORKER_LOCAL,
+        TRANSLATION_WORKER_LMV,
+        TRANSLATION_WORKER_FORGE,
+    ]
 
     # Version Type string constants
     VERSION_TYPE_2D = "2D Version"
@@ -93,11 +98,6 @@ class UploadVersionPlugin(HookBaseClass):
                     last_option=self.VERSION_TYPE_OPTIONS[-1],
                 ),
             },
-            "Translation Worker": {
-                "type": "str",
-                "default": "local",
-                "description": "Use local libraries or Forge Cloud Services for translations.",
-            },
             "Upload": {
                 "type": "bool",
                 "default": False,
@@ -105,7 +105,8 @@ class UploadVersionPlugin(HookBaseClass):
             },
             "Translation Worker": {
                 "type": "str",
-                "default": self.TRANSLATION_WORKER_FRAMEWORK,
+                "default": self.TRANSLATION_WORKER_FORGE,
+                # "default": self.TRANSLATION_WORKER_LMV,
                 "description": "Specify the worker to use to perform LMV translation.",
             },
         }
@@ -152,6 +153,9 @@ class UploadVersionPlugin(HookBaseClass):
         :returns: dictionary with boolean keys accepted, required and enabled
         """
 
+        if settings.get("Translation Worker").value not in self.TRANSLATION_WORKERS:
+            self.logger.error("Unknown Translation Worker")
+
         return {"accepted": True, "checked": True}
 
     def validate(self, settings, item):
@@ -195,6 +199,11 @@ class UploadVersionPlugin(HookBaseClass):
             self.logger.error("Could not run LMV translation: missing ATF framework")
             return False
 
+        framework_forge = self.load_framework("tk-framework-forge_v0.1.x")
+        if not framework_forge:
+            self.logger.error("Could not load Forge framework")
+            return False
+
         translation_worker = settings.get("Translation Worker").value
         if translation_worker not in self.TRANSLATION_WORKERS:
             self.logger.error(
@@ -234,34 +243,45 @@ class UploadVersionPlugin(HookBaseClass):
             # create the Version in ShotGrid
             super(UploadVersionPlugin, self).publish(settings, item)
 
+            # Get the translation worker to use to perform the translation
+            translation_worker = settings.get("Translation Worker").value
+
             # Get the version type to create
             version_type = settings.get("Version Type").value
 
             # generate the Version content: LMV file (for 3D) or simple 2D thumbnail
             if version_type == self.VERSION_TYPE_3D:
-                use_framework_translator = (
-                    settings.get("Translation Worker").value
-                    == self.TRANSLATION_WORKER_FRAMEWORK
-                )
                 self.logger.debug("Creating LMV files from source file")
+
+                # use_framework_translator = (
+                #     settings.get("Translation Worker").value
+                #     == self.TRANSLATION_WORKER_FRAMEWORK
+                # )
+
                 # translate the file to lmv and upload the corresponding package to the Version
                 (
                     package_path,
                     thumbnail_path,
                     output_directory,
-                ) = self._translate_file_to_lmv(item, use_framework_translator)
+                    # ) = self._translate_file_to_lmv(item, use_framework_translator)
+                ) = self._translate_file_to_lmv(item, translation_worker)
+
                 self.logger.info("Uploading LMV files to ShotGrid")
                 self.parent.shotgun.update(
                     entity_type="Version",
                     entity_id=item.properties["sg_version_data"]["id"],
                     data={"sg_translation_type": "LMV"},
                 )
-                self.parent.shotgun.upload(
-                    entity_type="Version",
-                    entity_id=item.properties["sg_version_data"]["id"],
-                    path=package_path,
-                    field_name="sg_uploaded_movie",
-                )
+
+                # If using forge with urn only, we will not have a local path to upload (Forge option 1)
+                if package_path:
+                    self.parent.shotgun.upload(
+                        entity_type="Version",
+                        entity_id=item.properties["sg_version_data"]["id"],
+                        path=package_path,
+                        field_name="sg_uploaded_movie",
+                    )
+
                 # if the Version thumbnail is empty, update it with the newly created thumbnail
                 if not item.get_thumbnail_as_path() and thumbnail_path:
                     self.parent.shotgun.upload_thumbnail(
@@ -269,9 +289,11 @@ class UploadVersionPlugin(HookBaseClass):
                         entity_id=item.properties["sg_version_data"]["id"],
                         path=thumbnail_path,
                     )
-                # delete the temporary folder on disk
-                self.logger.debug("Deleting temporary folder")
-                shutil.rmtree(output_directory)
+
+                if output_directory:
+                    # delete the temporary folder on disk
+                    self.logger.debug("Deleting temporary folder")
+                    shutil.rmtree(output_directory)
 
             elif version_type == self.VERSION_TYPE_2D:
                 thumbnail_path = item.get_thumbnail_as_path()
@@ -284,14 +306,18 @@ class UploadVersionPlugin(HookBaseClass):
                         field_name="sg_uploaded_movie",
                     )
                 else:
-                    use_framework_translator = (
-                        settings.get("Translation Worker").value
-                        == self.TRANSLATION_WORKER_FRAMEWORK
-                    )
                     self.logger.debug("Converting file to LMV to extract thumbnails")
+
+                    # use_framework_translator = (
+                    #     settings.get("Translation Worker").value
+                    #     == self.TRANSLATION_WORKER_FRAMEWORK
+                    # )
                     output_directory, thumbnail_path = self._get_thumbnail_from_lmv(
-                        item, use_framework_translator
+                        # item, use_framework_translator
+                        item,
+                        translation_worker,
                     )
+
                     if thumbnail_path:
                         self.logger.info("Uploading LMV thumbnail file to ShotGrid")
                         self.parent.shotgun.upload(
@@ -305,8 +331,11 @@ class UploadVersionPlugin(HookBaseClass):
                             entity_id=item.properties["sg_version_data"]["id"],
                             path=thumbnail_path,
                         )
-                    self.logger.debug("Deleting temporary folder")
-                    shutil.rmtree(output_directory)
+
+                    if output_directory:
+                        self.logger.debug("Deleting temporary folder")
+                        shutil.rmtree(output_directory)
+
             else:
                 raise NotImplementedError(
                     "Failed to generate thumbnail for Version Type '{}'".format(
@@ -382,14 +411,23 @@ class UploadVersionPlugin(HookBaseClass):
             )
         )
 
+        # Add a combobox to edit the translation worker
+        translation_worker_combobox = QtGui.QComboBox(widget)
+        translation_worker_combobox.setAccessibleName(
+            "Translation worker selection dropdown"
+        )
+        translation_worker_combobox.addItems(self.TRANSLATION_WORKERS)
+
         # Add all the minor widgets to the main widget
         widget_layout.addWidget(description_group_box)
         widget_layout.addWidget(version_type_combobox)
+        widget_layout.addWidget(translation_worker_combobox)
         widget.setLayout(widget_layout)
 
         # Set the widget property to store the combobox to access in get_ui_settings and set_ui_settings
         widget.setProperty("description_label", description_label)
         widget.setProperty("version_type_combobox", version_type_combobox)
+        widget.setProperty("translation_worker_combobox", translation_worker_combobox)
 
         return widget
 
@@ -427,15 +465,27 @@ class UploadVersionPlugin(HookBaseClass):
         version_type_combobox = widget.property("version_type_combobox")
         if version_type_combobox:
             version_type_index = version_type_combobox.currentIndex()
-            # if version_type_index >= 0 and version_type_index < len(self.VERSION_TYPE_OPTIONS):
             if 0 <= version_type_index < len(self.VERSION_TYPE_OPTIONS):
-                self.VERSION_TYPE_OPTIONS[version_type_index]
                 ui_settings["Version Type"] = self.VERSION_TYPE_OPTIONS[
                     version_type_index
                 ]
             else:
                 self.logger.debug(
                     "Invalid Version Type index {}".format(version_type_index)
+                )
+
+        translation_worker_combobox = widget.property("translation_worker_combobox")
+        if translation_worker_combobox:
+            translation_worker_index = translation_worker_combobox.currentIndex()
+            if 0 <= translation_worker_index < len(self.TRANSLATION_WORKERS):
+                ui_settings["Translation Worker"] = self.TRANSLATION_WORKERS[
+                    translation_worker_index
+                ]
+            else:
+                self.logger.debug(
+                    "Invalid translation worker index {}".format(
+                        translation_worker_index
+                    )
                 )
 
         return ui_settings
@@ -496,6 +546,13 @@ class UploadVersionPlugin(HookBaseClass):
             )
             return
 
+        translation_worker_combobox = widget.property("translation_worker_combobox")
+        if not translation_worker_combobox:
+            self.logger.debug(
+                "Failed to retrieve Translation Worker combobox to set custom UI"
+            )
+            return
+
         description_label = widget.property("description_label")
         if not description_label:
             self.logger.debug(
@@ -518,6 +575,22 @@ class UploadVersionPlugin(HookBaseClass):
             self._on_version_type_changed(version_type_value, description_label)
         else:
             version_type_combobox.setCurrentIndex(version_type_index)
+
+        # Get the default setting for translation worker
+        translation_worker_default_value = self.settings.get(
+            "Translation Worker", {}
+        ).get("default", self.TRANSLATION_WORKERS[0])
+
+        # Get the version type value from the settings, and set the combobox accordingly
+        translation_worker_value = settings[0].get(
+            "Translation Worker", translation_worker_default_value
+        )
+        translation_worker_index = max(
+            self.TRANSLATION_WORKERS.index(translation_worker_value), 0
+        )
+        current_translation_worker_index = translation_worker_combobox.currentIndex()
+        if current_translation_worker_index != translation_worker_index:
+            translation_worker_combobox.setCurrentIndex(translation_worker_index)
 
     def _on_version_type_changed(self, version_type, description_label):
         """
@@ -582,7 +655,8 @@ class UploadVersionPlugin(HookBaseClass):
     ############################################################################
     # Protected functions
 
-    def _translate_file_to_lmv(self, item, use_framework_translator):
+    # def _translate_file_to_lmv(self, item, use_framework_translator):
+    def _translate_file_to_lmv(self, item, translation_worker):
         """
         Translate the current Alias file as an LMV package in order to upload it to ShotGrid as a 3D Version
 
@@ -598,14 +672,19 @@ class UploadVersionPlugin(HookBaseClass):
         thumbnail_path = None
         output_directory = None
 
-        if translation_worker == "local":
+        if translation_worker in (
+            self.TRANSLATION_WORKER_LOCAL,
+            self.TRANSLATION_WORKER_LMV,
+        ):
             framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
             translator = framework_lmv.import_module("translator")
 
             # translate the file to lmv
             lmv_translator = translator.LMVTranslator(item.properties.path)
+            use_framework_translator = translation_worker == self.TRANSLATION_WORKER_LMV
+
             self.logger.info("Converting file to LMV")
-            lmv_translator.translate()
+            lmv_translator.translate(use_framework_translator=use_framework_translator)
 
             # package it up
             self.logger.info("Packaging LMV files")
@@ -615,7 +694,7 @@ class UploadVersionPlugin(HookBaseClass):
             )
             output_directory = lmv_translator.output_directory
 
-        elif translation_worker == "forge":
+        elif translation_worker == self.TRANSLATION_WORKER_FORGE:
             framework_forge = self.load_framework("tk-framework-forge_v0.1.x")
             # forge_api = framework_forge.import_module("forge_api")
             model_derivative_module = framework_forge.import_module("model_derivative")
@@ -635,10 +714,34 @@ class UploadVersionPlugin(HookBaseClass):
                     data={"sg_urn": urn},
                 )
 
-        # translate the file to lmv
-        lmv_translator = translator.LMVTranslator(item.properties.path)
-        self.logger.info("Converting file to LMV")
-        lmv_translator.translate(use_framework_translator=use_framework_translator)
+            if FORGE_OPTION2:
+                # Forge Option #2:
+                # More of a proof of concept, but we can download the translation files from
+                # Forge, and then pass to SG API to upload to S3 for 3D Viewer to access in SG
+                # Pro: No code changes to SG, only toolkit
+                # Con: Redundancy in uploading to Forge, which uploads to S3 -- then we download the
+                # translation files to upload again to SG this time, which also stores it on S3
+                # NOTE: could we modify SG to point to Forge S3 location? Then we can get the best
+                # of #1 and #2, but uploading to Forge and minimal code change to SG to get S3 files
+                # ^I don't think so, since SG also requires that all the necessary files be stores in a folder
+                # in a sepcific structure to parse
+                # Also, this option requires waiting for the job to finish, since we need the derivatives in the
+                # successful manifest
+                manifest = model_derivative.get_manifest(urn)
+
+                if model_derivative.is_manifest_successful(manifest):
+                    # Download all derivates from Forge, including any file dependencies, and package it up (similar to lmv)
+                    (
+                        package_path,
+                        thumbnail_path,
+                        output_directory,
+                    ) = model_derivative.download_derivatives(item, manifest)
+                else:
+                    # TODO: parse manifest["derivatives"] for error messages
+                    self.logger.error("Forge Translation failed")
+
+                # Done. Close the forge connection.
+                # model_derivative.forge_client.close_connection()
 
         else:
             self.logger.error(
@@ -647,7 +750,8 @@ class UploadVersionPlugin(HookBaseClass):
 
         return package_path, thumbnail_path, output_directory
 
-    def _get_thumbnail_from_lmv(self, item, use_framework_translator):
+    # def _get_thumbnail_from_lmv(self, item, use_framework_translator):
+    def _get_thumbnail_from_lmv(self, item, translation_worker):
         """
         Extract the thumbnail from the source file, using the LMV conversion
 
@@ -658,22 +762,73 @@ class UploadVersionPlugin(HookBaseClass):
             - The path to the LMV thumbnail
         """
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
-        translator = framework_lmv.import_module("translator")
+        output_directory = None
+        thumbnail_path = None
 
-        # translate the file to lmv
-        lmv_translator = translator.LMVTranslator(item.properties.path)
-        self.logger.info("Converting file to LMV")
-        lmv_translator.translate(use_framework_translator=use_framework_translator)
+        if translation_worker in (
+            self.TRANSLATION_WORKER_LOCAL,
+            self.TRANSLATION_WORKER_LMV,
+        ):
+            framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
+            translator = framework_lmv.import_module("translator")
 
-        self.logger.info("Extracting thumbnails from LMV")
-        thumbnail_path = lmv_translator.extract_thumbnail()
-        if not thumbnail_path:
-            self.logger.warning(
-                "Couldn't retrieve thumbnail data from LMV. Version won't have any associated media"
+            # translate the file to lmv
+            lmv_translator = translator.LMVTranslator(item.properties.path)
+            self.logger.info("Converting file to LMV")
+
+            use_framework_translator = translation_worker == self.TRANSLATION_WORKER_LMV
+            lmv_translator.translate(use_framework_translator=use_framework_translator)
+
+            self.logger.info("Extracting thumbnails from LMV")
+            thumbnail_path = lmv_translator.extract_thumbnail()
+            if not thumbnail_path:
+                self.logger.warning(
+                    "Couldn't retrieve thumbnail data from LMV. Version won't have any associated media"
+                )
+
+            output_directory = lmv_translator.output_directory
+
+        elif translation_worker == self.TRANSLATION_WORKER_FORGE:
+            framework_forge = self.load_framework("tk-framework-forge_v0.1.x")
+            model_derivative_module = framework_forge.import_module("model_derivative")
+            model_derivative = model_derivative_module.ModelDerivative()
+            urn = model_derivative.translate_source(item.name, item.properties.path)
+
+            if FORGE_OPTION1:
+                # Forge Option #1:
+                # Set custom field on Version for "URN" value for SG to load in Forge Viewer
+                # Pro: fast operation to translate -- job is sent to Forge and we're free to go on
+                # Con: requires SG code change to load using URN, in addition to local URL. As well,
+                # a Forge App/credentials needs to be shared between Toolkit and SG
+                self.parent.shotgun.update(
+                    entity_type="Version",
+                    entity_id=item.properties["sg_version_data"]["id"],
+                    data={"sg_urn": urn},
+                )
+
+            elif FORGE_OPTION2:
+                manifest = model_derivative.get_manifest(urn)
+
+                if model_derivative.is_manifest_successful(manifest):
+                    # Download all derivates from Forge, including any file dependencies, and package it up (similar to lmv)
+                    (
+                        output_directory,
+                        thumbnail_path,
+                    ) = model_derivative.download_thumbnails(item, manifest)
+                else:
+                    # TODO: parse manifest["derivatives"] for error messages
+                    self.logger.error("Failed to extract thumbnails using Forge")
+
+                # Done. Close the forge connection. TODO this should happen on publisher destroy/close
+                # model_derivative.forge_client.close_connection()
+
+        else:
+            self.logger.error(
+                "Failed to get thumbnail: unknown Translation Worker Type"
             )
 
-        return lmv_translator.output_directory, thumbnail_path
+        # return lmv_translator.output_directory, thumbnail_path
+        return output_directory, thumbnail_path
 
     def _is_3d_viewer_enabled(self):
         """
