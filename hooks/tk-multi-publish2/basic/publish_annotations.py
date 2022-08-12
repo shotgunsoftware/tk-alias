@@ -122,25 +122,25 @@ class PublishAnnotationsPlugin(HookBaseClass):
             if version_data is not None:
                 note_links.append(version_data)
 
-        annotations = alias_api.get_annotation_locator_strings()
+            annotations = alias_api.get_annotation_locator_strings()
 
-        batch_data = []
-        for annotation in annotations:
-            note_data = {
-                "project": item.context.project,
-                "user": item.context.user,
-                "subject": "Alias Annotation",
-                "content": annotation,
-                "note_links": note_links,
-            }
-            if item.context.task:
-                note_data["tasks"] = [item.context.task]
-            batch_data.append(
-                {"request_type": "create", "entity_type": "Note", "data": note_data}
-            )
+            batch_data = []
+            for annotation in annotations:
+                note_data = {
+                    "project": item.context.project,
+                    "user": item.context.user,
+                    "subject": "Alias Annotation",
+                    "content": annotation,
+                    "note_links": note_links,
+                }
+                if item.context.task:
+                    note_data["tasks"] = [item.context.task]
+                batch_data.append(
+                    {"request_type": "create", "entity_type": "Note", "data": note_data}
+                )
 
-        if batch_data:
-            self.parent.shotgun.batch(batch_data)
+            if batch_data:
+                self.parent.shotgun.batch(batch_data)
 
     def finalize(self, settings, item):
         """
