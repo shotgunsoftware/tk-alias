@@ -8,8 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import os
 import sgtk
-
 import alias_api
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -148,13 +148,15 @@ class AliasPublishVariantsPlugin(HookBaseClass):
                 publisher.shotgun.upload_thumbnail(
                     entity_type="Note", entity_id=note.get("id"), path=variant[1]
                 )
+                variant_filepath = variant[1]
+                _, file_ext = os.path.splitext(variant_filepath)
 
                 publisher.shotgun.upload(
                     entity_type="Note",
                     entity_id=note.get("id"),
-                    path=variant[1],
+                    path=variant_filepath,
                     field_name="attachments",
-                    display_name="Variant Image",
+                    display_name="{name}.{ext}".format(name=variant[0], ext=file_ext),
                 )
 
     def finalize(self, settings, item):
