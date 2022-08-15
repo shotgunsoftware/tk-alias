@@ -108,7 +108,7 @@ class AliasActions(HookBaseClass):
                 }
             )
 
-        if "import_subdiv" in actions and hasattr(alias_api, "import_subdivision"):
+        if "import_subdiv" in actions:
             action_instances.append(
                 {
                     "name": "import_subdiv",
@@ -277,4 +277,12 @@ class AliasActions(HookBaseClass):
         """
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
-        alias_api.import_subdivision(path)
+
+        try:
+            alias_api.import_subdiv(path)
+        except alias_api.AliasPythonException as api_error:
+            err_msg = "{api_error}<br/><br/>For more information, click {help_link}.".format(
+                api_error=str(api_error),
+                help_link="<a href='https://help.autodesk.com/view/ALIAS/2023/ENU/?guid=GUID-667410AD-CF4D-43B3-AE96-0C1331CB80B2'>here</a>",
+            )
+            raise alias_api.AliasPythonException(err_msg)
