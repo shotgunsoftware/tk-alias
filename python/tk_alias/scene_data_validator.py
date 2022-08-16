@@ -427,7 +427,6 @@ class AliasSceneDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
-                "get_kwargs": lambda: {"first_arg": 1, "second_arg": 2},
                 "dependency_ids": ["node_is_null"],
             },
             "node_name_matches_layer": {
