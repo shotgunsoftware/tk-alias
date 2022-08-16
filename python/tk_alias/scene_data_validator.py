@@ -1221,16 +1221,21 @@ class AliasSceneDataValidator(object):
         if isinstance(errors, six.string_types):
             errors = [errors]
 
+        if not errors:
+            # Optimize the zero transform by first calling the zero transform on all top-level nodes
+            # Then get the remaining nodes that do not have zero transform and apply it to those only.
+            alias_api.zero_transform_top_level()
+
         nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
             nodes=errors,
             skip_node_types=set(skip_node_types),
         )
 
-        for node in nodes:
-            status = alias_api.zero_transform(node)
+        if nodes:
+            status = alias_api.zero_transform(nodes)
             if not alias_py.utils.is_success(status):
                 alias_py.utils.raise_exception(
-                    "Failed to apply zero transform to node '{}'".format(node.name),
+                    "Failed to apply zero transform to nodes. Returned status:",
                     status,
                 )
 
