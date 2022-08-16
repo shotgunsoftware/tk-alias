@@ -156,7 +156,7 @@ class AliasPublishVariantsPlugin(HookBaseClass):
                     entity_id=note.get("id"),
                     path=variant_filepath,
                     field_name="attachments",
-                    display_name="{name}.{ext}".format(name=variant[0], ext=file_ext),
+                    display_name="{name}{ext}".format(name=variant[0], ext=file_ext),
                 )
 
     def finalize(self, settings, item):
