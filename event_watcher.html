@@ -1,0 +1,411 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Event Watcher &mdash; tk-alias v2.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ShotGrid Menu in Alias" href="menu.html" />
+    <link rel="prev" title="Scene Data Validator" href="scene_data_validator.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+    <a href='http://developer.shotgridsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="index.html" class="icon icon-home"> tk-alias
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="engine.html">The Alias Engine Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scene_data_validator.html">Scene Data Validator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Event Watcher</a></li>
+<li class="toctree-l1"><a class="reference internal" href="menu.html">ShotGrid Menu in Alias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hooks.html">Alias Engine Hooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alias_python_api.html">Alias Python API</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px;
+                color: #b3b3b3;
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>
+    <style>
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-alias</b> v2.1.7.<br>
+    
+        This documentation is part of the ShotGrid Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    The code associated with this documentation can be found
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tk-alias</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Event Watcher</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="event-watcher">
+<span id="id1"></span><h1>Event Watcher<a class="headerlink" href="#event-watcher" title="Permalink to this headline">¶</a></h1>
+<p>Using the <a class="reference internal" href="alias_python_api.html#alias-python-api"><span class="std std-ref">Alias Python API (APA)</span></a>, the Engine can listen for events fired by Alias, and trigger Python callbacks. The <code class="xref py py-class docutils literal notranslate"><span class="pre">alias_event_watcher.AliasEventWatcher</span></code> helps to manage registering callbacks for Alias Events, and ensuring that the callbacks are executed without interfering with Alias.</p>
+<p>See the <a class="reference internal" href="alias_python_api.html#alias-python-api-reference"><span class="std std-ref">APA Reference</span></a> for the Alias Events that the Engine can register callbacks for.</p>
+<dl class="class">
+<dt id="tk_alias.alias_event_watcher.AliasEventWatcher">
+<em class="property">class </em><code class="descclassname">tk_alias.alias_event_watcher.</code><code class="descname">AliasEventWatcher</code><a class="reference internal" href="_modules/tk_alias/alias_event_watcher.html#AliasEventWatcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.alias_event_watcher.AliasEventWatcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An object to manage Alias message events and callbacks.</p>
+<p>This class provides methods to register and unregister Alias message event callbacks.
+The events and their callbacks are stored in the class object so that they can be
+managed, including removing the callbacks on application shutdown.</p>
+<p>An Alias message event can be registered, which adds the message handler using the
+Alias Python API. The callbacks associated with the events will be triggered when
+this object is <cite>watching</cite> for Alias message events.</p>
+<p>Similarly, an Alias message event can be unregistered, meaning that the Python callback
+will no longer be triggered for the Alias message event.</p>
+<p>Initialize the Alias event watcher.</p>
+<dl class="class">
+<dt id="tk_alias.alias_event_watcher.AliasEventWatcher.ContextManager">
+<em class="property">class </em><code class="descname">ContextManager</code><span class="sig-paren">(</span><em>ignore_events=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/alias_event_watcher.html#AliasEventWatcher.ContextManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.alias_event_watcher.AliasEventWatcher.ContextManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A custom context manager to handle Alias events triggering Python callbacks.</p>
+<p>The purpose of this context manager is to ensure that Alias operations and Python
+callbacks triggered from Alias message events do not conflict. The entry method
+ensures that any Python callbacks triggered by Alias message events are queued
+(not executed immediately), and will be executed once the exit method is called.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">AliasEventWatch</span><span class="o">.</span><span class="n">ContextManager</span><span class="p">():</span>
+    <span class="n">alias_api</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This way of managing executing Python callbacks is preferred to using the
+AliasEventWAtcher watcher methods <cite>start_watching</cite> and <cite>stop_watching</cite>.</p>
+<p>Initialize the context manager.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ignore_events</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to avoid triggering Python callbacks for any
+Alias message events that occur.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tk_alias.alias_event_watcher.AliasEventWatcher.is_watching">
+<code class="descname">is_watching</code><a class="headerlink" href="#tk_alias.alias_event_watcher.AliasEventWatcher.is_watching" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the property indicating if the event watcher is watching for Alias events.</p>
+<p>Python callbacks registered for Alias message events will only be triggered when this
+proeprty is True. Python callbacks will be ignored when this property is False.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.alias_event_watcher.AliasEventWatcher.get_callbacks">
+<code class="descname">get_callbacks</code><span class="sig-paren">(</span><em>scene_event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/alias_event_watcher.html#AliasEventWatcher.get_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.alias_event_watcher.AliasEventWatcher.get_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of Python callback functions for the Alias event type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scene_event</strong> (<em>alias_api.AlMessageType</em>) – The Alias event type</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The list of Python callback functions.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list&lt;function&gt;</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.alias_event_watcher.AliasEventWatcher.register_alias_callback">
+<code class="descname">register_alias_callback</code><span class="sig-paren">(</span><em>cb_fn</em>, <em>scene_events</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/alias_event_watcher.html#AliasEventWatcher.register_alias_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.alias_event_watcher.AliasEventWatcher.register_alias_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the given callback to the list of registered callbacks
+If we’re currently watching, register this callback in Alias.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cb_fn</strong> (<em>function</em>) – Python callback we want to register.</li>
+<li><strong>scene_events</strong> (<em>list&lt;alias_api.AlMessageType&gt;</em>) – Single Alias event or list of Alias events we want to register
+this callback for.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.alias_event_watcher.AliasEventWatcher.unregister_alias_callback">
+<code class="descname">unregister_alias_callback</code><span class="sig-paren">(</span><em>cb_fn</em>, <em>scene_events</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/alias_event_watcher.html#AliasEventWatcher.unregister_alias_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.alias_event_watcher.AliasEventWatcher.unregister_alias_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the given callback to the list of registered callbacks
+If we’re currently watching, unregister this callback in Alias.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cb_fn</strong> (<em>function</em>) – Python c.allback we want to unregister</li>
+<li><strong>scene_events</strong> (<em>list&lt;alias_api.AlMessageType&gt;</em>) – Single Alias event or list of Alias events we want to unregister
+this callback for.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.alias_event_watcher.AliasEventWatcher.start_watching">
+<code class="descname">start_watching</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/alias_event_watcher.html#AliasEventWatcher.start_watching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.alias_event_watcher.AliasEventWatcher.start_watching" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts watching for Alias scene events.</p>
+<p>The registered Alias message events are being watched by adding the message handler
+that triggers the Python callback when the event occurs. When Alias message events
+are being watched, this means that the associated Python callbacks will be triggered.</p>
+<p>NOTE: start and stop watching methods were created before adding the custom
+context manager class <cite>AliasEventWatcher.ContextManager</cite>. The context manager is the
+preferred way to managing calling Alias Python API functions to perform Alias
+operations, while ensuring that Python callbacks triggered by Alias message events
+do not conflict. These methods still exist for back supporting</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.alias_event_watcher.AliasEventWatcher.stop_watching">
+<code class="descname">stop_watching</code><span class="sig-paren">(</span><em>force=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/alias_event_watcher.html#AliasEventWatcher.stop_watching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.alias_event_watcher.AliasEventWatcher.stop_watching" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops watching for Alias scene events.</p>
+<p>The registered Alias message events are ignored by removing the message handler that
+triggers the Python callback when the event occurs. When Alias message events are
+being ignored, this means that the associated Python callbacks will not be triggered.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>force</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to perform stop watching operations regardless of current
+watching state, else False to only perform stop watching operations if currently
+watching events.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.alias_event_watcher.AliasEventWatcher.shutdown">
+<code class="descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/alias_event_watcher.html#AliasEventWatcher.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.alias_event_watcher.AliasEventWatcher.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shut down the event watcher.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="menu.html" class="btn btn-neutral float-right" title="ShotGrid Menu in Alias" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="scene_data_validator.html" class="btn btn-neutral float-left" title="Scene Data Validator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Autodesk
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

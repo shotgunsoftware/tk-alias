@@ -1,0 +1,551 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tk_alias.menu_generation &mdash; tk-alias v2.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+    <a href='http://developer.shotgridsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='../../_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../../index.html" class="icon icon-home"> tk-alias
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../engine.html">The Alias Engine Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scene_data_validator.html">Scene Data Validator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../event_watcher.html">Event Watcher</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../menu.html">ShotGrid Menu in Alias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hooks.html">Alias Engine Hooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../alias_python_api.html">Alias Python API</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px;
+                color: #b3b3b3;
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>
+    <style>
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-alias</b> v2.1.7.<br>
+    
+        This documentation is part of the ShotGrid Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    The code associated with this documentation can be found
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">tk-alias</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>tk_alias.menu_generation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tk_alias.menu_generation</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2020 Shotgun Software Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">tank_vendor</span> <span class="kn">import</span> <span class="n">six</span>
+<span class="kn">from</span> <span class="nn">sgtk.util</span> <span class="kn">import</span> <span class="n">is_windows</span><span class="p">,</span> <span class="n">is_macos</span><span class="p">,</span> <span class="n">is_linux</span>
+
+<span class="kn">import</span> <span class="nn">alias_api</span>
+
+
+<div class="viewcode-block" id="AliasMenuGenerator"><a class="viewcode-back" href="../../menu.html#tk_alias.menu_generation.AliasMenuGenerator">[docs]</a><span class="k">class</span> <span class="nc">AliasMenuGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Menu handling for Alias.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">engine</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a new menu generator.</span>
+
+<span class="sd">        :param engine: The currently-running engine.</span>
+<span class="sd">        :type engine: :class:`tank.platform.Engine`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">=</span> <span class="n">engine</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version_check</span><span class="p">(</span><span class="n">engine</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span> <span class="s2">&quot;2022.2&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">MENU_NAME</span> <span class="o">=</span> <span class="s2">&quot;al_shotgrid&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">MENU_NAME</span> <span class="o">=</span> <span class="s2">&quot;al_shotgun&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MENU_NAME</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AliasMenuGenerator.create_menu"><a class="viewcode-back" href="../../menu.html#tk_alias.menu_generation.AliasMenuGenerator.create_menu">[docs]</a>    <span class="k">def</span> <span class="nf">create_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clean_menu</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render the entire ShotGrid menu.</span>
+
+<span class="sd">        :param clean_menu:  If clean_menu is set to true, the previous ShotGrid menu will be cleaned before creating the</span>
+<span class="sd">                            new one. This is useful in the case you&#39;re rebuilding the menu after context switching.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># First, ensure that the ShotGrid menu inside Alias is empty.</span>
+        <span class="c1"># This is to ensure we can recover from weird context switches</span>
+        <span class="c1"># where the engine didn&#39;t clean up after itself properly.</span>
+        <span class="k">if</span> <span class="n">clean_menu</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+
+        <span class="c1"># Add the context item on top of the main menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_context_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_context_menu</span><span class="p">()</span>
+
+        <span class="c1"># Now enumerate all items and create menu objects for them.</span>
+        <span class="n">menu_items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">cmd_name</span><span class="p">,</span> <span class="n">cmd_details</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">menu_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AppCommand</span><span class="p">(</span><span class="n">cmd_name</span><span class="p">,</span> <span class="n">cmd_details</span><span class="p">))</span>
+
+        <span class="c1"># Sort list of commands in name order</span>
+        <span class="n">menu_items</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Add favourites</span>
+        <span class="n">add_separator</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">fav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="s2">&quot;menu_favourites&quot;</span><span class="p">):</span>
+            <span class="n">app_instance_name</span> <span class="o">=</span> <span class="n">fav</span><span class="p">[</span><span class="s2">&quot;app_instance&quot;</span><span class="p">]</span>
+            <span class="n">menu_name</span> <span class="o">=</span> <span class="n">fav</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+            <span class="c1"># scan through all menu items.</span>
+            <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">menu_items</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">app_instance_name</span> <span class="o">==</span> <span class="n">app_instance_name</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">menu_name</span><span class="p">:</span>
+                    <span class="n">cmd</span><span class="o">.</span><span class="n">add_command_to_menu</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="p">,</span> <span class="n">add_separator</span><span class="o">=</span><span class="n">add_separator</span>
+                    <span class="p">)</span>
+                    <span class="n">cmd</span><span class="o">.</span><span class="n">favourite</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="c1"># Only add a separator for the first menu item</span>
+                    <span class="n">add_separator</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Go through all of the menu items.</span>
+        <span class="c1"># Separate them out into various sections.</span>
+        <span class="n">commands_by_app</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">add_separator</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">menu_items</span><span class="p">:</span>
+
+            <span class="c1"># context menu case</span>
+            <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">app_type</span> <span class="o">==</span> <span class="s2">&quot;context_menu&quot;</span><span class="p">:</span>
+                <span class="n">cmd</span><span class="o">.</span><span class="n">add_command_to_menu</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="p">,</span>
+                    <span class="n">sub_menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_context_menu</span><span class="p">,</span>
+                    <span class="n">add_separator</span><span class="o">=</span><span class="n">add_separator</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">add_separator</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># normal menu</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">app_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">commands_by_app</span><span class="p">:</span>
+                    <span class="n">commands_by_app</span><span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">app_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">commands_by_app</span><span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">app_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="c1"># add all the apps to the main menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_apps_to_menu</span><span class="p">(</span><span class="n">commands_by_app</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AliasMenuGenerator.clean_menu"><a class="viewcode-back" href="../../menu.html#tk_alias.menu_generation.AliasMenuGenerator.clean_menu">[docs]</a>    <span class="k">def</span> <span class="nf">clean_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clean the ShotGrid menu in Alias by removing all its entries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_add_context_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a context menu which displays the current context</span>
+
+<span class="sd">        :return:  An :class:`alias_api.MenuItem` instance representing the context menu.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">context</span>
+        <span class="n">ctx_name</span> <span class="o">=</span> <span class="n">six</span><span class="o">.</span><span class="n">ensure_str</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">context</span><span class="p">))</span>
+
+        <span class="c1"># Create the menu object</span>
+        <span class="n">ctx_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="o">.</span><span class="n">add_menu</span><span class="p">(</span><span class="n">ctx_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+            <span class="s2">&quot;Jump to ShotGrid&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jump_to_sg</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">ctx_menu</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">filesystem_locations</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+                <span class="s2">&quot;Jump to File System&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jump_to_fs</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">ctx_menu</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ctx_menu</span>
+
+    <span class="k">def</span> <span class="nf">_add_apps_to_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commands_by_app</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add all apps to the main menu, process them one by one.</span>
+
+<span class="sd">        :param commands_by_app:  List of all the apps to add to the menu</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">add_separator</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">app_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">commands_by_app</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">commands_by_app</span><span class="p">[</span><span class="n">app_name</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># more than one menu entry fort his app</span>
+                <span class="c1"># make a sub menu and put all items in the sub menu</span>
+                <span class="n">sub_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="o">.</span><span class="n">add_menu</span><span class="p">(</span><span class="n">app_name</span><span class="p">)</span>
+
+                <span class="c1"># get the list of menu commands for this app and make sure it is in alphabetical order</span>
+                <span class="n">commands</span> <span class="o">=</span> <span class="n">commands_by_app</span><span class="p">[</span><span class="n">app_name</span><span class="p">]</span>
+                <span class="n">commands</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">cmd_obj</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+                    <span class="n">cmd_obj</span><span class="o">.</span><span class="n">add_command_to_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="p">,</span> <span class="n">sub_menu</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># this app only has a single entry.</span>
+                <span class="c1"># display that on the menu</span>
+                <span class="n">cmd_obj</span> <span class="o">=</span> <span class="n">commands_by_app</span><span class="p">[</span><span class="n">app_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd_obj</span><span class="o">.</span><span class="n">favourite</span><span class="p">:</span>
+                    <span class="n">cmd_obj</span><span class="o">.</span><span class="n">add_command_to_menu</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="p">,</span> <span class="n">add_separator</span><span class="o">=</span><span class="n">add_separator</span>
+                    <span class="p">)</span>
+                    <span class="n">add_separator</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_jump_to_sg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Jump to ShotGrid, launch web browser</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Defer import to avoid import error for unit tests</span>
+        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtCore</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">shotgun_url</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QDesktopServices</span><span class="o">.</span><span class="n">openUrl</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QUrl</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_jump_to_fs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Jump from a context to the filesystem.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># launch one window for each location on disk</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">filesystem_locations</span>
+
+        <span class="k">for</span> <span class="n">disk_location</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_linux</span><span class="p">():</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;xdg-open &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">disk_location</span>
+            <span class="k">elif</span> <span class="n">is_macos</span><span class="p">():</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;open &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">disk_location</span>
+            <span class="k">elif</span> <span class="n">is_windows</span><span class="p">():</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;cmd.exe /C start &quot;Folder&quot; &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">disk_location</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Platform is not supported.&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Jump to filesystem command: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+
+            <span class="n">exit_code</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">exit_code</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to launch &#39;</span><span class="si">%s</span><span class="s2">&#39;!&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_version_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version1</span><span class="p">,</span> <span class="n">version2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare version strings and return 1 if version1 is greater than version2,</span>
+<span class="sd">            0 if they are equal and -1 if version1 is less than version2</span>
+
+<span class="sd">        :param version1: A version string to compare against version2 e.g. 2022.2</span>
+<span class="sd">        :param version2: A version string to compare against version1 e.g. 2021.3.1</span>
+
+<span class="sd">        :return: 1, 0, -1 as per above.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This will split both the versions by the &#39;.&#39; character</span>
+        <span class="n">arr1</span> <span class="o">=</span> <span class="n">version1</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">arr2</span> <span class="o">=</span> <span class="n">version2</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr1</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr2</span><span class="p">)</span>
+
+        <span class="c1"># Converts to integer from string</span>
+        <span class="n">arr1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arr1</span><span class="p">]</span>
+        <span class="n">arr2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arr2</span><span class="p">]</span>
+
+        <span class="c1"># Compares which list is bigger and fills</span>
+        <span class="c1"># the smaller list with zero (for unequal delimeters)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">m</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                <span class="n">arr2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+                <span class="n">arr1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Returns 1 if version1 is greater</span>
+        <span class="c1"># Returns -1 if version2 is greater</span>
+        <span class="c1"># Returns 0 if they are equal</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arr1</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">arr1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">arr2</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">arr2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">arr1</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="AliasMenuGenerator.refresh"><a class="viewcode-back" href="../../menu.html#tk_alias.menu_generation.AliasMenuGenerator.refresh">[docs]</a>    <span class="k">def</span> <span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Refresh the menu by forcing Alias to rebuild of its menus.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alias_menu</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">AppCommand</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wraps around a single command that you get from engine.commands</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">command_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class constructor</span>
+
+<span class="sd">        :param name: Command name</span>
+<span class="sd">        :param command_dict: Dictionary containing Command details</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="n">command_dict</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">favourite</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">command_dict</span><span class="p">[</span><span class="s2">&quot;callback&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app_instance_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of the app instance, as defined in the environment.</span>
+<span class="sd">        Returns None if not found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;app&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">app_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">app_instance</span><span class="o">.</span><span class="n">engine</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">app_instance_name</span><span class="p">,</span> <span class="n">app_instance_obj</span><span class="p">)</span> <span class="ow">in</span> <span class="n">engine</span><span class="o">.</span><span class="n">apps</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">app_instance_obj</span> <span class="o">==</span> <span class="n">app_instance</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">app_instance_name</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the command type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">app_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of the app that this command belongs to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;app&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">display_name</span>
+        <span class="k">return</span> <span class="s2">&quot;Other Items&quot;</span>
+
+    <span class="k">def</span> <span class="nf">add_command_to_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">menu</span><span class="p">,</span> <span class="n">sub_menu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_separator</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds an app command to the menu</span>
+
+<span class="sd">        :param menu: Menu to add the command to</span>
+<span class="sd">        :param sub_menu:  If a submenu is provided by the user, add the command under it</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sub_menu</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="n">add_separator</span><span class="o">=</span><span class="n">add_separator</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">sub_menu</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="n">add_separator</span><span class="o">=</span><span class="n">add_separator</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Autodesk
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

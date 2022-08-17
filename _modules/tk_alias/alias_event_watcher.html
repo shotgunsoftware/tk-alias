@@ -1,0 +1,534 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tk_alias.alias_event_watcher &mdash; tk-alias v2.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+    <a href='http://developer.shotgridsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='../../_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../../index.html" class="icon icon-home"> tk-alias
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../engine.html">The Alias Engine Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scene_data_validator.html">Scene Data Validator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../event_watcher.html">Event Watcher</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../menu.html">ShotGrid Menu in Alias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hooks.html">Alias Engine Hooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../alias_python_api.html">Alias Python API</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px;
+                color: #b3b3b3;
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>
+    <style>
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-alias</b> v2.1.7.<br>
+    
+        This documentation is part of the ShotGrid Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    The code associated with this documentation can be found
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">tk-alias</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>tk_alias.alias_event_watcher</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tk_alias.alias_event_watcher</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2022 Autodesk, Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the ShotGrid Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Autodesk, Inc.</span>
+
+<span class="kn">import</span> <span class="nn">alias_api</span>
+
+
+<div class="viewcode-block" id="AliasEventWatcher"><a class="viewcode-back" href="../../event_watcher.html#tk_alias.alias_event_watcher.AliasEventWatcher">[docs]</a><span class="k">class</span> <span class="nc">AliasEventWatcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object to manage Alias message events and callbacks.</span>
+
+<span class="sd">    This class provides methods to register and unregister Alias message event callbacks.</span>
+<span class="sd">    The events and their callbacks are stored in the class object so that they can be</span>
+<span class="sd">    managed, including removing the callbacks on application shutdown.</span>
+
+<span class="sd">    An Alias message event can be registered, which adds the message handler using the</span>
+<span class="sd">    Alias Python API. The callbacks associated with the events will be triggered when</span>
+<span class="sd">    this object is `watching` for Alias message events.</span>
+
+<span class="sd">    Similarly, an Alias message event can be unregistered, meaning that the Python callback</span>
+<span class="sd">    will no longer be triggered for the Alias message event.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AliasEventWatcher.ContextManager"><a class="viewcode-back" href="../../event_watcher.html#tk_alias.alias_event_watcher.AliasEventWatcher.ContextManager">[docs]</a>    <span class="k">class</span> <span class="nc">ContextManager</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A custom context manager to handle Alias events triggering Python callbacks.</span>
+
+<span class="sd">        The purpose of this context manager is to ensure that Alias operations and Python</span>
+<span class="sd">        callbacks triggered from Alias message events do not conflict. The entry method</span>
+<span class="sd">        ensures that any Python callbacks triggered by Alias message events are queued</span>
+<span class="sd">        (not executed immediately), and will be executed once the exit method is called.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            with AliasEventWatch.ContextManager():</span>
+<span class="sd">                alias_api.open_file(file_path)</span>
+
+<span class="sd">        This way of managing executing Python callbacks is preferred to using the</span>
+<span class="sd">        AliasEventWAtcher watcher methods `start_watching` and `stop_watching`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore_events</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Initialize the context manager.</span>
+
+<span class="sd">            :param ignore_events: Set to True to avoid triggering Python callbacks for any</span>
+<span class="sd">                Alias message events that occur.</span>
+<span class="sd">            :type ignore_events: bool</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ignore_events</span> <span class="o">=</span> <span class="n">ignore_events</span>
+
+        <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Set up the context manager.</span>
+
+<span class="sd">            This entry method just calls the Alias Python API function to indicate to start</span>
+<span class="sd">            queuing any callbacks triggered by Alias message events. This means that any</span>
+<span class="sd">            Python callback that would be triggered by an Alias event, is not executed until</span>
+<span class="sd">            the Alias Python API function is called to execute the callbacks that have been</span>
+<span class="sd">            queued.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="n">alias_api</span><span class="o">.</span><span class="n">queue_events</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Set up the context manager.</span>
+
+<span class="sd">            This exit method calls the Alias Python API function to execute the Python</span>
+<span class="sd">            callbacks that have been added to the queue. The queue will become empty after</span>
+<span class="sd">            this API call.</span>
+
+<span class="sd">            :param exc_type: The exception class</span>
+<span class="sd">            :param exc_value: The exception instance</span>
+<span class="sd">            :param exc_tb: The traceback object</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="c1"># TODO handle exceptions</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_events</span><span class="p">:</span>
+                <span class="c1"># Clear the queued events, but do not trigger their callacks.</span>
+                <span class="n">alias_api</span><span class="o">.</span><span class="n">clear_queued_events</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Trigger any Python callbacks for the queued events. The queue will become</span>
+                <span class="c1"># empty after this.</span>
+                <span class="n">alias_api</span><span class="o">.</span><span class="n">queue_events</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Alias event watcher.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Store the Alias message event callbacks that have been registered. For example,</span>
+        <span class="c1">#</span>
+        <span class="c1">#   self.__scene_events = {</span>
+        <span class="c1">#       AliasEventType : {</span>
+        <span class="c1">#           cb_fn1: cb_id1,</span>
+        <span class="c1">#           ...</span>
+        <span class="c1">#       },</span>
+        <span class="c1">#       ...</span>
+        <span class="c1">#   }</span>
+        <span class="c1">#</span>
+        <span class="c1"># , such that:</span>
+        <span class="c1">#   - AliasEventType is an alias_api.AlMessageType object</span>
+        <span class="c1">#   - cn_fn is the python callback we want to execute</span>
+        <span class="c1">#   - cb_id is the id of the registered callback in Alias</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Property flag indicating whether or not the event watching is currently watching for</span>
+        <span class="c1"># Alias message events. When set to True, Python callbacks will be triggered, else</span>
+        <span class="c1"># when False, Python callbacks will not be triggered.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_watching</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Properties</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_watching</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the property indicating if the event watcher is watching for Alias events.</span>
+
+<span class="sd">        Python callbacks registered for Alias message events will only be triggered when this</span>
+<span class="sd">        proeprty is True. Python callbacks will be ignored when this property is False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_watching</span>
+
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Public methods</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="AliasEventWatcher.get_callbacks"><a class="viewcode-back" href="../../event_watcher.html#tk_alias.alias_event_watcher.AliasEventWatcher.get_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene_event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of Python callback functions for the Alias event type.</span>
+
+<span class="sd">        :param scene_event: The Alias event type</span>
+<span class="sd">        :type scene_event: alias_api.AlMessageType</span>
+
+<span class="sd">        :return: The list of Python callback functions.</span>
+<span class="sd">        :rtype: list&lt;function&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scene_event</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AliasEventWatcher.register_alias_callback"><a class="viewcode-back" href="../../event_watcher.html#tk_alias.alias_event_watcher.AliasEventWatcher.register_alias_callback">[docs]</a>    <span class="k">def</span> <span class="nf">register_alias_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cb_fn</span><span class="p">,</span> <span class="n">scene_events</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add the given callback to the list of registered callbacks</span>
+<span class="sd">        If we&#39;re currently watching, register this callback in Alias.</span>
+
+<span class="sd">        :param cb_fn: Python callback we want to register.</span>
+<span class="sd">        :type cb_fn: function</span>
+<span class="sd">        :param scene_events: Single Alias event or list of Alias events we want to register</span>
+<span class="sd">            this callback for.</span>
+<span class="sd">        :type scene_events: list&lt;alias_api.AlMessageType&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">callback_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scene_events</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">scene_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">scene_events</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">scene_events</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_callback_registered</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">cb_fn</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="c1"># we only want to register the callback if we&#39;re currently watching</span>
+            <span class="c1"># otherwise, we just want to add the callback to the list of registered callbacks</span>
+            <span class="c1"># it will be properly registered next time the watcher is started</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_watching</span><span class="p">:</span>
+                <span class="n">status</span><span class="p">,</span> <span class="n">callback_id</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">add_message_handler</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">cb_fn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="p">{})[</span><span class="n">cb_fn</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback_id</span></div>
+
+<div class="viewcode-block" id="AliasEventWatcher.unregister_alias_callback"><a class="viewcode-back" href="../../event_watcher.html#tk_alias.alias_event_watcher.AliasEventWatcher.unregister_alias_callback">[docs]</a>    <span class="k">def</span> <span class="nf">unregister_alias_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cb_fn</span><span class="p">,</span> <span class="n">scene_events</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the given callback to the list of registered callbacks</span>
+<span class="sd">        If we&#39;re currently watching, unregister this callback in Alias.</span>
+
+<span class="sd">        :param cb_fn: Python c.allback we want to unregister</span>
+<span class="sd">        :type cb_fn: function</span>
+<span class="sd">        :param scene_events: Single Alias event or list of Alias events we want to unregister</span>
+<span class="sd">            this callback for.</span>
+<span class="sd">        :type scene_events: list&lt;alias_api.AlMessageType&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scene_events</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">scene_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">scene_events</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">scene_events</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_callback_registered</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">cb_fn</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">callback_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cb_fn</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_watching</span><span class="p">:</span>
+                <span class="n">alias_api</span><span class="o">.</span><span class="n">remove_message_handler</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">callback_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AliasEventWatcher.start_watching"><a class="viewcode-back" href="../../event_watcher.html#tk_alias.alias_event_watcher.AliasEventWatcher.start_watching">[docs]</a>    <span class="k">def</span> <span class="nf">start_watching</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts watching for Alias scene events.</span>
+
+<span class="sd">        The registered Alias message events are being watched by adding the message handler</span>
+<span class="sd">        that triggers the Python callback when the event occurs. When Alias message events</span>
+<span class="sd">        are being watched, this means that the associated Python callbacks will be triggered.</span>
+
+<span class="sd">        NOTE: start and stop watching methods were created before adding the custom</span>
+<span class="sd">        context manager class `AliasEventWatcher.ContextManager`. The context manager is the</span>
+<span class="sd">        preferred way to managing calling Alias Python API functions to perform Alias</span>
+<span class="sd">        operations, while ensuring that Python callbacks triggered by Alias message events</span>
+<span class="sd">        do not conflict. These methods still exist for back supporting</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if we&#39;re already watching, just exit</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_watching</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># if we don&#39;t have any registered callbacks, exit too</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">ev</span><span class="p">,</span> <span class="n">callbacks</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">cb_fn</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">status</span><span class="p">,</span> <span class="n">callback_id</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">add_message_handler</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">cb_fn</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">alias_api</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="n">cb_fn</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_watching</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="AliasEventWatcher.stop_watching"><a class="viewcode-back" href="../../event_watcher.html#tk_alias.alias_event_watcher.AliasEventWatcher.stop_watching">[docs]</a>    <span class="k">def</span> <span class="nf">stop_watching</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stops watching for Alias scene events.</span>
+
+<span class="sd">        The registered Alias message events are ignored by removing the message handler that</span>
+<span class="sd">        triggers the Python callback when the event occurs. When Alias message events are</span>
+<span class="sd">        being ignored, this means that the associated Python callbacks will not be triggered.</span>
+
+<span class="sd">        :param force: Set to True to perform stop watching operations regardless of current</span>
+<span class="sd">            watching state, else False to only perform stop watching operations if currently</span>
+<span class="sd">            watching events.</span>
+<span class="sd">        :type force: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_watching</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">ev</span><span class="p">,</span> <span class="n">callbacks</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">cb_fn</span><span class="p">,</span> <span class="n">callback_id</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">callback_id</span><span class="p">:</span>
+                    <span class="k">return</span>
+                <span class="n">alias_api</span><span class="o">.</span><span class="n">remove_message_handler</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">callback_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="n">cb_fn</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_watching</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="AliasEventWatcher.shutdown"><a class="viewcode-back" href="../../event_watcher.html#tk_alias.alias_event_watcher.AliasEventWatcher.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shut down the event watcher.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_watching</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Private methods</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">__is_callback_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene_event</span><span class="p">,</span> <span class="n">cb_fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a callback is already registered</span>
+
+<span class="sd">        :param scene_event: Type of the Alias Event the callback is linked to</span>
+<span class="sd">        :type scene_event: alias_api.AlMessageType</span>
+<span class="sd">        :param cb_fn: Callback to check</span>
+<span class="sd">        :type cb_fn: function</span>
+
+<span class="sd">        :return: True if the callback is already registered, False otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scene_events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scene_event</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">cb_fn</span> <span class="o">==</span> <span class="n">fn</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Autodesk
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

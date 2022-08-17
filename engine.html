@@ -1,0 +1,1221 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The Alias Engine Code &mdash; tk-alias v2.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Scene Data Validator" href="scene_data_validator.html" />
+    <link rel="prev" title="The Alias Engine" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+    <a href='http://developer.shotgridsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="index.html" class="icon icon-home"> tk-alias
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The Alias Engine Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-class-members">Key Class Members</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scene_data_validator.html">Scene Data Validator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="event_watcher.html">Event Watcher</a></li>
+<li class="toctree-l1"><a class="reference internal" href="menu.html">ShotGrid Menu in Alias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hooks.html">Alias Engine Hooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alias_python_api.html">Alias Python API</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px;
+                color: #b3b3b3;
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>
+    <style>
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-alias</b> v2.1.7.<br>
+    
+        This documentation is part of the ShotGrid Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    The code associated with this documentation can be found
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tk-alias</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>The Alias Engine Code</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="the-alias-engine-code">
+<span id="engine"></span><h1>The Alias Engine Code<a class="headerlink" href="#the-alias-engine-code" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasEngine</span></code> is the main class which constructs and initializes the Toolkit engine.</p>
+<div class="section" id="key-class-members">
+<span id="engine-members"></span><h2>Key Class Members<a class="headerlink" href="#key-class-members" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>event_watcher (<a class="reference internal" href="event_watcher.html#event-watcher"><span class="std std-ref">Event Watcher</span></a>)</li>
+<li>scene_data_validator (<a class="reference internal" href="scene_data_validator.html#scene-data-validator"><span class="std std-ref">Scene Data Validator</span></a>)</li>
+<li>_menu_generator (<a class="reference internal" href="menu.html#menu"><span class="std std-ref">ShotGrid Menu in Alias</span></a>)</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2019 Shotgun Software Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">sgtk</span>
+<span class="kn">from</span> <span class="nn">sgtk.util</span> <span class="kn">import</span> <span class="n">LocalFileStorageManager</span>
+
+
+<span class="k">class</span> <span class="nc">AliasEngine</span><span class="p">(</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">Engine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An Alias DCC engine for Shotgun Toolkit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tk</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">engine_instance_name</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize custom attributes.&quot;&quot;&quot;</span>
+        <span class="c1"># Custom attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_qt_app</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plugin_is_ready</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias_codename</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias_execpath</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias_bindir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dialog_parent</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__event_watcher</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__scene_data_validator</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_menu_generator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_path</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;argv&quot;</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">AliasEngine</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">tk</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">engine_instance_name</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Static methods</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_current_engine</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the engine that Toolkit is currently running. This is used by the Alias</span>
+<span class="sd">        C++ Plugin to ensure that its reference to the engine is not stale (e.g. the</span>
+<span class="sd">        plugin&#39;s reference will become stale after the engine has been reloaded).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_parent_window</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the current active window Qt window.</span>
+
+<span class="sd">        This is a fallback method to get the main window, if `_get_dialog_parent` cannot be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
+        <span class="k">return</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">activeWindow</span><span class="p">()</span>
+
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Properties</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">host_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information about the application hosting this engine.</span>
+
+<span class="sd">        :returns: A {&quot;name&quot;: application name, &quot;version&quot;: application version}</span>
+<span class="sd">                  dictionary. eg: {&quot;name&quot;: &quot;AfterFX&quot;, &quot;version&quot;: &quot;2017.1.1&quot;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Alias&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;unknown&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detect and return if Alias is running in interactive/non-interactive mode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Alias.exe&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">context_change_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Specifies that context changes are allowed by the engine.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">event_watcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the AliasEventWatcher object to help manager Alias message events and Python callbacks.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__event_watcher</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">scene_data_validator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the AliasSceneDataValidator object to help validate the Alias scene data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scene_data_validator</span>
+
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Override base Engine class methods</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">pre_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up the engine into an operational state. Executed by the system and typically</span>
+<span class="sd">        implemented by deriving classes. This method called before any apps are loaded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Initializing...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,))</span>
+
+        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+        <span class="c1"># unicode characters returned by the shotgun api need to be converted</span>
+        <span class="c1"># to display correctly in all of the app windows</span>
+        <span class="c1"># tell QT to interpret C strings as utf-8</span>
+        <span class="n">utf8</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QTextCodec</span><span class="o">.</span><span class="n">codecForName</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QTextCodec</span><span class="o">.</span><span class="n">setCodecForCStrings</span><span class="p">(</span><span class="n">utf8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;set utf-8 codec for widget text&quot;</span><span class="p">)</span>
+
+        <span class="n">pyside_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+        <span class="n">site_packages_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pyside_folder</span><span class="p">)</span>
+        <span class="n">lib_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">site_packages_folder</span><span class="p">)</span>
+        <span class="n">python_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">lib_folder</span><span class="p">)</span>
+        <span class="n">shotgun_create_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">python_folder</span><span class="p">)</span>
+        <span class="n">qt_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">shotgun_create_folder</span><span class="p">,</span> <span class="s2">&quot;Qt&quot;</span><span class="p">)</span>
+
+        <span class="c1"># PySide plugins</span>
+        <span class="n">plugins_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pyside_folder</span><span class="p">,</span> <span class="s2">&quot;plugins&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">plugins_dir</span><span class="p">):</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QCoreApplication</span><span class="o">.</span><span class="n">addLibraryPath</span><span class="p">(</span><span class="n">plugins_dir</span><span class="p">)</span>
+
+        <span class="c1"># QT plugins</span>
+        <span class="n">plugins_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">qt_folder</span><span class="p">,</span> <span class="s2">&quot;plugins&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">plugins_dir</span><span class="p">):</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QCoreApplication</span><span class="o">.</span><span class="n">addLibraryPath</span><span class="p">(</span><span class="n">plugins_dir</span><span class="p">)</span>
+
+        <span class="c1"># Init QT main loop</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_qt_app</span><span class="p">()</span>
+
+        <span class="c1"># Defer importing the Alias Python API until now so that a proper info message can be displayed to</span>
+        <span class="c1"># user if the api failed to import.</span>
+        <span class="c1"># NOTE: Ensure this check runs after the Qt app is created and before attempting to import the</span>
+        <span class="c1"># alias_api module, which means any engine functions that requires the alias_api module should import</span>
+        <span class="c1"># the module at the function declaration. TODO: move all alias_api functionality outside the engine</span>
+        <span class="c1"># and to its own module.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">alias_api</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">api_import_error</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">api_import_error</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+                <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_parent_window</span><span class="p">(),</span>
+                    <span class="s2">&quot;Failed to import the Alias Python API&quot;</span><span class="p">,</span>
+                    <span class="n">error_msg</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="c1"># import python/tk_alias module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;tk_alias&quot;</span><span class="p">)</span>
+
+        <span class="c1"># dialog parent handler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dialog_parent</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span><span class="o">.</span><span class="n">DialogParent</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="c1"># event watcher</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__event_watcher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_alias_event_watcher</span><span class="p">()</span>
+
+        <span class="c1"># scene validator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__scene_data_validator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span><span class="o">.</span><span class="n">AliasSceneDataValidator</span><span class="p">()</span>
+
+        <span class="c1"># Env vars</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias_execpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;TK_ALIAS_EXECPATH&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias_bindir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_execpath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias_codename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;TK_ALIAS_CODENAME&quot;</span><span class="p">,</span> <span class="s2">&quot;autostudio&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Be sure the current version is supported</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;TK_ALIAS_VERSION&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get Alias version. Skip version comparison&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
+            <span class="s2">&quot;compatibility_dialog_min_version&quot;</span><span class="p">,</span> <span class="mi">2021</span>
+        <span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias </span><span class="si">%s</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;You can continue to use the Toolkit but you may experience bugs or &quot;</span>
+                <span class="s2">&quot;instability.  Please report any issues you see to </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">support_url</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+                <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_parent_window</span><span class="p">(),</span>
+                    <span class="s2">&quot;Warning - ShotGrid Pipeline Toolkit!&quot;</span><span class="p">,</span>
+                    <span class="n">msg</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2021</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
+            <span class="s2">&quot;compatibility_dialog_old_version&quot;</span>
+        <span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;The ShotGrid Pipeline Toolkit is not fully capable with Alias </span><span class="si">%s</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;You should consider upgrading to a more recent version of Alias. &quot;</span>
+                <span class="s2">&quot;Please report any issues you see to </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">support_url</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+                <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_parent_window</span><span class="p">(),</span>
+                    <span class="s2">&quot;Warning - ShotGrid Pipeline Toolkit!&quot;</span><span class="p">,</span>
+                    <span class="n">msg</span><span class="p">,</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">post_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executed by the system and typically implemented by deriving classes.</span>
+<span class="sd">        This method called after all apps have been loaded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Post Initializing...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># init menu</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_menu_generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span><span class="o">.</span><span class="n">AliasMenuGenerator</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_menu_generator</span><span class="o">.</span><span class="n">create_menu</span><span class="p">(</span><span class="n">clean_menu</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_app_instance_commands</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">destroy_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the engine should tear down itself and all its apps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Destroying...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Clean the menu</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_menu_generator</span><span class="o">.</span><span class="n">clean_menu</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_watcher</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+
+        <span class="c1"># Close all Shotgun app dialogs that are still opened since</span>
+        <span class="c1"># some apps do threads cleanup in their onClose event handler</span>
+        <span class="c1"># Note that this function is called when the engine is restarted (through &quot;Reload Engine and Apps&quot;)</span>
+
+        <span class="c1"># Important: Copy the list of dialogs still opened since the call to close() will modify created_qt_dialogs</span>
+        <span class="n">dialogs_still_opened</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_qt_dialogs</span><span class="p">[:]</span>
+
+        <span class="k">for</span> <span class="n">dialog</span> <span class="ow">in</span> <span class="n">dialogs_still_opened</span><span class="p">:</span>
+            <span class="n">dialog</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">show_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">panel_id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">bundle</span><span class="p">,</span> <span class="n">widget_class</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show a dialog as panel in Alias as they are not properly supported. In case the widget has already been opened,</span>
+<span class="sd">        do not create a second widget but use the existing one instead.</span>
+
+<span class="sd">        :param panel_id: Unique identifier for the panel, as obtained by register_panel().</span>
+<span class="sd">        :param title: The title of the panel</span>
+<span class="sd">        :param bundle: The app, engine or framework object that is associated with this window</span>
+<span class="sd">        :param widget_class: The class of the UI to be constructed. This must derive from QWidget.</span>
+
+<span class="sd">        Additional parameters specified will be passed through to the widget_class constructor.</span>
+
+<span class="sd">        :returns: the created widget_class instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Begin showing panel </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">panel_id</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Sorry, this environment does not support UI display! Cannot show &quot;</span>
+                <span class="s2">&quot;the requested window &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># try to find existing window in order to avoid having many instances of the same app opened at the same time</span>
+        <span class="k">for</span> <span class="n">qt_dialog</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_qt_dialogs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">qt_dialog</span><span class="p">,</span> <span class="s2">&quot;_widget&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">qt_dialog</span><span class="o">.</span><span class="n">_widget</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="n">panel_id</span><span class="p">:</span>
+                <span class="n">widget_instance</span> <span class="o">=</span> <span class="n">qt_dialog</span>
+                <span class="n">widget_instance</span><span class="o">.</span><span class="n">raise_</span><span class="p">()</span>
+                <span class="n">widget_instance</span><span class="o">.</span><span class="n">activateWindow</span><span class="p">()</span>
+                <span class="k">break</span>
+        <span class="c1"># in case we can&#39;t find an existing widget, create a new one</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">widget_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_dialog</span><span class="p">(</span>
+                <span class="n">title</span><span class="p">,</span> <span class="n">bundle</span><span class="p">,</span> <span class="n">widget_class</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+            <span class="n">widget_instance</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">panel_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">widget_instance</span>
+
+    <span class="k">def</span> <span class="nf">_get_dialog_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get Alias dialog parent window.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dialog_parent</span><span class="o">.</span><span class="n">get_dialog_parent</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_emit_log_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by the engine to log messages in Alias Terminal.</span>
+<span class="sd">        All log messages from the toolkit logging namespace will be passed to this method.</span>
+
+<span class="sd">        :param handler: Log handler that this message was dispatched from.</span>
+<span class="sd">                        Its default format is &quot;[levelname basename] message&quot;.</span>
+<span class="sd">        :type handler: :class:`~python.logging.LogHandler`</span>
+<span class="sd">        :param record: Standard python logging record.</span>
+<span class="sd">        :type record: :class:`~python.logging.LogRecord`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: improve Alias API to redirect the logs to the Alias Promptline</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Protected methods</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_init_qt_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize QT application.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Initializing QtApp&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Get current instance</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+
+        <span class="c1"># Create instance</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_qt_app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_qt_app</span><span class="o">.</span><span class="n">setQuitOnLastWindowClosed</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created QApplication instance: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_qt_app</span><span class="p">))</span>
+
+            <span class="k">def</span> <span class="nf">_app_quit</span><span class="p">():</span>
+                <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span>
+
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">aboutToQuit</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_app_quit</span><span class="p">)</span>
+        <span class="c1"># Use current instance</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_qt_app</span> <span class="o">=</span> <span class="n">instance</span>
+
+        <span class="c1"># Make the QApplication use the dark theme. Must be called after the QApplication is instantiated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_dark_look_and_feel</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_alias_event_watcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Alis event watcher.</span>
+
+<span class="sd">        Register any initial Alias message event callbacks, and start watching for events immediately.</span>
+
+<span class="sd">        NOTE: registering callback for event AlMessageType.DagNameModified causes a crash on startup.</span>
+<span class="sd">        This looks like a bug where Alias is not ready to handle events yet but we can register them.</span>
+
+<span class="sd">        :return: The Alias event watcher object.</span>
+<span class="sd">        :rtype: AliasEventWatcher</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">import</span> <span class="nn">alias_api</span>
+
+        <span class="n">event_watcher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span><span class="o">.</span><span class="n">AliasEventWatcher</span><span class="p">()</span>
+
+        <span class="c1"># Register event callbacks</span>
+        <span class="c1"># NOTE: cannot call engine class methods directly, must use lambda in order to have</span>
+        <span class="c1"># access to the engine object to call its class methods. The event callbacks must</span>
+        <span class="c1"># take one parameter, which is the result passed from the Alias Python API for the</span>
+        <span class="c1"># Alias event</span>
+        <span class="n">event_watcher</span><span class="o">.</span><span class="n">register_alias_callback</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">result</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="bp">self</span><span class="p">:</span> <span class="n">engine</span><span class="o">.</span><span class="n">on_stage_active</span><span class="p">(</span><span class="n">result</span><span class="p">),</span>
+            <span class="n">alias_api</span><span class="o">.</span><span class="n">AlMessageType</span><span class="o">.</span><span class="n">StageActive</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Now start watching the events. This should be called after registering events to</span>
+        <span class="c1"># ensure the event watcher starts listening.</span>
+        <span class="n">event_watcher</span><span class="o">.</span><span class="n">start_watching</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">event_watcher</span>
+
+    <span class="k">def</span> <span class="nf">_run_app_instance_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the series of app instance commands listed in the &#39;run_at_startup&#39; setting</span>
+<span class="sd">        of the environment configuration yaml file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Build a dictionary mapping app instance names to dictionaries of commands they registered with the engine.</span>
+        <span class="n">app_instance_commands</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">command_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">app_instance</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;app&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">app_instance</span><span class="p">:</span>
+                <span class="c1"># Add entry &#39;command name: command function&#39; to the command dictionary of this app instance.</span>
+                <span class="n">command_dict</span> <span class="o">=</span> <span class="n">app_instance_commands</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span>
+                    <span class="n">app_instance</span><span class="o">.</span><span class="n">instance_name</span><span class="p">,</span> <span class="p">{}</span>
+                <span class="p">)</span>
+                <span class="n">command_dict</span><span class="p">[</span><span class="n">command_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;callback&quot;</span><span class="p">]</span>
+
+        <span class="n">commands_to_run</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Run the series of app instance commands listed in the &#39;run_at_startup&#39; setting.</span>
+        <span class="k">for</span> <span class="n">app_setting_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="s2">&quot;run_at_startup&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+
+            <span class="n">app_instance_name</span> <span class="o">=</span> <span class="n">app_setting_dict</span><span class="p">[</span><span class="s2">&quot;app_instance&quot;</span><span class="p">]</span>
+            <span class="c1"># Menu name of the command to run or &#39;&#39; to run all commands of the given app instance.</span>
+            <span class="n">setting_command_name</span> <span class="o">=</span> <span class="n">app_setting_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+            <span class="c1"># Retrieve the command dictionary of the given app instance.</span>
+            <span class="n">command_dict</span> <span class="o">=</span> <span class="n">app_instance_commands</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">app_instance_name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">command_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> configuration setting &#39;run_at_startup&#39; requests app &#39;</span><span class="si">%s</span><span class="s2">&#39; that is not installed.&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">app_instance_name</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">setting_command_name</span><span class="p">:</span>
+                    <span class="c1"># Run all commands of the given app instance.</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">command_name</span><span class="p">,</span> <span class="n">command_function</span><span class="p">)</span> <span class="ow">in</span> <span class="n">command_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> startup running app &#39;</span><span class="si">%s</span><span class="s2">&#39; command &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">app_instance_name</span><span class="p">,</span>
+                            <span class="n">command_name</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">commands_to_run</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command_function</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Run the command whose name is listed in the &#39;run_at_startup&#39; setting.</span>
+                    <span class="n">command_function</span> <span class="o">=</span> <span class="n">command_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">setting_command_name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">command_function</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> startup running app &#39;</span><span class="si">%s</span><span class="s2">&#39; command &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">app_instance_name</span><span class="p">,</span>
+                            <span class="n">setting_command_name</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">commands_to_run</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command_function</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">known_commands</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">command_dict</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> configuration setting &#39;run_at_startup&#39; requests app &#39;</span><span class="si">%s</span><span class="s2">&#39; unknown command &#39;</span><span class="si">%s</span><span class="s2">&#39;. &quot;</span>
+                            <span class="s2">&quot;Known commands: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">app_instance_name</span><span class="p">,</span>
+                            <span class="n">setting_command_name</span><span class="p">,</span>
+                            <span class="n">known_commands</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+        <span class="c1"># no commands to run. just bail</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">commands_to_run</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># finally, run the commands</span>
+        <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands_to_run</span><span class="p">:</span>
+            <span class="n">command</span><span class="p">()</span>
+
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Public methods</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">on_plugin_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is called by the Alias ShotGrid Plugin on initialization.</span>
+
+<span class="sd">        This is called once, and only once when Alias starts up.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SGTK_FILE_TO_OPEN&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">post_context_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_context</span><span class="p">,</span> <span class="n">new_context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs after a context change has occurred.</span>
+
+<span class="sd">        :param old_context: The previous context.</span>
+<span class="sd">        :param new_context: The current context.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Post context change...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Rebuild the menu only if we change of context and if we&#39;re running Alias in interactive mode</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_menu_generator</span><span class="o">.</span><span class="n">create_menu</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_menu_generator</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">save_context_for_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the context associated to the current Alias stage.</span>
+<span class="sd">        We need to save and restore the context because of the different stages the user can use.</span>
+<span class="sd">        As the Stages can change their name, we need to store the context for both the stage name and the stage path.</span>
+
+<span class="sd">        :param context:  We can specify a context to associate to the current stage. If no one is supplied, we will use</span>
+<span class="sd">                         the current one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">import</span> <span class="nn">alias_api</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span>
+
+        <span class="n">current_stage</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_current_stage</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">current_stage</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_path</span><span class="p">[</span><span class="n">current_stage</span><span class="o">.</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span><span class="p">[</span><span class="n">current_stage</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">context</span>
+
+    <span class="c1">#####################################################################################</span>
+    <span class="c1"># File I/O</span>
+
+    <span class="k">def</span> <span class="nf">save_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function to call the Alias Python API to save the file and ensure</span>
+<span class="sd">        the context is saved for the current stage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">import</span> <span class="nn">alias_api</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">save_file</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">alias_api</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Alias Python API Error: save_file returned non-success status code </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">status</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Save context for the current stage that was updated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_context_for_stage</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">save_file_as</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function to call the Alias Python API to save the file and ensure</span>
+<span class="sd">        the context is saved for the current stage.</span>
+
+<span class="sd">        :param path: the file path to save.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">import</span> <span class="nn">alias_api</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">save_file_as</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">alias_api</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Alias Python API Error: save_file_as(&#39;</span><span class="si">{}</span><span class="s2">&#39;) returned non-success status code </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">path</span><span class="p">,</span> <span class="n">status</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Save context for the current stage that was updated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_context_for_stage</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function to call the Alias Python API to open a file and ensure</span>
+<span class="sd">        the context is saved for the current stage.</span>
+
+<span class="sd">        :param path: the file path to open.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">import</span> <span class="nn">alias_api</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">alias_api</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Alias Python API Error: open_file(&#39;</span><span class="si">{}</span><span class="s2">&#39;) returned non-success status code </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">path</span><span class="p">,</span> <span class="n">status</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Save context for the current stage that was updated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_context_for_stage</span><span class="p">()</span>
+
+    <span class="c1">#####################################################################################</span>
+    <span class="c1"># AliasEventWatcher callbacks</span>
+
+    <span class="k">def</span> <span class="nf">on_stage_active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a callback that is triggered by Alias &quot;StageCreated&quot; events.</span>
+
+<span class="sd">        Update the ShotGrid context according to the current stage (since it may have changed).</span>
+
+<span class="sd">        :param result: The result of the Alias stage created event.</span>
+<span class="sd">        :type result: alias_api.PythonCallbackMessageResult</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">import</span> <span class="nn">alias_api</span>
+
+        <span class="n">current_stage</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_current_stage</span><span class="p">()</span>
+
+        <span class="c1"># Do nothing if the current stage is invalid</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">current_stage</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Do nothing if there are no SG contexts saved for Alias stages yet</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Attempt to get the saved SG context for the current Alias stage</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">path</span> <span class="ow">and</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_path</span><span class="p">:</span>
+            <span class="c1"># Found the context form the stage path</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_path</span><span class="p">[</span><span class="n">current_stage</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span><span class="p">:</span>
+            <span class="c1"># Found the context form the stage name</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span><span class="p">[</span><span class="n">current_stage</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Context not found, reset to the project context</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">context_from_entity_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+
+        <span class="c1"># Only change the context if we found one and it is not the current context</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="n">context</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_context</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="c1">#####################################################################################</span>
+    <span class="c1"># QT Utils</span>
+
+    <span class="k">def</span> <span class="nf">open_save_as_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to open tk-multi-workfiles2 Save As... dialog if it exists otherwise</span>
+<span class="sd">        launch a Qt file browser for the Save As...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">open_dialog_func</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">workfiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tk-multi-workfiles2&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">workfiles</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">workfiles</span><span class="p">,</span> <span class="s2">&quot;show_file_save_dlg&quot;</span><span class="p">):</span>
+                <span class="n">open_dialog_func</span> <span class="o">=</span> <span class="n">workfiles</span><span class="o">.</span><span class="n">show_file_save_dlg</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;use_modal_dialog&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">open_dialog_func</span><span class="p">:</span>
+            <span class="n">open_dialog_func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Alias doesn&#39;t appear to have a &quot;save as&quot; dialog accessible via</span>
+            <span class="c1"># python. so open our own Qt file dialog.</span>
+
+            <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
+            <span class="n">file_dialog</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="p">(</span>
+                <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_parent_window</span><span class="p">(),</span>
+                <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Save As&quot;</span><span class="p">,</span>
+                <span class="n">directory</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">),</span>
+                <span class="nb">filter</span><span class="o">=</span><span class="s2">&quot;Alias file (*.wire)&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">file_dialog</span><span class="o">.</span><span class="n">setLabelText</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">Accept</span><span class="p">,</span> <span class="s2">&quot;Save&quot;</span><span class="p">)</span>
+            <span class="n">file_dialog</span><span class="o">.</span><span class="n">setLabelText</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">Reject</span><span class="p">,</span> <span class="s2">&quot;Cancel&quot;</span><span class="p">)</span>
+            <span class="n">file_dialog</span><span class="o">.</span><span class="n">setOption</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">DontResolveSymlinks</span><span class="p">)</span>
+            <span class="n">file_dialog</span><span class="o">.</span><span class="n">setOption</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">DontUseNativeDialog</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">():</span>
+                <span class="k">return</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">file_dialog</span><span class="o">.</span><span class="n">selectedFiles</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.wire&quot;</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">.wire&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_file_as</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">open_delete_stages_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_file</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Launch a QT prompt dialog to ask the user if he wants to delete all the existing stages or keep them when</span>
+<span class="sd">        opening a new file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
+        <span class="k">if</span> <span class="n">new_file</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;DELETE all objects, shaders, views and actions in all existing Stage before Opening a New File?&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;DELETE all objects, shaders, views and actions in all existing Stage before Opening this File?&quot;</span>
+        <span class="n">message_type</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Yes</span> <span class="o">|</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span> <span class="o">|</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Cancel</span>
+        <span class="p">)</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">question</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_parent_window</span><span class="p">(),</span> <span class="s2">&quot;Open&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">message_type</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">answer</span>
+
+    <span class="c1">#####################################################################################</span>
+    <span class="c1"># Utils</span>
+
+    <span class="k">def</span> <span class="nf">get_tk_from_project_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the tank instance given the project ID. This is useful when you have to deal with files from library project</span>
+
+<span class="sd">        :param project_id: Id of the project you want to get the tank instance for</span>
+<span class="sd">        :return: An instance of :class`sgtk.Sgtk`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># first of all, we need to determine if the file we&#39;re trying to import lives in the current project or in</span>
+        <span class="c1"># another one</span>
+        <span class="n">in_current_project</span> <span class="o">=</span> <span class="n">project_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">in_current_project</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span>
+
+        <span class="c1"># if the file we&#39;re trying to import lives in another project, we need to access the configuration used by this</span>
+        <span class="c1"># project in order to get the right configuration settings</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">pc_local_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_pipeline_configuration_local_path</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pc_local_path</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Couldn&#39;t get tank instance for project </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">sgtk_from_path</span><span class="p">(</span><span class="n">pc_local_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_reference_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tk</span><span class="p">,</span> <span class="n">sg_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the reference_template according to the given context</span>
+
+<span class="sd">        :param tk: Instance of :class`sgtk.Sgtk` for the project we want to get the reference template from</span>
+<span class="sd">        :param sg_data: Dictionary of Shotgun data containing some context information. This dictionary must contain</span>
+<span class="sd">                        the &#39;task&#39; field</span>
+<span class="sd">        :return: The reference template object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s2">&quot;task&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sg_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find &#39;task&#39; key in sg_data dictionary&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">context_from_entity_dictionary</span><span class="p">(</span><span class="n">sg_data</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find context from data: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sg_data</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="n">env</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_environment_from_context</span><span class="p">(</span><span class="n">tk</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">env</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get environment from context&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">engine_settings</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get_engine_settings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">engine_settings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get engine settings&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">reference_template_name</span> <span class="o">=</span> <span class="n">engine_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reference_template&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reference_template_name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get reference template from settings&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">return</span> <span class="n">tk</span><span class="o">.</span><span class="n">templates</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reference_template_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_pipeline_configuration_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the path to the local configuration (the one which stands in the Sgtk cache folder) in order to be able</span>
+<span class="sd">        to build a :class`sgtk.Sgtk` instance from this path</span>
+
+<span class="sd">        :param project_id: Id of the project we want to retrieve the config for</span>
+<span class="sd">        :returns: The local path to the config if we could determine which config to use, None otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">plugin_id</span> <span class="o">=</span> <span class="s2">&quot;basic.desktop&quot;</span>
+
+        <span class="c1"># first, start the toolkit manager to get all the pipeline configurations related to the distant project</span>
+        <span class="c1"># here, we are going to use the default plugin id &quot;basic.*&quot; to find the pipeline configurations</span>
+        <span class="n">mgr</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">bootstrap</span><span class="o">.</span><span class="n">ToolkitManager</span><span class="p">()</span>
+        <span class="n">mgr</span><span class="o">.</span><span class="n">plugin_id</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">DEFAULT_PLUGIN_ID</span>
+        <span class="n">pipeline_configurations</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">get_pipeline_configurations</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Project&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pipeline_configurations</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Couldn&#39;t retrieve any pipeline configuration linked to project </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">project_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pipeline_configurations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">pipeline_config</span> <span class="o">=</span> <span class="n">pipeline_configurations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># try to determine which configuration we want to use:</span>
+            <span class="c1"># 1- if one and only one pipeline configuration is restricted to this project, use it</span>
+            <span class="c1"># 2- if one pipeline configuration is named Primary and linked to this project, use it</span>
+            <span class="c1"># 3- reject all the other cases</span>
+
+            <span class="n">pipeline_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_project_pipeline_configuration</span><span class="p">(</span>
+                <span class="n">pipeline_configurations</span><span class="p">,</span> <span class="n">project_id</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pipeline_config</span><span class="p">:</span>
+                <span class="n">pipeline_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_primary_pipeline_configuration</span><span class="p">(</span>
+                    <span class="n">pipeline_configurations</span><span class="p">,</span> <span class="n">project_id</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pipeline_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Couldn&#39;t get the pipeline configuration linked to project </span><span class="si">{}</span><span class="s2">: too many configurations&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">project_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">config_local_path</span> <span class="o">=</span> <span class="n">LocalFileStorageManager</span><span class="o">.</span><span class="n">get_configuration_root</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">shotgun_url</span><span class="p">,</span>
+            <span class="n">project_id</span><span class="p">,</span>
+            <span class="n">plugin_id</span><span class="p">,</span>
+            <span class="n">pipeline_config</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+            <span class="n">LocalFileStorageManager</span><span class="o">.</span><span class="n">CACHE</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_local_path</span><span class="p">,</span> <span class="s2">&quot;cfg&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_project_pipeline_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline_configurations</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the pipeline configuration list in order to find if one of them is only used by this project.</span>
+
+<span class="sd">        :param pipeline_configurations: List of pipeline configurations to parse</span>
+<span class="sd">        :param project_id:              Id of the project we want to get the pipeline configuration for</span>
+<span class="sd">        :returns: The pipeline configuration if only one config has been defined for this project, None otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pipeline_configuration</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">pc</span> <span class="ow">in</span> <span class="n">pipeline_configurations</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pc</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">pc</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">project_id</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pipeline_configuration</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="n">pipeline_configuration</span> <span class="o">=</span> <span class="n">pc</span>
+
+        <span class="k">return</span> <span class="n">pipeline_configuration</span>
+
+    <span class="k">def</span> <span class="nf">__get_primary_pipeline_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline_configurations</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the pipeline configuration list in order to find if one of them has been defined as &quot;Primary&quot; for this</span>
+<span class="sd">        project.</span>
+
+<span class="sd">        :param pipeline_configurations: List of pipeline configurations to parse</span>
+<span class="sd">        :param project_id:              Id of the project we want to get the pipeline configuration for</span>
+<span class="sd">        :returns: The pipeline configuration if a &quot;Primary&quot; config has been found for this project, None otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">pc</span> <span class="ow">in</span> <span class="n">pipeline_configurations</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">pc</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">project_id</span>
+                    <span class="ow">and</span> <span class="n">pc</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                    <span class="o">==</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">PRIMARY_PIPELINE_CONFIG_NAME</span>
+                <span class="p">):</span>
+                    <span class="k">return</span> <span class="n">pc</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No project_id key for </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pc</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Deprecated methods - to be removed in next major version v3.0.0</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">execute_api_ops_and_defer_event_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alias_api_ops</span><span class="p">,</span> <span class="n">event_types</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Marked as deprecated and to be removed in v3.0.0. Use AliasEventWatcher.ContextManager to handle</span>
+<span class="sd">        triggering Python callbacks to ensure there is no conflict while performing Alias operations.</span>
+
+<span class="sd">        Call an Alias API function while blocking any Alias event callbacks until the</span>
+<span class="sd">        API function is done executing. Once finished, the registered Python callbacks</span>
+<span class="sd">        will be triggered for the event types provided. Any event types not provided</span>
+<span class="sd">        will not be triggered at all by the API function executed.</span>
+<span class="sd">        NOTE since the callbacks are deferred to after the event operation has completed,</span>
+<span class="sd">        we do not have access to the Alias callback return result that we normally get.</span>
+<span class="sd">        TODO implement this deferred event handling in the Alias Python API side, for now</span>
+<span class="sd">        we will just pass None for the message result to the Python callback function.</span>
+<span class="sd">        Implementing the deferred event handling will also improve the way we currently</span>
+<span class="sd">        ignore event callbacks by unregistering and re-registering events.</span>
+<span class="sd">        :param alias_api_ops: The name of the main Alias API function to execute.</span>
+<span class="sd">        :type alias_api_ops: list&lt;AliasApiOp&gt;, where AliasApiOp is of format:</span>
+<span class="sd">            tuple&lt;alias_api_func_name, func_args, func_keyword_args&gt;</span>
+<span class="sd">                alias_api_func: str</span>
+<span class="sd">                obj: If None the alias_api_func is a function of the `alias_api` module.</span>
+<span class="sd">                     If not None, the alias_api_func is a method of the `obj`.</span>
+<span class="sd">                args: list</span>
+<span class="sd">                kwargs: dict</span>
+<span class="sd">        :param event_types: The Alias event types to defer callbacks until the main</span>
+<span class="sd">                            operation is complete. Any event types that are not listed</span>
+<span class="sd">                            will not be triggered at all for for this operation.</span>
+<span class="sd">        :type event_types: list&lt;AlMessageType&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">import</span> <span class="nn">alias_api</span>
+
+        <span class="c1"># Check that all api functions exist, if not abort</span>
+        <span class="k">for</span> <span class="n">api_func</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">alias_api_ops</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="n">alias_api</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">api_func</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed execute_api_ops_and_defer_event_callbcaks: Alias Python API function not found &#39;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">obj</span><span class="p">,</span> <span class="n">api_func</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event_types</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">event_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">event_types</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_watcher</span><span class="o">.</span><span class="n">is_watching</span><span class="p">:</span>
+            <span class="c1"># If the event watcher is already paused, just execute the the operations normally.</span>
+            <span class="k">for</span> <span class="n">api_func</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">alias_api_ops</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="n">alias_api</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">api_func</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Pause the event watcher</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event_watcher</span><span class="o">.</span><span class="n">stop_watching</span><span class="p">()</span>
+
+            <span class="c1"># Execute all alias api operations in order</span>
+            <span class="k">for</span> <span class="n">api_func</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">alias_api_ops</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> <span class="ow">or</span> <span class="n">alias_api</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">api_func</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="c1"># Enable the event watcher now that the operations have completed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event_watcher</span><span class="o">.</span><span class="n">start_watching</span><span class="p">()</span>
+
+            <span class="c1"># Now manually trigger the registered callbacks for the event types</span>
+            <span class="k">for</span> <span class="n">event_type</span> <span class="ow">in</span> <span class="n">event_types</span><span class="p">:</span>
+                <span class="n">callback_fns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_watcher</span><span class="o">.</span><span class="n">get_callbacks</span><span class="p">(</span><span class="n">event_type</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">callback_fn</span> <span class="ow">in</span> <span class="n">callback_fns</span><span class="p">:</span>
+                    <span class="n">callback_fn</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="scene_data_validator.html" class="btn btn-neutral float-right" title="Scene Data Validator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="The Alias Engine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Autodesk
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

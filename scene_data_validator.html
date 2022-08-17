@@ -1,0 +1,2811 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Scene Data Validator &mdash; tk-alias v2.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Event Watcher" href="event_watcher.html" />
+    <link rel="prev" title="The Alias Engine Code" href="engine.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+    <a href='http://developer.shotgridsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="index.html" class="icon icon-home"> tk-alias
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="engine.html">The Alias Engine Code</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scene Data Validator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-use-it">How to use it</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="event_watcher.html">Event Watcher</a></li>
+<li class="toctree-l1"><a class="reference internal" href="menu.html">ShotGrid Menu in Alias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hooks.html">Alias Engine Hooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alias_python_api.html">Alias Python API</a></li>
+</ul>
+
+            
+          
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px;
+                color: #b3b3b3;
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>
+    <style>
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-alias</b> v2.1.7.<br>
+    
+        This documentation is part of the ShotGrid Pipeline Toolkit.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    The code associated with this documentation can be found
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
+
+    </div>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tk-alias</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Scene Data Validator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="scene-data-validator">
+<span id="id1"></span><h1>Scene Data Validator<a class="headerlink" href="#scene-data-validator" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#scene-data-validator-class"><span class="std std-ref">Alias Scene Data Validator (ASDV)</span></a> is the backbone to performing data validation on an Alias scene. This class defines the default data validation rule set, that determines if the data in an Alias scene is valid or not, and provides the necessary actions to resolve the data errors.</p>
+<div class="section" id="how-to-use-it">
+<h3>How to use it<a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#tk_alias.scene_data_validator.AliasSceneDataValidator" title="tk_alias.scene_data_validator.AliasSceneDataValidator"><code class="xref py py-class docutils literal notranslate"><span class="pre">tk_alias.scene_data_validator.AliasSceneDataValidator</span></code></a> includes the core functionality to perform the scene data validation, but does not provide a user interface to use it. The <code class="xref py py-class docutils literal notranslate"><span class="pre">tk-multi-data-validation:dialog</span></code> App provides the user interface for a DCC to perform data validation.</p>
+<p>The Alias Engine instantiates an AliasSceneDataValidator class member <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasEngine.scene_data_validator</span></code> that is used by the <cite>tk-multi-data-validation</cite> App via the engine <a class="reference internal" href="hooks.html#hooks-tk-multi-data-validation-data-validator"><span class="std std-ref">hook</span></a>.</p>
+<span class="target" id="scene-data-validator-class"></span><dl class="class">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator">
+<em class="property">class </em><code class="descclassname">tk_alias.scene_data_validator.</code><code class="descname">AliasSceneDataValidator</code><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The Alias Scene Validator class provides the data and functionality to validate a scene in Alias.</p>
+<p>The <a class="reference internal" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.get_validation_data" title="tk_alias.scene_data_validator.AliasSceneDataValidator.get_validation_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_validation_data()</span></code></a> method returns the default validation rules data set, that drives the
+scene validation. Each rule in the validation data includes the necessary information to display the
+validation rule, and the functions to perform the validation check and fix actions for the rule.</p>
+<p>The validation rule check functions are the functions prefixed with <code class="xref py py-meth docutils literal notranslate"><span class="pre">check_()</span></code> and the fix functions
+are prefixed with <code class="xref py py-meth docutils literal notranslate"><span class="pre">fix_()</span></code>.</p>
+<p>Some rules may not have the full capability of being resolved programatically, and do not have a fix
+function. These rules may define a <code class="xref py py-meth docutils literal notranslate"><span class="pre">pick_()</span></code> function that helps to resolve the data errors by first
+selecting the data that requires attention.</p>
+<p>Initialize the AliasSceneDataValidator object.</p>
+<dl class="class">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.CheckResult">
+<em class="property">class </em><code class="descname">CheckResult</code><span class="sig-paren">(</span><em>is_valid=None</em>, <em>errors=None</em>, <em>args=None</em>, <em>kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.CheckResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.CheckResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The CheckResult object is the type returned by AliasSceneDataValidator check functions.</p>
+<p>Initialize the CheckResult object with the given data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>is_valid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – The success status that the check function reported. If not provided, the validity will be determined based on if there are any errors.</li>
+<li><strong>errors</strong> (<em>list</em>) – The data errors the check function found. This should be a list of Alias objects, but
+can be a list of object as long as they follow the expected format.</li>
+<li><strong>args</strong> (<em>list</em>) – The arguments list the check function provided to pass to its corresponding fix function.</li>
+<li><strong>kwargs</strong> – The key-word arguments the check function provided to pass to its corresponding fix
+function.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>The CheckResult object will have the attributes:</dt>
+<dd><dl class="first last docutils">
+<dt>is_valid</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">type:</th><td class="field-body">bool</td>
+</tr>
+<tr class="field-even field"><th class="field-name">description:</th><td class="field-body">True if the result is valid, else False</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>errors</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">description:</th><td class="field-body">This is the list of errors passed to create the result object. This is expected to be a list of Alias objects, but it can be any list of objects that have the expected format (required attributes: name (str), type (func =&gt; str), optional attributes: id (str))</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>args</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">description:</th><td class="field-body">A list of arguments that can be passed to a fix function</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>kwargs</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">description:</th><td class="field-body">Keyword arguments that can be passed to a fix function. This will contain the errors passed in assigned to key ‘error_items’.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.get_validation_data">
+<code class="descname">get_validation_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.get_validation_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.get_validation_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the validation rule data set that is used to validate an Alias scene.</p>
+<p>This is the main function of the class. It defines how the Alias scene data is validated, and
+provides the functions to resolve those data errors in the scene.</p>
+<p>The returned data set is a dictionay mapping of validation rule id to its validation rule data.</p>
+<p><strong>Default Validation Rule IDs:</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>shader_unused</dt>
+<dd>Check for shaders that are not assigned to any geometry, and delete them.</dd>
+<dt>shader_is_vred_compatible:</dt>
+<dd>Check that shaders are from the Asset Library for compatibility with VRED.</dd>
+<dt>node_is_null</dt>
+<dd>Check for null nodes, and delete them.</dd>
+<dt>node_has_construction_history:</dt>
+<dd>Check for nodes with construction history, and delete the history.</dd>
+<dt>node_instances</dt>
+<dd>Check for node instances, and convert them to geometry.</dd>
+<dt>node_pivots_at_origin</dt>
+<dd>Reset rotate and scale pivots to the global origin (absolute).</dd>
+<dt>node_has_zero_transform</dt>
+<dd>Check for nodes with non-zero transforms, and apply the zero transform operation.</dd>
+<dt>node_templates</dt>
+<dd>Check for tempalted nodes, and delete them.</dd>
+<dt>cos_unused</dt>
+<dd>Check for unused COS, and delete them.</dd>
+<dt>cos_construction_history</dt>
+<dd>Check for unused COS with construction history, and delete the history.</dd>
+<dt>curves</dt>
+<dd>Check for curves, and delete them.</dd>
+<dt>set_empty</dt>
+<dd>Check for empty sets, and delete them.</dd>
+<dt>group_has_single_level_hierarchy</dt>
+<dd>Check for group nodes that have a group node child, and flatten the group node to a single level by moving all grandchildren to be a child of the top group node.</dd>
+<dt>layer_is_empty</dt>
+<dd>Check for empty layers and folders, and delete them.</dd>
+<dt>layer_has_single_object</dt>
+<dd>Check for layers that have multiple objects, and move all objects into a single group node in the layer.</dd>
+<dt>layer_has_single_shader</dt>
+<dd>Check for layers whose geometry does not all use a single shader.</dd>
+<dt>layer_symmetry</dt>
+<dd>Check for layers that have the symmetry property turned on, and turn it off.</dd>
+<dt>locators</dt>
+<dd>Check for locators, and delete them.</dd>
+<dt>references_exist</dt>
+<dd>for referenced geometry, and delete it.</dd>
+<dt>metadata</dt>
+<dd>Check for metadata, and delete it.</dd>
+<dt>node_dag_top_level</dt>
+<dd>Top-level DAG nodes must be of one of the specified types: AlGroupNode, AlCurveNode, AlFaceNode, or AlSurfaceNode.</dd>
+<dt>node_is_not_in_layer</dt>
+<dd>Only Lights, Cameras, Texture Placements, and Groups can be in the default layer.</dd>
+<dt>node_is_in_layer</dt>
+<dd>All Lights, Camera, and Texture Placements must be in the default layer.</dd>
+<dt>node_layer_matches_parent</dt>
+<dd>The layer assigned to a node must be the same layer that is assigned to the node’s parent.</dd>
+<dt>node_name_matches_layer</dt>
+<dd>A node’s name must match the name of the layer that is assigned to the node.</dd>
+</dl>
+</div></blockquote>
+<p><strong>The Validation Rule data:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span>
+<span class="normal">569</span>
+<span class="normal">570</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span></pre></div></td><td class="code"><div><pre><span></span>                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Delete</span><span class="o">.</span> <span class="n">DefaultShader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">affected</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found unused shaders&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_shader_unused,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_shader_unused,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Delete All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Delete unused Shaders.&quot;,</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Delete&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_shader_unused,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;kwargs&quot;: {&quot;skip_shaders&quot;: [self.DEFAULT_SHADER_NAME]},</span>
+<span class="s2">                &quot;dependency_ids&quot;: [</span>
+<span class="s2">                    &quot;node_is_null&quot;,</span>
+<span class="s2">                    &quot;node_instances&quot;,</span>
+<span class="s2">                ],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;shader_is_vred_compatible&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Only Use VRED Shaders&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Shaders</span> <span class="n">are</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">Asset</span> <span class="n">Library</span> <span class="p">(</span><span class="n">VRED</span><span class="o">-</span><span class="n">compatible</span><span class="p">)</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">You</span> <span class="n">must</span> <span class="n">assign</span> <span class="n">shaders</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">Asset</span> <span class="n">Library</span><span class="o">.</span> <span class="n">DefaultShader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">affected</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_shader_is_vred_compatible,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found shader(s) that are incompatible with VRED.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All Shader Geometry&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select Shader Geometry&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes_assigned_to_shaders,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;kwargs&quot;: {&quot;skip_shaders&quot;: [self.DEFAULT_SHADER_NAME]},</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_is_null&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Delete Null Nodes&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Null</span> <span class="n">nodes</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Action</span><span class="p">:</span> <span class="n">Delete</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_is_null,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Delete All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Delete all null nodes.&quot;,</span>
+<span class="s2">                &quot;warn_msg&quot;: &#39;This validation does not return a status. To ensure all null nodes are deleted, select &quot;Delete All&quot; or &quot;Fix All.&quot;&#39;,</span>
+<span class="s2">                &quot;dependency_ids&quot;: [</span>
+<span class="s2">                    &quot;node_has_construction_history&quot;,</span>
+<span class="s2">                ],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_has_construction_history&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Delete Construction History&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Construction</span> <span class="n">history</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Action</span><span class="p">:</span> <span class="n">Delete</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_has_construction_history,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_has_construction_history,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Delete All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Delete all construction history from all nodes.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found node(s) with construction history.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Delete&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_node_has_construction_history,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;kwargs&quot;: {</span>
+<span class="s2">                    &quot;skip_node_types&quot;: [</span>
+<span class="s2">                        alias_api.AlObjectType.GroupNodeType,</span>
+<span class="s2">                        alias_api.AlObjectType.CurveNodeType,</span>
+<span class="s2">                        alias_api.AlObjectType.FaceNodeType,</span>
+<span class="s2">                        alias_api.AlObjectType.TextureNodeType,</span>
+<span class="s2">                    ],</span>
+<span class="s2">                },</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_instances&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Convert Instances to Geometry&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Instances</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Action</span><span class="p">:</span> <span class="n">Convert</span> <span class="n">to</span> <span class="n">geometry</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_instances,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_instances,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Expand All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Remove Instances by expanding them.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Instance found.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Expand&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_node_instances,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_has_construction_history&quot;, &quot;node_is_null&quot;],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_pivots_at_origin&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Reset Pivots to Global Origin&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Pivot</span> <span class="n">point</span> <span class="n">coordinates</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Set</span> <span class="n">pivot</span> <span class="n">points</span> <span class="n">to</span> <span class="k">global</span> <span class="n">origin</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">light</span><span class="p">,</span> <span class="ow">and</span> <span class="n">texture</span> <span class="n">nodes</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">affected</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_pivots_at_origin,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_pivots_at_origin,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Reset All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;All pivots will be moved to the origin. Camera, light, and texture nodes are not affected.&quot;</span>
+<span class="s2">                &quot;&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found pivots not set to the origin.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Reset&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_node_pivots_at_origin,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_has_construction_history&quot;, &quot;node_is_null&quot;],</span>
+<span class="s2">                &quot;kwargs&quot;: {</span>
+<span class="s2">                    &quot;skip_node_types&quot;: [</span>
+<span class="s2">                        alias_api.AlObjectType.TextureNodeType,</span>
+<span class="s2">                        *self._camera_node_types,</span>
+<span class="s2">                        *self._light_node_types,</span>
+<span class="s2">                    ]</span>
+<span class="s2">                },</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_has_zero_transform&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Zero Transforms&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Non</span><span class="o">-</span><span class="n">zero</span> <span class="n">transformations</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Action</span><span class="p">:</span> <span class="n">Sets</span> <span class="n">transformations</span> <span class="n">to</span> <span class="mf">0.0</span> <span class="n">on</span> <span class="n">each</span> <span class="n">node</span> <span class="ow">and</span> <span class="n">DAG</span> <span class="n">node</span><span class="o">.</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">light</span><span class="p">,</span> <span class="ow">and</span> <span class="n">texture</span> <span class="n">nodes</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">affected</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_has_zero_transform,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_has_zero_transform,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Reset All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Reset all transforms to zero. Camera, light, and texture nodes are not affected.&quot;</span>
+<span class="s2">                &quot;&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found node(s) with non-zero transform.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Reset&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_node_has_zero_transform,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;kwargs&quot;: {</span>
+<span class="s2">                    &quot;skip_node_types&quot;: [</span>
+<span class="s2">                        alias_api.AlObjectType.TextureNodeType,</span>
+<span class="s2">                        *self._camera_node_types,</span>
+<span class="s2">                        *self._light_node_types,</span>
+<span class="s2">                    ]</span>
+<span class="s2">                },</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_has_construction_history&quot;, &quot;node_is_null&quot;],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_is_not_in_layer&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Nodes Must Not Be In DefaultLayer&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Only</span> <span class="n">camera</span><span class="p">,</span> <span class="n">light</span><span class="p">,</span> <span class="n">texture</span><span class="p">,</span> <span class="ow">and</span> <span class="n">group</span> <span class="n">nodes</span> <span class="n">should</span> <span class="n">be</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">DefaultLayer</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_is_not_in_layer,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found nodes in the default layer that are not allowed.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                        &quot;tooltip&quot;: &quot;Select nodes to manually fix data errors.&quot;,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;kwargs&quot;: {</span>
+<span class="s2">                    &quot;layer_name&quot;: self.DEFAULT_LAYER_NAME,</span>
+<span class="s2">                    &quot;accept_node_types&quot;: [</span>
+<span class="s2">                        alias_api.AlObjectType.GroupNodeType,</span>
+<span class="s2">                        alias_api.AlObjectType.TextureNodeType,</span>
+<span class="s2">                        *self._camera_node_types,</span>
+<span class="s2">                        *self._light_node_types,</span>
+<span class="s2">                    ],</span>
+<span class="s2">                },</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_is_null&quot;],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_is_in_layer&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Nodes Must Be In DefaultLayer&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">All</span> <span class="n">camera</span><span class="p">,</span> <span class="n">light</span><span class="p">,</span> <span class="ow">and</span> <span class="n">texture</span> <span class="n">nodes</span> <span class="n">must</span> <span class="n">be</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">DefaultLayer</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Move</span> <span class="nb">all</span> <span class="n">light</span><span class="p">,</span> <span class="n">camera</span><span class="p">,</span> <span class="ow">and</span> <span class="n">texture</span> <span class="n">nodes</span> <span class="n">to</span> <span class="n">the</span> <span class="n">DefaultLayer</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_is_in_layer,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_is_in_layer,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Move&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Move all lights, cameras, and texture nodes to the DefaultLayer.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Required objects not found in the DefaultLayer.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Move&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_node_is_in_layer,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;kwargs&quot;: {</span>
+<span class="s2">                    &quot;layer_name&quot;: self.DEFAULT_LAYER_NAME,</span>
+<span class="s2">                    &quot;accept_node_types&quot;: [</span>
+<span class="s2">                        alias_api.AlObjectType.TextureNodeType,</span>
+<span class="s2">                        *self._camera_node_types,</span>
+<span class="s2">                        *self._light_node_types,</span>
+<span class="s2">                    ],</span>
+<span class="s2">                },</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_is_null&quot;],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_name_matches_layer&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Match Layer And Assigned Nodes&#39; Names&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Layer</span> <span class="ow">and</span> <span class="n">Top</span> <span class="n">Node</span> <span class="n">Names</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Rename</span> <span class="n">top</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">layer</span> <span class="n">to</span> <span class="n">match</span> <span class="n">the</span> <span class="n">layer</span> <span class="n">name</span><span class="o">.</span> <span class="n">DefaultLayer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">affected</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_name_matches_layer,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_name_matches_layer,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Rename All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Rename Groups to match their respective Layer name.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found Layer Group name mismatches.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Rename&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_node_name_matches_layer,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;kwargs&quot;: {&quot;skip_layers&quot;: [self.DEFAULT_LAYER_NAME]},</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_is_in_layer&quot;, &quot;node_is_not_in_layer&quot;],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_layer_matches_parent&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Node Layer Matches Parent Layer&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Layer</span> <span class="n">assignment</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Re</span><span class="o">-</span><span class="n">assign</span> <span class="n">node</span> <span class="n">to</span> <span class="n">the</span> <span class="n">same</span> <span class="n">layer</span> <span class="k">as</span> <span class="n">the</span> <span class="n">parent</span> <span class="n">node</span> <span class="n">layer</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_layer_matches_parent,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_layer_matches_parent,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Reassign All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Set each node&#39;s layer to match its parent&#39;s layer.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found node(s) assigned to layer different than its parent.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Reassign&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_node_layer_matches_parent,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;dependency_ids&quot;: [</span>
+<span class="s2">                    &quot;node_is_in_layer&quot;,</span>
+<span class="s2">                    &quot;node_is_not_in_layer&quot;,</span>
+<span class="s2">                    &quot;group_has_single_level_hierarchy&quot;,</span>
+<span class="s2">                ],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_dag_top_level&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Top-Level DAG Nodes&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">DAG</span> <span class="n">Top</span><span class="o">-</span><span class="n">level</span> <span class="n">Nodes</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">DAG</span> <span class="n">top</span><span class="o">-</span><span class="n">level</span> <span class="n">nodes</span> <span class="n">must</span> <span class="n">be</span> <span class="n">a</span> <span class="n">group</span><span class="p">,</span> <span class="n">curve</span><span class="p">,</span> <span class="n">face</span><span class="p">,</span> <span class="ow">or</span> <span class="n">surface</span> <span class="n">node</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_dag_top_level,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found nodes in the top level of the DAG that are not allowed.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                        &quot;tooltip&quot;: &quot;Select nodes to manually fix data errors.&quot;,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;kwargs&quot;: {</span>
+<span class="s2">                    &quot;accept_node_types&quot;: [</span>
+<span class="s2">                        alias_api.AlObjectType.CurveNodeType,</span>
+<span class="s2">                        alias_api.AlObjectType.FaceNodeType,</span>
+<span class="s2">                        alias_api.AlObjectType.SurfaceNodeType,</span>
+<span class="s2">                        alias_api.AlObjectType.GroupNodeType,</span>
+<span class="s2">                    ],</span>
+<span class="s2">                },</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;node_templates&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Delete Templates&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Templated</span> <span class="n">geometry</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Delete</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_templates,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_templates,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Delete All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Delete nodes that are set as templates.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found node(s) that are set as templates.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Delete&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_node_templates,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_has_construction_history&quot;, &quot;node_is_null&quot;],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;cos_unused&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Delete Unused Curves-on-Surfaces (COS)&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Unused</span> <span class="n">curves</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">surfaces</span> <span class="p">(</span><span class="n">COS</span><span class="p">)</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Delete</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_curve_on_surface_unused,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_curve_on_surface_unused,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Delete All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Delete unused COS.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found unused COS.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All COS&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_curves_on_surface_from_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All Nodes&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Delete&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_curve_on_surface_unused,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select COS&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_curves_on_surface_from_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select Nodes&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;dependency_ids&quot;: [</span>
+<span class="s2">                    &quot;cos_construction_history&quot;,</span>
+<span class="s2">                    &quot;node_has_construction_history&quot;,</span>
+<span class="s2">                    &quot;node_is_null&quot;,</span>
+<span class="s2">                ],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;cos_construction_history&quot;: {</span>
+<span class="s2">                &quot;description&quot;: &quot;Check for nodes with unused COS with construction history.&quot;,</span>
+<span class="s2">                &quot;name&quot;: &quot;Delete Unused Curves-on-Surfaces (COS) Construction History&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Unused</span> <span class="n">curves</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">surfaces</span> <span class="p">(</span><span class="n">COS</span><span class="p">)</span> <span class="k">with</span> <span class="n">construction</span> <span class="n">history</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Delete</span> <span class="n">construction</span> <span class="n">history</span> <span class="k">for</span> <span class="n">unused</span> <span class="n">COS</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_curve_on_surface_construction_history,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_curve_on_surface_construction_history,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Delete All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Delete construction history for unused curve on surface&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found construction history for unused curve(s) on surface.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All COS&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_curves_on_surface_from_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All Nodes&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Delete&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_curve_on_surface_unused,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select COS&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_curves_on_surface_from_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select Nodes&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_has_construction_history&quot;],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;curves&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Delete Curves&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Curves</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Delete</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_node_curves,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_node_curves,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Delete All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Delete all curves found.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found curve(s).&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Delete&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_node_curves,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_has_construction_history&quot;, &quot;node_is_null&quot;],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;set_empty&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Delete Empty Selection Sets&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Empty</span> <span class="n">sets</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Delete</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_set_empty,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_set_empty,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Delete All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Delete empty selection sets found.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found empty selection set(s).&quot;,</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Delete&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_set_empty,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;dependency_ids&quot;: [</span>
+<span class="s2">                    &quot;node_is_null&quot;,</span>
+<span class="s2">                ],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;group_has_single_level_hierarchy&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Only One Level Per Group&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Group</span> <span class="n">hierarchy</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Flatten</span> <span class="n">group</span> <span class="n">nodes</span> <span class="n">to</span> <span class="n">have</span> <span class="n">a</span> <span class="n">single</span><span class="o">-</span><span class="n">level</span> <span class="n">hierarchy</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_group_has_single_level_hierarchy,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_group_has_single_level_hierarchy,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Flatten All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Flatten Groups with multiple hierarchy levels.&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found Groups with multiple hierarchy levels.&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Flatten&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_group_has_single_level_hierarchy,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_nodes,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;dependency_ids&quot;: [</span>
+<span class="s2">                    &quot;node_is_null&quot;,</span>
+<span class="s2">                    &quot;layer_has_single_object&quot;,</span>
+<span class="s2">                ],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;layer_is_empty&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Delete Empty Layers and Folders&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Empty</span> <span class="n">Layers</span> <span class="ow">and</span> <span class="n">Folders</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+                                <span class="n">Fix</span><span class="p">:</span> <span class="n">Delete</span><span class="o">.</span> <span class="n">DefaultLayer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">affected</span><span class="o">.</span><span class="s2">&quot;&quot;&quot;,</span>
+<span class="s2">                &quot;check_func&quot;: self.check_layer_is_empty,</span>
+<span class="s2">                &quot;fix_func&quot;: self.fix_layer_is_empty,</span>
+<span class="s2">                &quot;fix_name&quot;: &quot;Delete All&quot;,</span>
+<span class="s2">                &quot;fix_tooltip&quot;: &quot;Delete empty layers and folders&quot;,</span>
+<span class="s2">                &quot;error_msg&quot;: &quot;Found empty layers or folders&quot;,</span>
+<span class="s2">                &quot;actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select All&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_layers,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;item_actions&quot;: [</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Delete&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.fix_layer_is_empty,</span>
+<span class="s2">                    },</span>
+<span class="s2">                    {</span>
+<span class="s2">                        &quot;name&quot;: &quot;Select&quot;,</span>
+<span class="s2">                        &quot;callback&quot;: self.pick_layers,</span>
+<span class="s2">                    },</span>
+<span class="s2">                ],</span>
+<span class="s2">                &quot;kwargs&quot;: {&quot;skip_layers&quot;: [self.DEFAULT_LAYER_NAME]},</span>
+<span class="s2">                &quot;dependency_ids&quot;: [&quot;node_is_null&quot;],</span>
+<span class="s2">            },</span>
+<span class="s2">            &quot;layer_has_single_shader&quot;: {</span>
+<span class="s2">                &quot;name&quot;: &quot;Layer Has Single Shader&quot;,</span>
+<span class="s2">                &quot;description&quot;: &quot;&quot;&quot;</span><span class="n">Check</span><span class="p">:</span> <span class="n">Layer</span> <span class="n">Members</span><span class="s1">&#39; Shaders&quot;&quot;&quot;,</span>
+                <span class="s2">&quot;check_func&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_layer_has_single_shader</span><span class="p">,</span>
+                <span class="s2">&quot;error_msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Found layer(s) using multiple shaders.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Select All&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_layers</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;item_actions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Select Layer&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_layers</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Select Layer Geometry&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_nodes_assigned_to_layers</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;dependency_ids&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">&quot;node_is_null&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;node_is_in_layer&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;node_is_not_in_layer&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;layer_symmetry&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Turn Off (All) Layer Symmetry&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;Check: Layer Symmetry&lt;br/&gt;</span>
+<span class="s2">                                Fix: Turn off symmetry on layers. DefaultLayer is not affected.&quot;&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;check_func&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_layer_symmetry</span><span class="p">,</span>
+                <span class="s2">&quot;fix_func&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_layer_symmetry</span><span class="p">,</span>
+                <span class="s2">&quot;fix_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Turn Off All&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;fix_tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Turn off symmetry for all Layers and Layer Folders.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;error_msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Found Layers with symmetry turned on.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Select All&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_layers</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;item_actions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Turn Off&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_layer_symmetry</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Select&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_layers</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;skip_layers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_LAYER_NAME</span><span class="p">]},</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;layer_has_single_object&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Layer Has Single Item&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;Check: Layer Members&lt;br/&gt;</span>
+<span class="s2">                                Fix: Move all layer members into a single group node. DefaultLayer is not affected.&quot;&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;check_func&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_layer_has_single_object</span><span class="p">,</span>
+                <span class="s2">&quot;fix_func&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_layer_has_single_object</span><span class="p">,</span>
+                <span class="s2">&quot;fix_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Collapse All&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;fix_tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Collapse all layer items into a single group, and rename the group to the name of the layer.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;error_msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Found layers with more than one item.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Select All&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_layers</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;item_actions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Select Layer&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_layers</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Select Layer Geometry&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_nodes_assigned_to_layers</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;skip_layers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_LAYER_NAME</span><span class="p">]},</span>
+                <span class="s2">&quot;dependency_ids&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s2">&quot;layer_is_empty&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;node_is_null&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;node_is_in_layer&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;node_is_not_in_layer&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;node_has_zero_transform&quot;</span><span class="p">,</span>
+                <span class="p">],</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;locators&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Delete Locators&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;Check: Locators&lt;br/&gt;</span>
+<span class="s2">                                Fix: Delete including Annotate locators.&quot;&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;check_func&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_locators</span><span class="p">,</span>
+                <span class="s2">&quot;fix_func&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_locators</span><span class="p">,</span>
+                <span class="s2">&quot;fix_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Delete All&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;fix_tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Delete locators&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;error_msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Found locator(s).&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Select All&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_locators</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;item_actions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Delete&quot;</span><span class="p">,</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>Each validation rule is a dictionary of data that can be used to create a <code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationRule</span></code>. See the <code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationRule</span></code> constructor for more details on the dictionary data format it accepts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The validation rules data set.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_shader_unused">
+<code class="descname">check_shader_unused</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>skip_shaders=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_shader_unused"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_shader_unused" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for unused shaders (shaders that are not assigned to any geometry) in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to return immediately as soon as the check fails. Set to False to check
+entire data and return all data errors found, and arguments that can be passed to
+the corresponding fix function. Note that when set to False, this function will be
+slower to execute.</li>
+<li><strong>skip_shaders</strong> (<em>list&lt;str&gt;</em>) – The specified shaders (by name) will not be checked.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name. This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function. This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_shader_unused">
+<code class="descname">fix_shader_unused</code><span class="sig-paren">(</span><em>errors=None</em>, <em>skip_shaders=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_shader_unused"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_shader_unused" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all shaders in the current scene, or the specified shaders, and delete all unused shaders.</p>
+<p>NOTE that the shaders list in Alias may not update automatically, alias_api.redraw_screen() may need
+to be invoked after this function, to see the updated shaders list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlShader&gt;</em>) – (optional) The shaders to process, if None, all shaders in the current
+scene will be processed. Default=None</li>
+<li><strong>skip_shaders</strong> (<em>list&lt;str&gt;</em>) – The specified shaders (by name) will not be fixed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_shader_is_vred_compatible">
+<code class="descname">check_shader_is_vred_compatible</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>skip_shaders=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_shader_is_vred_compatible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_shader_is_vred_compatible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for non-VRED shaders used in the current scene.</p>
+<p>A non-VRED shader is a shader that is not from the Asset Library (compaitible with VRED). Only shaders
+that are in use will be checked (e.g. if there is a non-VRED shader but is not used, it will not cause
+this check to fail).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to return immediately as soon as the check fails. Set to False to check
+entire data and return all errors found, and arguments that can be passed to
+the corresponding fix function. Note that when set to False, this function will be
+slower to execute.</li>
+<li><strong>skip_shaders</strong> (<em>list&lt;str&gt;</em>) – The specified shaders (by name) will not be checked.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name
+This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function
+This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function
+This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_is_null">
+<code class="descname">fix_node_is_null</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_is_null"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_is_null" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the specified nodes, and delete all null nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – (optional) The of nodes to process, if None, all nodes in the current
+scene will be processed. Default=None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>alias_api.AliasPythonException</strong> – if the attempting to delete specific nodes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_has_construction_history">
+<code class="descname">check_node_has_construction_history</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>skip_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_has_construction_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_has_construction_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for nodes with construction history in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</li>
+<li><strong>skip_node_types</strong> (<em>list&lt;alias_api.AlObjectType&gt;</em>) – The specified node types will not be checked.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_has_construction_history">
+<code class="descname">fix_node_has_construction_history</code><span class="sig-paren">(</span><em>errors=None</em>, <em>skip_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_has_construction_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_has_construction_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the specified of nodes, and delete history from any nodes
+with history.</p>
+<p>NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
+to be invoked after this function, to see the updated scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – (optional) The nodes to process, if None, all nodes in the current scene will
+be processed. Default=None</li>
+<li><strong>skip_node_types</strong> (<em>list&lt;alias_api.AlObjectType&gt;</em>) – The specified node types will not be fixed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_instances">
+<code class="descname">check_node_instances</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for instanced nodes in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_instances">
+<code class="descname">fix_node_instances</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the list of nodes if provided, and remove all instanced
+nodes.</p>
+<p>NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
+to be invoked after this function, to see the updated scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – (optional) The list of nodes to process, if None, all nodes in the current
+scene will be processed. Default=None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>alias_api.AliasPythonException</strong> – if a node instance failed to expand</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_pivots_at_origin">
+<code class="descname">check_node_pivots_at_origin</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>skip_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_pivots_at_origin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_pivots_at_origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for nodes that do not have their pivots set to the origin.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_pivots_at_origin">
+<code class="descname">fix_node_pivots_at_origin</code><span class="sig-paren">(</span><em>errors=None</em>, <em>skip_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_pivots_at_origin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_pivots_at_origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the specified nodes, and reset their scale and roate
+pivots such that they are centered around the origin.</p>
+<p>NOTE that the pivots Alias may not update automatically, alias_api.redraw_screen() may need to be
+invoked after this function, to see the updated pivots.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – (optional) The nodes to process, if None, all nodes in the current scene will
+be processed. Default=None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>alias_api.AliasPythonException</strong> – if a failed to set a node’s pivot to the origin</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_has_zero_transform">
+<code class="descname">check_node_has_zero_transform</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>skip_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_has_zero_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_has_zero_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for nodes with non-zero transforms in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</li>
+<li><strong>skip_node_types</strong> (<em>list&lt;alias_api.AlObjectType&gt;</em>) – The specified node types will not be checked.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_has_zero_transform">
+<code class="descname">fix_node_has_zero_transform</code><span class="sig-paren">(</span><em>errors=None</em>, <em>skip_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_has_zero_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_has_zero_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the specified nodes, and reset all transforms to zero.</p>
+<p>NOTE that the nodes Alias may not update automatically, alias_api.redraw_screen() may need
+to be invoked after this function, to see the updated node transforms.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – (optional) The nodes to process, if None, all nodes in the current
+scene will be processed. Default=None</li>
+<li><strong>skip_node_types</strong> (<em>list&lt;alias_api.AlObjectType&gt;</em>) – The specified node types will not be fixed.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>alias_api.AliasPythonException</strong> – if a failed to set a node’s transform to zero</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_is_not_in_layer">
+<code class="descname">check_node_is_not_in_layer</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>layer_name=None</em>, <em>accept_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_is_not_in_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_is_not_in_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the layer contains only nodes of type in the accepted list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to return immediately as soon as the check fails. Set to False to check
+entire data and return all data errors found, and arguments that can be passed to
+the corresponding fix function. Note that when set to False, this function will be
+slower to execute.</li>
+<li><strong>layer_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The layer to check node membership. Default is the default layer in Alias.</li>
+<li><strong>accept_node_types</strong> (<em>list&lt;alias_api.AlObjectType&gt;</em>) – Only the specified node types are accepted in the layer.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_is_in_layer">
+<code class="descname">check_node_is_in_layer</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>layer_name=None</em>, <em>accept_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_is_in_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_is_in_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the specified node types are in the layer.</p>
+<p>The whole DAG will be traversed to find nodes that are incorrectly placed in a layer that is not the
+specified layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</li>
+<li><strong>layer_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The layer that the specified node types belong to. Default is the default layer in
+Alias.</li>
+<li><strong>accept_node_types</strong> (<em>list&lt;alias_api.AlObjectType&gt;</em>) – The node types that must only be in the layer.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_is_in_layer">
+<code class="descname">fix_node_is_in_layer</code><span class="sig-paren">(</span><em>errors=None</em>, <em>layer_name=None</em>, <em>accept_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_is_in_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_is_in_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the specified nodes, and move any nodes found that are of
+the specified node type but not in the specified layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – (optional) The of nodes to process, if None, all nodes in the current
+scene will be processed. Default=None</li>
+<li><strong>layer_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The layer that the specified node types belong to. Default is the default layer in Alias.</li>
+<li><strong>accept_node_types</strong> (<em>list&lt;alias_api.AlObjectType&gt;</em>) – The node types only accepted in the default layer.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_name_matches_layer">
+<code class="descname">check_node_name_matches_layer</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>skip_layers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_name_matches_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_name_matches_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for naming mismatches between layer and its nodes, for all top-levle nodes in the current scene.</p>
+<p>Each layer should only contain one group (or one surface). This group is named after the layer.
+If groups are found that don’t match the name of the layer, an error is thrown.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to return immediately as soon as the check fails. Set to False to check
+entire data and return all data errors found, and arguments that can be passed to
+the corresponding fix function. Note that when set to False, this function will be
+slower to execute.</li>
+<li><strong>skip_layers</strong> (<em>list&lt;str&gt;</em>) – The specified layers (by name) will not be checked.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_name_matches_layer">
+<code class="descname">fix_node_name_matches_layer</code><span class="sig-paren">(</span><em>errors=None</em>, <em>skip_layers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_name_matches_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_name_matches_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the specified nodes, and rename any nodes that do not
+match its layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – (optional) The of nodes to process, if None, all nodes in the current
+scene will be processed. Default=None</li>
+<li><strong>skip_layers</strong> (<em>list&lt;str&gt;</em>) – Nodes in the specified layers (by name) will not be fixed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_layer_matches_parent">
+<code class="descname">check_node_layer_matches_parent</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_layer_matches_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_layer_matches_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for nodes that do not have the layer as their parent node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_layer_matches_parent">
+<code class="descname">fix_node_layer_matches_parent</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_layer_matches_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_layer_matches_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the specified nodes, and ensure that a node’s layer is the
+same as its parent node’s layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – (optional) The of nodes to process, if None, all nodes in the current
+scene will be processed. Default=None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_dag_top_level">
+<code class="descname">check_node_dag_top_level</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>accept_node_types=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_dag_top_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_dag_top_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for invalid top-level nodes in the DAG of the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to return immediately as soon as the check fails. Set to False to check
+entire data and return all data errors found, and arguments that can be passed to
+the corresponding fix function. Note that when set to False, this function will be
+slower to execute.</li>
+<li><strong>accept_node_types</strong> (<em>list&lt;alias_api.AlObjectType&gt;</em>) – Only the specified node types are accepted in the top level of the DAG.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_templates">
+<code class="descname">check_node_templates</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_templates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for nodes that are set as templates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_templates">
+<code class="descname">fix_node_templates</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_templates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the list of nodes if provided, and delete nodes that are
+set as a template.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – The list of nodes to process, if None, all nodes in the current scene will be
+processed. Default=None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_curves">
+<code class="descname">check_node_curves</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_node_curves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_node_curves" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for nodes that represent a curve (ie. AlCurveNode objects).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_curves">
+<code class="descname">fix_node_curves</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_node_curves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_node_curves" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the list of nodes if provided, and delete all nodes that
+represent a curve.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – The list of nodes to process, if None, all nodes in the current scene will be
+processed. Default=None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_curve_on_surface_unused">
+<code class="descname">check_curve_on_surface_unused</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_curve_on_surface_unused"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_curve_on_surface_unused" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for unused curves on surfaces in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_curve_on_surface_unused">
+<code class="descname">fix_curve_on_surface_unused</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_curve_on_surface_unused"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_curve_on_surface_unused" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all curves on surface current scene, or the list of curves on surface if provided, and delete
+unused curves on surface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlCurveOnSurface&gt;</em>) – The list of curves on surface to process, if None, all curves on surface
+current scene will be processed. Default=None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_curve_on_surface_construction_history">
+<code class="descname">check_curve_on_surface_construction_history</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_curve_on_surface_construction_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_curve_on_surface_construction_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for unused curves on surfaces that have construction history in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_curve_on_surface_construction_history">
+<code class="descname">fix_curve_on_surface_construction_history</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_curve_on_surface_construction_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_curve_on_surface_construction_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all curves on surface current scene, or the list of curves on surface if provided, and delete
+construction history for unused curves on surface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlCurveOnSurface&gt;</em>) – The list of curves on surface to process, if None, all curves on surface
+current scene will be processed. Default=None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_set_empty">
+<code class="descname">check_set_empty</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_set_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_set_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for sets that empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_set_empty">
+<code class="descname">fix_set_empty</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_set_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_set_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all sets in the current scene, or the list of sets if provided, and delete all sets that are
+empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – The list of nodes to process, if None, all nodes in the current scene will be
+processed. Default=None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_layer_is_empty">
+<code class="descname">check_layer_is_empty</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>skip_layers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_layer_is_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_layer_is_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for empty layers and layer folders in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</li>
+<li><strong>skip_layers</strong> (<em>list&lt;str&gt;</em>) – The specified layers (by name) will not be checked.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_layer_is_empty">
+<code class="descname">fix_layer_is_empty</code><span class="sig-paren">(</span><em>errors=None</em>, <em>skip_layers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_layer_is_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_layer_is_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all layers in the current scene, or the list of layers if provided, and delete all the empty layers and layer
+folders.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>layers</strong> (<em>str | list&lt;str&gt; | list&lt;AlLayer&gt;</em>) – (optiona) The layers to process, if None, all layers in the current scene will
+be processed. Default=None</li>
+<li><strong>skip_layers</strong> (<em>list&lt;str&gt;</em>) – The specified layers (by name) will not be fixed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_layer_has_single_shader">
+<code class="descname">check_layer_has_single_shader</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_layer_has_single_shader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_layer_has_single_shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that all nodes in a layer use the same single shader.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_layer_symmetry">
+<code class="descname">check_layer_symmetry</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>skip_layers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_layer_symmetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_layer_symmetry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for layers with symmetry turned on in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to return immediately as soon as the check fails. Set to False to check
+entire data and return all data errors found, and arguments that can be passed to
+the corresponding fix function. Note that when set to False, this function will be
+slower to execute.</li>
+<li><strong>skip_layers</strong> (<em>list&lt;str&gt;</em>) – The specified layers (by name) will not be checked.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_layer_symmetry">
+<code class="descname">fix_layer_symmetry</code><span class="sig-paren">(</span><em>errors=None</em>, <em>skip_layers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_layer_symmetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_layer_symmetry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all layers in the current scene, or the specified layers, and turn off symmetry on layers.</p>
+<p>NOTE that the layers in Alias may not update automatically, alias_api.redraw_screen() may need
+to be invoked after this function, to see the updated layers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlLayer&gt;</em>) – (optional) The layers to process, if None, all layers in the current
+scene will be processed. Default=None</li>
+<li><strong>skip_layers</strong> (<em>list&lt;str&gt;</em>) – The specified layers (by name) will not be fixed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_layer_has_single_object">
+<code class="descname">check_layer_has_single_object</code><span class="sig-paren">(</span><em>fail_fast=False</em>, <em>skip_layers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_layer_has_single_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_layer_has_single_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for layers that contain more than one top-level node (e.g. layers can only have a single node,
+for multiple nodes, they can have a group node that contains child nodes).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to return immediately as soon as the check fails. Set to False to check
+entire data and return all data errors found, and arguments that can be passed to
+the corresponding fix function. Note that when set to False, this function will be
+slower to execute.</li>
+<li><strong>skip_layers</strong> (<em>list&lt;str&gt;</em>) – The specified layers (by name) will not be checked.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">AliasSceneValidation.CheckResult</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_layer_has_single_object">
+<code class="descname">fix_layer_has_single_object</code><span class="sig-paren">(</span><em>errors=None</em>, <em>skip_layers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_layer_has_single_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_layer_has_single_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all layers in the current scene, or the list of layers if provided, and place all
+layer’s contents into a single group.</p>
+<p>A new group will be created if the layer does not have any group nodes currently.</p>
+<p>NOTE that the layers in Alias may not update automatically, alias_api.redraw_screen() may need
+to be invoked after this function, to see the updated scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlLayer&gt;</em>) – (optional) The list of layers to process, if None, all layers in the current
+scene will be processed. Default=None</li>
+<li><strong>skip_layers</strong> (<em>list&lt;str&gt;</em>) – The specified layers (by name) will not be fixed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_group_has_single_level_hierarchy">
+<code class="descname">check_group_has_single_level_hierarchy</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_group_has_single_level_hierarchy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_group_has_single_level_hierarchy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for groups with more than one level of hierarchy in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_group_has_single_level_hierarchy">
+<code class="descname">fix_group_has_single_level_hierarchy</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_group_has_single_level_hierarchy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_group_has_single_level_hierarchy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all nodes in the current scene, or the specified group nodes, and flatten each node such that
+it only has a single levele of hierarchy (e.g. parent-&gt;child but not parent-&gt;child-&gt;grandchild)</p>
+<p>NOTE that the groups in Alias may not update automatically, alias_api.redraw_screen() may need
+to be invoked after this function, to see the updated scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlLayer&gt;</em>) – (optional) The list of group nodes to process, if None, all nodes in the
+current scene will be processed. Default=None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>alias_api.AliasPythonException</strong> – if failed to flatten all groups</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_locators">
+<code class="descname">check_locators</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_locators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_locators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for locators in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True to return immediately as soon as the check fails. Set to False to check
+entire data and return all data errors found, and arguments that can be passed to
+the corresponding fix function. Note that when set to False, this function will be
+slower to execute.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The check result object containing the data:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">AliasSceneValidation.CheckResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_locators">
+<code class="descname">fix_locators</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_locators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_locators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all locators in the current scene, or the specified locators, and delete them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlCurveOnSurface&gt;</em>) – The list of locators to process, if None, all locators in current scene will
+be processed. Default=None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>alias_api.AliasPythonException</strong> – if failed to delete locator object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.check_refererences_exist">
+<code class="descname">check_refererences_exist</code><span class="sig-paren">(</span><em>fail_fast=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.check_refererences_exist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.check_refererences_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for referenced geometry in the current scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fail_fast</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Not applicable, but keep this param to follow guidelines for check functions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A tuple containing:
+(1) True if the check passed, else False
+(2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
+(3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
+(4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple&lt;bool,list,list,dict&gt;</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.fix_references_exist">
+<code class="descname">fix_references_exist</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.fix_references_exist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.fix_references_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all references, or the specificed references, and remove all referneces from the current
+scene.</p>
+<p>NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
+to be invoked after this function, to see the updated scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlReferenceFile&gt;</em>) – (optional) The list of references to process, if None, all references in the
+current scene will be processed. Default=None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>alias_api.AliasPythonException</strong> – if failed to remove a reference</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.pick_nodes">
+<code class="descname">pick_nodes</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.pick_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.pick_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pick the nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | AlDagNode | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – The node(s) to pick.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.pick_curves_on_surface_from_nodes">
+<code class="descname">pick_curves_on_surface_from_nodes</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.pick_curves_on_surface_from_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.pick_curves_on_surface_from_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pick the curves on surface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | AlDagNode | list&lt;str&gt; | list&lt;AlDagNode&gt;</em>) – The node(s) to pick curves on surface from.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.pick_nodes_assigned_to_shaders">
+<code class="descname">pick_nodes_assigned_to_shaders</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.pick_nodes_assigned_to_shaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.pick_nodes_assigned_to_shaders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pick the nodes assigned to the shaders.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlShader&gt;</em>) – The shaders to get assigned nodes to pick.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.pick_nodes_assigned_to_layers">
+<code class="descname">pick_nodes_assigned_to_layers</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.pick_nodes_assigned_to_layers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.pick_nodes_assigned_to_layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pick the nodes assigned to the layers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlLayer&gt;</em>) – The layers to get assigned ndoes to pick.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.pick_layers">
+<code class="descname">pick_layers</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.pick_layers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.pick_layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pick the layers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlLayer&gt;</em>) – The layers to pick.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tk_alias.scene_data_validator.AliasSceneDataValidator.pick_locators">
+<code class="descname">pick_locators</code><span class="sig-paren">(</span><em>errors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tk_alias/scene_data_validator.html#AliasSceneDataValidator.pick_locators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tk_alias.scene_data_validator.AliasSceneDataValidator.pick_locators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pick the locators.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>errors</strong> (<em>str | list&lt;str&gt; | list&lt;AlLocator&gt;</em>) – The locators to pick. If None, all locators will be picked.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="event_watcher.html" class="btn btn-neutral float-right" title="Event Watcher" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="engine.html" class="btn btn-neutral float-left" title="The Alias Engine Code" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Autodesk
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>
