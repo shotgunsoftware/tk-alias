@@ -1,8 +1,0 @@
-Internal Alias Python API Reference
-#####################################################
-
-.. toctree::
-    :maxdepth: 1
-
-    internal_classes
-    internal_namespaces
