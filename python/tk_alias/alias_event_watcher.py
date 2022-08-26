@@ -194,9 +194,11 @@ class AliasEventWatcher(object):
         for ev in scene_events:
             if not self.__is_callback_registered(ev, cb_fn):
                 continue
+
+            # Remove the callback from the list, and use the callback id to remove
+            # the Alias message handler.
             callback_id = self.__scene_events[ev].pop(cb_fn)
-            if self.is_watching:
-                alias_api.remove_message_handler(ev, callback_id)
+            alias_api.remove_message_handler(ev, callback_id)
 
     def start_watching(self):
         """
@@ -256,12 +258,10 @@ class AliasEventWatcher(object):
         self.__is_watching = False
 
     def shutdown(self):
-        """
-        Shut down the event watcher.
-        """
+        """Shut down the event watcher."""
 
         self.stop_watching(force=True)
-        self.__scene_events = None
+        self.__scene_events = {}
 
     # -------------------------------------------------------------------------------------------------------
     # Private methods
@@ -279,6 +279,9 @@ class AliasEventWatcher(object):
         :return: True if the callback is already registered, False otherwise
         :rtype: bool
         """
+
+        if not self.__scene_events:
+            return False
 
         for fn in self.__scene_events.get(scene_event, {}).keys():
             if cb_fn == fn:
