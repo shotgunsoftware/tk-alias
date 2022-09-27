@@ -196,7 +196,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.fix_shader_unused,
                     },
                 ],
-                "kwargs": {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
+                "get_kwargs": lambda: {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
                 "dependency_ids": [
                     "node_is_null",
                     "node_instances",
@@ -220,7 +220,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes_assigned_to_shaders,
                     },
                 ],
-                "kwargs": {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
+                "get_kwargs": lambda: {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
             },
             "node_is_null": {
                 "name": "Delete Null Nodes",
@@ -259,7 +259,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.GroupNodeType,
                         alias_api.AlObjectType.CurveNodeType,
@@ -322,7 +322,7 @@ class AliasSceneDataValidator(object):
                     },
                 ],
                 "dependency_ids": ["node_has_construction_history", "node_is_null"],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
                         *self._camera_node_types,
@@ -356,7 +356,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
                         *self._camera_node_types,
@@ -383,7 +383,7 @@ class AliasSceneDataValidator(object):
                         "tooltip": "Select nodes to manually fix data errors.",
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "layer_name": self.DEFAULT_LAYER_NAME,
                     "accept_node_types": [
                         alias_api.AlObjectType.GroupNodeType,
@@ -419,7 +419,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "layer_name": self.DEFAULT_LAYER_NAME,
                     "accept_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
@@ -454,7 +454,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": ["node_is_in_layer", "node_is_not_in_layer"],
             },
             "node_layer_matches_parent": {
@@ -507,7 +507,7 @@ class AliasSceneDataValidator(object):
                         "tooltip": "Select nodes to manually fix data errors.",
                     },
                 ],
-                "kwargs": {
+                "get_kwargs": lambda: {
                     "accept_node_types": [
                         alias_api.AlObjectType.CurveNodeType,
                         alias_api.AlObjectType.FaceNodeType,
@@ -719,7 +719,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_layers,
                     },
                 ],
-                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": ["node_is_null"],
             },
             "layer_has_single_shader": {
@@ -774,7 +774,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_layers,
                     },
                 ],
-                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
             },
             "layer_has_single_object": {
                 "name": "Layer Has Single Item",
@@ -801,7 +801,7 @@ class AliasSceneDataValidator(object):
                         "callback": self.pick_nodes_assigned_to_layers,
                     },
                 ],
-                "kwargs": {"skip_layers": [self.DEFAULT_LAYER_NAME]},
+                "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": [
                     "layer_is_empty",
                     "node_is_null",
@@ -1221,16 +1221,21 @@ class AliasSceneDataValidator(object):
         if isinstance(errors, six.string_types):
             errors = [errors]
 
+        if not errors:
+            # Optimize the zero transform by first calling the zero transform on all top-level nodes
+            # Then get the remaining nodes that do not have zero transform and apply it to those only.
+            alias_api.zero_transform_top_level()
+
         nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
             nodes=errors,
             skip_node_types=set(skip_node_types),
         )
 
-        for node in nodes:
-            status = alias_api.zero_transform(node)
+        if nodes:
+            status = alias_api.zero_transform(nodes)
             if not alias_py.utils.is_success(status):
                 alias_py.utils.raise_exception(
-                    "Failed to apply zero transform to node '{}'".format(node.name),
+                    "Failed to apply zero transform to nodes. Returned status:",
                     status,
                 )
 

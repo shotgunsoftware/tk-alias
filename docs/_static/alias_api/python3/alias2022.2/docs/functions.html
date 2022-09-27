@@ -142,6 +142,42 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="alias_api.AlFileType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">AlFileType</span></span><a class="headerlink" href="#alias_api.AlFileType" title="Permalink to this definition"></a></dt>
+<dd><p>Members:</p>
+<p>Dwg</p>
+<p>Unknown</p>
+<p>ProRender</p>
+<p>Wire</p>
+<p>Dxf</p>
+<p>Vdafs</p>
+<p>Iges</p>
+<p>Edf</p>
+<p>Tri</p>
+<p>C4x</p>
+<p>Vdais</p>
+<p>Jamais</p>
+<p>Quad</p>
+<p>Inventor</p>
+<p>Stl</p>
+<p>Obj</p>
+<p>Fbx</p>
+<p>Unused</p>
+<p>Epsf</p>
+<p>Illustrator</p>
+<p>JT</p>
+<p>Slc</p>
+<p>Acis</p>
+<p>CatiaV5</p>
+<p>Nx</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.AlFileType.name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#alias_api.AlFileType.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="alias_api.AlMessageType">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">AlMessageType</span></span><a class="headerlink" href="#alias_api.AlMessageType" title="Permalink to this definition"></a></dt>
 <dd><p>Members:</p>
@@ -162,7 +198,6 @@
 <p>JointModified</p>
 <p>Refresh</p>
 <p>DagNodePreReplaceGeometry</p>
-<p>Update</p>
 <p>DagNodeReplaceGeometry</p>
 <p>DagNodeApplyTransformation</p>
 <p>DagNodeVisible</p>
@@ -183,10 +218,8 @@
 <p>AnimPlayback</p>
 <p>ListModifiedNodes</p>
 <p>PreRefresh</p>
-<p>ReferenceFileSetDeleted</p>
 <p>TextureDeleted</p>
 <p>CommandInstall</p>
-<p>LayerStateModified</p>
 <p>CommandFree</p>
 <p>LayerAssign</p>
 <p>PickListModified</p>
@@ -201,29 +234,21 @@
 <p>UniverseActive</p>
 <p>PostStore</p>
 <p>TextureModified</p>
-<p>ReferenceFileSetModified</p>
 <p>ClMemberModified</p>
 <p>DagInserted</p>
 <p>ShaderDeleted</p>
 <p>CameraModified</p>
 <p>ExprModified</p>
-<p>LayersEnabled</p>
 <p>CommandUnInstall</p>
 <p>ShaderAdded</p>
 <p>CnetDeleted</p>
 <p>ShaderModified</p>
+<p>LayerAdded</p>
 <p>LightModified</p>
 <p>TextureAdded</p>
 <p>DagNodeUndeleted</p>
-<p>LayerVisibilityModified</p>
-<p>LayersReordered</p>
-<p>LayerAdded</p>
 <p>LayerDeleted</p>
 <p>LayerAttributeChanged</p>
-<p>ReferenceFileModified</p>
-<p>ReferenceFileAdded</p>
-<p>ReferenceFileSetAdded</p>
-<p>ReferenceLayerModified</p>
 <p>CosCreated</p>
 <p>LocatorAdded</p>
 <p>LocatorDeleted</p>
@@ -413,6 +438,30 @@
 
 </dd></dl>
 
+<dl class="py exception">
+<dt class="sig sig-object py" id="alias_api.AliasCompatibilityException">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">AliasCompatibilityException</span></span><a class="headerlink" href="#alias_api.AliasCompatibilityException" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="alias_api.AliasOpenModelException">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">AliasOpenModelException</span></span><a class="headerlink" href="#alias_api.AliasOpenModelException" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="alias_api.SymmetryState">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">SymmetryState</span></span><a class="headerlink" href="#alias_api.SymmetryState" title="Permalink to this definition"></a></dt>
+<dd><p>Members:</p>
+<p>Mirror</p>
+<p>Original</p>
+<p>BothSides</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.SymmetryState.name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#alias_api.SymmetryState.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="alias_api.add_message_handler">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">add_message_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlMessageType" title="alias_api.AlMessageType"><span class="pre">alias_api.AlMessageType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_func</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="classes.html#alias_api.MessageResult" title="alias_api.MessageResult"><span class="pre">alias_api.MessageResult</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.add_message_handler" title="Permalink to this definition"></a></dt>
@@ -470,6 +519,12 @@ Failure - AlUniverse was not initialized</p>
 <dt class="sig sig-object py" id="alias_api.clear_pick_list">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">clear_pick_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.clear_pick_list" title="Permalink to this definition"></a></dt>
 <dd><p>Remove all objects from the pick list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.clear_queued_events">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">clear_queued_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#alias_api.clear_queued_events" title="Permalink to this definition"></a></dt>
+<dd><p>Clear the currently queued events. The callbacks of the events in the queue will not be triggered.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -651,6 +706,12 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.current_window">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">current_window</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="classes.html#alias_api.AlWindow" title="alias_api.AlWindow"><span class="pre">alias_api.AlWindow</span></a></span></span><a class="headerlink" href="#alias_api.current_window" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the currently active window.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.delete_all_construction_entities">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">delete_all_construction_entities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.delete_all_construction_entities" title="Permalink to this definition"></a></dt>
 <dd><p>Delete all AlConstructionPlane objects found in the Alias Universe.</p>
@@ -706,6 +767,59 @@ Failure - the universe was not initialized or the deletion failed.</p>
 <dt class="sig sig-object py" id="alias_api.expand_instances">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">expand_instances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="classes.html#alias_api.AlDagNode" title="alias_api.AlDagNode"><span class="pre">alias_api.AlDagNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.expand_instances" title="Permalink to this definition"></a></dt>
 <dd><p>Convert all instsances below the given node (top node of tree) to uninstanced geometry.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.export_by_layer">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">export_by_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dirname</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlFileType" title="alias_api.AlFileType"><span class="pre">alias_api.AlFileType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.export_by_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Export each layer to a new file.</p>
+<p>This function will modify the pick list, ensure to save the state of the pick list
+before calling this function if it is desired to restore it after this operation.</p>
+<p>This is an alternative function to exportByLayerSequentially that is optimized for
+when there are many dag nodes, since it will only traverse the DAG once, whereas
+exportByLayerSequentially will traverse the DAG once per layer. The downside of this
+function is that it requires more memory since it will keep track of the nodes per
+layer.</p>
+<p>This function requires Alias &gt;= 2022.2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_dirname</strong> (<em>str</em>) – The output directory to save new layer files to.</p></li>
+<li><p><strong>base_filename</strong> (<em>str</em>) – The base filename for the newly saved layer files. The layer name will be appended for each file.</p></li>
+<li><p><strong>file_type</strong> (<a class="reference internal" href="#alias_api.AlFileType" title="alias_api.AlFileType"><em>AlFileType</em></a>) – The file type that the new layer files will be saved as.</p></li>
+<li><p><strong>layer_list</strong> (<em>list&lt;AlLayer&gt;</em>) – The layers to export.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – True will overwrite any existing files, False will not save a the layer file it if a file already exists with the same name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#alias_api.AliasCompatibilityException" title="alias_api.AliasCompatibilityException"><strong>AliasCompatibilityException</strong></a> – if currently running version of Alias &lt; 2022.2</p></li>
+<li><p><a class="reference internal" href="exceptions.html#alias_api.AliasPythonException" title="alias_api.AliasPythonException"><strong>AliasPythonException</strong></a> – if errors were reported during export</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.export_by_layer_sequentially">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">export_by_layer_sequentially</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_dirname</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlFileType" title="alias_api.AlFileType"><span class="pre">alias_api.AlFileType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="classes.html#alias_api.AlLayer" title="alias_api.AlLayer"><span class="pre">alias_api.AlLayer</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.export_by_layer_sequentially" title="Permalink to this definition"></a></dt>
+<dd><p>Export each layer to a new file.</p>
+<p>This function will modify the pick list, ensure to save the state of the pick list
+before calling this function if it is desired to restore it after this operation.</p>
+<p>This is a naive approach to export all layers. For each layer, the DAG is traversed
+to pick each node in the layer. This will be slow if there are many nodes in the DAG.</p>
+<p>Use exportByLayer for an optimized approach, for Alias &gt;= 2022.2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_dirname</strong> (<em>str</em>) – The output directory to save new layer files to.</p></li>
+<li><p><strong>base_filename</strong> (<em>str</em>) – The base filename for the newly saved layer files. The layer name will be appended for each file.</p></li>
+<li><p><strong>file_type</strong> (<a class="reference internal" href="#alias_api.AlFileType" title="alias_api.AlFileType"><em>AlFileType</em></a>) – The file type that the new layer files will be saved as.</p></li>
+<li><p><strong>layer_list</strong> (<em>list&lt;str&gt;</em>) – The layers in the file to export. If not specified, all layers will be exported.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – True will overwrite any existing files, False will not save a the layer file it if a file already exists with the same name.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1107,6 +1221,21 @@ specified will not contain any nested group nodes.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.has_queued_events">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">has_queued_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#alias_api.has_queued_events" title="Permalink to this definition"></a></dt>
+<dd><p>Check if there are Alias event callbacks queued and waiting to execute.</p>
+<p>Queued event callbacks will be executed once queuing events is turned off.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if there are queued event callbacks, else False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.has_reference">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">has_reference</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#alias_api.has_reference" title="Permalink to this definition"></a></dt>
 <dd><p>Return True if any AlReferenceFiles found in the current Alias Universe.</p>
@@ -1132,20 +1261,53 @@ specified will not contain any nested group nodes.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alias_api.import_subdiv">
-<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">import_subdiv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.import_subdiv" title="Permalink to this definition"></a></dt>
-<dd><p>Imports a file as a subdivision.</p>
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">import_subdiv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#alias_api.import_subdiv" title="Permalink to this definition"></a></dt>
+<dd><p>Imports a subdiv data from OBJ, TSM, F3D or SF3D file.</p>
+<p>Note that SF3D file format is only supported in OpenAlias.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The name of the input file to process</p>
+</dd>
+<dt class="field-even">Throws AliasPythonException</dt>
+<dd class="field-even"><p>If filepath is None, Alias failed to import or the Alias universe has not been initialized.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alias_api.import_subdivision">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">import_subdivision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#alias_api.import_subdivision" title="Permalink to this definition"></a></dt>
-<dd><p>Deprecated - use ‘import_subdiv’ instead. Imports a file as a subdivision.</p>
+<dd><p>Deprecated - use ‘import_subdiv’ instead.</p>
+<p>Imports a subdiv data from OBJ, TSM, F3D or SF3D file.</p>
+<p>Note that SF3D file format is only supported in OpenAlias.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The name of the input file to process</p>
+</dd>
+<dt class="field-even">Throws AliasPythonException</dt>
+<dd class="field-even"><p>If filepath is None, Alias failed to import or the Alias universe has not been initialized.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="alias_api.initialize_universe">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">initialize_universe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">up:</span> <span class="pre">alias_api.AlCoordinateSystem</span> <span class="pre">=</span> <span class="pre">&lt;AlCoordinateSystem.???:</span> <span class="pre">1&gt;</span></em>, <em class="sig-param"><span class="pre">init_project_env:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.initialize_universe" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize the Alias Universe.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.is_construction_layer">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">is_construction_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#alias_api.is_construction_layer" title="Permalink to this definition"></a></dt>
+<dd><p>Determine if the layer is a construction layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>layer_number</strong> – The number of the layer to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the layer is a construction layer, else False.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1158,6 +1320,24 @@ specified will not contain any nested group nodes.</p>
 <dt class="sig sig-object py" id="alias_api.is_empty_file">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">is_empty_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#alias_api.is_empty_file" title="Permalink to this definition"></a></dt>
 <dd><p>Deprecated - use ‘is_stage_empty’ instead.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.is_queuing_events">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">is_queuing_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#alias_api.is_queuing_events" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the Alias event callbacks are currently being queued.</p>
+<p>When event callbacks are being queued, this means that when Alias events are
+fired, the C++ message handler is still invoked, but the Python callbacks
+registered to the Alias events will not be executed immediately, and instead
+will be executed once queuing events is turned off.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if event callbacks are being queued, else False.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1314,6 +1494,23 @@ specified will not contain any nested group nodes.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="alias_api.queue_events">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">queue_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#alias_api.queue_events" title="Permalink to this definition"></a></dt>
+<dd><p>Manage queuing Python callbcacks triggered by Alias message events.</p>
+<p>Pass True to this function to start queuing all Python callbacks that
+are triggered by Alias message events.</p>
+<p>When ready to execute the Python callbacks, pass False to this funciton
+to empty the queue and trigger each Python callback in the queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>queue</strong> – True to queue event callbacks, and False to execute the
+queued event callbacks.</p>
+</dd>
+</dl>
+<p>type queue: bool</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="alias_api.redraw_screen">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">redraw_screen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">redraw_flag</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.redraw_screen" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -1358,6 +1555,42 @@ specified will not contain any nested group nodes.</p>
 <dt class="sig sig-object py" id="alias_api.save_file_as">
 <span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">save_file_as</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.save_file_as" title="Permalink to this definition"></a></dt>
 <dd><p>Save the current file to the given path.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.save_layers">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">save_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_path:</span> <span class="pre">str</span></em>, <em class="sig-param"><span class="pre">target_dirname:</span> <span class="pre">str</span></em>, <em class="sig-param"><span class="pre">layer_names:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">[]</span></em>, <em class="sig-param"><span class="pre">save_invisible:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></em>, <em class="sig-param"><span class="pre">picked_only:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em>, <em class="sig-param"><span class="pre">file_type:</span> <span class="pre">alias_api.AlFileType</span> <span class="pre">=</span> <span class="pre">&lt;AlFileType.Wire:</span> <span class="pre">1&gt;</span></em>, <em class="sig-param"><span class="pre">use_sequential:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em>, <em class="sig-param"><span class="pre">overwrite:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em>, <em class="sig-param"><span class="pre">threshold:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">8</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.save_layers" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve the file and export each of its layers to a new file.</p>
+<p>This provides the same functionality as the Save Layers plugin. It is a
+convenience function to calling the main export by layer functions (
+export_by_layer, export_by_layer_sequentially).</p>
+<p>The pick list state will be saved before modifying it, and restored at the end of
+the operation.</p>
+<p>Empty layers will be omitted (there will be no wire file created for empty layers).</p>
+<p>This function requires Alias &gt;= 2022.2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – The file to export layers from. This file will first be retrieved.</p></li>
+<li><p><strong>target_dirname</strong> (<em>str</em>) – The output directory to save new layer files to.</p></li>
+<li><p><strong>layer_names</strong> (<em>list&lt;str&gt;</em>) – The layers in the file to export. If not specified, all layers will be exported.</p></li>
+<li><p><strong>save_invisible</strong> (<em>bool</em>) – True will export all non-empty layers, False will only save layers that are visible or that are construction layers.</p></li>
+<li><p><strong>picked_only</strong> (<em>bool</em>) – True will export only layers that are picked, False will export both picked and not picked layers.</p></li>
+<li><p><strong>file_type</strong> (<a class="reference internal" href="#alias_api.AlFileType" title="alias_api.AlFileType"><em>AlFileType</em></a>) – The file type that the new layer files will be saved as.</p></li>
+<li><p><strong>use_sequential</strong> (<em>bool</em>) – True will force using the sequential export method (ignores the threshold value).</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – True will overwrite any existing files, False will not save a the layer file it if a file already exists with the same name.</p></li>
+<li><p><strong>threshold</strong> (<em>int</em>) – Set the upperbound limit on number of layers to switch between export methods.
+If the number of layers is less than or equal the threshold, then layers are exported sequentially.
+If the number of layers is greater than the threshold, then layers are exported in an optimized way.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#alias_api.AliasCompatibilityException" title="alias_api.AliasCompatibilityException"><strong>AliasCompatibilityException</strong></a> – if currently running version of Alias &lt; 2022.2</p></li>
+<li><p><a class="reference internal" href="exceptions.html#alias_api.AliasPythonException" title="alias_api.AliasPythonException"><strong>AliasPythonException</strong></a> – if the optimized export method was used and reported any errors</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1502,6 +1735,33 @@ for more details on how to filter the output data.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The status code result of the traversal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="alias_api.store">
+<span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">str</span></em>, <em class="sig-param"><span class="pre">active:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">file_type:</span> <span class="pre">alias_api.AlFileType</span> <span class="pre">=</span> <span class="pre">&lt;AlFileType.Wire:</span> <span class="pre">1&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.store" title="Permalink to this definition"></a></dt>
+<dd><p>Save the file.</p>
+<p>This is a very early implementation of a general file saving method.
+It accepts a filename, active flag and a file type. Currently it
+will only store wire files, iges files, and dxf files, as well as
+IGES derivatives C4, Jamias and VDAIS and VDAFS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileName</strong> – The name of the file to be stored.</p></li>
+<li><p><strong>active</strong> – Store all or just the selected objects.</p></li>
+<li><p><strong>filetype</strong> – The type of file to save.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return The status code result</dt>
+<dd class="field-even"><p>Success - the file was stored successfully
+Failure - the wire file could not be stored properly
+InvalidArgument - unrecognized file type or fileName is NULL.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>int(<a class="reference internal" href="#alias_api.AlStatusCode" title="alias_api.AlStatusCode">AlStatusCode</a>)</p>

@@ -9533,6 +9533,12 @@ InvalidObject - the dag node was invalid</p>
 <dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">AlPerspectiveCamera</span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#alias_api.AlCamera" title="alias_api.AlCamera"><code class="xref py py-class docutils literal notranslate"><span class="pre">alias_api.AlCamera</span></code></a>, <a class="reference internal" href="#alias_api.AlPickable" title="alias_api.AlPickable"><code class="xref py py-class docutils literal notranslate"><span class="pre">alias_api.AlPickable</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.angle_of_view">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">angle_of_view</span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.angle_of_view" title="Permalink to this definition"></a></dt>
+<dd><p>Get or set the angle of view of the camera.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.as_annotation_locator_ptr">
 <span class="sig-name descname"><span class="pre">as_annotation_locator_ptr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.as_annotation_locator_ptr" title="Permalink to this definition"></a></dt>
@@ -9672,6 +9678,18 @@ InvalidObject - the dag node was invalid</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.eye">
+<span class="sig-name descname"><span class="pre">eye</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPerspectiveCamera" title="alias_api.AlPerspectiveCamera"><span class="pre">alias_api.AlPerspectiveCamera</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alias_api.AlCameraNode" title="alias_api.AlCameraNode"><span class="pre">AlCameraNode</span></a></span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.eye" title="Permalink to this definition"></a></dt>
+<dd><p>Return the eye node object attached to the camera.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.focus_length">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">focus_length</span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.focus_length" title="Permalink to this definition"></a></dt>
+<dd><p>Get or set the focus length of the camera.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.is_picked">
 <span class="sig-name descname"><span class="pre">is_picked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPickable" title="alias_api.AlPickable"><span class="pre">alias_api.AlPickable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.is_picked" title="Permalink to this definition"></a></dt>
 <dd><p>Return True if the object is picked.</p>
@@ -9690,6 +9708,158 @@ InvalidObject - the dag node was invalid</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.set_world_eye">
+<span class="sig-name descname"><span class="pre">set_world_eye</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.set_world_eye" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>set_world_eye(self: alias_api.AlPerspectiveCamera, p: alPyMath::Vec3) -&gt; int</p></li>
+</ol>
+<p>Set the world eye position and return the status code result of the operation.</p>
+<ol class="arabic" start="2">
+<li><p>set_world_eye(self: alias_api.AlPerspectiveCamera, x: float, y: float, z: float) -&gt; int</p>
+<blockquote>
+<div><p>Sets the camera’s world eye position to be x,y, &amp; z in world space.
+The value will be set in the camera’s eye node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param x</dt>
+<dd class="field-odd"><p>The new world eye position along the x axis.</p>
+</dd>
+<dt class="field-even">type x</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">param y</dt>
+<dd class="field-odd"><p>The new world eye position along the y axis.</p>
+</dd>
+<dt class="field-even">type y</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">param z</dt>
+<dd class="field-odd"><p>The new world eye position along the z axis.</p>
+</dd>
+<dt class="field-even">type z</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">return</dt>
+<dd class="field-odd"><p>The status code result:
+Success - the position was successfully set
+InvalidObject - the camera is not valid.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>int(StatusCode)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.set_world_up">
+<span class="sig-name descname"><span class="pre">set_world_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.set_world_up" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>set_world_up(self: alias_api.AlPerspectiveCamera, p: alPyMath::Vec3) -&gt; int</p>
+<blockquote>
+<div><p>Set the world up position and return the status code result of the operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param p</dt>
+<dd class="field-odd"><p>A vec3 containing the new world up position.</p>
+</dd>
+<dt class="field-even">return</dt>
+<dd class="field-even"><p>The status code result:
+Success - the position was successfully set
+InvalidObject - the camera is not valid.</p>
+</dd>
+<dt class="field-odd">rtype</dt>
+<dd class="field-odd"><p>int(StatusCode)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>set_world_up(self: alias_api.AlPerspectiveCamera, x: float, y: float, z: float) -&gt; int</p>
+<blockquote>
+<div><p>Sets the camera’s world up position to be x,y, &amp; z in world space.
+The value will be set in the camera’s up node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param x</dt>
+<dd class="field-odd"><p>The new world up position along the x axis.</p>
+</dd>
+<dt class="field-even">type x</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">param y</dt>
+<dd class="field-odd"><p>The new world up position along the y axis.</p>
+</dd>
+<dt class="field-even">type y</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">param z</dt>
+<dd class="field-odd"><p>The new world up position along the z axis.</p>
+</dd>
+<dt class="field-even">type z</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">return</dt>
+<dd class="field-odd"><p>The status code result:
+Success - the position was successfully set
+InvalidObject - the camera is not valid.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>int(StatusCode)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.set_world_view">
+<span class="sig-name descname"><span class="pre">set_world_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.set_world_view" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>set_world_view(self: alias_api.AlPerspectiveCamera, p: alPyMath::Vec3) -&gt; int</p></li>
+</ol>
+<p>Set the world view position and return the status code result of the operation.</p>
+<ol class="arabic" start="2">
+<li><p>set_world_view(self: alias_api.AlPerspectiveCamera, x: float, y: float, z: float) -&gt; int</p>
+<blockquote>
+<div><p>Sets the camera’s world view position to be x,y, &amp; z in world space.
+The value will be set in the camera’s view node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param x</dt>
+<dd class="field-odd"><p>The new world view position along the x axis.</p>
+</dd>
+<dt class="field-even">type x</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">param y</dt>
+<dd class="field-odd"><p>The new world view position along the y axis.</p>
+</dd>
+<dt class="field-even">type y</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">param z</dt>
+<dd class="field-odd"><p>The new world view position along the z axis.</p>
+</dd>
+<dt class="field-even">type z</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">return</dt>
+<dd class="field-odd"><p>The status code result:
+Success - the position was successfully set
+InvalidObject - the camera is not valid.</p>
+</dd>
+<dt class="field-even">rtype</dt>
+<dd class="field-even"><p>int(StatusCode)</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.type">
 <span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPerspectiveCamera" title="alias_api.AlPerspectiveCamera"><span class="pre">alias_api.AlPerspectiveCamera</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="functions.html#alias_api.AlObjectType" title="alias_api.AlObjectType"><span class="pre">alias_api.AlObjectType</span></a></span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.type" title="Permalink to this definition"></a></dt>
 <dd><p>Return the AlPerspectiveCamera type identifier.</p>
@@ -9699,6 +9869,87 @@ InvalidObject - the dag node was invalid</p>
 <dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.unpick">
 <span class="sig-name descname"><span class="pre">unpick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPickable" title="alias_api.AlPickable"><span class="pre">alias_api.AlPickable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.unpick" title="Permalink to this definition"></a></dt>
 <dd><p>Unpick the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.up">
+<span class="sig-name descname"><span class="pre">up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPerspectiveCamera" title="alias_api.AlPerspectiveCamera"><span class="pre">alias_api.AlPerspectiveCamera</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alias_api.AlCameraNode" title="alias_api.AlCameraNode"><span class="pre">AlCameraNode</span></a></span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.up" title="Permalink to this definition"></a></dt>
+<dd><p>Return the up node object attached to the camera.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.view">
+<span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPerspectiveCamera" title="alias_api.AlPerspectiveCamera"><span class="pre">alias_api.AlPerspectiveCamera</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#alias_api.AlCameraNode" title="alias_api.AlCameraNode"><span class="pre">AlCameraNode</span></a></span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.view" title="Permalink to this definition"></a></dt>
+<dd><p>Return the view node object attached to the camera.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.world_eye">
+<span class="sig-name descname"><span class="pre">world_eye</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPerspectiveCamera" title="alias_api.AlPerspectiveCamera"><span class="pre">alias_api.AlPerspectiveCamera</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.world_eye" title="Permalink to this definition"></a></dt>
+<dd><p>Find the world coordinates of the camera’s eye location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>A tuple (status, x, y, z), where
+status [AlStatusCode] - the status code result</p>
+<blockquote>
+<div><p>Success - the coordinates was found
+InvalidObject - the point is not valid</p>
+</div></blockquote>
+<p>x [float] - the x world coordinate of the eye position
+y [float] - the y world coordinate of the eye position
+z [float] - the z world coordinate of the eye position</p>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.world_up">
+<span class="sig-name descname"><span class="pre">world_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPerspectiveCamera" title="alias_api.AlPerspectiveCamera"><span class="pre">alias_api.AlPerspectiveCamera</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.world_up" title="Permalink to this definition"></a></dt>
+<dd><p>Find the world coordinates of the camera’s up location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>A tuple (status, x, y, z), where
+status [AlStatusCode] - the status code result</p>
+<blockquote>
+<div><p>Success - the coordinates was found
+InvalidObject - the point is not valid</p>
+</div></blockquote>
+<p>x [float] - the x world coordinate of the up position
+y [float] - the y world coordinate of the up position
+z [float] - the z world coordinate of the up position</p>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlPerspectiveCamera.world_view">
+<span class="sig-name descname"><span class="pre">world_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlPerspectiveCamera" title="alias_api.AlPerspectiveCamera"><span class="pre">alias_api.AlPerspectiveCamera</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.AlPerspectiveCamera.world_view" title="Permalink to this definition"></a></dt>
+<dd><p>Find the world coordinates of the camera’s view location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>A tuple (status, x, y, z), where
+status [AlStatusCode] - the status code result</p>
+<blockquote>
+<div><p>Success - the coordinates was found
+InvalidObject - the point is not valid</p>
+</div></blockquote>
+<p>x [float] - the x world coordinate of the view position
+y [float] - the y world coordinate of the view position
+z [float] - the z world coordinate of the view position</p>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -13711,6 +13962,12 @@ InvalidObject - the dag node was invalid</p>
 <dd><p>Delete the AlWindow from the Alias Universe and return the status of the performed operation.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="alias_api.AlWindow.get_resolution">
+<span class="sig-name descname"><span class="pre">get_resolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#alias_api.AlWindow" title="alias_api.AlWindow"><span class="pre">alias_api.AlWindow</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#alias_api.AlWindow.get_resolution" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieves the resolution of a window.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="alias_api.AlWindow.grid_size">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">grid_size</span></span><a class="headerlink" href="#alias_api.AlWindow.grid_size" title="Permalink to this definition"></a></dt>
@@ -13777,6 +14034,48 @@ InvalidObject - the dag node was invalid</p>
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">alias_api.</span></span><span class="sig-name descname"><span class="pre">MessageResult</span></span><a class="headerlink" href="#alias_api.MessageResult" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
 <dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.attributes_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">attributes_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.attributes_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlAttributes from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.bool_value_1">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bool_value_1</span></span><a class="headerlink" href="#alias_api.MessageResult.bool_value_1" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first bool value from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.camera_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">camera_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.camera_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlCamera from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.cloud_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cloud_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.cloud_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlCloud from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.curve_on_surface_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">curve_on_surface_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.curve_on_surface_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlCurveOnSurface from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.dag_node_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dag_node_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.dag_node_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlDagNode from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.dag_node_2_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dag_node_2_name</span></span><a class="headerlink" href="#alias_api.MessageResult.dag_node_2_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the second AlDagNode from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="alias_api.MessageResult.int_value_1">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">int_value_1</span></span><a class="headerlink" href="#alias_api.MessageResult.int_value_1" title="Permalink to this definition"></a></dt>
 <dd><p>Get the first int value from the message event that triggered the Python callback.</p>
@@ -13789,21 +14088,69 @@ InvalidObject - the dag node was invalid</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.light_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">light_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.light_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlLight from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.locator_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">locator_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.locator_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlLocator from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="alias_api.MessageResult.message_type">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">message_type</span></span><a class="headerlink" href="#alias_api.MessageResult.message_type" title="Permalink to this definition"></a></dt>
 <dd><p>Get the message type that trigger the Python callback.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.reference_file_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">reference_file_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.reference_file_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlReferenceFile from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.reference_file_set_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">reference_file_set_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.reference_file_set_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlReferenceFileSet from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="alias_api.MessageResult.shader">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">shader</span></span><a class="headerlink" href="#alias_api.MessageResult.shader" title="Permalink to this definition"></a></dt>
-<dd><p>Get the unique shader name value from the message event that triggered the Python callback.</p>
+<dd><p>Get the first AlShader name from the message event that triggered the Python callback. Deprecated and will be remoed in v4.0.0 - use shader_1_name instead.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.shader_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">shader_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.shader_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlShader from the message event that triggered the Python callback.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alias_api.MessageResult.str_value_1">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">str_value_1</span></span><a class="headerlink" href="#alias_api.MessageResult.str_value_1" title="Permalink to this definition"></a></dt>
 <dd><p>Get the first string value from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.surface_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">surface_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.surface_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlSurface from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.texture_1_name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">texture_1_name</span></span><a class="headerlink" href="#alias_api.MessageResult.texture_1_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlTexture from the message event that triggered the Python callback.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="alias_api.MessageResult.tm_1">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">tm_1</span></span><a class="headerlink" href="#alias_api.MessageResult.tm_1" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first AlTM from the message event that triggered the Python callback.</p>
 </dd></dl>
 
 </dd></dl>
@@ -13839,13 +14186,13 @@ InvalidObject - the dag node was invalid</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="alias_api.Variant.name">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#alias_api.Variant.name" title="Permalink to this definition"></a></dt>
-<dd><p>Get the Variant name.</p>
+<dd><p>Get the Variant name. If the Variant is renamed after this object is created, the name property will not be updated to reflect the name change.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="alias_api.Variant.path">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#alias_api.Variant.path" title="Permalink to this definition"></a></dt>
-<dd><p>Get the thumnail path for the Variant.</p>
+<dd><p>Get the thumnail path for the Variant. If the Variant path is changed after this object is created, the path property will not be updated to reflect the path change.</p>
 </dd></dl>
 
 </dd></dl>
