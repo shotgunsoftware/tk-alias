@@ -79,3 +79,4 @@ requires_core_version: "v0.19.18"
 
 frameworks:
   - {"name": "tk-framework-aliastranslations", "version": "v0.x.x"}
+  - {"name": "tk-framework-forge", "version": "v0.1.x"}

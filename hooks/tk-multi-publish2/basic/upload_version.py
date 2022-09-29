@@ -9,9 +9,24 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import os
 import shutil
+import tempfile
+from tkinter import W
+
 import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
+
+
+# --------------------------------------------------------------------------------------------
+# Autodesk Platform Services imports and globals
+# --------------------------------------------------------------------------------------------
+
+import base64
+
+CLIENT_ID = os.environ.get("APS_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("APS_CLIENT_SECRET")
+BUCKET_KEY = CLIENT_ID.lower() + "_upload"
+SCOPE = "data:read data:write data:create bucket:create bucket:read"
 
 FORGE_OPTION1 = True
 FORGE_OPTION2 = True
@@ -253,47 +268,48 @@ class UploadVersionPlugin(HookBaseClass):
             if version_type == self.VERSION_TYPE_3D:
                 self.logger.debug("Creating LMV files from source file")
 
-                # use_framework_translator = (
-                #     settings.get("Translation Worker").value
-                #     == self.TRANSLATION_WORKER_FRAMEWORK
-                # )
+                # TODO remove
+                try:
 
-                # translate the file to lmv and upload the corresponding package to the Version
-                (
-                    package_path,
-                    thumbnail_path,
-                    output_directory,
-                    # ) = self._translate_file_to_lmv(item, use_framework_translator)
-                ) = self._translate_file_to_lmv(item, translation_worker)
+                    # translate the file to lmv and upload the corresponding package to the Version
+                    (
+                        package_path,
+                        thumbnail_path,
+                        output_directory,
+                        # ) = self._translate_file_to_lmv(item, use_framework_translator)
+                    ) = self._translate_file_to_lmv(item, translation_worker)
 
-                self.logger.info("Uploading LMV files to ShotGrid")
-                self.parent.shotgun.update(
-                    entity_type="Version",
-                    entity_id=item.properties["sg_version_data"]["id"],
-                    data={"sg_translation_type": "LMV"},
-                )
-
-                # If using forge with urn only, we will not have a local path to upload (Forge option 1)
-                if package_path:
-                    self.parent.shotgun.upload(
+                    self.logger.info("Uploading LMV files to ShotGrid")
+                    self.parent.shotgun.update(
                         entity_type="Version",
                         entity_id=item.properties["sg_version_data"]["id"],
-                        path=package_path,
-                        field_name="sg_uploaded_movie",
+                        data={"sg_translation_type": "LMV"},
                     )
 
-                # if the Version thumbnail is empty, update it with the newly created thumbnail
-                if not item.get_thumbnail_as_path() and thumbnail_path:
-                    self.parent.shotgun.upload_thumbnail(
-                        entity_type="Version",
-                        entity_id=item.properties["sg_version_data"]["id"],
-                        path=thumbnail_path,
-                    )
+                    # If using forge with urn only, we will not have a local path to upload (Forge option 1)
+                    if package_path:
+                        self.parent.shotgun.upload(
+                            entity_type="Version",
+                            entity_id=item.properties["sg_version_data"]["id"],
+                            path=package_path,
+                            field_name="sg_uploaded_movie",
+                        )
 
-                if output_directory:
-                    # delete the temporary folder on disk
-                    self.logger.debug("Deleting temporary folder")
-                    shutil.rmtree(output_directory)
+                    # if the Version thumbnail is empty, update it with the newly created thumbnail
+                    if not item.get_thumbnail_as_path() and thumbnail_path:
+                        self.parent.shotgun.upload_thumbnail(
+                            entity_type="Version",
+                            entity_id=item.properties["sg_version_data"]["id"],
+                            path=thumbnail_path,
+                        )
+
+                    if output_directory:
+                        # delete the temporary folder on disk
+                        self.logger.debug("Deleting temporary folder")
+                        shutil.rmtree(output_directory)
+
+                except Exception as e:
+                    print(e)
 
             elif version_type == self.VERSION_TYPE_2D:
                 thumbnail_path = item.get_thumbnail_as_path()
@@ -308,24 +324,13 @@ class UploadVersionPlugin(HookBaseClass):
                 else:
                     self.logger.debug("Converting file to LMV to extract thumbnails")
 
-                    # use_framework_translator = (
-                    #     settings.get("Translation Worker").value
-                    #     == self.TRANSLATION_WORKER_FRAMEWORK
-                    # )
                     output_directory, thumbnail_path = self._get_thumbnail_from_lmv(
-                        # item, use_framework_translator
                         item,
                         translation_worker,
                     )
 
                     if thumbnail_path:
                         self.logger.info("Uploading LMV thumbnail file to ShotGrid")
-                        self.parent.shotgun.upload(
-                            entity_type="Version",
-                            entity_id=item.properties["sg_version_data"]["id"],
-                            path=thumbnail_path,
-                            field_name="sg_uploaded_movie",
-                        )
                         self.parent.shotgun.upload_thumbnail(
                             entity_type="Version",
                             entity_id=item.properties["sg_version_data"]["id"],
@@ -655,7 +660,6 @@ class UploadVersionPlugin(HookBaseClass):
     ############################################################################
     # Protected functions
 
-    # def _translate_file_to_lmv(self, item, use_framework_translator):
     def _translate_file_to_lmv(self, item, translation_worker):
         """
         Translate the current Alias file as an LMV package in order to upload it to ShotGrid as a 3D Version
@@ -695,12 +699,7 @@ class UploadVersionPlugin(HookBaseClass):
             output_directory = lmv_translator.output_directory
 
         elif translation_worker == self.TRANSLATION_WORKER_FORGE:
-            framework_forge = self.load_framework("tk-framework-forge_v0.1.x")
-            # forge_api = framework_forge.import_module("forge_api")
-            model_derivative_module = framework_forge.import_module("model_derivative")
-            model_derivative = model_derivative_module.ModelDerivative()
-
-            urn = model_derivative.translate_source(item.name, item.properties.path)
+            urn = self.translate_source(item.name, item.properties.path)
 
             if FORGE_OPTION1:
                 # Forge Option #1:
@@ -727,21 +726,9 @@ class UploadVersionPlugin(HookBaseClass):
                 # in a sepcific structure to parse
                 # Also, this option requires waiting for the job to finish, since we need the derivatives in the
                 # successful manifest
-                manifest = model_derivative.get_manifest(urn)
-
-                if model_derivative.is_manifest_successful(manifest):
-                    # Download all derivates from Forge, including any file dependencies, and package it up (similar to lmv)
-                    (
-                        package_path,
-                        thumbnail_path,
-                        output_directory,
-                    ) = model_derivative.download_derivatives(item, manifest)
-                else:
-                    # TODO: parse manifest["derivatives"] for error messages
-                    self.logger.error("Forge Translation failed")
-
-                # Done. Close the forge connection.
-                # model_derivative.forge_client.close_connection()
+                (package_path, thumbnail_path, output_directory) = self.download_source(
+                    item, urn
+                )
 
         else:
             self.logger.error(
@@ -789,39 +776,11 @@ class UploadVersionPlugin(HookBaseClass):
             output_directory = lmv_translator.output_directory
 
         elif translation_worker == self.TRANSLATION_WORKER_FORGE:
-            framework_forge = self.load_framework("tk-framework-forge_v0.1.x")
-            model_derivative_module = framework_forge.import_module("model_derivative")
-            model_derivative = model_derivative_module.ModelDerivative()
-            urn = model_derivative.translate_source(item.name, item.properties.path)
-
-            if FORGE_OPTION1:
-                # Forge Option #1:
-                # Set custom field on Version for "URN" value for SG to load in Forge Viewer
-                # Pro: fast operation to translate -- job is sent to Forge and we're free to go on
-                # Con: requires SG code change to load using URN, in addition to local URL. As well,
-                # a Forge App/credentials needs to be shared between Toolkit and SG
-                self.parent.shotgun.update(
-                    entity_type="Version",
-                    entity_id=item.properties["sg_version_data"]["id"],
-                    data={"sg_urn": urn},
-                )
-
-            elif FORGE_OPTION2:
-                manifest = model_derivative.get_manifest(urn)
-
-                if model_derivative.is_manifest_successful(manifest):
-                    # Download all derivates from Forge, including any file dependencies, and package it up (similar to lmv)
-                    (
-                        output_directory,
-                        thumbnail_path,
-                    ) = model_derivative.download_thumbnails(item, manifest)
-                else:
-                    # TODO: parse manifest["derivatives"] for error messages
-                    self.logger.error("Failed to extract thumbnails using Forge")
-
-                # Done. Close the forge connection. TODO this should happen on publisher destroy/close
-                # model_derivative.forge_client.close_connection()
-
+            # TODO translate only thumbnails not whole sourve
+            urn = self.translate_source(item.name, item.properties.path)
+            (package_path, thumbnail_path, output_directory) = self.download_thumbnails(
+                item, urn
+            )
         else:
             self.logger.error(
                 "Failed to get thumbnail: unknown Translation Worker Type"
@@ -853,3 +812,321 @@ class UploadVersionPlugin(HookBaseClass):
             return None
 
         return prefs[enable_3d_viewer_pref]
+
+    # --------------------------------------------------------------------------------------------
+    # Autodesk Platform Services utility methods
+    # --------------------------------------------------------------------------------------------
+
+    def authenticate(self):
+        """Two-legged authentication and return the creentials."""
+
+        aps_auth = self.parent.engine.autodesk_platform_services_auth
+
+        oauth = aps_auth.OAuth2TwoLegged(CLIENT_ID, CLIENT_SECRET, SCOPE)
+        return oauth.authenticate()
+
+    def translate_source(self, source_name, source_path):
+        """
+        First make sure the Forge Client is authenticated and the bucket has
+        been created to upload the source file to. Upload the source to Forge
+        and then start a translation job.
+
+        :return: The manifest for the translation job.
+        """
+
+        # Authenticate with APS
+        credentials = self.authenticate()
+
+        # Get the APS api module
+        aps = self.parent.engine.autodesk_platform_services_api
+        buckets_api = aps.BucketsApi()
+
+        # Call api to create a bucket to upload the source to
+        # TODO check response? This shoudl report already created after initial creation
+        response = buckets_api.create_bucket(credentials, BUCKET_KEY)
+
+        # Use the objects api to upload the source file
+        objects_api = aps.ObjectsApi()
+        upload_data = objects_api.upload_object(
+            credentials, BUCKET_KEY, source_name, source_path
+        )
+
+        download_object = objects_api.download_object(
+            credentials, BUCKET_KEY, source_name
+        )
+
+        # Extract the object id from the payload returned from Forge. Base64 encode the object id before passing to http request
+        urn_str = upload_data["objectId"].rstrip("=")
+        urn_str = urn_str.encode("utf8")
+        urn = base64.urlsafe_b64encode(urn_str)
+
+        # output_format = {"type": "obj"}
+        output_format = {"type": "svf", "views": ["2d", "3d"], "advanced": {}}
+
+        # Start a translation job to conver the wire to an svf for the Autodesk Viewer
+        jobs_api = aps.JobsApi()
+        job = jobs_api.post_job(credentials, urn, output_format)
+
+        return job["urn"]
+
+    def get_manifest(self, urn):
+        """ """
+
+        # Authenticate with APS
+        credentials = self.authenticate()
+
+        aps = self.parent.engine.autodesk_platform_services_api
+        manifest_api = aps.ManifestApi()
+
+        manifest = None
+        completed = False
+        while not completed:
+            manifest = manifest_api.get_manifest(credentials, urn)
+            completed = aps.ManifestApi.JobStatus.is_complete(manifest["status"])
+
+        if manifest and manifest["status"] == aps.ManifestApi.JobStatus.SUCCESS.value:
+            return manifest
+
+        return None
+
+    def download_source(self, item, urn):
+        """ """
+
+        manifest = self.get_manifest(urn)
+
+        if manifest:
+            # Download all derivates from Forge, including any file dependencies, and package it up (similar to lmv)
+            (
+                package_path,
+                thumbnail_path,
+                output_directory,
+            ) = self.download_derivatives(item, manifest)
+        else:
+            # TODO: parse manifest["derivatives"] for error messages
+            self.logger.error("Forge Translation failed")
+            package_path = None
+            thumbnail_path = None
+            output_directory = None
+
+        return (package_path, thumbnail_path, output_directory)
+
+    def download_derivatives(self, item, manifest, output_directory=None, package=True):
+        """
+        Download the derivatives from the item's manifest (all necessary files to view
+        the item 3D model offline, from zip folder instead of URN). Package the downloaded
+        derivative sources to a zip folder and return the path to the file.
+        """
+
+        aps = self.parent.engine.autodesk_platform_services_api
+
+        package_path = None
+        design_urn = manifest["urn"]
+        version = str(item.properties["sg_version_data"]["id"])
+
+        # Parse the manifest to extract the derviatives to download
+        (derivatives, thumbnails) = self.parse_manifest(
+            manifest["derivatives"], manifest
+        )
+
+        if output_directory is None:
+            output_directory = tempfile.mkdtemp(prefix="forge_{}".format(version))
+
+        output_dir_path = os.path.join(output_directory, "output")
+        target_dir = os.path.join(output_dir_path, "1")
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
+
+        # Downlaod derivative sources from Froge
+        for derivative in derivatives:
+            if aps.DerivativesApi.MimeType.is_svf(derivative["mime"]):
+                derivative["root_filename"] = "{}.svf".format(version)
+
+            path = os.path.join(target_dir, derivative["root_filename"])
+            self.download_derivative(design_urn, derivative["urn"], path)
+
+            # Download any dependencies for the derivative
+            for filename in derivative["files"]:
+                derivative_urn = os.path.join(derivative["base_path"], filename)
+                path = os.path.join(target_dir, filename)
+                self.download_derivative(design_urn, derivative_urn, path)
+
+        # Get the thumbnail data
+        thumbnail_data = None
+        thumbnail_source_path = item.get_thumbnail_as_path()
+        if thumbnail_source_path:
+            with open(thumbnail_source_path, "rb") as file_p:
+                thumbnail_data = file_p.read()
+        elif thumbnails:
+            # Just take the first thumbnail for now.
+            path = os.path.join(target_dir, thumbnails[-1]["root_filename"])
+            with open(path, "rb") as file_p:
+                thumbnail_data = file_p.read()
+
+        # Write the thumbnails on disk
+        if thumbnail_data:
+            images_dir_path = os.path.join(output_dir_path, "images")
+            if not os.path.exists(images_dir_path):
+                os.makedirs(images_dir_path)
+
+            thumbnail_path = os.path.join(images_dir_path, "{}.jpg".format(version))
+            with open(thumbnail_path, "wb") as file_p:
+                file_p.write(thumbnail_data)
+        else:
+            thumbnail_path = None
+
+        # Finally, package up the derivative sources and thumbnail data
+        if package:
+            package_path = shutil.make_archive(
+                base_name=os.path.join(output_directory, version),
+                format="zip",
+                root_dir=output_dir_path,
+            )
+
+        return package_path, thumbnail_path, output_directory
+
+    def parse_manifest(self, derivatives, manifest):
+        """
+        Parse the manifiest and return a tuple containing the
+        """
+
+        # FIXME for OBJ
+        # seems like OBJ just have a urn in the manifest, not in each of the children
+
+        # FIXME better way to define this...
+        try:
+            from urllib.parse import unquote
+        except ImportError:
+            from urllib import unquote as stdlib_unquote
+
+            # polyfill. This behaves the same as urllib.parse.unquote on Python 3
+            def unquote(string, encoding="utf-8", errors="replace"):
+                """ """
+
+                if isinstance(string, bytes):
+                    raise TypeError(
+                        "a bytes-like object is required, not '{}'".format(type(string))
+                    )
+
+                return stdlib_unquote(string.encode(encoding)).decode(
+                    encoding, errors=errors
+                )
+
+        aps = self.parent.engine.autodesk_platform_services_api
+
+        items = []
+        thumbnails = []
+
+        while derivatives:
+            derivative = derivatives.pop()
+
+            if derivative.get("role", None) in aps.DerivativesApi.Role.get_roles():
+                item = {}
+
+                properties = ["guid", "mime", "urn"]
+                for prop in properties:
+                    item[prop] = derivative[prop]
+
+                # This fails because urn does not have '/'
+                # NOTE is it failing because it failed to upload/translate before trying to download?
+                #
+                derivative_urn = unquote(item["urn"] or manifest["urn"])
+                index = derivative_urn.rindex("/")
+                item["root_filename"] = derivative_urn[index + 1 :]
+                item["base_path"] = derivative_urn[: index + 1]
+                item["files"] = (
+                    aps.DerivativesApi.SVFFile.get_svf_files()
+                    if aps.DerivativesApi.MimeType.is_svf(item["mime"])
+                    else []
+                )
+
+                items.append(item)
+
+                if derivative["role"] == "thumbnail":
+                    thumbnails.append(item)
+
+            if derivative.get("children", None) is not None:
+                derivatives.extend(derivative["children"])
+
+        return (items, thumbnails)
+
+    def download_derivative(self, design_urn, derivative_urn, path=None):
+        """ """
+
+        credentials = self.authenticate()
+        aps = self.parent.engine.autodesk_platform_services_api
+        derivatives_api = aps.DerivativesApi()
+
+        response = derivatives_api.download_derivative(
+            credentials, design_urn, derivative_urn
+        )
+
+        if path:
+            with open(path, "wb") as file_p:
+                # NOTE encoding handling utf-8?
+                file_p.write(response)
+
+        return response
+
+    def download_thumbnails(self, item, urn, output_directory=None, package=True):
+        """ """
+
+        manifest = self.get_manifest(urn)
+        if not manifest:
+            return (None, None, None)
+
+        package_path = None
+        thumbnail_path = None
+        thumbnail_data = None
+
+        thumbnail_source_path = item.get_thumbnail_as_path()
+        if thumbnail_source_path:
+            with open(thumbnail_source_path, "rb") as file_p:
+                thumbnail_data = file_p.read()
+
+        else:
+            # Parse the manifest to extract the derviatives to download
+            (_, thumbnails) = self.parse_manifest(manifest["derivatives"], manifest)
+
+            if thumbnails:
+                design_urn = manifest["urn"]
+                version = str(item.properties["sg_version_data"]["id"])
+
+                if output_directory is None:
+                    output_directory = tempfile.mkdtemp(
+                        prefix="forge_{}".format(version)
+                    )
+
+                output_dir_path = os.path.join(output_directory, "output")
+                if not os.path.exists(output_dir_path):
+                    os.makedirs(output_dir_path)
+
+                # Downlaod derivative sources from Froge
+                for thumbnail in thumbnails:
+                    path = os.path.join(output_dir_path, thumbnail["root_filename"])
+                    self.download_derivative(design_urn, thumbnail["urn"], path)
+
+                # Get the thumbnail data
+                # Just take the first thumbnail for now.
+                path = os.path.join(output_dir_path, thumbnails[-1]["root_filename"])
+                with open(path, "rb") as file_p:
+                    thumbnail_data = file_p.read()
+
+        # Write the thumbnails on disk
+        if thumbnail_data:
+            images_dir_path = os.path.join(output_dir_path, "images")
+            if not os.path.exists(images_dir_path):
+                os.makedirs(images_dir_path)
+
+            thumbnail_path = os.path.join(images_dir_path, "{}.jpg".format(version))
+            with open(thumbnail_path, "wb") as file_p:
+                file_p.write(thumbnail_data)
+
+        # Finally, package up the derivative sources and thumbnail data
+        if package:
+            package_path = shutil.make_archive(
+                base_name=os.path.join(output_directory, version),
+                format="zip",
+                root_dir=output_dir_path,
+            )
+
+        return package_path, thumbnail_path, output_directory

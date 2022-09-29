@@ -43,6 +43,10 @@ class AliasEngine(sgtk.platform.Engine):
 
         super(AliasEngine, self).__init__(tk, context, engine_instance_name, env)
 
+        forge = self.frameworks["tk-framework-forge"]
+        self.__aps_auth = forge.import_module("authentication")
+        self.__aps_api = forge.import_module("api")
+
     # -------------------------------------------------------------------------------------------------------
     # Static methods
     # -------------------------------------------------------------------------------------------------------
@@ -109,6 +113,16 @@ class AliasEngine(sgtk.platform.Engine):
         """Get the AliasSceneDataValidator object to help validate the Alias scene data."""
         return self.__scene_data_validator
 
+    @property
+    def autodesk_platform_services_api(self):
+        """Return the Autodesk Platform Services api."""
+        return self.__aps_api
+
+    @property
+    def autodesk_platform_services_auth(self):
+        """Return the Autodesk Platform Services authentication."""
+        return self.__aps_auth
+
     # -------------------------------------------------------------------------------------------------------
     # Override base Engine class methods
     # -------------------------------------------------------------------------------------------------------
@@ -120,6 +134,14 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         self.logger.debug("%s: Initializing..." % (self,))
+
+        import sys
+
+        sys.path.append("Z:\\python_libs")
+        import ptvsd
+
+        ptvsd.enable_attach(address=("192.168.56.106", 2222))
+        ptvsd.wait_for_attach()
 
         from sgtk.platform.qt import QtCore, QtGui
 
