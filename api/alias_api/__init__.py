@@ -17,7 +17,9 @@ import sys
 #   >= v2022.2 & < v2023.0  -- use APA from folder alias2022.2
 #   >= v2023.0              -- use APA from folder alias2023
 #
-# TODO: update the APA folder names to be more accurate
+# TODO: the Alias Python API, starting at version 2023.0, will have a build to match
+#       the exact version of Alias that is running - update how we pick the python api
+#       by specifying exact version, instead of by grouping (min/max version)
 #
 ALIAS_API = {
     "alias2023.1": {"min_version": "2023.1"},
