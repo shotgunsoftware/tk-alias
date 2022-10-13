@@ -20,7 +20,8 @@ import sys
 # TODO: update the APA folder names to be more accurate
 #
 ALIAS_API = {
-    "alias2023.0": {"min_version": "2023.0"},
+    "alias2023.1": {"min_version": "2023.1"},
+    "alias2023.0": {"min_version": "2023.0", "max_version": "2023.1"},
     "alias2022.2": {"min_version": "2022.2", "max_version": "2023.0"},
     "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
     "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3"},
