@@ -16,7 +16,7 @@ import sys
 
 class TestAliasSceneDataValidator(object):
     """
-    A test class for the AliasSceneDataValidator class functionality.
+    A test class for the AliasDataValidator class functionality.
 
     TODO add more unit tests to check the SDV check and fix functions.
     """
@@ -30,15 +30,15 @@ class TestAliasSceneDataValidator(object):
     @pytest.fixture
     def validator_class(request):
         """
-        Fixture to return the AliasSceneDataValidator class.
+        Fixture to return the AliasDataValidator class.
 
         Defer the import until this fixture to avoid import errors when this test class should
         be ignored.
         """
 
-        from tk_alias import AliasSceneDataValidator
+        from tk_alias import AliasDataValidator
 
-        return AliasSceneDataValidator
+        return AliasDataValidator
 
     @pytest.fixture
     def validator(request, validator_class):
