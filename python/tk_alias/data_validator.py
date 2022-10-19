@@ -871,6 +871,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         shaders = errors or alias_api.get_shaders()
 
@@ -988,6 +992,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         nodes = alias_py.dag_node.get_nodes_with_construction_history(
             nodes=errors,
@@ -1029,6 +1037,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         nodes = alias_py.dag_node.get_instanced_nodes(errors)
 
@@ -1078,6 +1090,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot(
             nodes=errors,
@@ -1140,6 +1156,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         if not errors:
             # Optimize the zero transform by first calling the zero transform on all top-level nodes
@@ -1260,6 +1280,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         if errors:
             for node in errors:
@@ -1340,6 +1364,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         nodes = errors or alias_api.get_top_dag_nodes()
 
@@ -1393,6 +1421,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         if errors:
             for node in errors:
@@ -1477,7 +1509,10 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlDagNode>
         """
 
-        # NOTE ask design - delete or untemplate?
+        if isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         if errors:
             alias_py.dag_node.delete_nodes(errors)
@@ -1515,6 +1550,11 @@ class AliasDataValidator(object):
             processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
         """
+
+        if isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         if errors:
             alias_py.dag_node.delete_nodes(errors)
@@ -1555,6 +1595,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
             nodes=errors
@@ -1598,6 +1642,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         unused_cos = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
             nodes=errors
@@ -1641,17 +1689,21 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlDagNode>
         """
 
+        if isinstance(errors, six.string_types):
+            errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
+
         # The list of specifi set names to delete. Leave empty to delete all sets.
         set_names = []
         if errors:
-            if isinstance(errors, six.string_types):
-                set_names.append(errors)
-            else:
-                for item in errors:
-                    if isinstance(item, six.string_types):
-                        set_names.append(item)
-                    elif isinstance(item, alias_api.AlSet):
-                        set_names.append(item.name)
+            for item in errors:
+                if isinstance(item, six.string_types):
+                    set_names.append(item)
+                elif isinstance(item, alias_api.AlSet):
+                    set_names.append(item.name)
 
         alias_set = alias_api.first_set()
         while alias_set:
@@ -1704,6 +1756,10 @@ class AliasDataValidator(object):
         if errors:
             if isinstance(errors, six.string_types):
                 errors = [errors]
+            elif isinstance(errors, list):
+                for i, error_item in enumerate(errors):
+                    if isinstance(error_item, dict):
+                        errors[i] = error_item["name"]
 
             for layer in errors:
                 if isinstance(layer, six.string_types):
@@ -1773,6 +1829,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         layers = alias_py.layer.get_symmetric_layers(
             layers=errors, skip_layers=skip_layers
@@ -1849,6 +1909,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         layers = errors or alias_api.get_layers()
 
@@ -1950,6 +2014,10 @@ class AliasDataValidator(object):
         if errors:
             if isinstance(errors, six.string_types):
                 errors = [errors]
+            elif isinstance(errors, list):
+                for i, error_item in enumerate(errors):
+                    if isinstance(error_item, dict):
+                        errors[i] = error_item["name"]
 
             groups_to_flatten = []
             for group_node in errors:
@@ -2006,6 +2074,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         if errors:
             for locator in errors:
@@ -2059,6 +2131,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         references = errors or alias_api.get_references()
 
@@ -2098,6 +2174,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         alias_py.pick_list.pick_nodes(errors)
 
@@ -2115,6 +2195,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         alias_py.pick_list.pick_curves_on_surface_from_nodes(errors)
 
@@ -2131,6 +2215,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         alias_py.pick_list.pick_nodes_assigned_to_shaders(errors)
 
@@ -2147,6 +2235,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         alias_py.pick_list.pick_nodes_assigned_to_layers(errors)
 
@@ -2163,6 +2255,10 @@ class AliasDataValidator(object):
 
         if isinstance(errors, six.string_types):
             errors = [errors]
+        elif isinstance(errors, list):
+            for i, error_item in enumerate(errors):
+                if isinstance(error_item, dict):
+                    errors[i] = error_item["name"]
 
         alias_py.pick_list.pick_layers(errors)
 
@@ -2181,5 +2277,9 @@ class AliasDataValidator(object):
         else:
             if isinstance(errors, six.string_types):
                 errors = [errors]
+            elif isinstance(errors, list):
+                for i, error_item in enumerate(errors):
+                    if isinstance(error_item, dict):
+                        errors[i] = error_item["name"]
 
             alias_py.pick_list.pick_locators(errors)
