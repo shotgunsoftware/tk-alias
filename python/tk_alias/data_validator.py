@@ -862,7 +862,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The shaders to process, if None, all shaders will be
             processed. Default=None
-        :type errors: str | list<str> | list<AlShader>
+        :type errors: str | list<str> | list<AlShader> | list<dict>
         :param skip_shaders: The specified shaders (by name) will not be fixed.
         :type skip_shaders: list<str>
         """
@@ -934,7 +934,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The of nodes to process, if None, all nodes in the current
                               stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
 
         :raises alias_api.AliasPythonException: if the attempting to delete specific nodes
         """
@@ -983,7 +983,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The nodes to process, if None, all nodes in the current stage will
                        be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
         :param skip_node_types: The specified node types will not be fixed.
         :type skip_node_types: list<alias_api.AlObjectType>
         """
@@ -1030,7 +1030,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The list of nodes to process, if None, all nodes in the current
                               stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
 
         :raises alias_api.AliasPythonException: if a node instance failed to expand
         """
@@ -1081,7 +1081,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The nodes to process, if None, all nodes in the current stage will
                               be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
 
         :raises alias_api.AliasPythonException: if a failed to set a node's pivot to the origin
         """
@@ -1145,7 +1145,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The nodes to process, if None, all nodes in the current
                               stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
         :param skip_node_types: The specified node types will not be fixed.
         :type skip_node_types: list<alias_api.AlObjectType>
 
@@ -1265,7 +1265,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The of nodes to process, if None, all nodes in the current
                               stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
         :param layer_name: The layer that the specified node types belong to. Default is the default layer in Alias.
         :type layer_name: str
         :param accept_node_types: The node types only accepted in the default layer.
@@ -1357,7 +1357,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The of nodes to process, if None, all nodes in the current
                               stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
         :param skip_layers: Nodes in the specified layers (by name) will not be fixed.
         :type skip_layers: list<str>
         """
@@ -1416,7 +1416,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The of nodes to process, if None, all nodes in the current
                               stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
         """
 
         if isinstance(errors, six.string_types):
@@ -1506,7 +1506,7 @@ class AliasDataValidator(object):
 
         :param errors: The list of nodes to process, if None, all nodes in the current stage will be
             processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
         """
 
         if isinstance(errors, list):
@@ -1548,7 +1548,7 @@ class AliasDataValidator(object):
 
         :param errors: The list of nodes to process, if None, all nodes in the current stage will be
             processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
         """
 
         if isinstance(errors, list):
@@ -1590,7 +1590,7 @@ class AliasDataValidator(object):
 
         :param errors: The list of curves on surface to process, if None, all curves on surface
                               current stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlCurveOnSurface>
+        :type errors: str | list<str> | list<AlCurveOnSurface> | list<dict>
         """
 
         if isinstance(errors, six.string_types):
@@ -1637,7 +1637,7 @@ class AliasDataValidator(object):
 
         :param errors: The list of curves on surface to process, if None, all curves on surface
                               current stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlCurveOnSurface>
+        :type errors: str | list<str> | list<AlCurveOnSurface> | list<dict>
         """
 
         if isinstance(errors, six.string_types):
@@ -1686,7 +1686,7 @@ class AliasDataValidator(object):
 
         :param errors: The list of nodes to process, if None, all nodes in the current stage will be
             processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode>
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
         """
 
         if isinstance(errors, six.string_types):
@@ -1822,7 +1822,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The layers to process, if None, all layers in the current
                               stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlLayer>
+        :type errors: str | list<str> | list<AlLayer> | list<dict>
         :param skip_layers: The specified layers (by name) will not be fixed.
         :type skip_layers: list<str>
         """
@@ -1900,7 +1900,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The list of layers to process, if None, all layers in the current
                               stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlLayer>
+        :type errors: str | list<str> | list<AlLayer> | list<dict>
         :param skip_layers: The specified layers (by name) will not be fixed.
         :type skip_layers: list<str>
         """
@@ -2004,7 +2004,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The list of group nodes to process, if None, all nodes in the
                               current stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlLayer>
+        :type errors: str | list<str> | list<AlLayer> | list<dict>
 
         :raises alias_api.AliasPythonException: if failed to flatten all groups
         """
@@ -2067,7 +2067,7 @@ class AliasDataValidator(object):
 
         :param errors: The list of locators to process, if None, all locators in current stage will
                               be processed. Default=None
-        :type errors: str | list<str> | list<AlCurveOnSurface>
+        :type errors: str | list<str> | list<AlCurveOnSurface> | list<dict>
 
         :raises alias_api.AliasPythonException: if failed to delete locator object
         """
@@ -2124,7 +2124,7 @@ class AliasDataValidator(object):
 
         :param errors: (optional) The list of references to process, if None, all references in the
                               current stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlReferenceFile>
+        :type errors: str | list<str> | list<AlReferenceFile> | list<dict>
 
         :raises alias_api.AliasPythonException: if failed to remove a reference
         """
@@ -2166,7 +2166,7 @@ class AliasDataValidator(object):
         Pick the nodes.
 
         :param errors: The node(s) to pick.
-        :type errors: str | AlDagNode | list<str> | list<AlDagNode>
+        :type errors: str | AlDagNode | list<str> | list<AlDagNode> | list<dict>
         """
 
         if not errors:
@@ -2187,7 +2187,7 @@ class AliasDataValidator(object):
         Pick the curves on surface.
 
         :param errors: The node(s) to pick curves on surface from.
-        :type errors: str | AlDagNode | list<str> | list<AlDagNode>
+        :type errors: str | AlDagNode | list<str> | list<AlDagNode> | list<dict>
         """
 
         if not errors:
@@ -2208,7 +2208,7 @@ class AliasDataValidator(object):
         Pick the nodes assigned to the shaders.
 
         :param errors: The shaders to get assigned nodes to pick.
-        :type errors: str | list<str> | list<AlShader>
+        :type errors: str | list<str> | list<AlShader> | list<dict>
         """
 
         errors = errors or alias_api.get_shaders()
@@ -2228,7 +2228,7 @@ class AliasDataValidator(object):
         Pick the nodes assigned to the layers.
 
         :param errors: The layers to get assigned ndoes to pick.
-        :type errors: str | list<str> | list<AlLayer>
+        :type errors: str | list<str> | list<AlLayer> | list<dict>
         """
 
         errors = errors or alias_api.get_layers()
@@ -2248,7 +2248,7 @@ class AliasDataValidator(object):
         Pick the layers.
 
         :param errors: The layers to pick.
-        :type errors: str | list<str> | list<AlLayer>
+        :type errors: str | list<str> | list<AlLayer> | list<dict>
         """
 
         errors = errors or alias_api.get_layers()
@@ -2268,7 +2268,7 @@ class AliasDataValidator(object):
         Pick the locators.
 
         :param errors: The locators to pick. If None, all locators will be picked.
-        :type errors: str | list<str> | list<AlLocator>
+        :type errors: str | list<str> | list<AlLocator> | list<dict>
         """
 
         if not errors:
