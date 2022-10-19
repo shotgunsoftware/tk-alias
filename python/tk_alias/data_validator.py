@@ -17,12 +17,12 @@ import alias_py.utils
 import alias_py.traverse_dag
 
 
-class AliasSceneDataValidator(object):
+class AliasDataValidator(object):
     """
-    The Alias Scene Validator class provides the data and functionality to validate a scene in Alias.
+    The Alias Data Validator class provides the data and functionality to validate data in Alias.
 
     The :meth:`get_validation_data` method returns the default validation rules data set, that drives the
-    scene validation. Each rule in the validation data includes the necessary information to display the
+    data validation. Each rule in the validation data includes the necessary information to display the
     validation rule, and the functions to perform the validation check and fix actions for the rule.
 
     The validation rule check functions are the functions prefixed with :meth:`check_` and the fix functions
@@ -41,7 +41,7 @@ class AliasSceneDataValidator(object):
 
     class CheckResult(object):
         """
-        The CheckResult object is the type returned by AliasSceneDataValidator check functions.
+        The CheckResult object is the type returned by AliasDataValidator check functions.
         """
 
         def __init__(self, is_valid=None, errors=None, args=None, kwargs=None):
@@ -95,7 +95,7 @@ class AliasSceneDataValidator(object):
 
     def __init__(self):
         """
-        Initialize the AliasSceneDataValidator object.
+        Initialize the AliasDataValidator object.
         """
 
         self._camera_node_types = alias_py.utils.camera_node_types()
@@ -107,10 +107,10 @@ class AliasSceneDataValidator(object):
 
     def get_validation_data(self):
         """
-        Return the validation rule data set that is used to validate an Alias scene.
+        Return the validation rule data set that is used to validate Alias data.
 
-        This is the main function of the class. It defines how the Alias scene data is validated, and
-        provides the functions to resolve those data errors in the scene.
+        This is the main function of the class. It defines how the Alias data is validated, and
+        provides the functions to resolve those data errors in Alias.
 
         The returned data set is a dictionay mapping of validation rule id to its validation rule data.
 
@@ -169,7 +169,7 @@ class AliasSceneDataValidator(object):
 
         **The Validation Rule data:**
 
-        .. literalinclude:: ../python/tk_alias/scene_data_validator.py
+        .. literalinclude:: ../python/tk_alias/data_validator.py
             :language: python
             :linenos:
             :lines: 187-830
@@ -876,7 +876,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_shader_unused(self, fail_fast=False, skip_shaders=None):
         """
-        Check for unused shaders (shaders that are not assigned to any geometry) in the current scene.
+        Check for unused shaders (shaders that are not assigned to any geometry) in Alias.
 
         :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
                           entire data and return all data errors found, and arguments that can be passed to
@@ -891,7 +891,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name. This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function. This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidation.CheckResult
         """
 
         skip_shaders = skip_shaders or []
@@ -903,21 +903,22 @@ class AliasSceneDataValidator(object):
 
             if not shader.is_used():
                 if fail_fast:
-                    return AliasSceneDataValidator.CheckResult(is_valid=False)
+                    return AliasDataValidator.CheckResult(is_valid=False)
                 unused_shaders.append(shader)
 
-        return AliasSceneDataValidator.CheckResult(errors=unused_shaders)
+        return AliasDataValidator.CheckResult(errors=unused_shaders)
 
     @sgtk.LogManager.log_timing
     def fix_shader_unused(self, errors=None, skip_shaders=None):
         """
-        Process all shaders in the current scene, or the specified shaders, and delete all unused shaders.
+        Process all shaders in Alias, or the specified shaders, and delete all unused shaders.
 
-        NOTE that the shaders list in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated shaders list.
+        NOTE that the shaders list in Alias may not update automatically,
+        alias_api.redraw_screen() may need to be invoked after this function, to see the
+        updated shaders list.
 
-        :param errors: (optional) The shaders to process, if None, all shaders in the current
-                              scene will be processed. Default=None
+        :param errors: (optional) The shaders to process, if None, all shaders will be
+            processed. Default=None
         :type errors: str | list<str> | list<AlShader>
         :param skip_shaders: The specified shaders (by name) will not be fixed.
         :type skip_shaders: list<str>
@@ -946,7 +947,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_shader_is_vred_compatible(self, fail_fast=False, skip_shaders=None):
         """
-        Check for non-VRED shaders used in the current scene.
+        Check for non-VRED shaders used in the current stage.
 
         A non-VRED shader is a shader that is not from the Asset Library (compaitible with VRED). Only shaders
         that are in use will be checked (e.g. if there is a non-VRED shader but is not used, it will not cause
@@ -968,7 +969,7 @@ class AliasSceneDataValidator(object):
                     This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function
                     This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         skip_shaders = skip_shaders or []
@@ -980,18 +981,18 @@ class AliasSceneDataValidator(object):
 
             if shader.is_used() and not alias_api.is_copy_of_vred_shader(shader):
                 if fail_fast:
-                    return AliasSceneDataValidator.CheckResult(is_valid=False)
+                    return AliasDataValidator.CheckResult(is_valid=False)
                 non_vred_shaders.append(shader)
 
-        return AliasSceneDataValidator.CheckResult(errors=non_vred_shaders)
+        return AliasDataValidator.CheckResult(errors=non_vred_shaders)
 
     @sgtk.LogManager.log_timing
     def fix_node_is_null(self, errors=None):
         """
-        Process all nodes in the current scene, or the specified nodes, and delete all null nodes.
+        Process all nodes in the current stage, or the specified nodes, and delete all null nodes.
 
         :param errors: (optional) The of nodes to process, if None, all nodes in the current
-                              scene will be processed. Default=None
+                              stage will be processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
 
         :raises alias_api.AliasPythonException: if the attempting to delete specific nodes
@@ -1010,7 +1011,7 @@ class AliasSceneDataValidator(object):
         self, fail_fast=False, skip_node_types=None
     ):
         """
-        Check for nodes with construction history in the current scene.
+        Check for nodes with construction history in the current stage.
 
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
@@ -1022,7 +1023,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         skip_node_types = skip_node_types or []
@@ -1031,18 +1032,18 @@ class AliasSceneDataValidator(object):
             skip_node_types=set(skip_node_types),
         )
 
-        return AliasSceneDataValidator.CheckResult(errors=nodes_with_history)
+        return AliasDataValidator.CheckResult(errors=nodes_with_history)
 
     @sgtk.LogManager.log_timing
     def fix_node_has_construction_history(self, errors=None, skip_node_types=None):
         """
-        Process all nodes in the current scene, or the specified of nodes, and delete history from any nodes
+        Process all nodes in the current stage, or the specified of nodes, and delete history from any nodes
         with history.
 
         NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated scene.
+        to be invoked after this function, to see the updated data.
 
-        :param errors: (optional) The nodes to process, if None, all nodes in the current scene will
+        :param errors: (optional) The nodes to process, if None, all nodes in the current stage will
                        be processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
         :param skip_node_types: The specified node types will not be fixed.
@@ -1064,7 +1065,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_node_instances(self, fail_fast=False):
         """
-        Check for instanced nodes in the current scene.
+        Check for instanced nodes in the current stage.
 
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
@@ -1074,24 +1075,24 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         invalid_nodes = alias_py.dag_node.get_instanced_nodes()
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_nodes)
+        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_instances(self, errors=None):
         """
-        Process all nodes in the current scene, or the list of nodes if provided, and remove all instanced
+        Process all nodes in the current stage, or the list of nodes if provided, and remove all instanced
         nodes.
 
         NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated scene.
+        to be invoked after this function, to see the updated data.
 
         :param errors: (optional) The list of nodes to process, if None, all nodes in the current
-                              scene will be processed. Default=None
+                              stage will be processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
 
         :raises alias_api.AliasPythonException: if a node instance failed to expand
@@ -1122,7 +1123,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         skip_node_types = skip_node_types or []
@@ -1131,18 +1132,18 @@ class AliasSceneDataValidator(object):
             skip_node_types=set(skip_node_types),
         )
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_nodes)
+        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_pivots_at_origin(self, errors=None, skip_node_types=None):
         """
-        Process all nodes in the current scene, or the specified nodes, and reset their scale and roate
+        Process all nodes in the current stage, or the specified nodes, and reset their scale and roate
         pivots such that they are centered around the origin.
 
         NOTE that the pivots Alias may not update automatically, alias_api.redraw_screen() may need to be
         invoked after this function, to see the updated pivots.
 
-        :param errors: (optional) The nodes to process, if None, all nodes in the current scene will
+        :param errors: (optional) The nodes to process, if None, all nodes in the current stage will
                               be processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
 
@@ -1176,7 +1177,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_node_has_zero_transform(self, fail_fast=False, skip_node_types=None):
         """
-        Check for nodes with non-zero transforms in the current scene.
+        Check for nodes with non-zero transforms in the current stage.
 
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
@@ -1188,7 +1189,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         skip_node_types = skip_node_types or []
@@ -1197,18 +1198,18 @@ class AliasSceneDataValidator(object):
             skip_node_types=set(skip_node_types),
         )
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_nodes)
+        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_has_zero_transform(self, errors=None, skip_node_types=None):
         """
-        Process all nodes in the current scene, or the specified nodes, and reset all transforms to zero.
+        Process all nodes in the current stage, or the specified nodes, and reset all transforms to zero.
 
         NOTE that the nodes Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated node transforms.
 
         :param errors: (optional) The nodes to process, if None, all nodes in the current
-                              scene will be processed. Default=None
+                              stage will be processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
         :param skip_node_types: The specified node types will not be fixed.
         :type skip_node_types: list<alias_api.AlObjectType>
@@ -1261,7 +1262,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         layer = alias_api.get_layer_by_name(layer_name)
@@ -1277,10 +1278,10 @@ class AliasSceneDataValidator(object):
         for node in nodes:
             if node.type() not in accept_node_types:
                 if fail_fast:
-                    return AliasSceneDataValidator.CheckResult(is_valid=False)
+                    return AliasDataValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_nodes)
+        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def check_node_is_in_layer(
@@ -1305,7 +1306,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         layer = alias_api.get_layer_by_name(layer_name)
@@ -1319,18 +1320,18 @@ class AliasSceneDataValidator(object):
         )
         result = alias_api.search_dag(input_data)
 
-        return AliasSceneDataValidator.CheckResult(errors=result.nodes)
+        return AliasDataValidator.CheckResult(errors=result.nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_is_in_layer(
         self, errors=None, layer_name=None, accept_node_types=None
     ):
         """
-        Process all nodes in the current scene, or the specified nodes, and move any nodes found that are of
+        Process all nodes in the current stage, or the specified nodes, and move any nodes found that are of
         the specified node type but not in the specified layer.
 
         :param errors: (optional) The of nodes to process, if None, all nodes in the current
-                              scene will be processed. Default=None
+                              stage will be processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
         :param layer_name: The layer that the specified node types belong to. Default is the default layer in Alias.
         :type layer_name: str
@@ -1375,7 +1376,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_node_name_matches_layer(self, fail_fast=False, skip_layers=None):
         """
-        Check for naming mismatches between layer and its nodes, for all top-levle nodes in the current scene.
+        Check for naming mismatches between layer and its nodes, for all top-levle nodes in the current stage.
 
         Each layer should only contain one group (or one surface). This group is named after the layer.
         If groups are found that don't match the name of the layer, an error is thrown.
@@ -1393,7 +1394,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         invalid_nodes = []
@@ -1409,19 +1410,19 @@ class AliasSceneDataValidator(object):
             reg = r"^{}(#?\d)*$".format(layer.name)
             if not re.match(reg, node.name):
                 if fail_fast:
-                    return AliasSceneDataValidator.CheckResult(is_valid=False)
+                    return AliasDataValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_nodes)
+        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_name_matches_layer(self, errors=None, skip_layers=None):
         """
-        Process all nodes in the current scene, or the specified nodes, and rename any nodes that do not
+        Process all nodes in the current stage, or the specified nodes, and rename any nodes that do not
         match its layer.
 
         :param errors: (optional) The of nodes to process, if None, all nodes in the current
-                              scene will be processed. Default=None
+                              stage will be processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
         :param skip_layers: Nodes in the specified layers (by name) will not be fixed.
         :type skip_layers: list<str>
@@ -1464,22 +1465,22 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         input_data = alias_api.TraverseDagInputData()
         result = alias_api.search_node_layer_does_not_match_parent_layer(input_data)
 
-        return AliasSceneDataValidator.CheckResult(errors=result.nodes)
+        return AliasDataValidator.CheckResult(errors=result.nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_layer_matches_parent(self, errors=None):
         """
-        Process all nodes in the current scene, or the specified nodes, and ensure that a node's layer is the
+        Process all nodes in the current stage, or the specified nodes, and ensure that a node's layer is the
         same as its parent node's layer.
 
         :param errors: (optional) The of nodes to process, if None, all nodes in the current
-                              scene will be processed. Default=None
+                              stage will be processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
         """
 
@@ -1515,7 +1516,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_node_dag_top_level(self, fail_fast=False, accept_node_types=None):
         """
-        Check for invalid top-level nodes in the DAG of the current scene.
+        Check for invalid top-level nodes in the DAG of the current stage.
 
         :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
                           entire data and return all data errors found, and arguments that can be passed to
@@ -1530,7 +1531,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         accept_node_types = accept_node_types or []
@@ -1540,10 +1541,10 @@ class AliasSceneDataValidator(object):
         for node in nodes:
             if node.type() not in accept_node_types:
                 if fail_fast:
-                    return AliasSceneDataValidator.CheckResult(is_valid=False)
+                    return AliasDataValidator.CheckResult(is_valid=False)
                 invalid_nodes.append(node)
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_nodes)
+        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def check_node_templates(self, fail_fast=False):
@@ -1558,19 +1559,19 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         result = alias_api.traverse_dag(alias_py.traverse_dag.node_is_template)
-        return AliasSceneDataValidator.CheckResult(errors=result.nodes)
+        return AliasDataValidator.CheckResult(errors=result.nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_templates(self, errors=None):
         """
-        Process all nodes in the current scene, or the list of nodes if provided, and delete nodes that are
+        Process all nodes in the current stage, or the list of nodes if provided, and delete nodes that are
         set as a template.
 
-        :param errors: The list of nodes to process, if None, all nodes in the current scene will be
+        :param errors: The list of nodes to process, if None, all nodes in the current stage will be
             processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
         """
@@ -1598,7 +1599,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         # Find all (and only) AlCurveNode objects
@@ -1606,15 +1607,15 @@ class AliasSceneDataValidator(object):
             [alias_api.AlObjectType.CurveNodeType]
         )
 
-        return AliasSceneDataValidator.CheckResult(errors=curve_nodes)
+        return AliasDataValidator.CheckResult(errors=curve_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_curves(self, errors=None):
         """
-        Process all nodes in the current scene, or the list of nodes if provided, and delete all nodes that
+        Process all nodes in the current stage, or the list of nodes if provided, and delete all nodes that
         represent a curve.
 
-        :param errors: The list of nodes to process, if None, all nodes in the current scene will be
+        :param errors: The list of nodes to process, if None, all nodes in the current stage will be
             processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
         """
@@ -1633,7 +1634,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_curve_on_surface_unused(self, fail_fast=False):
         """
-        Check for unused curves on surfaces in the current scene.
+        Check for unused curves on surfaces in the current stage.
 
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
@@ -1643,21 +1644,21 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         invalid_nodes = alias_py.dag_node.get_nodes_with_unused_curves_on_surface()
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_nodes)
+        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_curve_on_surface_unused(self, errors=None):
         """
-        Process all curves on surface current scene, or the list of curves on surface if provided, and delete
+        Process all curves on surface current stage, or the list of curves on surface if provided, and delete
         unused curves on surface.
 
         :param errors: The list of curves on surface to process, if None, all curves on surface
-                              current scene will be processed. Default=None
+                              current stage will be processed. Default=None
         :type errors: str | list<str> | list<AlCurveOnSurface>
         """
 
@@ -1674,7 +1675,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_curve_on_surface_construction_history(self, fail_fast=False):
         """
-        Check for unused curves on surfaces that have construction history in the current scene.
+        Check for unused curves on surfaces that have construction history in the current stage.
 
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
@@ -1684,7 +1685,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         unused_cos = alias_py.dag_node.get_unused_curves_on_surface_for_nodes()
@@ -1694,16 +1695,16 @@ class AliasSceneDataValidator(object):
             if alias_api.has_construction_history(cos):
                 invalid_nodes.append(cos.surface().surface_node())
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_nodes)
+        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_curve_on_surface_construction_history(self, errors=None):
         """
-        Process all curves on surface current scene, or the list of curves on surface if provided, and delete
+        Process all curves on surface current stage, or the list of curves on surface if provided, and delete
         construction history for unused curves on surface.
 
         :param errors: The list of curves on surface to process, if None, all curves on surface
-                              current scene will be processed. Default=None
+                              current stage will be processed. Default=None
         :type errors: str | list<str> | list<AlCurveOnSurface>
         """
 
@@ -1731,7 +1732,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         empty_sets = []
@@ -1742,15 +1743,15 @@ class AliasSceneDataValidator(object):
                 empty_sets.append(alias_set)
             alias_set = alias_set.next_set()
 
-        return AliasSceneDataValidator.CheckResult(errors=empty_sets)
+        return AliasDataValidator.CheckResult(errors=empty_sets)
 
     @sgtk.LogManager.log_timing
     def fix_set_empty(self, errors=None):
         """
-        Process all sets in the current scene, or the list of sets if provided, and delete all sets that are
+        Process all sets in the current stage, or the list of sets if provided, and delete all sets that are
         empty.
 
-        :param errors: The list of nodes to process, if None, all nodes in the current scene will be
+        :param errors: The list of nodes to process, if None, all nodes in the current stage will be
             processed. Default=None
         :type errors: str | list<str> | list<AlDagNode>
         """
@@ -1780,7 +1781,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_layer_is_empty(self, fail_fast=False, skip_layers=None):
         """
-        Check for empty layers and layer folders in the current scene.
+        Check for empty layers and layer folders in the current stage.
 
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
@@ -1792,22 +1793,22 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         skip_layers = set(skip_layers or [])
         include_folders = True
         empty_layers = alias_api.get_empty_layers(include_folders, skip_layers)
 
-        return AliasSceneDataValidator.CheckResult(errors=empty_layers)
+        return AliasDataValidator.CheckResult(errors=empty_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_is_empty(self, errors=None, skip_layers=None):
         """
-        Process all layers in the current scene, or the list of layers if provided, and delete all the empty layers and layer
+        Process all layers in the current stage, or the list of layers if provided, and delete all the empty layers and layer
         folders.
 
-        :param layers: (optiona) The layers to process, if None, all layers in the current scene will
+        :param layers: (optiona) The layers to process, if None, all layers in the current stage will
                        be processed. Default=None
         :type layers: str | list<str> | list<AlLayer>
         :param skip_layers: The specified layers (by name) will not be fixed.
@@ -1847,17 +1848,17 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         invalid_layers = alias_api.get_layers_using_multiple_shaders()
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_layers)
+        return AliasDataValidator.CheckResult(errors=invalid_layers)
 
     @sgtk.LogManager.log_timing
     def check_layer_symmetry(self, fail_fast=False, skip_layers=None):
         """
-        Check for layers with symmetry turned on in the current scene.
+        Check for layers with symmetry turned on in the current stage.
 
         :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
                           entire data and return all data errors found, and arguments that can be passed to
@@ -1872,30 +1873,28 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         if fail_fast:
             has_symmetric_layers = alias_py.layer.get_symmetric_layers(
                 check_exists=True, skip_layers=skip_layers
             )
-            return AliasSceneDataValidator.CheckResult(
-                is_valid=not has_symmetric_layers
-            )
+            return AliasDataValidator.CheckResult(is_valid=not has_symmetric_layers)
 
         symmetric_layers = alias_py.layer.get_symmetric_layers(skip_layers=skip_layers)
-        return AliasSceneDataValidator.CheckResult(errors=symmetric_layers)
+        return AliasDataValidator.CheckResult(errors=symmetric_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_symmetry(self, errors=None, skip_layers=None):
         """
-        Process all layers in the current scene, or the specified layers, and turn off symmetry on layers.
+        Process all layers in the current stage, or the specified layers, and turn off symmetry on layers.
 
         NOTE that the layers in Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated layers.
 
         :param errors: (optional) The layers to process, if None, all layers in the current
-                              scene will be processed. Default=None
+                              stage will be processed. Default=None
         :type errors: str | list<str> | list<AlLayer>
         :param skip_layers: The specified layers (by name) will not be fixed.
         :type skip_layers: list<str>
@@ -1930,7 +1929,7 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         invalid_layers = []
@@ -1952,27 +1951,27 @@ class AliasSceneDataValidator(object):
 
             if node_layer_name in processed_layers:
                 if fail_fast:
-                    return AliasSceneDataValidator.CheckResult(is_valid=False)
+                    return AliasDataValidator.CheckResult(is_valid=False)
                 invalid_layers.append(node_layer)
                 marked_invalid_layers.add(node_layer_name)
             else:
                 processed_layers.add(node_layer_name)
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_layers)
+        return AliasDataValidator.CheckResult(errors=invalid_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_has_single_object(self, errors=None, skip_layers=None):
         """
-        Process all layers in the current scene, or the list of layers if provided, and place all
+        Process all layers in the current stage, or the list of layers if provided, and place all
         layer's contents into a single group.
 
         A new group will be created if the layer does not have any group nodes currently.
 
         NOTE that the layers in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated scene.
+        to be invoked after this function, to see the updated data.
 
         :param errors: (optional) The list of layers to process, if None, all layers in the current
-                              scene will be processed. Default=None
+                              stage will be processed. Default=None
         :type errors: str | list<str> | list<AlLayer>
         :param skip_layers: The specified layers (by name) will not be fixed.
         :type skip_layers: list<str>
@@ -2050,7 +2049,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_group_has_single_level_hierarchy(self, fail_fast=False):
         """
-        Check for groups with more than one level of hierarchy in the current scene.
+        Check for groups with more than one level of hierarchy in the current stage.
 
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
@@ -2060,24 +2059,24 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         invalid_group_nodes = alias_api.get_nesting_groups()
 
-        return AliasSceneDataValidator.CheckResult(errors=invalid_group_nodes)
+        return AliasDataValidator.CheckResult(errors=invalid_group_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_group_has_single_level_hierarchy(self, errors=None):
         """
-        Process all nodes in the current scene, or the specified group nodes, and flatten each node such that
+        Process all nodes in the current stage, or the specified group nodes, and flatten each node such that
         it only has a single levele of hierarchy (e.g. parent->child but not parent->child->grandchild)
 
         NOTE that the groups in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated scene.
+        to be invoked after this function, to see the updated data.
 
         :param errors: (optional) The list of group nodes to process, if None, all nodes in the
-                              current scene will be processed. Default=None
+                              current stage will be processed. Default=None
         :type errors: str | list<str> | list<AlLayer>
 
         :raises alias_api.AliasPythonException: if failed to flatten all groups
@@ -2111,7 +2110,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_locators(self, fail_fast=False):
         """
-        Check for locators in the current scene.
+        Check for locators in the current stage.
 
         :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
                           entire data and return all data errors found, and arguments that can be passed to
@@ -2124,22 +2123,22 @@ class AliasSceneDataValidator(object):
                     (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
                     (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
                     (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasSceneValidation.CheckResult
+        :rtype: AliasDataValidator.CheckResult
         """
 
         if fail_fast:
             has_locators = alias_py.utils.get_locators(check_exists=True)
-            return AliasSceneDataValidator.CheckResult(is_valid=not has_locators)
+            return AliasDataValidator.CheckResult(is_valid=not has_locators)
 
         locators = alias_py.utils.get_locators()
-        return AliasSceneDataValidator.CheckResult(errors=locators)
+        return AliasDataValidator.CheckResult(errors=locators)
 
     @sgtk.LogManager.log_timing
     def fix_locators(self, errors=None):
         """
-        Process all locators in the current scene, or the specified locators, and delete them.
+        Process all locators in the current stage, or the specified locators, and delete them.
 
-        :param errors: The list of locators to process, if None, all locators in current scene will
+        :param errors: The list of locators to process, if None, all locators in current stage will
                               be processed. Default=None
         :type errors: str | list<str> | list<AlCurveOnSurface>
 
@@ -2168,7 +2167,7 @@ class AliasSceneDataValidator(object):
     @sgtk.LogManager.log_timing
     def check_refererences_exist(self, fail_fast=False):
         """
-        Check for referenced geometry in the current scene.
+        Check for referenced geometry in the current stage.
 
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
@@ -2183,19 +2182,19 @@ class AliasSceneDataValidator(object):
 
         references = alias_api.get_references()
 
-        return AliasSceneDataValidator.CheckResult(errors=references)
+        return AliasDataValidator.CheckResult(errors=references)
 
     @sgtk.LogManager.log_timing
     def fix_references_exist(self, errors=None):
         """
         Process all references, or the specificed references, and remove all referneces from the current
-        scene.
+        stage.
 
         NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated scene.
+        to be invoked after this function, to see the updated data.
 
         :param errors: (optional) The list of references to process, if None, all references in the
-                              current scene will be processed. Default=None
+                              current stage will be processed. Default=None
         :type errors: str | list<str> | list<AlReferenceFile>
 
         :raises alias_api.AliasPythonException: if failed to remove a reference
