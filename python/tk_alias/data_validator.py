@@ -39,60 +39,6 @@ class AliasDataValidator(object):
     DEFAULT_LAYER_NAME = "DefaultLayer"
     DEFAULT_SHADER_NAME = "DefaultShader"
 
-    class CheckResult(object):
-        """
-        The CheckResult object is the type returned by AliasDataValidator check functions.
-        """
-
-        def __init__(self, is_valid=None, errors=None, args=None, kwargs=None):
-            """
-            Initialize the CheckResult object with the given data.
-
-            :param is_valid: The success status that the check function reported. If not provided, the validity will be determined based on if there are any errors.
-            :type is_valid: bool
-            :param errors: The data errors the check function found. This should be a list of Alias objects, but
-                can be a list of object as long as they follow the expected format.
-            :type errors: list
-            :param args: The arguments list the check function provided to pass to its corresponding fix function.
-            :type args: list
-            :param kwargs: The key-word arguments the check function provided to pass to its corresponding fix
-                function.
-            :type kargs: dict
-
-            The CheckResult object will have the attributes:
-                is_valid
-                    :type: bool
-                    :description: True if the result is valid, else False
-                errors
-                    :type: list
-                    :description: This is the list of errors passed to create the result object. This is expected to be a list of Alias objects, but it can be any list of objects that have the expected format (required attributes: name (str), type (func => str), optional attributes: id (str))
-                args
-                    :type: list
-                    :description: A list of arguments that can be passed to a fix function
-                kwargs
-                    :type: dict
-                    :description: Keyword arguments that can be passed to a fix function. This will contain the errors passed in assigned to key 'error_items'.
-            """
-
-            if is_valid is None:
-                self.is_valid = not errors
-            else:
-                self.is_valid = is_valid
-
-            errors = errors or []
-            self.errors = [
-                {
-                    "id": item.id if hasattr(item, "id") and item.id else item.name,
-                    "name": item.name,
-                    "type": item.type(),
-                }
-                for item in errors
-            ]
-
-            self.args = args or []
-            self.kwargs = kwargs or {}
-            self.kwargs["error_items"] = errors
-
     def __init__(self):
         """
         Initialize the AliasDataValidator object.
@@ -861,7 +807,7 @@ class AliasDataValidator(object):
     #   Guidelines to defining a check function:
     #       - Function name should be prefixed with `check_`
     #       - Takes an optional single parameter `fail_fast` which returned immediately once the check fails
-    #       - Returns a ValidationCheckResult object
+    #       - Returns a list of Alias objects
     #
     #   Guidelines to defining a fix function:
     #       - Function name should be prefixed with `fix_`
@@ -886,12 +832,9 @@ class AliasDataValidator(object):
         :param skip_shaders: The specified shaders (by name) will not be checked.
         :type skip_shaders: list<str>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name. This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function. This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidation.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         skip_shaders = skip_shaders or []
@@ -903,10 +846,10 @@ class AliasDataValidator(object):
 
             if not shader.is_used():
                 if fail_fast:
-                    return AliasDataValidator.CheckResult(is_valid=False)
+                    return False
                 unused_shaders.append(shader)
 
-        return AliasDataValidator.CheckResult(errors=unused_shaders)
+        return unused_shaders
 
     @sgtk.LogManager.log_timing
     def fix_shader_unused(self, errors=None, skip_shaders=None):
@@ -961,15 +904,9 @@ class AliasDataValidator(object):
         :param skip_shaders: The specified shaders (by name) will not be checked.
         :type skip_shaders: list<str>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name
-                    This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function
-                    This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function
-                    This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         skip_shaders = skip_shaders or []
@@ -981,10 +918,10 @@ class AliasDataValidator(object):
 
             if shader.is_used() and not alias_api.is_copy_of_vred_shader(shader):
                 if fail_fast:
-                    return AliasDataValidator.CheckResult(is_valid=False)
+                    return False
                 non_vred_shaders.append(shader)
 
-        return AliasDataValidator.CheckResult(errors=non_vred_shaders)
+        return non_vred_shaders
 
     @sgtk.LogManager.log_timing
     def fix_node_is_null(self, errors=None):
@@ -1018,12 +955,9 @@ class AliasDataValidator(object):
         :param skip_node_types: The specified node types will not be checked.
         :type skip_node_types: list<alias_api.AlObjectType>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         skip_node_types = skip_node_types or []
@@ -1032,7 +966,7 @@ class AliasDataValidator(object):
             skip_node_types=set(skip_node_types),
         )
 
-        return AliasDataValidator.CheckResult(errors=nodes_with_history)
+        return nodes_with_history
 
     @sgtk.LogManager.log_timing
     def fix_node_has_construction_history(self, errors=None, skip_node_types=None):
@@ -1070,17 +1004,12 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
-        invalid_nodes = alias_py.dag_node.get_instanced_nodes()
-
-        return AliasDataValidator.CheckResult(errors=invalid_nodes)
+        return alias_py.dag_node.get_instanced_nodes()
 
     @sgtk.LogManager.log_timing
     def fix_node_instances(self, errors=None):
@@ -1118,21 +1047,16 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         skip_node_types = skip_node_types or []
 
-        invalid_nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot(
+        return alias_py.dag_node.get_nodes_with_non_origin_pivot(
             skip_node_types=set(skip_node_types),
         )
-
-        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_pivots_at_origin(self, errors=None, skip_node_types=None):
@@ -1184,21 +1108,16 @@ class AliasDataValidator(object):
         :param skip_node_types: The specified node types will not be checked.
         :type skip_node_types: list<alias_api.AlObjectType>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         skip_node_types = skip_node_types or []
 
-        invalid_nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
+        return alias_py.dag_node.get_nodes_with_non_zero_transform(
             skip_node_types=set(skip_node_types),
         )
-
-        return AliasDataValidator.CheckResult(errors=invalid_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_has_zero_transform(self, errors=None, skip_node_types=None):
@@ -1257,12 +1176,9 @@ class AliasDataValidator(object):
         :param accept_node_types: Only the specified node types are accepted in the layer.
         :type accept_node_types: list<alias_api.AlObjectType>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         layer = alias_api.get_layer_by_name(layer_name)
@@ -1278,10 +1194,10 @@ class AliasDataValidator(object):
         for node in nodes:
             if node.type() not in accept_node_types:
                 if fail_fast:
-                    return AliasDataValidator.CheckResult(is_valid=False)
+                    return False
                 invalid_nodes.append(node)
 
-        return AliasDataValidator.CheckResult(errors=invalid_nodes)
+        return invalid_nodes
 
     @sgtk.LogManager.log_timing
     def check_node_is_in_layer(
@@ -1301,12 +1217,9 @@ class AliasDataValidator(object):
         :param accept_node_types: The node types that must only be in the layer.
         :type accept_node_types: list<alias_api.AlObjectType>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         layer = alias_api.get_layer_by_name(layer_name)
@@ -1320,7 +1233,7 @@ class AliasDataValidator(object):
         )
         result = alias_api.search_dag(input_data)
 
-        return AliasDataValidator.CheckResult(errors=result.nodes)
+        return result.nodes
 
     @sgtk.LogManager.log_timing
     def fix_node_is_in_layer(
@@ -1389,12 +1302,9 @@ class AliasDataValidator(object):
         :param skip_layers: The specified layers (by name) will not be checked.
         :type skip_layers: list<str>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         invalid_nodes = []
@@ -1410,10 +1320,10 @@ class AliasDataValidator(object):
             reg = r"^{}(#?\d)*$".format(layer.name)
             if not re.match(reg, node.name):
                 if fail_fast:
-                    return AliasDataValidator.CheckResult(is_valid=False)
+                    return False
                 invalid_nodes.append(node)
 
-        return AliasDataValidator.CheckResult(errors=invalid_nodes)
+        return invalid_nodes
 
     @sgtk.LogManager.log_timing
     def fix_node_name_matches_layer(self, errors=None, skip_layers=None):
@@ -1460,18 +1370,15 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         input_data = alias_api.TraverseDagInputData()
         result = alias_api.search_node_layer_does_not_match_parent_layer(input_data)
 
-        return AliasDataValidator.CheckResult(errors=result.nodes)
+        return result.nodes
 
     @sgtk.LogManager.log_timing
     def fix_node_layer_matches_parent(self, errors=None):
@@ -1526,12 +1433,9 @@ class AliasDataValidator(object):
         :param accept_node_types: Only the specified node types are accepted in the top level of the DAG.
         :type accept_node_types: list<alias_api.AlObjectType>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         accept_node_types = accept_node_types or []
@@ -1541,10 +1445,10 @@ class AliasDataValidator(object):
         for node in nodes:
             if node.type() not in accept_node_types:
                 if fail_fast:
-                    return AliasDataValidator.CheckResult(is_valid=False)
+                    return False
                 invalid_nodes.append(node)
 
-        return AliasDataValidator.CheckResult(errors=invalid_nodes)
+        return invalid_nodes
 
     @sgtk.LogManager.log_timing
     def check_node_templates(self, fail_fast=False):
@@ -1554,16 +1458,13 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         result = alias_api.traverse_dag(alias_py.traverse_dag.node_is_template)
-        return AliasDataValidator.CheckResult(errors=result.nodes)
+        return result.nodes
 
     @sgtk.LogManager.log_timing
     def fix_node_templates(self, errors=None):
@@ -1594,20 +1495,15 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         # Find all (and only) AlCurveNode objects
-        curve_nodes = alias_py.dag_node.get_nodes_by_type(
+        return alias_py.dag_node.get_nodes_by_type(
             [alias_api.AlObjectType.CurveNodeType]
         )
-
-        return AliasDataValidator.CheckResult(errors=curve_nodes)
 
     @sgtk.LogManager.log_timing
     def fix_node_curves(self, errors=None):
@@ -1639,17 +1535,12 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
-        invalid_nodes = alias_py.dag_node.get_nodes_with_unused_curves_on_surface()
-
-        return AliasDataValidator.CheckResult(errors=invalid_nodes)
+        return alias_py.dag_node.get_nodes_with_unused_curves_on_surface()
 
     @sgtk.LogManager.log_timing
     def fix_curve_on_surface_unused(self, errors=None):
@@ -1680,12 +1571,9 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         unused_cos = alias_py.dag_node.get_unused_curves_on_surface_for_nodes()
@@ -1695,7 +1583,7 @@ class AliasDataValidator(object):
             if alias_api.has_construction_history(cos):
                 invalid_nodes.append(cos.surface().surface_node())
 
-        return AliasDataValidator.CheckResult(errors=invalid_nodes)
+        return invalid_nodes
 
     @sgtk.LogManager.log_timing
     def fix_curve_on_surface_construction_history(self, errors=None):
@@ -1727,12 +1615,9 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         empty_sets = []
@@ -1743,7 +1628,7 @@ class AliasDataValidator(object):
                 empty_sets.append(alias_set)
             alias_set = alias_set.next_set()
 
-        return AliasDataValidator.CheckResult(errors=empty_sets)
+        return empty_sets
 
     @sgtk.LogManager.log_timing
     def fix_set_empty(self, errors=None):
@@ -1788,19 +1673,14 @@ class AliasDataValidator(object):
         :param skip_layers: The specified layers (by name) will not be checked.
         :type skip_layers: list<str>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         skip_layers = set(skip_layers or [])
         include_folders = True
-        empty_layers = alias_api.get_empty_layers(include_folders, skip_layers)
-
-        return AliasDataValidator.CheckResult(errors=empty_layers)
+        return alias_api.get_empty_layers(include_folders, skip_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_is_empty(self, errors=None, skip_layers=None):
@@ -1843,17 +1723,12 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
-        invalid_layers = alias_api.get_layers_using_multiple_shaders()
-
-        return AliasDataValidator.CheckResult(errors=invalid_layers)
+        return alias_api.get_layers_using_multiple_shaders()
 
     @sgtk.LogManager.log_timing
     def check_layer_symmetry(self, fail_fast=False, skip_layers=None):
@@ -1868,22 +1743,18 @@ class AliasDataValidator(object):
         :param skip_layers: The specified layers (by name) will not be checked.
         :type skip_layers: list<str>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         if fail_fast:
             has_symmetric_layers = alias_py.layer.get_symmetric_layers(
                 check_exists=True, skip_layers=skip_layers
             )
-            return AliasDataValidator.CheckResult(is_valid=not has_symmetric_layers)
+            return not has_symmetric_layers
 
-        symmetric_layers = alias_py.layer.get_symmetric_layers(skip_layers=skip_layers)
-        return AliasDataValidator.CheckResult(errors=symmetric_layers)
+        return alias_py.layer.get_symmetric_layers(skip_layers=skip_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_symmetry(self, errors=None, skip_layers=None):
@@ -1924,12 +1795,9 @@ class AliasDataValidator(object):
         :param skip_layers: The specified layers (by name) will not be checked.
         :type skip_layers: list<str>
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         invalid_layers = []
@@ -1951,13 +1819,13 @@ class AliasDataValidator(object):
 
             if node_layer_name in processed_layers:
                 if fail_fast:
-                    return AliasDataValidator.CheckResult(is_valid=False)
+                    return False
                 invalid_layers.append(node_layer)
                 marked_invalid_layers.add(node_layer_name)
             else:
                 processed_layers.add(node_layer_name)
 
-        return AliasDataValidator.CheckResult(errors=invalid_layers)
+        return invalid_layers
 
     @sgtk.LogManager.log_timing
     def fix_layer_has_single_object(self, errors=None, skip_layers=None):
@@ -2054,17 +1922,12 @@ class AliasDataValidator(object):
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
-        invalid_group_nodes = alias_api.get_nesting_groups()
-
-        return AliasDataValidator.CheckResult(errors=invalid_group_nodes)
+        return alias_api.get_nesting_groups()
 
     @sgtk.LogManager.log_timing
     def fix_group_has_single_level_hierarchy(self, errors=None):
@@ -2118,20 +1981,16 @@ class AliasDataValidator(object):
                           slower to execute.
         :type fail_fast: bool
 
-        :return: The check result object containing the data:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: AliasDataValidator.CheckResult
+        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
+            else the list of Alias objects that that failed the check is returned.
+        :rtype: list | bool
         """
 
         if fail_fast:
             has_locators = alias_py.utils.get_locators(check_exists=True)
-            return AliasDataValidator.CheckResult(is_valid=not has_locators)
+            return not has_locators
 
-        locators = alias_py.utils.get_locators()
-        return AliasDataValidator.CheckResult(errors=locators)
+        return alias_py.utils.get_locators()
 
     @sgtk.LogManager.log_timing
     def fix_locators(self, errors=None):
@@ -2180,9 +2039,7 @@ class AliasDataValidator(object):
         :rtype: tuple<bool,list,list,dict>
         """
 
-        references = alias_api.get_references()
-
-        return AliasDataValidator.CheckResult(errors=references)
+        return alias_api.get_references()
 
     @sgtk.LogManager.log_timing
     def fix_references_exist(self, errors=None):

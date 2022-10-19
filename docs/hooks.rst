@@ -12,7 +12,7 @@ tk-multi-data-validation
 
 .. _hooks-tk-multi-data-validation-data-validator:
 
-DataValidationHook
+AliasDataValidationHook
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This hook will get the validation rule data from the :ref:`data_validator` and pass it to the tk-multi-data-validation App.

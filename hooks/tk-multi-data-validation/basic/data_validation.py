@@ -13,8 +13,42 @@ import sgtk
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class DataValidationHook(HookBaseClass):
+class AliasDataValidationHook(HookBaseClass):
     """Hook to define Alias data validation functionality."""
+
+    class AliasDataValidationError(Exception):
+        """Custom exception class to report Alias Data Validation errors."""
+
+    class SanitizedResult:
+        """Class to represent a sanitized check result object."""
+
+        def __init__(self, is_valid=None, errors=None):
+            """
+            Initialize the object with the given data.
+
+            :param is_valid: The success status that the check function reported. If not provided, the validity will be determined based on if there are any errors.
+            :type is_valid: bool
+            :param errors: The data errors the check function found. This should be a list of Alias objects, but
+                can be a list of object as long as they follow the expected format.
+            :type errors: list
+            """
+
+            if is_valid is None:
+                self.is_valid = not errors
+            else:
+                self.is_valid = is_valid
+
+            if errors:
+                self.errors = [
+                    {
+                        "id": item.id if hasattr(item, "id") and item.id else item.name,
+                        "name": item.name,
+                        "type": item.type(),
+                    }
+                    for item in errors
+                ]
+            else:
+                self.errors = []
 
     def get_validation_data(self):
         """
@@ -59,31 +93,26 @@ class DataValidationHook(HookBaseClass):
         #     This callback method will execute when the "Validate" button is clicked for this
         #     rule, or validate all is initiated.
         #
-        #     This check function just returns the CheckResult with the is_valid state set to
-        #     the value of our global `custom_rule_is_valid` variable, and mocks an error list
-        #     of objects if the state is not valid.
-        #
-        #     NOTE that the check function takes one parameter, `fail_fast`, this is not used
-        #     here for simplicity, but it should still be defined to follow the "check"
-        #     functions guidelines (see AliasDataValidator class for more info).
+        #     NOTE that the check function takes one parameter, `fail_fast`, even if it is not
+        #     used, it should still be defined to follow the "check"functions guidelines (see
+        #     AliasDataValidator class for more info).
         #
         #     For examples of more advanced check functions, see the AliasDataValidator class
         #     methods prefixed with `check_`.
         #     """
         #
+        #     if fail_fast:
+        #         # In a fail fast context, just return True or False indicating if the rule is valid
+        #         return custom_rule_is_valid
+        #
         #     if custom_rule_is_valid:
         #         # Do not report any errors if the rule is valid
         #         errors = None
         #     else:
-        #         # The rule is not valid, pass an error list to the CheckResult object
-        #         #
-        #         # The errors list passed to the CheckResult object does not have to be a list
-        #         # of Alias objects, but it must have the required attributes:
-        #         #   1. name (str) - the name of the object (should be unique if 'id' is not included)
-        #         #   2. type (function -> str) - returns the type of the object
-        #         #   3. id (str) : optional - the unique identifier for the object
-        #         #
-        #         # Here is an example of what the objects in the error list should look like:
+        #         # The rule is not valid, return the Alias objects that do not pass the check.
+        #         # In this example, we using a namedtuple to return a list of Alias objects, but
+        #         # a list of Alias objects retrieved from the Alias Python API can also be used
+        #         # directly.
         #         from collections import namedtuple
         #         AliasObject = namedtuple("AliasObject", ["name", "type"])
         #         errors = [
@@ -91,10 +120,8 @@ class DataValidationHook(HookBaseClass):
         #             AliasObject("node#2", lambda: "AlSurfaceNode()"),
         #         ]
         #
-        #     # All validation check functions should return an
-        #     # AliasDataValidator.CheckResult object. It is not required, but it must
-        #     # follow the format that the tk-multi-data-validation ValidationRule expects.
-        #     return self.parent.engine.data_validator.CheckResult(is_valid=custom_rule_is_valid, errors=errors)
+        #     # If not fail faist, check functions should return the list of error objects
+        #     return errors
         #
         # def fix_my_custom_rule(errors=None):
         #     """
@@ -153,3 +180,57 @@ class DataValidationHook(HookBaseClass):
         # }
 
         return data
+
+    def sanitize_check_result(self, result):
+        """
+        Sanitize the value returned by any validate function to conform to the standard format.
+
+        Convert the incoming list of Alias objects (that are errors) to conform to the standard
+        format that the Data Validation App requires:
+
+            is_valid:
+                type: bool
+                description: True if the validate function succeed with the current data, else
+                             False.
+
+            errors:
+                type: list
+                description: The list of error objects (found by the validate function). None
+                             or empty list if the current data is valid.
+                items:
+                    type: dict
+                    key-values:
+                        id:
+                            type: str | int
+                            description: A unique identifier for the error object.
+                            optional: False
+                        name:
+                            type: str
+                            description: The display name for the error object.
+                            optional: False
+                        type:
+                            type: str
+                            description: The display name of the error object type.
+                            optional: True
+
+        This method will be called by the Data Validation App after any validate function is
+        called, in order to receive the validate result in the required format.
+
+        :param result: The result returned by a validation rule ``check_func``. This is
+            should be a list of Alias objects or a boolean value indicating the validity of
+            the check.
+        :type result: list
+
+        :return: The result of a ``check_func`` in the Data Validation standardized format.
+        :rtype: dict
+        """
+
+        if isinstance(result, bool):
+            return self.SanitizedResult(is_valid=result)
+
+        if isinstance(result, list):
+            return self.SanitizedResult(errors=result)
+
+        raise self.AliasDataValidationError(
+            "Cannot sanitize result type '{}'".format(type(result))
+        )
