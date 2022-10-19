@@ -13,17 +13,15 @@ import sgtk
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class SceneDataValidationHook(HookBaseClass):
-    """
-    Hook to define Alias scene validation functionality.
-    """
+class DataValidationHook(HookBaseClass):
+    """Hook to define Alias data validation functionality."""
 
     def get_validation_data(self):
         """
         Return the validation rule data set to validate an Alias scene.
 
         This method will retrieve the default validation rules returned by
-        :meth:`AliasSceneDataValidator.get_validation_data`. To customize the default
+        :meth:`AliasDataValidator.get_validation_data`. To customize the default
         validation rules, override this hook method to modify the returned data dictionary.
 
         The dictionary returned by this function should be formated such that it can be passed
@@ -34,7 +32,7 @@ class SceneDataValidationHook(HookBaseClass):
         :rtype: dict
         """
 
-        data = self.parent.engine.scene_data_validator.get_validation_data()
+        data = self.parent.engine.data_validator.get_validation_data()
 
         # -------------------------------------------------------------------------------------------------------
         #
@@ -67,9 +65,9 @@ class SceneDataValidationHook(HookBaseClass):
         #
         #     NOTE that the check function takes one parameter, `fail_fast`, this is not used
         #     here for simplicity, but it should still be defined to follow the "check"
-        #     functions guidelines (see AliasSceneDataValidator class for more info).
+        #     functions guidelines (see AliasDataValidator class for more info).
         #
-        #     For examples of more advanced check functions, see the AliasSceneDataValidator class
+        #     For examples of more advanced check functions, see the AliasDataValidator class
         #     methods prefixed with `check_`.
         #     """
         #
@@ -94,9 +92,9 @@ class SceneDataValidationHook(HookBaseClass):
         #         ]
         #
         #     # All validation check functions should return an
-        #     # AliasSceneDataValidator.CheckResult object. It is not required, but it must
+        #     # AliasDataValidator.CheckResult object. It is not required, but it must
         #     # follow the format that the tk-multi-data-validation ValidationRule expects.
-        #     return self.parent.engine.scene_data_validator.CheckResult(is_valid=custom_rule_is_valid, errors=errors)
+        #     return self.parent.engine.data_validator.CheckResult(is_valid=custom_rule_is_valid, errors=errors)
         #
         # def fix_my_custom_rule(errors=None):
         #     """
@@ -108,9 +106,9 @@ class SceneDataValidationHook(HookBaseClass):
         #
         #     NOTE that the fix function takes one parameter, `errors`, this is not used here
         #     for simplicity, but it should still be defined to follow the "fix" function
-        #     guidelines (see AliasSceneDataValidator class for more info).
+        #     guidelines (see AliasDataValidator class for more info).
         #
-        #     For examples of more advanced fix functions, see the AliasSceneDataValidator class
+        #     For examples of more advanced fix functions, see the AliasDataValidator class
         #     methods prefixed with `fix_`.
         #     """
         #     global custom_rule_is_valid
@@ -130,9 +128,9 @@ class SceneDataValidationHook(HookBaseClass):
         #
         #     NOTE that the fix function takes one parameter, `errors`, this is not used here
         #     for simplicity, but it should still be defined to follow the action function
-        #     guidelines (see AliasSceneDataValidator class for more info).
+        #     guidelines (see AliasDataValidator class for more info).
         #
-        #     For examples of more advanced fix functions, see the AliasSceneDataValidator class
+        #     For examples of more advanced fix functions, see the AliasDataValidator class
         #     methods.
         #     """
         #     global custom_rule_is_valid
