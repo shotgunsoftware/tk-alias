@@ -20,7 +20,7 @@ Contents
    :maxdepth: 2
 
    engine
-   scene_data_validator
+   data_validator
    event_watcher
    menu
    hooks
