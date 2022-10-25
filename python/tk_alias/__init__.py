@@ -15,4 +15,4 @@ if is_windows():
 
 from .menu_generation import AliasMenuGenerator
 from .alias_event_watcher import AliasEventWatcher
-from .scene_data_validator import AliasSceneDataValidator
+from .data_validator import AliasDataValidator

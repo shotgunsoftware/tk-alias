@@ -11,7 +11,7 @@ Key Class Members
 *******************
 
 - event_watcher (:ref:`event_watcher`)
-- scene_data_validator (:ref:`scene_data_validator`)
+- data_validator (:ref:`data_validator`)
 - _menu_generator (:ref:`menu`)
 
 .. literalinclude:: ../engine.py

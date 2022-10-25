@@ -32,7 +32,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.alias_version = None
         self._dialog_parent = None
         self.__event_watcher = None
-        self.__scene_data_validator = None
+        self.__data_validator = None
 
         self._menu_generator = None
         self._contexts_by_stage_name = {}
@@ -105,9 +105,9 @@ class AliasEngine(sgtk.platform.Engine):
         return self.__event_watcher
 
     @property
-    def scene_data_validator(self):
-        """Get the AliasSceneDataValidator object to help validate the Alias scene data."""
-        return self.__scene_data_validator
+    def data_validator(self):
+        """Get the AliasDataValidator object to help validate the Alias data."""
+        return self.__data_validator
 
     # -------------------------------------------------------------------------------------------------------
     # Override base Engine class methods
@@ -180,8 +180,8 @@ class AliasEngine(sgtk.platform.Engine):
         # event watcher
         self.__event_watcher = self._init_alias_event_watcher()
 
-        # scene validator
-        self.__scene_data_validator = self._tk_alias.AliasSceneDataValidator()
+        # data validator
+        self.__data_validator = self._tk_alias.AliasDataValidator()
 
         # Env vars
         self.alias_execpath = os.getenv("TK_ALIAS_EXECPATH", None)
