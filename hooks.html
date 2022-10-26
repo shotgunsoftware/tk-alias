@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Alias Engine Hooks &mdash; tk-alias v2.1.7 documentation</title>
+  <title>Alias Engine Hooks &mdash; tk-alias v2.1.9 documentation</title>
   
 
   
@@ -95,12 +95,12 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="engine.html">The Alias Engine Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="scene_data_validator.html">Scene Data Validator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_validator.html">Data Validator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="event_watcher.html">Event Watcher</a></li>
 <li class="toctree-l1"><a class="reference internal" href="menu.html">ShotGrid Menu in Alias</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Alias Engine Hooks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tk-multi-data-validation">tk-multi-data-validation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#scenedatavalidationhook">SceneDataValidationHook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aliasdatavalidationhook">AliasDataValidationHook</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#tk-multi-loader2">tk-multi-loader2</a><ul>
@@ -150,7 +150,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v2.1.7.<br>
+    <b>tk-alias</b> v2.1.9.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -160,6 +160,12 @@
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
 
     </div>
+    <style>
+        p.privacy_links { margin: 4px 0px;}
+    </style>
+    <p class="privacy_links"><a data-opt-in-preferences href="javascript:;">Privacy settings</a></p>
+    <p class="privacy_links"><a data-wat-linkname="manage-ccpa-settings-footer-link" href="javascript:;">Do not sell my personal information</a></p>
+    <p class="privacy_links"><a href="https://www.autodesk.com/company/legal-notices-trademarks/privacy-statement">Privacy/Cookies</a></p>
 
 
 
@@ -226,9 +232,9 @@
 <p>The Alias Engine defines hooks to customize the Toolkit Apps that it uses. See below for App specific hook details.</p>
 <div class="section" id="tk-multi-data-validation">
 <span id="hooks-tk-multi-data-validation"></span><h2>tk-multi-data-validation<a class="headerlink" href="#tk-multi-data-validation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="scenedatavalidationhook">
-<span id="hooks-tk-multi-data-validation-data-validator"></span><h3>SceneDataValidationHook<a class="headerlink" href="#scenedatavalidationhook" title="Permalink to this headline">¶</a></h3>
-<p>This hook will get the validation rule data from the <a class="reference internal" href="scene_data_validator.html#scene-data-validator"><span class="std std-ref">Scene Data Validator</span></a> and pass it to the tk-multi-data-validation App.</p>
+<div class="section" id="aliasdatavalidationhook">
+<span id="hooks-tk-multi-data-validation-data-validator"></span><h3>AliasDataValidationHook<a class="headerlink" href="#aliasdatavalidationhook" title="Permalink to this headline">¶</a></h3>
+<p>This hook will get the validation rule data from the <a class="reference internal" href="data_validator.html#data-validator"><span class="std std-ref">Data Validator</span></a> and pass it to the tk-multi-data-validation App.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2022 Autodesk, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -244,17 +250,49 @@
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
 
 
-<span class="k">class</span> <span class="nc">SceneDataValidationHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Hook to define Alias scene validation functionality.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">AliasDataValidationHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hook to define Alias data validation functionality.&quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">AliasDataValidationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Custom exception class to report Alias Data Validation errors.&quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">SanitizedResult</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class to represent a sanitized check result object.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_valid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Initialize the object with the given data.</span>
+
+<span class="sd">            :param is_valid: The success status that the check function reported. If not provided, the validity will be determined based on if there are any errors.</span>
+<span class="sd">            :type is_valid: bool</span>
+<span class="sd">            :param errors: The data errors the check function found. This should be a list of Alias objects, but</span>
+<span class="sd">                can be a list of object as long as they follow the expected format.</span>
+<span class="sd">            :type errors: list</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">if</span> <span class="n">is_valid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_valid</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">errors</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_valid</span> <span class="o">=</span> <span class="n">is_valid</span>
+
+            <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">type</span><span class="p">(),</span>
+                    <span class="p">}</span>
+                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">errors</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">get_validation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the validation rule data set to validate an Alias scene.</span>
 
 <span class="sd">        This method will retrieve the default validation rules returned by</span>
-<span class="sd">        :meth:`AliasSceneDataValidator.get_validation_data`. To customize the default</span>
+<span class="sd">        :meth:`AliasDataValidator.get_validation_data`. To customize the default</span>
 <span class="sd">        validation rules, override this hook method to modify the returned data dictionary.</span>
 
 <span class="sd">        The dictionary returned by this function should be formated such that it can be passed</span>
@@ -265,7 +303,7 @@
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">scene_data_validator</span><span class="o">.</span><span class="n">get_validation_data</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">data_validator</span><span class="o">.</span><span class="n">get_validation_data</span><span class="p">()</span>
 
         <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
         <span class="c1">#</span>
@@ -292,31 +330,26 @@
         <span class="c1">#     This callback method will execute when the &quot;Validate&quot; button is clicked for this</span>
         <span class="c1">#     rule, or validate all is initiated.</span>
         <span class="c1">#</span>
-        <span class="c1">#     This check function just returns the CheckResult with the is_valid state set to</span>
-        <span class="c1">#     the value of our global `custom_rule_is_valid` variable, and mocks an error list</span>
-        <span class="c1">#     of objects if the state is not valid.</span>
+        <span class="c1">#     NOTE that the check function takes one parameter, `fail_fast`, even if it is not</span>
+        <span class="c1">#     used, it should still be defined to follow the &quot;check&quot;functions guidelines (see</span>
+        <span class="c1">#     AliasDataValidator class for more info).</span>
         <span class="c1">#</span>
-        <span class="c1">#     NOTE that the check function takes one parameter, `fail_fast`, this is not used</span>
-        <span class="c1">#     here for simplicity, but it should still be defined to follow the &quot;check&quot;</span>
-        <span class="c1">#     functions guidelines (see AliasSceneDataValidator class for more info).</span>
-        <span class="c1">#</span>
-        <span class="c1">#     For examples of more advanced check functions, see the AliasSceneDataValidator class</span>
+        <span class="c1">#     For examples of more advanced check functions, see the AliasDataValidator class</span>
         <span class="c1">#     methods prefixed with `check_`.</span>
         <span class="c1">#     &quot;&quot;&quot;</span>
+        <span class="c1">#</span>
+        <span class="c1">#     if fail_fast:</span>
+        <span class="c1">#         # In a fail fast context, just return True or False indicating if the rule is valid</span>
+        <span class="c1">#         return custom_rule_is_valid</span>
         <span class="c1">#</span>
         <span class="c1">#     if custom_rule_is_valid:</span>
         <span class="c1">#         # Do not report any errors if the rule is valid</span>
         <span class="c1">#         errors = None</span>
         <span class="c1">#     else:</span>
-        <span class="c1">#         # The rule is not valid, pass an error list to the CheckResult object</span>
-        <span class="c1">#         #</span>
-        <span class="c1">#         # The errors list passed to the CheckResult object does not have to be a list</span>
-        <span class="c1">#         # of Alias objects, but it must have the required attributes:</span>
-        <span class="c1">#         #   1. name (str) - the name of the object (should be unique if &#39;id&#39; is not included)</span>
-        <span class="c1">#         #   2. type (function -&gt; str) - returns the type of the object</span>
-        <span class="c1">#         #   3. id (str) : optional - the unique identifier for the object</span>
-        <span class="c1">#         #</span>
-        <span class="c1">#         # Here is an example of what the objects in the error list should look like:</span>
+        <span class="c1">#         # The rule is not valid, return the Alias objects that do not pass the check.</span>
+        <span class="c1">#         # In this example, we using a namedtuple to return a list of Alias objects, but</span>
+        <span class="c1">#         # a list of Alias objects retrieved from the Alias Python API can also be used</span>
+        <span class="c1">#         # directly.</span>
         <span class="c1">#         from collections import namedtuple</span>
         <span class="c1">#         AliasObject = namedtuple(&quot;AliasObject&quot;, [&quot;name&quot;, &quot;type&quot;])</span>
         <span class="c1">#         errors = [</span>
@@ -324,10 +357,8 @@
         <span class="c1">#             AliasObject(&quot;node#2&quot;, lambda: &quot;AlSurfaceNode()&quot;),</span>
         <span class="c1">#         ]</span>
         <span class="c1">#</span>
-        <span class="c1">#     # All validation check functions should return an</span>
-        <span class="c1">#     # AliasSceneDataValidator.CheckResult object. It is not required, but it must</span>
-        <span class="c1">#     # follow the format that the tk-multi-data-validation ValidationRule expects.</span>
-        <span class="c1">#     return self.parent.engine.scene_data_validator.CheckResult(is_valid=custom_rule_is_valid, errors=errors)</span>
+        <span class="c1">#     # If not fail faist, check functions should return the list of error objects</span>
+        <span class="c1">#     return errors</span>
         <span class="c1">#</span>
         <span class="c1"># def fix_my_custom_rule(errors=None):</span>
         <span class="c1">#     &quot;&quot;&quot;</span>
@@ -339,9 +370,9 @@
         <span class="c1">#</span>
         <span class="c1">#     NOTE that the fix function takes one parameter, `errors`, this is not used here</span>
         <span class="c1">#     for simplicity, but it should still be defined to follow the &quot;fix&quot; function</span>
-        <span class="c1">#     guidelines (see AliasSceneDataValidator class for more info).</span>
+        <span class="c1">#     guidelines (see AliasDataValidator class for more info).</span>
         <span class="c1">#</span>
-        <span class="c1">#     For examples of more advanced fix functions, see the AliasSceneDataValidator class</span>
+        <span class="c1">#     For examples of more advanced fix functions, see the AliasDataValidator class</span>
         <span class="c1">#     methods prefixed with `fix_`.</span>
         <span class="c1">#     &quot;&quot;&quot;</span>
         <span class="c1">#     global custom_rule_is_valid</span>
@@ -361,9 +392,9 @@
         <span class="c1">#</span>
         <span class="c1">#     NOTE that the fix function takes one parameter, `errors`, this is not used here</span>
         <span class="c1">#     for simplicity, but it should still be defined to follow the action function</span>
-        <span class="c1">#     guidelines (see AliasSceneDataValidator class for more info).</span>
+        <span class="c1">#     guidelines (see AliasDataValidator class for more info).</span>
         <span class="c1">#</span>
-        <span class="c1">#     For examples of more advanced fix functions, see the AliasSceneDataValidator class</span>
+        <span class="c1">#     For examples of more advanced fix functions, see the AliasDataValidator class</span>
         <span class="c1">#     methods.</span>
         <span class="c1">#     &quot;&quot;&quot;</span>
         <span class="c1">#     global custom_rule_is_valid</span>
@@ -386,6 +417,60 @@
         <span class="c1"># }</span>
 
         <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">sanitize_check_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sanitize the value returned by any validate function to conform to the standard format.</span>
+
+<span class="sd">        Convert the incoming list of Alias objects (that are errors) to conform to the standard</span>
+<span class="sd">        format that the Data Validation App requires:</span>
+
+<span class="sd">            is_valid:</span>
+<span class="sd">                type: bool</span>
+<span class="sd">                description: True if the validate function succeed with the current data, else</span>
+<span class="sd">                             False.</span>
+
+<span class="sd">            errors:</span>
+<span class="sd">                type: list</span>
+<span class="sd">                description: The list of error objects (found by the validate function). None</span>
+<span class="sd">                             or empty list if the current data is valid.</span>
+<span class="sd">                items:</span>
+<span class="sd">                    type: dict</span>
+<span class="sd">                    key-values:</span>
+<span class="sd">                        id:</span>
+<span class="sd">                            type: str | int</span>
+<span class="sd">                            description: A unique identifier for the error object.</span>
+<span class="sd">                            optional: False</span>
+<span class="sd">                        name:</span>
+<span class="sd">                            type: str</span>
+<span class="sd">                            description: The display name for the error object.</span>
+<span class="sd">                            optional: False</span>
+<span class="sd">                        type:</span>
+<span class="sd">                            type: str</span>
+<span class="sd">                            description: The display name of the error object type.</span>
+<span class="sd">                            optional: True</span>
+
+<span class="sd">        This method will be called by the Data Validation App after any validate function is</span>
+<span class="sd">        called, in order to receive the validate result in the required format.</span>
+
+<span class="sd">        :param result: The result returned by a validation rule ``check_func``. This is</span>
+<span class="sd">            should be a list of Alias objects or a boolean value indicating the validity of</span>
+<span class="sd">            the check.</span>
+<span class="sd">        :type result: list</span>
+
+<span class="sd">        :return: The result of a ``check_func`` in the Data Validation standardized format.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">SanitizedResult</span><span class="p">(</span><span class="n">is_valid</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">SanitizedResult</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">AliasDataValidationError</span><span class="p">(</span>
+            <span class="s2">&quot;Cannot sanitize result type &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+        <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -504,7 +589,7 @@
                 <span class="p">}</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;import_subdiv&quot;</span> <span class="ow">in</span> <span class="n">actions</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">alias_api</span><span class="p">,</span> <span class="s2">&quot;import_subdivision&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;import_subdiv&quot;</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
             <span class="n">action_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;import_subdiv&quot;</span><span class="p">,</span>
@@ -673,7 +758,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;File not found on disk - &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
-        <span class="n">alias_api</span><span class="o">.</span><span class="n">import_subdivision</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">alias_api</span><span class="o">.</span><span class="n">import_subdiv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AliasPythonException</span> <span class="k">as</span> <span class="n">api_error</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{api_error}</span><span class="s2">&lt;br/&gt;&lt;br/&gt;For more information, click </span><span class="si">{help_link}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">api_error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">api_error</span><span class="p">),</span>
+                <span class="n">help_link</span><span class="o">=</span><span class="s2">&quot;&lt;a href=&#39;https://help.autodesk.com/view/ALIAS/2023/ENU/?guid=GUID-667410AD-CF4D-43B3-AE96-0C1331CB80B2&#39;&gt;here&lt;/a&gt;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AliasPythonException</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -806,25 +899,25 @@
             <span class="k">if</span> <span class="n">version_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">note_links</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">version_data</span><span class="p">)</span>
 
-        <span class="n">annotations</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_annotation_locator_strings</span><span class="p">()</span>
+            <span class="n">annotations</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_annotation_locator_strings</span><span class="p">()</span>
 
-        <span class="n">batch_data</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
-            <span class="n">note_data</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
-                <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
-                <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="s2">&quot;Alias Annotation&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">annotation</span><span class="p">,</span>
-                <span class="s2">&quot;note_links&quot;</span><span class="p">:</span> <span class="n">note_links</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">task</span><span class="p">:</span>
-                <span class="n">note_data</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">task</span><span class="p">]</span>
-            <span class="n">batch_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;request_type&quot;</span><span class="p">:</span> <span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;entity_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">note_data</span><span class="p">}</span>
-            <span class="p">)</span>
+            <span class="n">batch_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+                <span class="n">note_data</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
+                    <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                    <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="s2">&quot;Alias Annotation&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">annotation</span><span class="p">,</span>
+                    <span class="s2">&quot;note_links&quot;</span><span class="p">:</span> <span class="n">note_links</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">task</span><span class="p">:</span>
+                    <span class="n">note_data</span><span class="p">[</span><span class="s2">&quot;tasks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">task</span><span class="p">]</span>
+                <span class="n">batch_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;request_type&quot;</span><span class="p">:</span> <span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;entity_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">note_data</span><span class="p">}</span>
+                <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">batch_data</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">batch_data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1760,8 +1853,8 @@
 <span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
 <span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
 
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sgtk</span>
-
 <span class="kn">import</span> <span class="nn">alias_api</span>
 
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
@@ -1900,13 +1993,15 @@
                 <span class="n">publisher</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span>
                     <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="n">entity_id</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">path</span><span class="o">=</span><span class="n">variant</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="p">)</span>
+                <span class="n">variant_filepath</span> <span class="o">=</span> <span class="n">variant</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">variant_filepath</span><span class="p">)</span>
 
                 <span class="n">publisher</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
                     <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span>
                     <span class="n">entity_id</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span>
-                    <span class="n">path</span><span class="o">=</span><span class="n">variant</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">variant_filepath</span><span class="p">,</span>
                     <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;attachments&quot;</span><span class="p">,</span>
-                    <span class="n">display_name</span><span class="o">=</span><span class="s2">&quot;Variant Image&quot;</span><span class="p">,</span>
+                    <span class="n">display_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{name}{ext}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">variant</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ext</span><span class="o">=</span><span class="n">file_ext</span><span class="p">),</span>
                 <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
@@ -3012,7 +3107,7 @@
                 <span class="p">}</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;import_subdiv&quot;</span> <span class="ow">in</span> <span class="n">actions</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">alias_api</span><span class="p">,</span> <span class="s2">&quot;import_subdivision&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;import_subdiv&quot;</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
             <span class="n">action_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;import_subdiv&quot;</span><span class="p">,</span>
@@ -3173,7 +3268,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;File not found on disk - &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
-        <span class="n">alias_api</span><span class="o">.</span><span class="n">import_subdivision</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">alias_api</span><span class="o">.</span><span class="n">import_subdiv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AliasPythonException</span> <span class="k">as</span> <span class="n">api_error</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{api_error}</span><span class="s2">&lt;br/&gt;&lt;br/&gt;For more information, click </span><span class="si">{help_link}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">api_error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">api_error</span><span class="p">),</span>
+                <span class="n">help_link</span><span class="o">=</span><span class="s2">&quot;&lt;a href=&#39;https://help.autodesk.com/view/ALIAS/2023/ENU/?guid=GUID-667410AD-CF4D-43B3-AE96-0C1331CB80B2&#39;&gt;here&lt;/a&gt;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AliasPythonException</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -3366,15 +3469,14 @@
   
  
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-2114792-1', 'auto');
-  ga('send', 'pageview');
-</script>
-
+  <script type="text/javascript">
+    window.wafCCPAForceShow = true;
+    (function(a,b,c,d){
+      a='https://tags.tiqcdn.com/utag/autodesk/micro-basic/prod/utag.js';
+      b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+      a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+    })();
+  </script>
 
 
 </body>
