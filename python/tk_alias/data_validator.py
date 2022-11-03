@@ -283,8 +283,7 @@ class AliasDataValidator(object):
                 "check_func": self.check_node_has_zero_transform,
                 "fix_func": self.fix_node_has_zero_transform,
                 "fix_name": "Reset All",
-                "fix_tooltip": "Reset all transforms to zero. Camera, light, and texture nodes are not affected."
-                "",
+                "fix_tooltip": "Reset all transforms to zero. Camera, light, and texture nodes are not affected.",
                 "error_msg": "Found node(s) with non-zero transform.",
                 "actions": [
                     {
