@@ -281,7 +281,7 @@ class AliasDataValidator(object):
                 "description": """Check: Non-zero transformations<br/>
                                 Action: Sets transformations to 0.0 on each node and DAG node. Camera, light, and texture nodes are not affected.""",
                 "check_func": self.check_node_has_zero_transform,
-                "fix_func": self.fix_node_has_zero_transform,
+                "fix_func": self.fix_all_node_has_zero_transform,
                 "fix_name": "Reset All",
                 "fix_tooltip": "Reset all transforms to zero. Camera, light, and texture nodes are not affected.",
                 "error_msg": "Found node(s) with non-zero transform.",
@@ -1135,7 +1135,31 @@ class AliasDataValidator(object):
         )
 
     @sgtk.LogManager.log_timing
-    def fix_node_has_zero_transform(self, errors=None, skip_node_types=None):
+    def fix_all_node_has_zero_transform(self, errors=None, skip_node_types=None):
+        """
+        This is a special fix function to apply the zero transform operation to all nodes.
+
+        There are performance issues when applying zero transform to many nodes in Alias at a
+        time, so this method will call the main fix function for zero transform, but passes the
+        flag to run a specific Alias API function to significantly improve performance.
+
+        :param errors: (optional) The nodes to process, if None, all nodes in the current
+                              stage will be processed. Default=None
+        :type errors: str | list<str> | list<AlDagNode> | list<dict>
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        self.fix_node_has_zero_transform(
+            errors, skip_node_types, transform_top_level_first=True
+        )
+
+    @sgtk.LogManager.log_timing
+    def fix_node_has_zero_transform(
+        self, errors=None, skip_node_types=None, transform_top_level_first=False
+    ):
         """
         Process all nodes in the current stage, or the specified nodes, and reset all transforms to zero.
 
@@ -1147,6 +1171,12 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlDagNode> | list<dict>
         :param skip_node_types: The specified node types will not be fixed.
         :type skip_node_types: list<alias_api.AlObjectType>
+        :param transform_top_level_first: True will run a specific Alias API function to first
+            apply zero transform to all top-level nodes before applying zero transform to any
+            remaining nodes that do not have a zero transform. False will apply zero transform
+            to each node individually. Set to True when applying zero transform to all nodes or
+            all top-level nodes in Alias for best performance.
+        :type transform_top_level_first: bool. Defaults to False.
 
         :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
         """
@@ -1160,9 +1190,11 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        if not errors:
-            # Optimize the zero transform by first calling the zero transform on all top-level nodes
-            # Then get the remaining nodes that do not have zero transform and apply it to those only.
+        # NOTE for best performance when applying zero transform to all nodes or all top-level
+        # nodes, we can call a specific Alias API function to zero transform all top-level
+        # nodes first. Then check for remaining nodes that do not have a zero transform, and
+        # apply the zero transform to each individual node.
+        if transform_top_level_first:
             alias_api.zero_transform_top_level()
 
         nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
