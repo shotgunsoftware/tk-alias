@@ -178,6 +178,7 @@ class AliasDataValidator(object):
                 "warn_msg": 'This validation does not return a status. To ensure all null nodes are deleted, select "Delete All" or "Fix All."',
                 "dependency_ids": [
                     "node_has_construction_history",
+                    "curves",
                 ],
             },
             "node_has_construction_history": {
@@ -588,7 +589,7 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_has_construction_history"],
             },
             "set_empty": {
                 "name": "Delete Empty Selection Sets",
