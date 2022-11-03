@@ -185,7 +185,7 @@ class AliasDataValidator(object):
                 "description": """Check: Construction history<br/>
                                 Action: Delete""",
                 "check_func": self.check_node_has_construction_history,
-                "fix_func": self.fix_node_has_construction_history,
+                "fix_func": self.fix_all_node_has_construction_history,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all construction history from all nodes.",
                 "error_msg": "Found node(s) with construction history.",
@@ -219,7 +219,7 @@ class AliasDataValidator(object):
                 "description": """Check: Instances<br/>
                                 Action: Convert to geometry.""",
                 "check_func": self.check_node_instances,
-                "fix_func": self.fix_node_instances,
+                "fix_func": self.fix_all_node_instances,
                 "fix_name": "Expand All",
                 "fix_tooltip": "Remove Instances by expanding them.",
                 "error_msg": "Instance found.",
@@ -246,7 +246,7 @@ class AliasDataValidator(object):
                 "description": """Check: Pivot point coordinates<br/>
                                 Fix: Set pivot points to global origin (0, 0, 0). Camera, light, and texture nodes are not affected.""",
                 "check_func": self.check_node_pivots_at_origin,
-                "fix_func": self.fix_node_pivots_at_origin,
+                "fix_func": self.fix_all_node_pivots_at_origin,
                 "fix_name": "Reset All",
                 "fix_tooltip": "All pivots will be moved to the origin. Camera, light, and texture nodes are not affected."
                 "",
@@ -493,7 +493,7 @@ class AliasDataValidator(object):
                 "description": """Check: Unused curves-on-surfaces (COS)<br/>
                                 Fix: Delete""",
                 "check_func": self.check_curve_on_surface_unused,
-                "fix_func": self.fix_curve_on_surface_unused,
+                "fix_func": self.fix_all_curve_on_surface_unused,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete unused COS.",
                 "error_msg": "Found unused COS.",
@@ -533,7 +533,7 @@ class AliasDataValidator(object):
                 "description": """Check: Unused curves-on-surfaces (COS) with construction history<br/>
                                 Fix: Delete construction history for unused COS.""",
                 "check_func": self.check_curve_on_surface_construction_history,
-                "fix_func": self.fix_curve_on_surface_construction_history,
+                "fix_func": self.fix_all_curve_on_surface_construction_history,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete construction history for unused curve on surface",
                 "error_msg": "Found construction history for unused curve(s) on surface.",
@@ -972,10 +972,29 @@ class AliasDataValidator(object):
         return nodes_with_history
 
     @sgtk.LogManager.log_timing
+    def fix_all_node_has_construction_history(self, errors=None, skip_node_types=None):
+        """
+        Delete construction history for all nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_node_has_construction_history(
+            errors=None, skip_node_types=skip_node_types
+        )
+
+    @sgtk.LogManager.log_timing
     def fix_node_has_construction_history(self, errors=None, skip_node_types=None):
         """
-        Process all nodes in the current stage, or the specified of nodes, and delete history from any nodes
-        with history.
+        Delete construction history for the specified nodes.
 
         NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated data.
@@ -996,6 +1015,8 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         nodes = alias_py.dag_node.get_nodes_with_construction_history(
             nodes=errors,
             skip_node_types=set(skip_node_types),
@@ -1019,10 +1040,27 @@ class AliasDataValidator(object):
         return alias_py.dag_node.get_instanced_nodes()
 
     @sgtk.LogManager.log_timing
+    def fix_all_node_instances(self, errors=None):
+        """
+        Remove all instanced nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_node_instances(errors=None)
+
+    @sgtk.LogManager.log_timing
     def fix_node_instances(self, errors=None):
         """
-        Process all nodes in the current stage, or the list of nodes if provided, and remove all instanced
-        nodes.
+        Remove instanced nodes from the specified nodes.
 
         NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated data.
@@ -1041,6 +1079,8 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         nodes = alias_py.dag_node.get_instanced_nodes(errors)
 
         for node in nodes:
@@ -1070,10 +1110,27 @@ class AliasDataValidator(object):
         )
 
     @sgtk.LogManager.log_timing
+    def fix_all_node_pivots_at_origin(self, errors=None, skip_node_types=None):
+        """
+        Reset scale and rotate pivots to the origin for all nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_node_pivots_at_origin(errors=None, skip_node_types=skip_node_types)
+
+    @sgtk.LogManager.log_timing
     def fix_node_pivots_at_origin(self, errors=None, skip_node_types=None):
         """
-        Process all nodes in the current stage, or the specified nodes, and reset their scale and roate
-        pivots such that they are centered around the origin.
+        Reset scale and rotate pivots to the origin for the specified nodes.
 
         NOTE that the pivots Alias may not update automatically, alias_api.redraw_screen() may need to be
         invoked after this function, to see the updated pivots.
@@ -1094,6 +1151,8 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot(
             nodes=errors,
             skip_node_types=set(skip_node_types),
@@ -1137,23 +1196,21 @@ class AliasDataValidator(object):
     @sgtk.LogManager.log_timing
     def fix_all_node_has_zero_transform(self, errors=None, skip_node_types=None):
         """
-        This is a special fix function to apply the zero transform operation to all nodes.
+        Reset transforms to zero for all nodes.
 
-        There are performance issues when applying zero transform to many nodes in Alias at a
-        time, so this method will call the main fix function for zero transform, but passes the
-        flag to run a specific Alias API function to significantly improve performance.
-
-        :param errors: (optional) The nodes to process, if None, all nodes in the current
-                              stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
         :param skip_node_types: The specified node types will not be fixed.
         :type skip_node_types: list<alias_api.AlObjectType>
 
         :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
         """
 
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
         self.fix_node_has_zero_transform(
-            errors, skip_node_types, transform_top_level_first=True
+            errors=None, skip_node_types=skip_node_types, transform_top_level_first=True
         )
 
     @sgtk.LogManager.log_timing
@@ -1161,7 +1218,7 @@ class AliasDataValidator(object):
         self, errors=None, skip_node_types=None, transform_top_level_first=False
     ):
         """
-        Process all nodes in the current stage, or the specified nodes, and reset all transforms to zero.
+        Reset transforms to zero for the specified nodes.
 
         NOTE that the nodes Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated node transforms.
@@ -1174,8 +1231,9 @@ class AliasDataValidator(object):
         :param transform_top_level_first: True will run a specific Alias API function to first
             apply zero transform to all top-level nodes before applying zero transform to any
             remaining nodes that do not have a zero transform. False will apply zero transform
-            to each node individually. Set to True when applying zero transform to all nodes or
-            all top-level nodes in Alias for best performance.
+            to each node individually. This param will effectively be True when errors is None.
+            Settin to True will yield best performance, but it will reset all top-level node
+            transforms to zero.
         :type transform_top_level_first: bool. Defaults to False.
 
         :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
@@ -1190,13 +1248,17 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        # NOTE for best performance when applying zero transform to all nodes or all top-level
-        # nodes, we can call a specific Alias API function to zero transform all top-level
-        # nodes first. Then check for remaining nodes that do not have a zero transform, and
-        # apply the zero transform to each individual node.
-        if transform_top_level_first:
+        # NOTE for best performance when applying zero transform to many nodes at a time,
+        # we should call the specific Alias API function to apply the zero transform
+        # operation to all top-level nodes first. Then check for any remaining nodes that do
+        # not have a zero transform, and apply the zero transform to each individual node.
+        # This optimization will be done if the transform_top_level_first is set, or the
+        # errors list is not specified (indicating that all nodes should be processed).
+        if transform_top_level_first or not errors:
             alias_api.zero_transform_top_level()
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
             nodes=errors,
             skip_node_types=set(skip_node_types),
@@ -1614,10 +1676,25 @@ class AliasDataValidator(object):
         return alias_py.dag_node.get_nodes_with_unused_curves_on_surface()
 
     @sgtk.LogManager.log_timing
+    def fix_all_curve_on_surface_unused(self, errors=None):
+        """
+        Delete unused curves on surface for all nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_curve_on_surface_unused(errors=None)
+
+    @sgtk.LogManager.log_timing
     def fix_curve_on_surface_unused(self, errors=None):
         """
-        Process all curves on surface current stage, or the list of curves on surface if provided, and delete
-        unused curves on surface.
+        Delete unused curves on surface for the specified nodes.
 
         :param errors: The list of curves on surface to process, if None, all curves on surface
                               current stage will be processed. Default=None
@@ -1631,6 +1708,8 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
             nodes=errors
         )
@@ -1661,10 +1740,27 @@ class AliasDataValidator(object):
         return invalid_nodes
 
     @sgtk.LogManager.log_timing
+    def fix_all_curve_on_surface_construction_history(self, errors=None):
+        """
+        Delete construction history of unnused curves on surface for all nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        return self.fix_curve_on_surface_construction_history(errors=None)
+
+    @sgtk.LogManager.log_timing
     def fix_curve_on_surface_construction_history(self, errors=None):
         """
-        Process all curves on surface current stage, or the list of curves on surface if provided, and delete
-        construction history for unused curves on surface.
+        Delete construction history of unnused curves on surface for the specified nodes.
 
         :param errors: The list of curves on surface to process, if None, all curves on surface
                               current stage will be processed. Default=None
@@ -1678,6 +1774,8 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         unused_cos = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
             nodes=errors
         )
