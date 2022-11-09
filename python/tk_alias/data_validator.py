@@ -569,7 +569,7 @@ class AliasDataValidator(object):
                 "description": """Check: Curves<br/>
                                 Fix: Delete""",
                 "check_func": self.check_node_curves,
-                "fix_func": self.fix_node_curves,
+                "fix_func": self.fix_all_node_curves,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all curves found.",
                 "error_msg": "Found curve(s).",
@@ -1635,10 +1635,29 @@ class AliasDataValidator(object):
         )
 
     @sgtk.LogManager.log_timing
+    def fix_all_node_curves(self, errors=None):
+        """
+        Delete all nodes that represent a curve.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_node_curves(errors=None)
+
+    @sgtk.LogManager.log_timing
     def fix_node_curves(self, errors=None):
         """
-        Process all nodes in the current stage, or the list of nodes if provided, and delete all nodes that
-        represent a curve.
+        Delete the specified nodes that represent a curve.
+
+        If a list of nodes are passed in, they are assumed to represent a curve and will be deleted.
 
         :param errors: The list of nodes to process, if None, all nodes in the current stage will be
             processed. Default=None
@@ -1651,6 +1670,7 @@ class AliasDataValidator(object):
                     errors[i] = error_item["name"]
 
         if errors:
+            # NOTE this assumes all nodes passed in represent a curve.
             alias_py.dag_node.delete_nodes(errors)
 
         else:
