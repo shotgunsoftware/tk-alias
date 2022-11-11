@@ -1240,6 +1240,21 @@ class AliasDataValidator(object):
         :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
         """
 
+        @sgtk.LogManager.log_timing
+        def __apply_zero_transform_to_top_level():
+            alias_api.zero_transform_top_level()
+
+        @sgtk.LogManager.log_timing
+        def __get_nodes_with_non_zero_transform():
+            return alias_py.dag_node.get_nodes_with_non_zero_transform(
+                nodes=errors,
+                skip_node_types=set(skip_node_types),
+            )
+
+        @sgtk.LogManager.log_timing
+        def __apply_zero_transform(nodes):
+            return alias_api.zero_transform(nodes)
+
         skip_node_types = skip_node_types or []
 
         if isinstance(errors, six.string_types):
@@ -1248,6 +1263,7 @@ class AliasDataValidator(object):
             for i, error_item in enumerate(errors):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
+        
 
         # NOTE for best performance when applying zero transform to many nodes at a time,
         # we should call the specific Alias API function to apply the zero transform
@@ -1256,17 +1272,14 @@ class AliasDataValidator(object):
         # This optimization will be done if the transform_top_level_first is set, or the
         # errors list is not specified (indicating that all nodes should be processed).
         if transform_top_level_first or not errors:
-            alias_api.zero_transform_top_level()
+            __apply_zero_transform_to_top_level()
 
         # NOTE performance is slower when a list of nodes is passed. When applying to all
         # nodes, pass None instead of a list of all nodes.
-        nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
-            nodes=errors,
-            skip_node_types=set(skip_node_types),
-        )
+        nodes = __get_nodes_with_non_zero_transform()
 
         if nodes:
-            status = alias_api.zero_transform(nodes)
+            status = __apply_zero_transform(nodes)
             if not alias_py.utils.is_success(status):
                 alias_py.utils.raise_exception(
                     "Failed to apply zero transform to nodes. Returned status:",
