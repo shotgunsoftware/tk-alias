@@ -1721,9 +1721,11 @@ class AliasDataValidator(object):
         :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
         """
 
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        self.fix_curve_on_surface_unused(errors=None)
+        # NOTE must pass all error nodes specifcally. See note in fix_curve_on_surface_unused
+        self.fix_curve_on_surface_unused(errors=errors)
+        # # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # # should be processed. This will improve performance.
+        # self.fix_curve_on_surface_unused(errors=None)
 
     @sgtk.LogManager.log_timing
     def fix_curve_on_surface_unused(self, errors=None):
@@ -1742,14 +1744,26 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        # NOTE performance is slower when a list of nodes is passed. When applying to all
-        # nodes, pass None instead of a list of all nodes.
-        unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
-            nodes=errors
-        )
+        # NOTE the curves must be found for each node and deleted in order, instead of finding
+        # all unused curves at once, since multiple nodes may point to the same curve (which
+        # results in a crash when attempting to delete the same object twice). If this is slow
+        # then we will need to revert to the old method below, but ensure we do not attempt to
+        # delete the same curve twice
+        for node in errors:
+            unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
+                nodes=[node]
+            )
+            for curve in unused_curves:
+                curve.delete_object()
 
-        for curve in unused_curves:
-            curve.delete_object()
+        # # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # # nodes, pass None instead of a list of all nodes.
+        # unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
+        #     nodes=errors
+        # )
+        # for curve in unused_curves:
+        #     curve.delete_object()
+
 
     @sgtk.LogManager.log_timing
     def check_curve_on_surface_construction_history(self, fail_fast=False):
