@@ -309,7 +309,11 @@ class AliasDataValidator(object):
                         *self._light_node_types,
                     ]
                 },
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": [
+                    "node_has_construction_history",
+                    "node_is_null",
+                    "node_instances",
+                ],
             },
             "node_is_not_in_layer": {
                 "name": "Nodes Must Not Be In DefaultLayer",
