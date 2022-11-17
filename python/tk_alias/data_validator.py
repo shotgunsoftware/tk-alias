@@ -555,7 +555,7 @@ class AliasDataValidator(object):
                 "item_actions": [
                     {
                         "name": "Delete",
-                        "callback": self.fix_curve_on_surface_unused,
+                        "callback": self.fix_curve_on_surface_construction_history,
                     },
                     {
                         "name": "Select COS",
