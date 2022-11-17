@@ -1264,7 +1264,6 @@ class AliasDataValidator(object):
             for i, error_item in enumerate(errors):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
-        
 
         # NOTE for best performance when applying zero transform to many nodes at a time,
         # we should call the specific Alias API function to apply the zero transform
@@ -1764,7 +1763,6 @@ class AliasDataValidator(object):
         # )
         # for curve in unused_curves:
         #     curve.delete_object()
-
 
     @sgtk.LogManager.log_timing
     def check_curve_on_surface_construction_history(self, fail_fast=False):
