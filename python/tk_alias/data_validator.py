@@ -144,7 +144,6 @@ class AliasDataValidator(object):
                 ],
                 "get_kwargs": lambda: {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
                 "dependency_ids": [
-                    "node_is_null",
                     "node_instances",
                 ],
             },
@@ -240,7 +239,7 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_is_null"],
             },
             "node_pivots_at_origin": {
                 "name": "Reset Pivots to Global Origin",
@@ -268,7 +267,7 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_is_null"],
                 "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
@@ -305,13 +304,12 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
+                        alias_api.AlObjectType.GroupNodeType,
                         *self._camera_node_types,
                         *self._light_node_types,
                     ]
                 },
                 "dependency_ids": [
-                    "node_has_construction_history",
-                    "node_is_null",
                     "node_instances",
                 ],
             },
@@ -491,7 +489,7 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_is_null"],
             },
             "cos_unused": {
                 "name": "Delete Unused Curves-on-Surfaces (COS)",
@@ -528,7 +526,6 @@ class AliasDataValidator(object):
                 ],
                 "dependency_ids": [
                     "cos_construction_history",
-                    "node_has_construction_history",
                     "node_is_null",
                 ],
             },
