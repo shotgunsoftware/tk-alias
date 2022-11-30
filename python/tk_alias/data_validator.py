@@ -1178,6 +1178,8 @@ class AliasDataValidator(object):
         """
         Check for nodes with non-zero transforms in the current stage.
 
+        Only top-level dag nodes will be returned.
+        
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
         :param skip_node_types: The specified node types will not be checked.
@@ -1189,10 +1191,19 @@ class AliasDataValidator(object):
         """
 
         skip_node_types = skip_node_types or []
-
-        return alias_py.dag_node.get_nodes_with_non_zero_transform(
+       
+        all_nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
             skip_node_types=set(skip_node_types),
         )
+
+        top_node_names = [n.name for n in alias_api.get_top_dag_nodes()]
+        nodes = []
+        for node in all_nodes:
+            if node.name in top_node_names:
+                nodes.append(node)
+
+        return nodes
+
 
     @sgtk.LogManager.log_timing
     def fix_all_node_has_zero_transform(self, errors=None, skip_node_types=None):
@@ -1219,7 +1230,7 @@ class AliasDataValidator(object):
         self, errors=None, skip_node_types=None, transform_top_level_first=False
     ):
         """
-        Reset transforms to zero for the specified nodes.
+        Reset transforms to zero for the specified nodes, or all top nodes if not specified.
 
         NOTE that the nodes Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated node transforms.
@@ -1241,15 +1252,8 @@ class AliasDataValidator(object):
         """
 
         @sgtk.LogManager.log_timing
-        def __apply_zero_transform_to_top_level():
+        def __apply_zero_transform_top_level():
             alias_api.zero_transform_top_level()
-
-        @sgtk.LogManager.log_timing
-        def __get_nodes_with_non_zero_transform():
-            return alias_py.dag_node.get_nodes_with_non_zero_transform(
-                nodes=errors,
-                skip_node_types=set(skip_node_types),
-            )
 
         @sgtk.LogManager.log_timing
         def __apply_zero_transform(nodes):
@@ -1264,26 +1268,16 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        # NOTE for best performance when applying zero transform to many nodes at a time,
-        # we should call the specific Alias API function to apply the zero transform
-        # operation to all top-level nodes first. Then check for any remaining nodes that do
-        # not have a zero transform, and apply the zero transform to each individual node.
-        # This optimization will be done if the transform_top_level_first is set, or the
-        # errors list is not specified (indicating that all nodes should be processed).
-        if transform_top_level_first or not errors:
-            __apply_zero_transform_to_top_level()
-
-        # NOTE performance is slower when a list of nodes is passed. When applying to all
-        # nodes, pass None instead of a list of all nodes.
-        nodes = __get_nodes_with_non_zero_transform()
-
-        if nodes:
-            status = __apply_zero_transform(nodes)
+        if errors:
+            status = __apply_zero_transform(errors)
             if not alias_py.utils.is_success(status):
                 alias_py.utils.raise_exception(
                     "Failed to apply zero transform to nodes. Returned status:",
                     status,
                 )
+        else:
+            __apply_zero_transform_top_level()
+            
 
     @sgtk.LogManager.log_timing
     def check_node_is_not_in_layer(
