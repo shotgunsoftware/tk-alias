@@ -1179,7 +1179,7 @@ class AliasDataValidator(object):
         Check for nodes with non-zero transforms in the current stage.
 
         Only top-level dag nodes will be returned.
-        
+
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
         :param skip_node_types: The specified node types will not be checked.
@@ -1191,7 +1191,7 @@ class AliasDataValidator(object):
         """
 
         skip_node_types = skip_node_types or []
-       
+
         all_nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
             skip_node_types=set(skip_node_types),
         )
@@ -1203,7 +1203,6 @@ class AliasDataValidator(object):
                 nodes.append(node)
 
         return nodes
-
 
     @sgtk.LogManager.log_timing
     def fix_all_node_has_zero_transform(self, errors=None, skip_node_types=None):
@@ -1277,7 +1276,6 @@ class AliasDataValidator(object):
                 )
         else:
             __apply_zero_transform_top_level()
-            
 
     @sgtk.LogManager.log_timing
     def check_node_is_not_in_layer(
