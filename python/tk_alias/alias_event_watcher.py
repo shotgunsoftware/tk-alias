@@ -87,10 +87,10 @@ class AliasEventWatcher(object):
             if self.ignore_events:
                 # Clear the queued events, but do not trigger their callacks.
                 alias_api.clear_queued_events()
-            else:
-                # Trigger any Python callbacks for the queued events. The queue will become
-                # empty after this.
-                alias_api.queue_events(False)
+
+            # Trigger any Python callbacks for the queued events. The queue will become
+            # empty after this.
+            alias_api.queue_events(False)
 
     def __init__(self):
         """
