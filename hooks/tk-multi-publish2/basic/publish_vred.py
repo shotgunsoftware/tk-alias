@@ -34,10 +34,16 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
     @property
     def description(self):
+        """
+        Verbose, multi-line description of what the plugin does. This can
+        contain simple html for formatting.
+        """
+
         return """
         <p>
             This plugin create a new VRED scene by importing the current Alias session file once it has been published to
             ShotGrid.
+            
         </p>
         """
 
@@ -137,7 +143,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             return __publish_app_task_manager(parent_widget)
 
         # we need to get the BackgroundTaskManager used by the publisher app itself
-        # if we create a new one, they will be conflicts between them and Alias will crash a lot
+        # if we create a new one, there will be conflicts between them and Alias will crash a lot
         task_manager = __publish_app_task_manager(parent)
 
         return CustomWidget(
@@ -230,6 +236,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         # restore previous saved UI settings
         ui_settings = settings[0]["UI Settings"]
 
+        # if no Publish template has been defined in the plugin setting, hide the publish option from the UI
         publish_template = self.get_publish_template(settings[0], items[0])
         if not publish_template:
             widget.publish_to_shotgrid.hide()
@@ -238,6 +245,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             if "publish_to_sg" in ui_settings.keys():
                 widget.publish_to_shotgrid.setChecked(ui_settings["publish_to_sg"])
 
+        # initialize context selection widget
         ctx = self.get_context(settings[0], items[0])
         widget.context_widget.set_context(ctx)
 
@@ -293,6 +301,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             return {"accepted": False}
         item.properties.work_template = work_template
 
+        # get the publish template for the VRED file
         publish_template_setting = settings.get("Publish Template")
         publish_template = self.parent.engine.get_template_by_name(
             publish_template_setting.value
@@ -321,7 +330,6 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             for t in d.tasks:
                 if t.name == "Publish to ShotGrid" and t.checked:
                     is_plugin_checked = True
-
         if not is_plugin_checked:
             self.logger.error(
                 'Please, check the "Publish to ShotGrid" publish plugin to be able to create the VRED scene'
@@ -373,8 +381,8 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
                 self.logger.error("The Alias file {} doesn't exist on disk".format(alias_publish_path))
                 return
 
+            # build the path to the VRED file and make sure the output directory exist
             vred_work_path = self.get_work_path(settings, item)
-            # make sure the output directory exist
             work_folder = os.path.dirname(vred_work_path)
             self.parent.ensure_folder_exists(work_folder)
 
@@ -445,9 +453,13 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
     def get_work_template(self, settings, item):
         """
-        :param settings:
-        :param item:
-        :return:
+        Get the template that will be used to build the VRED work path
+
+        :param settings: Dictionary of Settings. The keys are strings, matching
+            the keys returned in the settings property. The values are `Setting`
+            instances.
+        :param item: Item to process
+        :return: VRED work template
         """
 
         work_template = item.get_property("work_template")
@@ -465,9 +477,13 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
     def get_work_path(self, settings, item):
         """
-        :param settings:
-        :param item:
-        :return:
+        Get the path to the VRED work file.
+
+        :param settings: Dictionary of Settings. The keys are strings, matching
+            the keys returned in the settings property. The values are `Setting`
+            instances.
+        :param item: Item to process
+        :return: Path to the VRED work file
         """
 
         work_path = item.get_property("path")
@@ -513,9 +529,16 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
     def get_context(self, settings, item):
         """
-        :return:
+        Get the context that will be used for the VRED scenes
+
+        :param settings: Dictionary of Settings. The keys are strings, matching
+            the keys returned in the settings property. The values are `Setting`
+            instances.
+        :param item: Item to process
+        :return: VRED scene context
         """
 
+        # if the user already chose a context in the UI, use it
         ui_settings = settings["UI Settings"]
         if not isinstance(ui_settings, dict):
             ui_settings = ui_settings.value
@@ -525,7 +548,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
         else:
 
-            # try to build the context from the plugin settings
+            # otherwise, try to build the context from the plugin settings
             task_name = settings["Task Name"].value if not isinstance(settings["Task Name"], str) else settings["Task Name"]
             step_name = settings["Step Name"].value if not isinstance(settings["Step Name"], str) else settings["Step Name"]
             sg_task = self.parent.shotgun.find_one(
@@ -539,14 +562,22 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
             if sg_task:
                 return self.parent.sgtk.context_from_entity_dictionary(sg_task)
+
+            # finally, if the task defined in the plugin settings doesn't exist, use the current session context
             else:
                 return item.context
 
     def get_filename(self, settings):
         """
-        :return:
+        Get the file name that will be used for the VRED scene.
+
+        :param settings: Dictionary of Settings. The keys are strings, matching
+            the keys returned in the settings property. The values are `Setting`
+            instances.
+        :return: The VRED file name
         """
 
+        # if the user already defined a name in the UI, use it
         ui_settings = settings["UI Settings"]
         if not isinstance(ui_settings, dict):
             ui_settings = ui_settings.value
@@ -554,6 +585,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         if "filename" in ui_settings.keys() and ui_settings["filename"]:
             return ui_settings["filename"]
 
+        # otherwise, try to get the file name of the current session using the template and its fields
         path = alias_api.get_current_path()
         if not path:
             return None
@@ -566,7 +598,13 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         return template_fields.get("name")
 
     def get_vred_python_script(self, alias_file_path, vred_file_path):
-        """ """
+        """
+        Build the Python commands that will be used to build the VRED scene from the Alias published file.
+
+        :param alias_file_path: Path to the Alias published file that we want to import in the scene
+        :param vred_file_path: Path to the VRED file path we want to save to
+        :return: The python commands used to build the VRED scene
+        """
 
         post_python_cmd = ""
         post_python_cmd += "import vrFileIO;"
@@ -578,14 +616,24 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         return post_python_cmd
 
     def __get_root_item(self, item):
-        """ """
+        """
+        Recursively get the publish root item
+
+        :param item: Item to process
+        : return: The publish root item
+        """
         if item.is_root:
             return item
         else:
             return self.__get_root_item(item.parent)
 
     def __get_alias_publish_data(self, item):
-        """ """
+        """
+        Go through the publish tree to find the Alias session publish data.
+
+        :param item: Item to process
+        :return: The publish data as ShotGrid dictionary
+        """
 
         root_item = self.__get_root_item(item)
         for i in root_item.descendants:
@@ -596,6 +644,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
 class CustomWidget(QtGui.QWidget):
     """
+    Settings widget that will be used by the Publish plugin
     """
 
     def __init__(self, parent, bundle, task_manager):
@@ -603,6 +652,9 @@ class CustomWidget(QtGui.QWidget):
         Class constructor.
 
         :param parent: Parent widget
+        :param bundle: The bundle (app, engine or framework) instance for the app that the calling code is associated
+            with
+        :param task_manager: Background Task Manager used to perform tasks without blocking the main thread
         """
 
         QtGui.QWidget.__init__(self, parent)
@@ -622,7 +674,7 @@ class CustomWidget(QtGui.QWidget):
 
     def setup_ui(self):
         """
-        :return:
+        Configure the UI.
         """
 
         # description widget
@@ -654,7 +706,7 @@ class CustomWidget(QtGui.QWidget):
         self.context_widget.context_changed.connect(self._on_context_changed)
 
         # filename widget
-        self.filename_label = QtGui.QLabel("Name:")
+        self.filename_label = QtGui.QLabel("File Name:")
         self.filename = QtGui.QLineEdit()
         self.filename_layout = QtGui.QHBoxLayout()
         self.filename_layout.addWidget(self.filename_label)
@@ -682,6 +734,8 @@ class CustomWidget(QtGui.QWidget):
 
     def _on_context_changed(self, context):
         """
-        :return:
+        Slot called when the context is picked by the user in the UI.
+
+        :param context: The selected context
         """
         self.context = context.to_dict()
