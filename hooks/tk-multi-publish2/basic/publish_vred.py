@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Autodesk, Inc.
 
 import os
+import shutil
 import subprocess
 
 import sgtk
@@ -29,7 +30,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         """
         One line display name describing the plugin
         """
-        return "Create VRED Scene"
+        return "VRED Handover"
 
     @property
     def description(self):
@@ -78,6 +79,16 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
                 "description": "Template path for published work files. Should"
                                "correspond to a template defined in "
                                "templates.yml.",
+            },
+            "Task Name": {
+                "type": "str",
+                "default": "Visualization",
+                "description": "Name of the Task the VRED file(s) will be linked to.",
+            },
+            "Step Name": {
+                "type": "str",
+                "default": "Visualization",
+                "description": "Name of the Step the VRED file(s) will be linked to.",
             },
             "UI Settings": {
                 "type": "dict",
@@ -162,7 +173,6 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         ui_settings = {
             "context": widget.context,
             "filename": widget.filename.text(),
-            "use_current_context": widget.use_current_context.isChecked(),
             "publish_to_sg": widget.publish_to_shotgrid.isChecked(),
         }
 
@@ -219,9 +229,6 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
         # restore previous saved UI settings
         ui_settings = settings[0]["UI Settings"]
-
-        if "use_current_context" in ui_settings.keys():
-            widget.use_current_context.setChecked(ui_settings["use_current_context"])
 
         publish_template = self.get_publish_template(settings[0], items[0])
         if not publish_template:
@@ -372,12 +379,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             self.parent.ensure_folder_exists(work_folder)
 
             # build the command line to create the vred scene
-            post_python_cmd = ""
-            post_python_cmd += "import vrFileIO;"
-            post_python_cmd += "import vrController;"
-            post_python_cmd += "vrFileIO.load(r'{}');".format(alias_publish_path)
-            post_python_cmd += "vrFileIO.save(r'{}');".format(vred_work_path)
-            post_python_cmd += "vrController.terminateVred();"
+            post_python_cmd = self.get_vred_python_script(alias_publish_path, vred_work_path)
 
             cmd = [
                 self.get_vred_bin_path(item),
@@ -409,7 +411,20 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         :param item: Item to process
         """
 
-        pass
+        # get the publish "mode" stored inside of the root item properties
+        root_item = self.__get_root_item(item)
+        bg_processing = root_item.properties.get("bg_processing", False)
+        in_bg_process = root_item.properties.get("in_bg_process", False)
+
+        if not bg_processing or (bg_processing and in_bg_process):
+
+            ui_settings = settings["UI Settings"].value
+            if ui_settings.get("publish_to_sg", True):
+
+                # increment the VRED work path
+                self._save_to_next_version(
+                    item.properties["path"], item, lambda p: shutil.copyfile(item.properties["path"], p)
+                )
 
     def get_vred_bin_path(self, item):
         """
@@ -463,6 +478,13 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         item.context = self.get_context(settings, item)
         filename = self.get_filename(settings)
 
+        # make sure the folders are created for the selected task
+        self.parent.sgtk.create_filesystem_structure(
+            item.context.task["type"],
+            item.context.task["id"],
+            "tk-vred"
+        )
+
         template_fields = item.context.as_template_fields(work_template)
         template_fields["name"] = filename
         # here, we initialize the version with a dummy number in order to check for missing fields
@@ -498,12 +520,27 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         if not isinstance(ui_settings, dict):
             ui_settings = ui_settings.value
 
-        use_current_context = ui_settings.get("use_current_context", True)
-
-        if not use_current_context and "context" in ui_settings.keys() and ui_settings["context"]:
+        if "context" in ui_settings.keys() and ui_settings["context"]:
             return sgtk.Context.from_dict(self.sgtk, ui_settings["context"])
+
         else:
-            return item.context
+
+            # try to build the context from the plugin settings
+            task_name = settings["Task Name"].value if not isinstance(settings["Task Name"], str) else settings["Task Name"]
+            step_name = settings["Step Name"].value if not isinstance(settings["Step Name"], str) else settings["Step Name"]
+            sg_task = self.parent.shotgun.find_one(
+                "Task",
+                [
+                    ["content", "is", task_name],
+                    ["step.Step.code", "is", step_name],
+                    ["entity", "is", item.context.entity]
+                ]
+            )
+
+            if sg_task:
+                return self.parent.sgtk.context_from_entity_dictionary(sg_task)
+            else:
+                return item.context
 
     def get_filename(self, settings):
         """
@@ -514,9 +551,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         if not isinstance(ui_settings, dict):
             ui_settings = ui_settings.value
 
-        use_current_context = ui_settings.get("use_current_context", True)
-
-        if not use_current_context and "filename" in ui_settings.keys() and ui_settings["filename"]:
+        if "filename" in ui_settings.keys() and ui_settings["filename"]:
             return ui_settings["filename"]
 
         path = alias_api.get_current_path()
@@ -529,6 +564,18 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
         template_fields = work_template.get_fields(path)
         return template_fields.get("name")
+
+    def get_vred_python_script(self, alias_file_path, vred_file_path):
+        """ """
+
+        post_python_cmd = ""
+        post_python_cmd += "import vrFileIO;"
+        post_python_cmd += "import vrController;"
+        post_python_cmd += "vrFileIO.load(r'{}');".format(alias_file_path)
+        post_python_cmd += "vrFileIO.save(r'{}');".format(vred_file_path)
+        post_python_cmd += "vrController.terminateVred();"
+
+        return post_python_cmd
 
     def __get_root_item(self, item):
         """ """
@@ -545,6 +592,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             if i.type_spec == "alias.session":
                 return i.get_property("sg_publish_data")
         return None
+
 
 class CustomWidget(QtGui.QWidget):
     """
@@ -591,15 +639,6 @@ class CustomWidget(QtGui.QWidget):
         self.description_layout.addStretch()
         self.description_group_box.setLayout(self.description_layout)
 
-        # publish option
-        self.publish_to_shotgrid = QtGui.QCheckBox("Publish the VRED Scene to ShotGrid")
-        self.publish_to_shotgrid.setChecked(True)
-
-        # context option
-        self.use_current_context = QtGui.QCheckBox("Use current session context")
-        self.use_current_context.setChecked(True)
-        self.use_current_context.stateChanged.connect(self._trigger_context_options)
-
         # context selection widget
         self.context_widget = self.__modules["context_selector"].ContextWidget(self)
         self.context_widget.set_up(self._task_manager)
@@ -621,31 +660,25 @@ class CustomWidget(QtGui.QWidget):
         self.filename_layout.addWidget(self.filename_label)
         self.filename_layout.addWidget(self.filename)
 
+        # publish option
+        self.publish_to_shotgrid = QtGui.QCheckBox("Publish the VRED Scene to ShotGrid")
+        self.publish_to_shotgrid.setChecked(True)
+
         # layout the widgets
         self.main_layout = QtGui.QVBoxLayout(self)
         self.main_layout.addWidget(self.description_group_box)
-        self.main_layout.addWidget(self.publish_to_shotgrid)
-        self.main_layout.addWidget(self.use_current_context)
+        self.main_layout.addItem(
+            QtGui.QSpacerItem(20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        )
         self.main_layout.addWidget(self.context_widget)
+        self.main_layout.addItem(
+            QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        )
         self.main_layout.addLayout(self.filename_layout)
-
-        self._trigger_context_options()
-
-    def _trigger_context_options(self):
-        """
-        :return:
-        """
-
-        if self.use_current_context.isChecked():
-            # hide the widgets
-            self.context_widget.hide()
-            self.filename_label.hide()
-            self.filename.hide()
-        else:
-            # show the widgets
-            self.context_widget.show()
-            self.filename_label.show()
-            self.filename.show()
+        self.main_layout.addItem(
+            QtGui.QSpacerItem(20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        )
+        self.main_layout.addWidget(self.publish_to_shotgrid)
 
     def _on_context_changed(self, context):
         """
