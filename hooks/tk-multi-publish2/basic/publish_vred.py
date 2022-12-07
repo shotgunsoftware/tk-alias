@@ -30,7 +30,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         """
         One line display name describing the plugin
         """
-        return "VRED Handover"
+        return "Create VRED Scene"
 
     @property
     def description(self):
