@@ -765,6 +765,79 @@ class AliasEngine(sgtk.platform.Engine):
 
         return tk.templates.get(reference_template_name)
 
+    def get_reference_templates(self, sg_data_list):
+        """
+        Get the reference_template according to the given context
+
+        :param tk: Instance of :class`sgtk.Sgtk` for the project we want to get the reference template from
+        :param sg_data: Dictionary of Shotgun data containing some context information. This dictionary must contain
+                        the 'task' field
+        :return: The reference template object
+        """
+
+        tk_by_project = {}
+        ctx_by_task = {}
+        reference_templates_by_project_and_task = {}
+
+        for sg_data in sg_data_list:
+            # Ensure we have a task to get the context
+            task_id = sg_data.get("task", {}).get("id")
+            if not task_id:
+                self.logger.error("Missing required task data to get reference template.")
+                continue
+
+            # Get the sgtk module by project
+            project_id = sg_data["project"]["id"]
+            if not task_id:
+                self.logger.error("Missing required project data to get reference template.")
+                continue
+
+            reference_template = reference_templates_by_project_and_task.get(project_id, {}).get(task_id)
+            if not reference_template:
+                # Get the reference template
+
+                tk = tk_by_project.get(project_id)
+                if not tk:
+                    tk = self.get_tk_from_project_id(project_id)
+                    tk_by_project[project_id] = tk
+
+                if not tk:
+                    self.logger.error("Couldn't find tk from project id: {}".format(project_id))
+                    continue
+
+                # Get the context by task
+                ctx = ctx_by_task.get(task_id)
+                if not ctx:
+                    ctx = tk.context_from_entity_dictionary(sg_data["task"])
+                    ctx_by_task[task_id] = ctx
+
+                if not ctx:
+                    self.logger.error("Couldn't find context from data: {}".format(sg_data))
+                    continue
+
+                # Why can't we just use self here?
+                env = sgtk.platform.engine.get_environment_from_context(tk, ctx)
+                if not env:
+                    self.logger.error("Couldn't get environment from context")
+                    continue
+
+                # Get our engine settings from the env
+                engine_settings = env.get_engine_settings(self.name)
+                if not engine_settings:
+                    self.logger.error("Couldn't get engine settings")
+                    continue
+
+                # Get the reference template name from the engine settings
+                reference_template_name = engine_settings.get("reference_template")
+                if not reference_template_name:
+                    self.logger.error("Couldn't get reference template from settings")
+                    continue
+
+                # Finally get the template
+                reference_templates_by_project_and_task.setdefault(project_id, {})[task_id] = tk.templates.get(reference_template_name)
+
+        return reference_templates_by_project_and_task
+
     def __get_pipeline_configuration_local_path(self, project_id):
         """
         Get the path to the local configuration (the one which stands in the Sgtk cache folder) in order to be able
