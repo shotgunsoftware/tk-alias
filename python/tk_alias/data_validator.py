@@ -217,7 +217,7 @@ class AliasDataValidator(object):
                     ],
                 },
             },
-            # NOTE the fix function for Convert Instances will crash in some versions of Alias 
+            # NOTE the fix function for Convert Instances will crash in some versions of Alias
             "node_instances": {
                 "name": "Convert Instances to Geometry",
                 "description": """Check: Instances<br/>
