@@ -41,8 +41,10 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
         return """
         <p>
-            This plugin create a new VRED scene by importing the current Alias session file once it has been published to
-            ShotGrid.
+            This plugin will create a new VRED .vpb file by importing the current Alias session file once it has been published to
+            ShotGrid.<p>
+            This plugin requires that you have an installation of VRED Professional on the same workstation as Alias.
+            If you do not have Administrator rights to install this yourself, please contact your System Administrator to have it installed.
 
         </p>
         """
