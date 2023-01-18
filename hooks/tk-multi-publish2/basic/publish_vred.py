@@ -43,7 +43,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         <p>
             This plugin create a new VRED scene by importing the current Alias session file once it has been published to
             ShotGrid.
-            
+
         </p>
         """
 
@@ -76,15 +76,15 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
                 "type": "template",
                 "default": None,
                 "description": "Template path for published work files. Should"
-                               "correspond to a template defined in "
-                               "templates.yml.",
+                "correspond to a template defined in "
+                "templates.yml.",
             },
             "Publish Template": {
                 "type": "template",
                 "default": None,
                 "description": "Template path for published work files. Should"
-                               "correspond to a template defined in "
-                               "templates.yml.",
+                "correspond to a template defined in "
+                "templates.yml.",
             },
             "Task Name": {
                 "type": "str",
@@ -100,8 +100,8 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
                 "type": "dict",
                 "default": {},
                 "description": "Python dictionary to store UI settings in order"
-                               "to save/restore the UI state."
-            }
+                "to save/restore the UI state.",
+            },
         }
 
         # update the base settings
@@ -146,11 +146,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         # if we create a new one, there will be conflicts between them and Alias will crash a lot
         task_manager = __publish_app_task_manager(parent)
 
-        return CustomWidget(
-            parent,
-            bundle=self.parent,
-            task_manager=task_manager
-        )
+        return CustomWidget(parent, bundle=self.parent, task_manager=task_manager)
 
     def get_ui_settings(self, widget, items=None):
         """
@@ -182,9 +178,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             "publish_to_sg": widget.publish_to_shotgrid.isChecked(),
         }
 
-        return {
-            "UI Settings": ui_settings
-        }
+        return {"UI Settings": ui_settings}
 
     def set_ui_settings(self, widget, settings, items=None):
         """
@@ -378,7 +372,9 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
                 return
 
             if not os.path.exists(alias_publish_path):
-                self.logger.error("The Alias file {} doesn't exist on disk".format(alias_publish_path))
+                self.logger.error(
+                    "The Alias file {} doesn't exist on disk".format(alias_publish_path)
+                )
                 return
 
             # build the path to the VRED file and make sure the output directory exist
@@ -387,14 +383,16 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             self.parent.ensure_folder_exists(work_folder)
 
             # build the command line to create the vred scene
-            post_python_cmd = self.get_vred_python_script(alias_publish_path, vred_work_path)
+            post_python_cmd = self.get_vred_python_script(
+                alias_publish_path, vred_work_path
+            )
 
             cmd = [
                 self.get_vred_bin_path(item),
                 "-console",
                 "-hide_gui",
                 "-postpython",
-                post_python_cmd
+                post_python_cmd,
             ]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             p_output, _ = p.communicate()
@@ -431,7 +429,9 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
                 # increment the VRED work path
                 self._save_to_next_version(
-                    item.properties["path"], item, lambda p: shutil.copyfile(item.properties["path"], p)
+                    item.properties["path"],
+                    item,
+                    lambda p: shutil.copyfile(item.properties["path"], p),
                 )
 
     def get_vred_bin_path(self, item):
@@ -446,7 +446,9 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         if vred_bin_path:
             return vred_bin_path
 
-        launcher = sgtk.platform.create_engine_launcher(self.parent.sgtk, item.context, "tk-vred")
+        launcher = sgtk.platform.create_engine_launcher(
+            self.parent.sgtk, item.context, "tk-vred"
+        )
         software_versions = launcher.scan_software()
 
         return software_versions[-1].path if software_versions else None
@@ -469,7 +471,9 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         if settings["Work Template"] is None or settings["Work Template"].value is None:
             return None
 
-        work_template = self.parent.engine.get_template_by_name(settings["Work Template"].value)
+        work_template = self.parent.engine.get_template_by_name(
+            settings["Work Template"].value
+        )
         if not work_template:
             return None
 
@@ -496,9 +500,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
         # make sure the folders are created for the selected task
         self.parent.sgtk.create_filesystem_structure(
-            item.context.task["type"],
-            item.context.task["id"],
-            "tk-vred"
+            item.context.task["type"], item.context.task["id"], "tk-vred"
         )
 
         template_fields = item.context.as_template_fields(work_template)
@@ -508,18 +510,20 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
         missing_keys = work_template.missing_keys(template_fields)
         if missing_keys:
-            self.logger.error("Work file '%s' missing keys required by the template: {}".format(missing_keys))
+            self.logger.error(
+                "Work file '%s' missing keys required by the template: {}".format(
+                    missing_keys
+                )
+            )
             return
 
         # now, we can look for the right version number
         existing_work_files = self.sgtk.paths_from_template(
-            work_template,
-            skip_keys=["version"],
-            fields=template_fields
+            work_template, skip_keys=["version"], fields=template_fields
         )
         max_existing_version = max(
             [work_template.get_fields(p).get("version") for p in existing_work_files],
-            default=0
+            default=0,
         )
         template_fields["version"] = max_existing_version + 1
 
@@ -549,15 +553,23 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         else:
 
             # otherwise, try to build the context from the plugin settings
-            task_name = settings["Task Name"].value if not isinstance(settings["Task Name"], str) else settings["Task Name"]
-            step_name = settings["Step Name"].value if not isinstance(settings["Step Name"], str) else settings["Step Name"]
+            task_name = (
+                settings["Task Name"].value
+                if not isinstance(settings["Task Name"], str)
+                else settings["Task Name"]
+            )
+            step_name = (
+                settings["Step Name"].value
+                if not isinstance(settings["Step Name"], str)
+                else settings["Step Name"]
+            )
             sg_task = self.parent.shotgun.find_one(
                 "Task",
                 [
                     ["content", "is", task_name],
                     ["step.Step.code", "is", step_name],
-                    ["entity", "is", item.context.entity]
-                ]
+                    ["entity", "is", item.context.entity],
+                ],
             )
 
             if sg_task:
@@ -666,7 +678,9 @@ class CustomWidget(QtGui.QWidget):
 
         # store Toolkit framework modules in order to avoid importing them many times
         self.__modules = {
-            "context_selector": self._bundle.frameworks["tk-framework-qtwidgets"].import_module("context_selector"),
+            "context_selector": self._bundle.frameworks[
+                "tk-framework-qtwidgets"
+            ].import_module("context_selector"),
         }
 
         # initialize the UI
@@ -720,15 +734,21 @@ class CustomWidget(QtGui.QWidget):
         self.main_layout = QtGui.QVBoxLayout(self)
         self.main_layout.addWidget(self.description_group_box)
         self.main_layout.addItem(
-            QtGui.QSpacerItem(20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+            QtGui.QSpacerItem(
+                20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed
+            )
         )
         self.main_layout.addWidget(self.context_widget)
         self.main_layout.addItem(
-            QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+            QtGui.QSpacerItem(
+                20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed
+            )
         )
         self.main_layout.addLayout(self.filename_layout)
         self.main_layout.addItem(
-            QtGui.QSpacerItem(20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+            QtGui.QSpacerItem(
+                20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed
+            )
         )
         self.main_layout.addWidget(self.publish_to_shotgrid)
 
