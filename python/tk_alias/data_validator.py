@@ -145,6 +145,9 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
                 "dependency_ids": [
                     "node_instances",
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                 ],
             },
             "shader_is_vred_compatible": {
@@ -177,6 +180,7 @@ class AliasDataValidator(object):
                 "warn_msg": 'This validation does not return a status. To ensure all null nodes are deleted, select "Delete All" or "Fix All."',
                 "dependency_ids": [
                     "curves",
+                    "node_has_construction_history",
                 ],
             },
             "node_has_construction_history": {
@@ -213,6 +217,7 @@ class AliasDataValidator(object):
                     ],
                 },
             },
+            # NOTE the fix function for Convert Instances will crash in some versions of Alias
             "node_instances": {
                 "name": "Convert Instances to Geometry",
                 "description": """Check: Instances<br/>
@@ -238,7 +243,11 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "node_pivots_at_origin": {
                 "name": "Reset Pivots to Global Origin",
@@ -266,7 +275,11 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
                 "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
@@ -310,6 +323,9 @@ class AliasDataValidator(object):
                 },
                 "dependency_ids": [
                     "node_instances",
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                 ],
             },
             "node_is_not_in_layer": {
@@ -339,7 +355,11 @@ class AliasDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
-                "dependency_ids": ["node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "node_is_in_layer": {
                 "name": "Nodes Must Be In DefaultLayer",
@@ -374,7 +394,11 @@ class AliasDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
-                "dependency_ids": ["node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "node_name_matches_layer": {
                 "name": "Match Layer And Assigned Nodes' Names",
@@ -488,7 +512,11 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "cos_unused": {
                 "name": "Delete Unused Curves-on-Surfaces (COS)",
@@ -526,6 +554,8 @@ class AliasDataValidator(object):
                 "dependency_ids": [
                     "cos_construction_history",
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                 ],
             },
             "cos_construction_history": {
@@ -608,6 +638,8 @@ class AliasDataValidator(object):
                 ],
                 "dependency_ids": [
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                 ],
             },
             "group_has_single_level_hierarchy": {
@@ -637,6 +669,8 @@ class AliasDataValidator(object):
                 ],
                 "dependency_ids": [
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                     "layer_has_single_object",
                 ],
             },
@@ -666,7 +700,11 @@ class AliasDataValidator(object):
                     },
                 ],
                 "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
-                "dependency_ids": ["node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "layer_has_single_shader": {
                 "name": "Layer Has Single Shader",
@@ -691,6 +729,8 @@ class AliasDataValidator(object):
                 ],
                 "dependency_ids": [
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                     "node_is_in_layer",
                     "node_is_not_in_layer",
                 ],
@@ -750,10 +790,13 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": [
                     "layer_is_empty",
+                    "node_has_zero_transform",
+                    "node_instances",
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                     "node_is_in_layer",
                     "node_is_not_in_layer",
-                    "node_has_zero_transform",
                 ],
             },
             "locators": {
