@@ -21,15 +21,11 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasCreateVREDFilePlugin(HookBaseClass):
-    """
-    Plugin for creating a VRED scene from the current Alias session.
-    """
+    """Plugin for creating a VRED scene from the current Alias session."""
 
     @property
     def name(self):
-        """
-        One line display name describing the plugin
-        """
+        """One line display name describing the plugin"""
         return "Create VRED Scene"
 
     @property
@@ -238,7 +234,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             widget.publish_to_shotgrid.hide()
             widget.publish_to_shotgrid.setChecked(False)
         else:
-            if "publish_to_sg" in ui_settings.keys():
+            if "publish_to_sg" in ui_settings:
                 widget.publish_to_shotgrid.setChecked(ui_settings["publish_to_sg"])
 
         # initialize context selection widget
@@ -549,7 +545,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         if not isinstance(ui_settings, dict):
             ui_settings = ui_settings.value
 
-        if "context" in ui_settings.keys() and ui_settings["context"]:
+        if "context" in ui_settings and ui_settings["context"]:
             return sgtk.Context.from_dict(self.sgtk, ui_settings["context"])
 
         else:
@@ -596,7 +592,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         if not isinstance(ui_settings, dict):
             ui_settings = ui_settings.value
 
-        if "filename" in ui_settings.keys() and ui_settings["filename"]:
+        if "filename" in ui_settings and ui_settings["filename"]:
             return ui_settings["filename"]
 
         # otherwise, try to get the file name of the current session using the template and its fields
@@ -657,9 +653,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
 
 
 class CustomWidget(QtGui.QWidget):
-    """
-    Settings widget that will be used by the Publish plugin
-    """
+    """Settings widget that will be used by the Publish plugin"""
 
     def __init__(self, parent, bundle, task_manager):
         """
@@ -689,9 +683,7 @@ class CustomWidget(QtGui.QWidget):
         self.setup_ui()
 
     def setup_ui(self):
-        """
-        Configure the UI.
-        """
+        """Configure the UI."""
 
         # description widget
         self.description_group_box = QtGui.QGroupBox(self)
