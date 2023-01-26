@@ -68,9 +68,8 @@ class SceneOperation(HookClass):
                                 all others     - None
         """
 
-
         # At the end of the scene operation, indicate if the context needs to be saved for the
-        # current Alias stage. 
+        # current Alias stage.
         save_context = operation in ["save_as", "prepare_new", "open", "reset"]
 
         # Use the event watcher context manager to queue any callbacks triggered by Alias
