@@ -62,10 +62,16 @@ class SceneOperation(HookClass):
         :returns:               Depends on operation:
                                 'current_path' - Return the current scene
                                                  file path as a String
+                                'open'         - True if file was opened, otherwise False
                                 'reset'        - True if scene was reset to an empty
                                                  state, otherwise False
                                 all others     - None
         """
+
+
+        # At the end of the scene operation, indicate if the context needs to be saved for the
+        # current Alias stage. 
+        save_context = operation in ["save_as", "prepare_new", "open", "reset"]
 
         # Use the event watcher context manager to queue any callbacks triggered by Alias
         # events while performing any scene operations. This ensures that all Alias file I/O
@@ -84,7 +90,9 @@ class SceneOperation(HookClass):
                             self.parent.engine.open_delete_stages_dialog()
                         )
                         if open_in_current_stage == QtGui.QMessageBox.Cancel:
-                            return
+                            # Do not save the context if the operation was cancelled.
+                            save_context = False
+                            return False
 
                         if open_in_current_stage == QtGui.QMessageBox.No:
                             alias_api.open_file(file_path, new_stage=True)
@@ -102,6 +110,7 @@ class SceneOperation(HookClass):
                     # do not reset the file if we try to open another one as we have to deal with the stages an resetting
                     # the current session will delete all the stages
                     if parent_action == "open_file":
+                        save_context = False
                         return True
 
                     if alias_api.is_empty_file() and len(alias_api.get_stages()) == 1:
@@ -112,6 +121,8 @@ class SceneOperation(HookClass):
                         self.parent.engine.open_delete_stages_dialog(new_file=True)
                     )
                     if open_in_current_stage == QtGui.QMessageBox.Cancel:
+                        # Do not save the context if the operation was cancelled.
+                        save_context = False
                         return False
 
                     if open_in_current_stage == QtGui.QMessageBox.No:
@@ -122,7 +133,7 @@ class SceneOperation(HookClass):
 
                     return True
             finally:
-                if operation in ["save_as", "prepare_new", "open"]:
+                if save_context:
                     # It is important that this method is executed before the event watcher
                     # context manager exits to ensure that the current context is saved for
                     # this Alias stage, before any event callbacks are triggered (whcih may
