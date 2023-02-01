@@ -15,15 +15,13 @@ import sys
 #   >= v2020.3 & < v2021.3  -- use APA from folder alias2020.3-alias2021
 #   >= v2021.3 & < v2022.2  -- use APA from folder alias2021.3
 #   >= v2022.2 & < v2023.0  -- use APA from folder alias2022.2
-#   >= v2023.0              -- use APA from folder alias2023
+#   == v2023.0              -- use APA from folder alias2023.0
+#   == v2023.1              -- use APA from folder alias2023.1
 #
-# TODO: the Alias Python API, starting at version 2023.0, will have a build to match
-#       the exact version of Alias that is running - update how we pick the python api
-#       by specifying exact version, instead of by grouping (min/max version)
-#
+# NOTE this Alias version mapping to python api version is deprecated since 2023.0
+# There should be an api folder for each Alias version. Remove these version mappings as older
+# versions of Alias are dropped from support.
 ALIAS_API = {
-    "alias2023.1": {"min_version": "2023.1"},
-    "alias2023.0": {"min_version": "2023.0", "max_version": "2023.1"},
     "alias2022.2": {"min_version": "2022.2", "max_version": "2023.0"},
     "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
     "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3"},
@@ -106,24 +104,52 @@ def import_alias_api():
         msg = "Alias version is not set. Set the environment variable TK_ALIAS_VERSION (e.g. 2022.2)."
         raise AliasPythonAPIImportError(msg)
 
+    python_version = "{major}.{minor}".format(
+        major=sys.version_info.major,
+        minor=sys.version_info.minor,
+    )
+    python_folder_name = "python{}".format(python_version)
+
     # Determine the name of the folder containing the files to import according to the version
     # of Alias
-    api_folder_name = None
-    for api_folder in ALIAS_API:
-        min_version = ALIAS_API[api_folder].get("min_version")
-        if min_version and version_cmp(alias_release_version, min_version) < 0:
-            continue
 
-        max_version = ALIAS_API[api_folder].get("max_version")
-        if max_version and version_cmp(alias_release_version, max_version) >= 0:
-            continue
+    # First try to get the api folder directly matching the running version of Alias
+    api_folder_name = "alias{version}".format(version=alias_release_version)
+    api_folder_path = os.path.normpath(
+        os.path.join(
+            os.path.dirname(__file__),
+            python_folder_name,
+            api_folder_name,
+        )
+    )
 
-        api_folder_name = api_folder
+    if not os.path.exists(api_folder_path):
+        # This is an older build, look up based on Alias version grouping.
+        api_folder_path = None
+        for api_folder_name in ALIAS_API:
+            min_version = ALIAS_API[api_folder_name].get("min_version")
+            if min_version and version_cmp(alias_release_version, min_version) < 0:
+                continue
 
-    if not api_folder_name:
+            max_version = ALIAS_API[api_folder_name].get("max_version")
+            if max_version and version_cmp(alias_release_version, max_version) >= 0:
+                continue
+
+            # Found the api folder name, now try to get the full path.
+            api_folder_path = os.path.normpath(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    python_folder_name,
+                    api_folder_name,
+                )
+            )
+            break
+
+    if not api_folder_path or not os.path.exists(api_folder_path):
         raise AliasPythonAPIImportError(
-            "Cound not determine module path for Alias version {}".format(
-                alias_release_version
+            "Failed to get Alias Python API module path for Alias {alias_version} and Python {py_version}".format(
+                alias_version=alias_release_version,
+                py_version=python_version
             )
         )
 
@@ -135,9 +161,7 @@ def import_alias_api():
     )
     module_path = os.path.normpath(
         os.path.join(
-            os.path.dirname(__file__),
-            "python3",
-            api_folder_name,
+            api_folder_path,
             "{}.pyd".format(module_name),
         )
     )
@@ -156,9 +180,20 @@ def import_alias_api():
         alias_api = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(alias_api)
     except Exception as e:
-        info_msg = "The specific Alias version that the Alias Python API requires must be installed. The Alias bin directory path must be in the system environment PATH variable. If more than one version of Alias is installed, it must appear before all other versions in the PATH."
+        info_msg = (
+            "Running: Alias v{alias_version}, Python v{py_major}.{py_minor}.{py_micro}.\n\n"
+            "Attempted to import Alias Python API: {apa_path}\n\n"
+            "Failed import may be caused by a mismatch between the running Alias or Python version and "
+            "the versions used to compile the Alias Python API."
+        ).format(
+            apa_path=module_path,
+            alias_version=alias_release_version,
+            py_major=sys.version_info.major,
+            py_minor=sys.version_info.minor,
+            py_micro=sys.version_info.micro,
+        )
         raise AliasPythonAPIImportError(
-            "{error}\n{info}".format(error=str(e), info=info_msg)
+            "{error}\n\n{info}".format(error=str(e), info=info_msg)
         )
 
     # Add the newly created module oject to sys.modules and remap the globals accessor to point at our new module
