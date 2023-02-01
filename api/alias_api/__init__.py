@@ -148,8 +148,7 @@ def import_alias_api():
     if not api_folder_path or not os.path.exists(api_folder_path):
         raise AliasPythonAPIImportError(
             "Failed to get Alias Python API module path for Alias {alias_version} and Python {py_version}".format(
-                alias_version=alias_release_version,
-                py_version=python_version
+                alias_version=alias_release_version, py_version=python_version
             )
         )
 

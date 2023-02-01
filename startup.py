@@ -260,7 +260,7 @@ class AliasLauncher(SoftwareLauncher):
             )
         )
 
-        if not os.path.exists(plugin_folder_path): 
+        if not os.path.exists(plugin_folder_path):
             # Folder not found, try the plugin mapping to Alias version
             plugin_folder_path = None
             for plugin_folder_name in self.ALIAS_PLUGINS:
