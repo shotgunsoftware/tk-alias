@@ -78,4 +78,4 @@ requires_shotgun_version:
 requires_core_version: "v0.19.18"
 
 frameworks:
-  - {"name": "tk-framework-aliastranslations", "version": "v0.x.x"}
+  - {"name": "tk-framework-aliastranslations", "version": "v0.2.3"}
