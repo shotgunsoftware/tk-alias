@@ -1,0 +1,23 @@
+Classes
+####################
+
+.. doxygenclass:: alPy::Alternative
+   :members:
+
+.. doxygenclass:: alPy::Layer
+   :members:
+
+.. doxygenclass:: alPy::Menu
+   :members:
+
+.. doxygenclass:: alPy::MenuItem
+   :members:
+
+.. doxygenclass:: alPy::Reference
+   :members:
+
+.. doxygenclass:: alPy::Stage
+   :members:
+
+.. doxygenclass:: alPy::Variant
+   :members:

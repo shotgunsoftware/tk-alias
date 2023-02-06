@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Classes &mdash; Alias Python API  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Exceptions" href="exceptions.html" />
+    <link rel="prev" title="Alias C++ API Python Bindings" href="alias_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Alias Python API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="alias_api.html">Alias C++ API Python Bindings</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#alannotationlocator">AlAnnotationLocator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alcamera">AlCamera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alcameranode">AlCameraNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alcluster">AlCluster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alclusternode">AlClusterNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alconstructionentity">AlConstructionEntity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alconstructionplane">AlConstructionPlane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alcurvenode">AlCurveNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alcurveonsurface">AlCurveOnSurface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alcurveonsurfacepoint">AlCurveOnSurfacePoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alcurvepoint">AlCurvePoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aldagnode">AlDagNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alcopyoptions">AlCopyOptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alface">AlFace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alfacenode">AlFaceNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#algroupnode">AlGroupNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alhashable">AlHashable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alikhandle">AlIKHandle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aliterator">AlIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allayer">AlLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allayeredshader">AlLayeredShader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allight">AlLight</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allightnode">AlLightNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allinkitem">AlLinkItem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allocator">AlLocator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#almesh">AlMesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#almeshnode">AlMeshNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alobject">AlObject</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alorthographiccamera">AlOrthographicCamera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alperspectivecamera">AlPerspectiveCamera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alpickable">AlPickable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alpoint">AlPoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alreferencefile">AlReferenceFile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alreferencefileset">AlReferenceFileSet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alshader">AlShader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alshell">AlShell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alshellnode">AlShellNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alspacepoint">AlSpacePoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alsurface">AlSurface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alsurfacenode">AlSurfaceNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alsurfacepoint">AlSurfacePoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alswitchshader">AlSwitchShader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#altexturenode">AlTextureNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#altm">AlTM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alwindow">AlWindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#menu">Menu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#menuitem">MenuItem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#messageresult">MessageResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stage">Stage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variant">Variant</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functions.html">Functions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Alias Python API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="alias_api.html">Alias C++ API Python Bindings</a> &raquo;</li>
+      <li>Classes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/classes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="classes">
+<h1>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h1>
+<section id="alannotationlocator">
+<h2>AlAnnotationLocator<a class="headerlink" href="#alannotationlocator" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alcamera">
+<h2>AlCamera<a class="headerlink" href="#alcamera" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alcameranode">
+<h2>AlCameraNode<a class="headerlink" href="#alcameranode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alcluster">
+<h2>AlCluster<a class="headerlink" href="#alcluster" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alclusternode">
+<h2>AlClusterNode<a class="headerlink" href="#alclusternode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alconstructionentity">
+<h2>AlConstructionEntity<a class="headerlink" href="#alconstructionentity" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alconstructionplane">
+<h2>AlConstructionPlane<a class="headerlink" href="#alconstructionplane" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alcurvenode">
+<h2>AlCurveNode<a class="headerlink" href="#alcurvenode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alcurveonsurface">
+<h2>AlCurveOnSurface<a class="headerlink" href="#alcurveonsurface" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alcurveonsurfacepoint">
+<h2>AlCurveOnSurfacePoint<a class="headerlink" href="#alcurveonsurfacepoint" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alcurvepoint">
+<h2>AlCurvePoint<a class="headerlink" href="#alcurvepoint" title="Permalink to this headline"></a></h2>
+</section>
+<section id="aldagnode">
+<h2>AlDagNode<a class="headerlink" href="#aldagnode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alcopyoptions">
+<h2>AlCopyOptions<a class="headerlink" href="#alcopyoptions" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alface">
+<h2>AlFace<a class="headerlink" href="#alface" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alfacenode">
+<h2>AlFaceNode<a class="headerlink" href="#alfacenode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="algroupnode">
+<h2>AlGroupNode<a class="headerlink" href="#algroupnode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alhashable">
+<h2>AlHashable<a class="headerlink" href="#alhashable" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alikhandle">
+<h2>AlIKHandle<a class="headerlink" href="#alikhandle" title="Permalink to this headline"></a></h2>
+</section>
+<section id="aliterator">
+<h2>AlIterator<a class="headerlink" href="#aliterator" title="Permalink to this headline"></a></h2>
+</section>
+<section id="allayer">
+<h2>AlLayer<a class="headerlink" href="#allayer" title="Permalink to this headline"></a></h2>
+</section>
+<section id="allayeredshader">
+<h2>AlLayeredShader<a class="headerlink" href="#allayeredshader" title="Permalink to this headline"></a></h2>
+</section>
+<section id="allight">
+<h2>AlLight<a class="headerlink" href="#allight" title="Permalink to this headline"></a></h2>
+</section>
+<section id="allightnode">
+<h2>AlLightNode<a class="headerlink" href="#allightnode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="allinkitem">
+<h2>AlLinkItem<a class="headerlink" href="#allinkitem" title="Permalink to this headline"></a></h2>
+</section>
+<section id="allocator">
+<h2>AlLocator<a class="headerlink" href="#allocator" title="Permalink to this headline"></a></h2>
+</section>
+<section id="almesh">
+<h2>AlMesh<a class="headerlink" href="#almesh" title="Permalink to this headline"></a></h2>
+</section>
+<section id="almeshnode">
+<h2>AlMeshNode<a class="headerlink" href="#almeshnode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alobject">
+<h2>AlObject<a class="headerlink" href="#alobject" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alorthographiccamera">
+<h2>AlOrthographicCamera<a class="headerlink" href="#alorthographiccamera" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alperspectivecamera">
+<h2>AlPerspectiveCamera<a class="headerlink" href="#alperspectivecamera" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alpickable">
+<h2>AlPickable<a class="headerlink" href="#alpickable" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alpoint">
+<h2>AlPoint<a class="headerlink" href="#alpoint" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alreferencefile">
+<h2>AlReferenceFile<a class="headerlink" href="#alreferencefile" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alreferencefileset">
+<h2>AlReferenceFileSet<a class="headerlink" href="#alreferencefileset" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alshader">
+<h2>AlShader<a class="headerlink" href="#alshader" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alshell">
+<h2>AlShell<a class="headerlink" href="#alshell" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alshellnode">
+<h2>AlShellNode<a class="headerlink" href="#alshellnode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alspacepoint">
+<h2>AlSpacePoint<a class="headerlink" href="#alspacepoint" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alsurface">
+<h2>AlSurface<a class="headerlink" href="#alsurface" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alsurfacenode">
+<h2>AlSurfaceNode<a class="headerlink" href="#alsurfacenode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alsurfacepoint">
+<h2>AlSurfacePoint<a class="headerlink" href="#alsurfacepoint" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alswitchshader">
+<h2>AlSwitchShader<a class="headerlink" href="#alswitchshader" title="Permalink to this headline"></a></h2>
+</section>
+<section id="altexturenode">
+<h2>AlTextureNode<a class="headerlink" href="#altexturenode" title="Permalink to this headline"></a></h2>
+</section>
+<section id="altm">
+<h2>AlTM<a class="headerlink" href="#altm" title="Permalink to this headline"></a></h2>
+</section>
+<section id="alwindow">
+<h2>AlWindow<a class="headerlink" href="#alwindow" title="Permalink to this headline"></a></h2>
+</section>
+<section id="menu">
+<h2>Menu<a class="headerlink" href="#menu" title="Permalink to this headline"></a></h2>
+</section>
+<section id="menuitem">
+<h2>MenuItem<a class="headerlink" href="#menuitem" title="Permalink to this headline"></a></h2>
+</section>
+<section id="messageresult">
+<h2>MessageResult<a class="headerlink" href="#messageresult" title="Permalink to this headline"></a></h2>
+</section>
+<section id="stage">
+<h2>Stage<a class="headerlink" href="#stage" title="Permalink to this headline"></a></h2>
+</section>
+<section id="variant">
+<h2>Variant<a class="headerlink" href="#variant" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="alias_api.html" class="btn btn-neutral float-left" title="Alias C++ API Python Bindings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="exceptions.html" class="btn btn-neutral float-right" title="Exceptions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Autodesk, Inc.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
