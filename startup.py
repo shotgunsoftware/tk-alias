@@ -244,6 +244,10 @@ class AliasLauncher(SoftwareLauncher):
 
         code_name = code_name or self.FALLBACK_CODE_NAME
         release_version = self._get_release_version(exec_path, code_name)
+
+        # Strip out any added text to the release version
+        release_version = release_version.split(" ")[0]
+
         python_folder_name = "python{major}.{minor}".format(
             major=sys.version_info.major,
             minor=sys.version_info.minor,
