@@ -245,9 +245,6 @@ class AliasLauncher(SoftwareLauncher):
         code_name = code_name or self.FALLBACK_CODE_NAME
         release_version = self._get_release_version(exec_path, code_name)
 
-        # Strip out any added text to the release version
-        release_version = release_version.split(" ")[0]
-
         python_folder_name = "python{major}.{minor}".format(
             major=sys.version_info.major,
             minor=sys.version_info.minor,
@@ -344,6 +341,9 @@ class AliasLauncher(SoftwareLauncher):
             item.strip() for item in releases if item.strip().startswith(release_prefix)
         ][0]
         release_version = release_info[len(release_prefix) :].strip()
+
+        # Strip out any text that comes after the version number string (e.g. Preview)
+        release_version = release_version.split(" ")[0]
 
         return release_version
 
