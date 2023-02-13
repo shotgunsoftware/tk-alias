@@ -49,7 +49,7 @@ class AliasLauncher(SoftwareLauncher):
     # should be one-to-one match, e.g. for Alias 2023.0 the folder will be
     # "alias2023.0"
     ALIAS_PLUGINS = {
-        "alias2022.2": {"min_version": "2022.2"},
+        "alias2022.2": {"min_version": "2022.2", "max_version": "2023.0"},
         "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
         "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3"},
         "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},
@@ -285,7 +285,20 @@ class AliasLauncher(SoftwareLauncher):
                 break
 
         if not plugin_folder_path or not os.path.exists(plugin_folder_path):
-            raise Exception("Failed to find Alias ShotGrid Plugin folder.")
+            # Try to fallback to the minor verison for the api, if it exists.
+            version_parts = release_version.split(".")
+            if len(version_parts) >= 2:
+                minor_version = "{major}.{minor}".format(major=version_parts[0], minor=version_parts[1])
+                plugin_folder_name = "alias{minor_version}".format(minor_version=minor_version)
+                plugin_folder_path = os.path.normpath(
+                    os.path.join(
+                        plugins_directory,
+                        python_folder_name,
+                        plugin_folder_name,
+                    )
+                )
+            if not plugin_folder_path or not os.path.exists(plugin_folder_path):
+                raise Exception("Failed to find Alias ShotGrid Plugin folder.")
 
         plugin_file_basename = (
             "shotgun" if version_cmp(release_version, "2022.2") < 0 else "shotgrid"

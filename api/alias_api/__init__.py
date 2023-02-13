@@ -123,6 +123,8 @@ def import_alias_api():
         )
     )
 
+    # NOTE remove this logic once support is dropped for these versions of Alias in the
+    # ALIAS_API version group mapping
     if not os.path.exists(api_folder_path):
         # This is an older build, look up based on Alias version grouping.
         api_folder_path = None
@@ -146,11 +148,24 @@ def import_alias_api():
             break
 
     if not api_folder_path or not os.path.exists(api_folder_path):
-        raise AliasPythonAPIImportError(
-            "Failed to get Alias Python API module path for Alias {alias_version} and Python {py_version}".format(
-                alias_version=alias_release_version, py_version=python_version
+        # Try to fallback to the minor verison for the api, if it exists.
+        alias_version_parts = alias_release_version.split(".")
+        if len(alias_version_parts) >= 2:
+            alias_minor_version = "{major}.{minor}".format(major=alias_version_parts[0], minor=alias_version_parts[1])
+            api_folder_name = "alias{minor_version}".format(minor_version=alias_minor_version)
+            api_folder_path = os.path.normpath(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    python_folder_name,
+                    api_folder_name,
+                )
             )
-        )
+        if not api_folder_path or not os.path.exists(api_folder_path):
+            raise AliasPythonAPIImportError(
+                "Failed to get Alias Python API module path for Alias {alias_version} and Python {py_version}".format(
+                    alias_version=alias_release_version, py_version=python_version
+                )
+            )
 
     # Get the right file to import according to the running mode (interactive vs non-interactive)
     module_name = (
