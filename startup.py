@@ -297,6 +297,16 @@ class AliasLauncher(SoftwareLauncher):
                         plugin_folder_name,
                     )
                 )
+                self.logger.warning(
+                    (
+                        "ShotGrid Plugin for exact Alias version {exact_version} not found. "
+                        "Attempting fallback to load ShotGrid Plugin for Alias {minor_version}."
+                    ).format(
+                        exact_version=release_version,
+                        minor_version=minor_version,
+                    )
+                )
+
             if not plugin_folder_path or not os.path.exists(plugin_folder_path):
                 raise Exception("Failed to find Alias ShotGrid Plugin folder.")
 
