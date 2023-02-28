@@ -128,14 +128,14 @@ class AliasDataValidator(object):
 
         return {
             "shader_unused": {
-                "name": "Delete Unused Shaders",
+                "name": "Delete unused shaders",
                 "description": """Check: Unused shaders<br/>
                                 Fix: Delete. DefaultShader is not affected.""",
                 "error_msg": "Found unused shaders",
                 "check_func": self.check_shader_unused,
                 "fix_func": self.fix_shader_unused,
                 "fix_name": "Delete All",
-                "fix_tooltip": "Delete unused Shaders.",
+                "fix_tooltip": "Delete unused shaders.",
                 "item_actions": [
                     {
                         "name": "Delete",
@@ -151,7 +151,7 @@ class AliasDataValidator(object):
                 ],
             },
             "shader_is_vred_compatible": {
-                "name": "Only Use VRED Shaders",
+                "name": "Only use VRED Shaders",
                 "description": """Check: Shaders are from the Asset Library (VRED-compatible)<br/>
                                 Fix: You must assign shaders from the Asset Library. DefaultShader is not affected.""",
                 "check_func": self.check_shader_is_vred_compatible,
@@ -171,7 +171,7 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
             },
             "node_is_null": {
-                "name": "Delete Null Nodes",
+                "name": "Delete null nodes",
                 "description": """Check: Null nodes<br/>
                                 Action: Delete""",
                 "fix_func": self.fix_node_is_null,
@@ -184,7 +184,7 @@ class AliasDataValidator(object):
                 ],
             },
             "node_has_construction_history": {
-                "name": "Delete Construction History",
+                "name": "Delete construction history",
                 "description": """Check: Construction history<br/>
                                 Action: Delete""",
                 "check_func": self.check_node_has_construction_history,
@@ -219,7 +219,7 @@ class AliasDataValidator(object):
             },
             # NOTE the fix function for Convert Instances will crash in some versions of Alias
             "node_instances": {
-                "name": "Convert Instances to Geometry",
+                "name": "Convert instances to geometry",
                 "description": """Check: Instances<br/>
                                 Action: Convert to geometry.""",
                 "check_func": self.check_node_instances,
@@ -250,7 +250,7 @@ class AliasDataValidator(object):
                 ],
             },
             "node_pivots_at_origin": {
-                "name": "Reset Pivots to Global Origin",
+                "name": "Reset pivots to global origin",
                 "description": """Check: Pivot point coordinates<br/>
                                 Fix: Set pivot points to global origin (0, 0, 0). Camera, light, and texture nodes are not affected.""",
                 "check_func": self.check_node_pivots_at_origin,
@@ -289,7 +289,7 @@ class AliasDataValidator(object):
                 },
             },
             "node_has_zero_transform": {
-                "name": "Zero Transforms",
+                "name": "Zero transforms",
                 "description": """Check: Non-zero transformations<br/>
                                 Action: Sets transformations to 0.0 on each node and DAG node. Camera, light, and texture nodes are not affected.""",
                 "check_func": self.check_node_has_zero_transform,
@@ -362,7 +362,7 @@ class AliasDataValidator(object):
                 ],
             },
             "node_is_in_layer": {
-                "name": "Nodes Must Be In DefaultLayer",
+                "name": "Specific nodes must be in the DefaultLayer",
                 "description": """Check: All camera, light, and texture nodes must be in the DefaultLayer<br/>
                                 Fix: Move all light, camera, and texture nodes to the DefaultLayer.""",
                 "check_func": self.check_node_is_in_layer,
@@ -519,8 +519,8 @@ class AliasDataValidator(object):
                 ],
             },
             "cos_unused": {
-                "name": "Delete Unused Curves-on-Surfaces (COS)",
-                "description": """Check: Unused curves-on-surfaces (COS)<br/>
+                "name": "Delete unused curve-on-surfaces (COS)",
+                "description": """Check: Unused curve-on-surfaces (COS)<br/>
                                 Fix: Delete""",
                 "check_func": self.check_curve_on_surface_unused,
                 "fix_func": self.fix_all_curve_on_surface_unused,
@@ -675,14 +675,14 @@ class AliasDataValidator(object):
                 ],
             },
             "layer_is_empty": {
-                "name": "Delete Empty Layers and Folders",
-                "description": """Check: Empty Layers and Folders<br/>
+                "name": "Delete empty layers and layer folders",
+                "description": """Check: Empty layers and layer folders<br/>
                                 Fix: Delete. DefaultLayer is not affected.""",
                 "check_func": self.check_layer_is_empty,
                 "fix_func": self.fix_layer_is_empty,
                 "fix_name": "Delete All",
-                "fix_tooltip": "Delete empty layers and folders",
-                "error_msg": "Found empty layers or folders",
+                "fix_tooltip": "Delete empty layers and layer folders",
+                "error_msg": "Found empty layers or layer folders",
                 "actions": [
                     {
                         "name": "Select All",
@@ -736,9 +736,9 @@ class AliasDataValidator(object):
                 ],
             },
             "layer_symmetry": {
-                "name": "Turn Off (All) Layer Symmetry",
-                "description": """Check: Layer Symmetry<br/>
-                                Fix: Turn off symmetry on layers. DefaultLayer is not affected.""",
+                "name": "Turn off layer symmetry for all layers",
+                "description": """Check: Layer symmetry<br/>
+                                Fix: Turn off symmetry on all layers. DefaultLayer is not affected.""",
                 "check_func": self.check_layer_symmetry,
                 "fix_func": self.fix_layer_symmetry,
                 "fix_name": "Turn Off All",
@@ -830,7 +830,7 @@ class AliasDataValidator(object):
                 "description": "Check: Metadata",
             },
             "references_exist": {
-                "name": "Remove Referenced Geometry",
+                "name": "Remove referenced geometry",
                 "description": """Check: Referenced geometry (.wref).<br/>
                                 Fix: Delete""",
                 "check_func": self.check_refererences_exist,
