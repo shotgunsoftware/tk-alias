@@ -151,20 +151,20 @@ class AliasDataValidator(object):
                 ],
             },
             "shader_is_vred_compatible": {
-                "name": "Only use VRED Shaders",
+                "name": "Only use VRED shaders",
                 "description": """Check: Shaders are from the Asset Library (VRED-compatible)<br/>
                                 Fix: You must assign shaders from the Asset Library. DefaultShader is not affected.""",
                 "check_func": self.check_shader_is_vred_compatible,
                 "error_msg": "Found shader(s) that are incompatible with VRED.",
                 "actions": [
                     {
-                        "name": "Select All Shader Geometry",
+                        "name": "Select all shader geometry",
                         "callback": self.pick_nodes,
                     },
                 ],
                 "item_actions": [
                     {
-                        "name": "Select Shader Geometry",
+                        "name": "Select shader geometry",
                         "callback": self.pick_nodes_assigned_to_shaders,
                     },
                 ],
@@ -329,7 +329,7 @@ class AliasDataValidator(object):
                 ],
             },
             "node_is_not_in_layer": {
-                "name": "Nodes Must Not Be In DefaultLayer",
+                "name": "Specific nodes must not be in the DefaultLayer",
                 "description": """Check: Only camera, light, texture, and group nodes should be in the DefaultLayer.""",
                 "check_func": self.check_node_is_not_in_layer,
                 "error_msg": "Found nodes in the default layer that are not allowed.",
@@ -401,8 +401,8 @@ class AliasDataValidator(object):
                 ],
             },
             "node_name_matches_layer": {
-                "name": "Match Layer And Assigned Nodes' Names",
-                "description": """Check: Layer and Top Node Names<br/>
+                "name": "Match layer and assigned nodes' names",
+                "description": """Check: Layer and top node names<br/>
                                 Fix: Rename top node in layer to match the layer name. DefaultLayer is not affected.""",
                 "check_func": self.check_node_name_matches_layer,
                 "fix_func": self.fix_node_name_matches_layer,
@@ -429,7 +429,7 @@ class AliasDataValidator(object):
                 "dependency_ids": ["node_is_in_layer", "node_is_not_in_layer"],
             },
             "node_layer_matches_parent": {
-                "name": "Node Layer Matches Parent Layer",
+                "name": "Node layer matches parent layer",
                 "description": """Check: Layer assignment<br/>
                                 Fix: Re-assign node to the same layer as the parent node layer.""",
                 "check_func": self.check_node_layer_matches_parent,
@@ -460,8 +460,8 @@ class AliasDataValidator(object):
                 ],
             },
             "node_dag_top_level": {
-                "name": "Top-Level DAG Nodes",
-                "description": """Check: DAG Top-level Nodes<br/>
+                "name": "Top-level DAG nodes",
+                "description": """Check: DAG top-level nodes<br/>
                                 Fix: DAG top-level nodes must be a group, curve, face, or surface node.""",
                 "check_func": self.check_node_dag_top_level,
                 "error_msg": "Found nodes in the top level of the DAG that are not allowed.",
@@ -488,7 +488,7 @@ class AliasDataValidator(object):
                 },
             },
             "node_templates": {
-                "name": "Delete Templates",
+                "name": "Delete templates",
                 "description": """Check: Templated geometry<br/>
                                 Fix: Delete""",
                 "check_func": self.check_node_templates,
@@ -559,9 +559,8 @@ class AliasDataValidator(object):
                 ],
             },
             "cos_construction_history": {
-                "description": "Check for nodes with unused COS with construction history.",
-                "name": "Delete Unused Curves-on-Surfaces (COS) Construction History",
-                "description": """Check: Unused curves-on-surfaces (COS) with construction history<br/>
+                "name": "Delete unused curve-on-surfaces (COS) construction history",
+                "description": """Check: Unused curve-on-surfaces (COS) with construction history<br/>
                                 Fix: Delete construction history for unused COS.""",
                 "check_func": self.check_curve_on_surface_construction_history,
                 "fix_func": self.fix_all_curve_on_surface_construction_history,
@@ -595,7 +594,7 @@ class AliasDataValidator(object):
                 "dependency_ids": ["node_has_construction_history"],
             },
             "curves": {
-                "name": "Delete Curves",
+                "name": "Delete curves",
                 "description": """Check: Curves<br/>
                                 Fix: Delete""",
                 "check_func": self.check_node_curves,
@@ -622,7 +621,7 @@ class AliasDataValidator(object):
                 "dependency_ids": ["node_has_construction_history"],
             },
             "set_empty": {
-                "name": "Delete Empty Selection Sets",
+                "name": "Delete empty selection sets",
                 "description": """Check: Empty sets<br/>
                                 Fix: Delete""",
                 "check_func": self.check_set_empty,
@@ -643,7 +642,7 @@ class AliasDataValidator(object):
                 ],
             },
             "group_has_single_level_hierarchy": {
-                "name": "Only One Level Per Group",
+                "name": "Only one level per group",
                 "description": """Check: Group hierarchy<br/>
                                 Fix: Flatten group nodes to have a single-level hierarchy.""",
                 "check_func": self.check_group_has_single_level_hierarchy,
@@ -707,8 +706,8 @@ class AliasDataValidator(object):
                 ],
             },
             "layer_has_single_shader": {
-                "name": "Layer Has Single Shader",
-                "description": """Check: Layer Members' Shaders""",
+                "name": "Layer has single shader",
+                "description": """Check: Layer members' shaders""",
                 "check_func": self.check_layer_has_single_shader,
                 "error_msg": "Found layer(s) using multiple shaders.",
                 "actions": [
@@ -763,8 +762,8 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
             },
             "layer_has_single_object": {
-                "name": "Layer Has Single Item",
-                "description": """Check: Layer Members<br/>
+                "name": "Layer has single item",
+                "description": """Check: Layer members<br/>
                                 Fix: Move all layer members into a single group node. DefaultLayer is not affected.""",
                 "check_func": self.check_layer_has_single_object,
                 "fix_func": self.fix_layer_has_single_object,
@@ -800,9 +799,9 @@ class AliasDataValidator(object):
                 ],
             },
             "locators": {
-                "name": "Delete Locators",
+                "name": "Delete locators",
                 "description": """Check: Locators<br/>
-                                Fix: Delete including Annotate locators.""",
+                                Fix: Delete including annotate locators.""",
                 "check_func": self.check_locators,
                 "fix_func": self.fix_locators,
                 "fix_name": "Delete All",
@@ -826,7 +825,7 @@ class AliasDataValidator(object):
                 ],
             },
             "metadata": {
-                "name": "Delete Metadata",
+                "name": "Delete metadata",
                 "description": "Check: Metadata",
             },
             "references_exist": {
