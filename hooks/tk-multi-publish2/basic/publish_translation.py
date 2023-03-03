@@ -275,6 +275,16 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             self.logger.warning("Couldn't find translator path.")
             return False
 
+        # store the licensing information in the item properties so that the translation could be run in
+        # background mode
+        alias_info = alias_api.get_product_information()
+        item.local_properties.license_settings = {
+            "product_key": alias_info.get("product_key"),
+            "product_version": alias_info.get("product_version"),
+            "product_license_type": alias_info.get("product_license_type"),
+            "product_license_path": alias_info.get("product_license_path"),
+        }
+
         return super(AliasTranslationPublishPlugin, self).validate(settings, item)
 
     def publish(self, settings, item):
@@ -308,6 +318,11 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             )
             translator = tk_framework_aliastranslations.Translator(
                 item.properties.path, publish_path
+            )
+
+            # set the license information
+            translator.translator_settings.license_settings = item.get_property(
+                "license_settings"
             )
 
             if (

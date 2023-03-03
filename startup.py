@@ -44,9 +44,12 @@ class AliasLauncher(SoftwareLauncher):
     # Fallback code name to use when none is given
     FALLBACK_CODE_NAME = "AutoStudio"
 
-    # # ShotGrid default plugins
+    # ShotGrid default plugins. NOTE this is the old way to look up the plugin for
+    # the current running Alias version. Starting from 2023.0 the folder naming
+    # should be one-to-one match, e.g. for Alias 2023.0 the folder will be
+    # "alias2023.0"
     ALIAS_PLUGINS = {
-        "alias2022.2": {"min_version": "2022.2"},
+        "alias2022.2": {"min_version": "2022.2", "max_version": "2023.0"},
         "alias2021.3": {"min_version": "2021.3", "max_version": "2022.2"},
         "alias2020.3-alias2021": {"min_version": "2020.3", "max_version": "2021.3"},
         "alias2019-alias2020.2": {"min_version": "2019", "max_version": "2020.3"},
@@ -242,23 +245,74 @@ class AliasLauncher(SoftwareLauncher):
         code_name = code_name or self.FALLBACK_CODE_NAME
         release_version = self._get_release_version(exec_path, code_name)
 
-        plugin_folder_name = None
-        for plugin_folder in self.ALIAS_PLUGINS:
-            min_version = self.ALIAS_PLUGINS[plugin_folder].get("min_version")
-            max_version = self.ALIAS_PLUGINS[plugin_folder].get("max_version")
+        python_folder_name = "python{major}.{minor}".format(
+            major=sys.version_info.major,
+            minor=sys.version_info.minor,
+        )
 
-            if min_version and version_cmp(release_version, min_version) < 0:
-                continue
+        # First try to get the plugin folder directly matching the running version of Alias,
+        # and the exact running python version
+        plugin_folder_name = "alias{version}".format(version=release_version)
+        plugin_folder_path = os.path.normpath(
+            os.path.join(
+                plugins_directory,
+                python_folder_name,
+                plugin_folder_name,
+            )
+        )
 
-            if max_version and version_cmp(release_version, max_version) >= 0:
-                continue
+        if not os.path.exists(plugin_folder_path):
+            # Folder not found, try the plugin mapping to Alias version
+            plugin_folder_path = None
+            for plugin_folder_name in self.ALIAS_PLUGINS:
+                min_version = self.ALIAS_PLUGINS[plugin_folder_name].get("min_version")
+                max_version = self.ALIAS_PLUGINS[plugin_folder_name].get("max_version")
 
-            plugin_folder_name = plugin_folder
-            break
+                if min_version and version_cmp(release_version, min_version) < 0:
+                    continue
 
-        if not plugin_folder_name:
-            self.logger.error("Failed to find plugin folder.")
-            return
+                if max_version and version_cmp(release_version, max_version) >= 0:
+                    continue
+
+                # Found the folder name, try to get the full path now.
+                plugin_folder_path = os.path.normpath(
+                    os.path.join(
+                        plugins_directory,
+                        python_folder_name,
+                        plugin_folder_name,
+                    )
+                )
+                break
+
+        if not plugin_folder_path or not os.path.exists(plugin_folder_path):
+            # Try to fallback to the minor verison for the api, if it exists.
+            version_parts = release_version.split(".")
+            if len(version_parts) >= 2:
+                minor_version = "{major}.{minor}".format(
+                    major=version_parts[0], minor=version_parts[1]
+                )
+                plugin_folder_name = "alias{minor_version}".format(
+                    minor_version=minor_version
+                )
+                plugin_folder_path = os.path.normpath(
+                    os.path.join(
+                        plugins_directory,
+                        python_folder_name,
+                        plugin_folder_name,
+                    )
+                )
+                self.logger.warning(
+                    (
+                        "ShotGrid Plugin for exact Alias version {exact_version} not found. "
+                        "Attempting fallback to load ShotGrid Plugin for Alias {minor_version}."
+                    ).format(
+                        exact_version=release_version,
+                        minor_version=minor_version,
+                    )
+                )
+
+            if not plugin_folder_path or not os.path.exists(plugin_folder_path):
+                raise Exception("Failed to find Alias ShotGrid Plugin folder.")
 
         plugin_file_basename = (
             "shotgun" if version_cmp(release_version, "2022.2") < 0 else "shotgrid"
@@ -280,11 +334,11 @@ class AliasLauncher(SoftwareLauncher):
 
         success = False
         with open(plugins_list_file, "w") as plf:
-            plugin_file_path = os.path.join(
-                plugins_directory,
-                "python3",
-                plugin_folder_name,
-                "{}.plugin".format(plugin_file_basename),
+            plugin_file_path = os.path.normpath(
+                os.path.join(
+                    plugin_folder_path,
+                    "{}.plugin".format(plugin_file_basename),
+                )
             )
             # Overwrite the lst file with the plugin file path found
             plf.write("{}\n".format(plugin_file_path))
@@ -314,6 +368,9 @@ class AliasLauncher(SoftwareLauncher):
             item.strip() for item in releases if item.strip().startswith(release_prefix)
         ][0]
         release_version = release_info[len(release_prefix) :].strip()
+
+        # Strip out any text that comes after the version number string (e.g. Preview)
+        release_version = release_version.split(" ")[0]
 
         return release_version
 

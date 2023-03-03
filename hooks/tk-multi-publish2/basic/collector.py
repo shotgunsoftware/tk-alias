@@ -103,4 +103,11 @@ class AliasSessionCollector(HookBaseClass):
             translation_item.properties["work_template"] = work_template
             self.logger.debug("Work template defined for Alias collection.")
 
+        # add a new item for all VRED publish plugins related
+        vred_item = session_item.create_item(
+            "alias.session.vred", "VRED Scene", "VRED render items"
+        )
+        icon_path = os.path.join(self.disk_location, os.pardir, "icons", "vred.png")
+        vred_item.set_icon_from_path(icon_path)
+
         self.logger.info("Collected current Alias file")

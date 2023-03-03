@@ -474,12 +474,17 @@ class AliasEngine(sgtk.platform.Engine):
     # Public methods
     # -------------------------------------------------------------------------------------------------------
 
-    def on_plugin_init(self):
-        """
-        This function is called by the Alias ShotGrid Plugin on initialization.
+    def on_plugin_init(
+        self, plugin_version=None, plugin_alias_version=None, plugin_python_version=None
+    ):
+        """This function is called by the Alias ShotGrid Plugin when it is loaded by Alias."""
 
-        This is called once, and only once when Alias starts up.
-        """
+        plugin_info = "Loaded ShotGrid plugin v{plugin_version} compiled with Alias {alias_version} and Python {python_version}".format(
+            plugin_version=plugin_version,
+            alias_version=plugin_alias_version,
+            python_version=plugin_python_version,
+        )
+        self.logger.info(plugin_info)
 
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
         if path:

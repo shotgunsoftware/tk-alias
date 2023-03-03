@@ -128,14 +128,14 @@ class AliasDataValidator(object):
 
         return {
             "shader_unused": {
-                "name": "Delete Unused Shaders",
+                "name": "Delete unused shaders",
                 "description": """Check: Unused shaders<br/>
                                 Fix: Delete. DefaultShader is not affected.""",
                 "error_msg": "Found unused shaders",
                 "check_func": self.check_shader_unused,
                 "fix_func": self.fix_shader_unused,
                 "fix_name": "Delete All",
-                "fix_tooltip": "Delete unused Shaders.",
+                "fix_tooltip": "Delete unused shaders.",
                 "item_actions": [
                     {
                         "name": "Delete",
@@ -144,32 +144,34 @@ class AliasDataValidator(object):
                 ],
                 "get_kwargs": lambda: {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
                 "dependency_ids": [
-                    "node_is_null",
                     "node_instances",
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                 ],
             },
             "shader_is_vred_compatible": {
-                "name": "Only Use VRED Shaders",
+                "name": "Only use VRED shaders",
                 "description": """Check: Shaders are from the Asset Library (VRED-compatible)<br/>
                                 Fix: You must assign shaders from the Asset Library. DefaultShader is not affected.""",
                 "check_func": self.check_shader_is_vred_compatible,
                 "error_msg": "Found shader(s) that are incompatible with VRED.",
                 "actions": [
                     {
-                        "name": "Select All Shader Geometry",
+                        "name": "Select all shader geometry",
                         "callback": self.pick_nodes,
                     },
                 ],
                 "item_actions": [
                     {
-                        "name": "Select Shader Geometry",
+                        "name": "Select shader geometry",
                         "callback": self.pick_nodes_assigned_to_shaders,
                     },
                 ],
                 "get_kwargs": lambda: {"skip_shaders": [self.DEFAULT_SHADER_NAME]},
             },
             "node_is_null": {
-                "name": "Delete Null Nodes",
+                "name": "Delete null nodes",
                 "description": """Check: Null nodes<br/>
                                 Action: Delete""",
                 "fix_func": self.fix_node_is_null,
@@ -177,15 +179,16 @@ class AliasDataValidator(object):
                 "fix_tooltip": "Delete all null nodes.",
                 "warn_msg": 'This validation does not return a status. To ensure all null nodes are deleted, select "Delete All" or "Fix All."',
                 "dependency_ids": [
+                    "curves",
                     "node_has_construction_history",
                 ],
             },
             "node_has_construction_history": {
-                "name": "Delete Construction History",
+                "name": "Delete construction history",
                 "description": """Check: Construction history<br/>
                                 Action: Delete""",
                 "check_func": self.check_node_has_construction_history,
-                "fix_func": self.fix_node_has_construction_history,
+                "fix_func": self.fix_all_node_has_construction_history,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all construction history from all nodes.",
                 "error_msg": "Found node(s) with construction history.",
@@ -214,12 +217,13 @@ class AliasDataValidator(object):
                     ],
                 },
             },
+            # NOTE the fix function for Convert Instances will crash in some versions of Alias
             "node_instances": {
-                "name": "Convert Instances to Geometry",
+                "name": "Convert instances to geometry",
                 "description": """Check: Instances<br/>
                                 Action: Convert to geometry.""",
                 "check_func": self.check_node_instances,
-                "fix_func": self.fix_node_instances,
+                "fix_func": self.fix_all_node_instances,
                 "fix_name": "Expand All",
                 "fix_tooltip": "Remove Instances by expanding them.",
                 "error_msg": "Instance found.",
@@ -239,14 +243,18 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "node_pivots_at_origin": {
-                "name": "Reset Pivots to Global Origin",
+                "name": "Reset pivots to global origin",
                 "description": """Check: Pivot point coordinates<br/>
                                 Fix: Set pivot points to global origin (0, 0, 0). Camera, light, and texture nodes are not affected.""",
                 "check_func": self.check_node_pivots_at_origin,
-                "fix_func": self.fix_node_pivots_at_origin,
+                "fix_func": self.fix_all_node_pivots_at_origin,
                 "fix_name": "Reset All",
                 "fix_tooltip": "All pivots will be moved to the origin. Camera, light, and texture nodes are not affected."
                 "",
@@ -267,7 +275,11 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
                 "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
@@ -277,14 +289,13 @@ class AliasDataValidator(object):
                 },
             },
             "node_has_zero_transform": {
-                "name": "Zero Transforms",
+                "name": "Zero transforms",
                 "description": """Check: Non-zero transformations<br/>
                                 Action: Sets transformations to 0.0 on each node and DAG node. Camera, light, and texture nodes are not affected.""",
                 "check_func": self.check_node_has_zero_transform,
-                "fix_func": self.fix_node_has_zero_transform,
+                "fix_func": self.fix_all_node_has_zero_transform,
                 "fix_name": "Reset All",
-                "fix_tooltip": "Reset all transforms to zero. Camera, light, and texture nodes are not affected."
-                "",
+                "fix_tooltip": "Reset all transforms to zero. Camera, light, and texture nodes are not affected.",
                 "error_msg": "Found node(s) with non-zero transform.",
                 "actions": [
                     {
@@ -305,14 +316,20 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {
                     "skip_node_types": [
                         alias_api.AlObjectType.TextureNodeType,
+                        alias_api.AlObjectType.GroupNodeType,
                         *self._camera_node_types,
                         *self._light_node_types,
                     ]
                 },
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": [
+                    "node_instances",
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "node_is_not_in_layer": {
-                "name": "Nodes Must Not Be In DefaultLayer",
+                "name": "Specific nodes must not be in the DefaultLayer",
                 "description": """Check: Only camera, light, texture, and group nodes should be in the DefaultLayer.""",
                 "check_func": self.check_node_is_not_in_layer,
                 "error_msg": "Found nodes in the default layer that are not allowed.",
@@ -338,10 +355,14 @@ class AliasDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
-                "dependency_ids": ["node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "node_is_in_layer": {
-                "name": "Nodes Must Be In DefaultLayer",
+                "name": "Specific nodes must be in the DefaultLayer",
                 "description": """Check: All camera, light, and texture nodes must be in the DefaultLayer<br/>
                                 Fix: Move all light, camera, and texture nodes to the DefaultLayer.""",
                 "check_func": self.check_node_is_in_layer,
@@ -373,11 +394,15 @@ class AliasDataValidator(object):
                         *self._light_node_types,
                     ],
                 },
-                "dependency_ids": ["node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "node_name_matches_layer": {
-                "name": "Match Layer And Assigned Nodes' Names",
-                "description": """Check: Layer and Top Node Names<br/>
+                "name": "Match layer and assigned nodes' names",
+                "description": """Check: Layer and top node names<br/>
                                 Fix: Rename top node in layer to match the layer name. DefaultLayer is not affected.""",
                 "check_func": self.check_node_name_matches_layer,
                 "fix_func": self.fix_node_name_matches_layer,
@@ -404,7 +429,7 @@ class AliasDataValidator(object):
                 "dependency_ids": ["node_is_in_layer", "node_is_not_in_layer"],
             },
             "node_layer_matches_parent": {
-                "name": "Node Layer Matches Parent Layer",
+                "name": "Node layer matches parent layer",
                 "description": """Check: Layer assignment<br/>
                                 Fix: Re-assign node to the same layer as the parent node layer.""",
                 "check_func": self.check_node_layer_matches_parent,
@@ -435,8 +460,8 @@ class AliasDataValidator(object):
                 ],
             },
             "node_dag_top_level": {
-                "name": "Top-Level DAG Nodes",
-                "description": """Check: DAG Top-level Nodes<br/>
+                "name": "Top-level DAG nodes",
+                "description": """Check: DAG top-level nodes<br/>
                                 Fix: DAG top-level nodes must be a group, curve, face, or surface node.""",
                 "check_func": self.check_node_dag_top_level,
                 "error_msg": "Found nodes in the top level of the DAG that are not allowed.",
@@ -463,7 +488,7 @@ class AliasDataValidator(object):
                 },
             },
             "node_templates": {
-                "name": "Delete Templates",
+                "name": "Delete templates",
                 "description": """Check: Templated geometry<br/>
                                 Fix: Delete""",
                 "check_func": self.check_node_templates,
@@ -487,14 +512,18 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "cos_unused": {
-                "name": "Delete Unused Curves-on-Surfaces (COS)",
-                "description": """Check: Unused curves-on-surfaces (COS)<br/>
+                "name": "Delete unused curve-on-surfaces (COS)",
+                "description": """Check: Unused curve-on-surfaces (COS)<br/>
                                 Fix: Delete""",
                 "check_func": self.check_curve_on_surface_unused,
-                "fix_func": self.fix_curve_on_surface_unused,
+                "fix_func": self.fix_all_curve_on_surface_unused,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete unused COS.",
                 "error_msg": "Found unused COS.",
@@ -524,17 +553,17 @@ class AliasDataValidator(object):
                 ],
                 "dependency_ids": [
                     "cos_construction_history",
-                    "node_has_construction_history",
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                 ],
             },
             "cos_construction_history": {
-                "description": "Check for nodes with unused COS with construction history.",
-                "name": "Delete Unused Curves-on-Surfaces (COS) Construction History",
-                "description": """Check: Unused curves-on-surfaces (COS) with construction history<br/>
+                "name": "Delete unused curve-on-surfaces (COS) construction history",
+                "description": """Check: Unused curve-on-surfaces (COS) with construction history<br/>
                                 Fix: Delete construction history for unused COS.""",
                 "check_func": self.check_curve_on_surface_construction_history,
-                "fix_func": self.fix_curve_on_surface_construction_history,
+                "fix_func": self.fix_all_curve_on_surface_construction_history,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete construction history for unused curve on surface",
                 "error_msg": "Found construction history for unused curve(s) on surface.",
@@ -551,7 +580,7 @@ class AliasDataValidator(object):
                 "item_actions": [
                     {
                         "name": "Delete",
-                        "callback": self.fix_curve_on_surface_unused,
+                        "callback": self.fix_curve_on_surface_construction_history,
                     },
                     {
                         "name": "Select COS",
@@ -565,11 +594,11 @@ class AliasDataValidator(object):
                 "dependency_ids": ["node_has_construction_history"],
             },
             "curves": {
-                "name": "Delete Curves",
+                "name": "Delete curves",
                 "description": """Check: Curves<br/>
                                 Fix: Delete""",
                 "check_func": self.check_node_curves,
-                "fix_func": self.fix_node_curves,
+                "fix_func": self.fix_all_node_curves,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all curves found.",
                 "error_msg": "Found curve(s).",
@@ -589,10 +618,10 @@ class AliasDataValidator(object):
                         "callback": self.pick_nodes,
                     },
                 ],
-                "dependency_ids": ["node_has_construction_history", "node_is_null"],
+                "dependency_ids": ["node_has_construction_history"],
             },
             "set_empty": {
-                "name": "Delete Empty Selection Sets",
+                "name": "Delete empty selection sets",
                 "description": """Check: Empty sets<br/>
                                 Fix: Delete""",
                 "check_func": self.check_set_empty,
@@ -608,10 +637,12 @@ class AliasDataValidator(object):
                 ],
                 "dependency_ids": [
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                 ],
             },
             "group_has_single_level_hierarchy": {
-                "name": "Only One Level Per Group",
+                "name": "Only one level per group",
                 "description": """Check: Group hierarchy<br/>
                                 Fix: Flatten group nodes to have a single-level hierarchy.""",
                 "check_func": self.check_group_has_single_level_hierarchy,
@@ -637,18 +668,20 @@ class AliasDataValidator(object):
                 ],
                 "dependency_ids": [
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                     "layer_has_single_object",
                 ],
             },
             "layer_is_empty": {
-                "name": "Delete Empty Layers and Folders",
-                "description": """Check: Empty Layers and Folders<br/>
+                "name": "Delete empty layers and layer folders",
+                "description": """Check: Empty layers and layer folders<br/>
                                 Fix: Delete. DefaultLayer is not affected.""",
                 "check_func": self.check_layer_is_empty,
                 "fix_func": self.fix_layer_is_empty,
                 "fix_name": "Delete All",
-                "fix_tooltip": "Delete empty layers and folders",
-                "error_msg": "Found empty layers or folders",
+                "fix_tooltip": "Delete empty layers and layer folders",
+                "error_msg": "Found empty layers or layer folders",
                 "actions": [
                     {
                         "name": "Select All",
@@ -666,11 +699,15 @@ class AliasDataValidator(object):
                     },
                 ],
                 "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
-                "dependency_ids": ["node_is_null"],
+                "dependency_ids": [
+                    "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
+                ],
             },
             "layer_has_single_shader": {
-                "name": "Layer Has Single Shader",
-                "description": """Check: Layer Members' Shaders""",
+                "name": "Layer has single shader",
+                "description": """Check: Layer members' shaders""",
                 "check_func": self.check_layer_has_single_shader,
                 "error_msg": "Found layer(s) using multiple shaders.",
                 "actions": [
@@ -691,14 +728,16 @@ class AliasDataValidator(object):
                 ],
                 "dependency_ids": [
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                     "node_is_in_layer",
                     "node_is_not_in_layer",
                 ],
             },
             "layer_symmetry": {
-                "name": "Turn Off (All) Layer Symmetry",
-                "description": """Check: Layer Symmetry<br/>
-                                Fix: Turn off symmetry on layers. DefaultLayer is not affected.""",
+                "name": "Turn off layer symmetry for all layers",
+                "description": """Check: Layer symmetry<br/>
+                                Fix: Turn off symmetry on all layers. DefaultLayer is not affected.""",
                 "check_func": self.check_layer_symmetry,
                 "fix_func": self.fix_layer_symmetry,
                 "fix_name": "Turn Off All",
@@ -723,8 +762,8 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
             },
             "layer_has_single_object": {
-                "name": "Layer Has Single Item",
-                "description": """Check: Layer Members<br/>
+                "name": "Layer has single item",
+                "description": """Check: Layer members<br/>
                                 Fix: Move all layer members into a single group node. DefaultLayer is not affected.""",
                 "check_func": self.check_layer_has_single_object,
                 "fix_func": self.fix_layer_has_single_object,
@@ -750,16 +789,19 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
                 "dependency_ids": [
                     "layer_is_empty",
+                    "node_has_zero_transform",
+                    "node_instances",
                     "node_is_null",
+                    "curves",
+                    "node_has_construction_history",
                     "node_is_in_layer",
                     "node_is_not_in_layer",
-                    "node_has_zero_transform",
                 ],
             },
             "locators": {
-                "name": "Delete Locators",
+                "name": "Delete locators",
                 "description": """Check: Locators<br/>
-                                Fix: Delete including Annotate locators.""",
+                                Fix: Delete including annotate locators.""",
                 "check_func": self.check_locators,
                 "fix_func": self.fix_locators,
                 "fix_name": "Delete All",
@@ -783,11 +825,11 @@ class AliasDataValidator(object):
                 ],
             },
             "metadata": {
-                "name": "Delete Metadata",
+                "name": "Delete metadata",
                 "description": "Check: Metadata",
             },
             "references_exist": {
-                "name": "Remove Referenced Geometry",
+                "name": "Remove referenced geometry",
                 "description": """Check: Referenced geometry (.wref).<br/>
                                 Fix: Delete""",
                 "check_func": self.check_refererences_exist,
@@ -973,10 +1015,29 @@ class AliasDataValidator(object):
         return nodes_with_history
 
     @sgtk.LogManager.log_timing
+    def fix_all_node_has_construction_history(self, errors=None, skip_node_types=None):
+        """
+        Delete construction history for all nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_node_has_construction_history(
+            errors=None, skip_node_types=skip_node_types
+        )
+
+    @sgtk.LogManager.log_timing
     def fix_node_has_construction_history(self, errors=None, skip_node_types=None):
         """
-        Process all nodes in the current stage, or the specified of nodes, and delete history from any nodes
-        with history.
+        Delete construction history for the specified nodes.
 
         NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated data.
@@ -997,6 +1058,8 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         nodes = alias_py.dag_node.get_nodes_with_construction_history(
             nodes=errors,
             skip_node_types=set(skip_node_types),
@@ -1020,10 +1083,27 @@ class AliasDataValidator(object):
         return alias_py.dag_node.get_instanced_nodes()
 
     @sgtk.LogManager.log_timing
+    def fix_all_node_instances(self, errors=None):
+        """
+        Remove all instanced nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_node_instances(errors=None)
+
+    @sgtk.LogManager.log_timing
     def fix_node_instances(self, errors=None):
         """
-        Process all nodes in the current stage, or the list of nodes if provided, and remove all instanced
-        nodes.
+        Remove instanced nodes from the specified nodes.
 
         NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated data.
@@ -1042,6 +1122,8 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         nodes = alias_py.dag_node.get_instanced_nodes(errors)
 
         for node in nodes:
@@ -1071,10 +1153,27 @@ class AliasDataValidator(object):
         )
 
     @sgtk.LogManager.log_timing
+    def fix_all_node_pivots_at_origin(self, errors=None, skip_node_types=None):
+        """
+        Reset scale and rotate pivots to the origin for all nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_node_pivots_at_origin(errors=None, skip_node_types=skip_node_types)
+
+    @sgtk.LogManager.log_timing
     def fix_node_pivots_at_origin(self, errors=None, skip_node_types=None):
         """
-        Process all nodes in the current stage, or the specified nodes, and reset their scale and roate
-        pivots such that they are centered around the origin.
+        Reset scale and rotate pivots to the origin for the specified nodes.
 
         NOTE that the pivots Alias may not update automatically, alias_api.redraw_screen() may need to be
         invoked after this function, to see the updated pivots.
@@ -1095,6 +1194,8 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot(
             nodes=errors,
             skip_node_types=set(skip_node_types),
@@ -1119,6 +1220,8 @@ class AliasDataValidator(object):
         """
         Check for nodes with non-zero transforms in the current stage.
 
+        Only top-level dag nodes will be returned.
+
         :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
         :type fail_fast: bool
         :param skip_node_types: The specified node types will not be checked.
@@ -1131,14 +1234,44 @@ class AliasDataValidator(object):
 
         skip_node_types = skip_node_types or []
 
-        return alias_py.dag_node.get_nodes_with_non_zero_transform(
+        all_nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
             skip_node_types=set(skip_node_types),
         )
 
+        top_node_names = [n.name for n in alias_api.get_top_dag_nodes()]
+        nodes = []
+        for node in all_nodes:
+            if node.name in top_node_names:
+                nodes.append(node)
+
+        return nodes
+
     @sgtk.LogManager.log_timing
-    def fix_node_has_zero_transform(self, errors=None, skip_node_types=None):
+    def fix_all_node_has_zero_transform(self, errors=None, skip_node_types=None):
         """
-        Process all nodes in the current stage, or the specified nodes, and reset all transforms to zero.
+        Reset transforms to zero for all nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_node_has_zero_transform(
+            errors=None, skip_node_types=skip_node_types, transform_top_level_first=True
+        )
+
+    @sgtk.LogManager.log_timing
+    def fix_node_has_zero_transform(
+        self, errors=None, skip_node_types=None, transform_top_level_first=False
+    ):
+        """
+        Reset transforms to zero for the specified nodes, or all top nodes if not specified.
 
         NOTE that the nodes Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated node transforms.
@@ -1148,9 +1281,24 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlDagNode> | list<dict>
         :param skip_node_types: The specified node types will not be fixed.
         :type skip_node_types: list<alias_api.AlObjectType>
+        :param transform_top_level_first: True will run a specific Alias API function to first
+            apply zero transform to all top-level nodes before applying zero transform to any
+            remaining nodes that do not have a zero transform. False will apply zero transform
+            to each node individually. This param will effectively be True when errors is None.
+            Settin to True will yield best performance, but it will reset all top-level node
+            transforms to zero.
+        :type transform_top_level_first: bool. Defaults to False.
 
         :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
         """
+
+        @sgtk.LogManager.log_timing
+        def __apply_zero_transform_top_level():
+            alias_api.zero_transform_top_level()
+
+        @sgtk.LogManager.log_timing
+        def __apply_zero_transform(nodes):
+            return alias_api.zero_transform(nodes)
 
         skip_node_types = skip_node_types or []
 
@@ -1161,23 +1309,15 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        if not errors:
-            # Optimize the zero transform by first calling the zero transform on all top-level nodes
-            # Then get the remaining nodes that do not have zero transform and apply it to those only.
-            alias_api.zero_transform_top_level()
-
-        nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
-            nodes=errors,
-            skip_node_types=set(skip_node_types),
-        )
-
-        if nodes:
-            status = alias_api.zero_transform(nodes)
+        if errors:
+            status = __apply_zero_transform(errors)
             if not alias_py.utils.is_success(status):
                 alias_py.utils.raise_exception(
                     "Failed to apply zero transform to nodes. Returned status:",
                     status,
                 )
+        else:
+            __apply_zero_transform_top_level()
 
     @sgtk.LogManager.log_timing
     def check_node_is_not_in_layer(
@@ -1541,10 +1681,29 @@ class AliasDataValidator(object):
         )
 
     @sgtk.LogManager.log_timing
+    def fix_all_node_curves(self, errors=None):
+        """
+        Delete all nodes that represent a curve.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        self.fix_node_curves(errors=None)
+
+    @sgtk.LogManager.log_timing
     def fix_node_curves(self, errors=None):
         """
-        Process all nodes in the current stage, or the list of nodes if provided, and delete all nodes that
-        represent a curve.
+        Delete the specified nodes that represent a curve.
+
+        If a list of nodes are passed in, they are assumed to represent a curve and will be deleted.
 
         :param errors: The list of nodes to process, if None, all nodes in the current stage will be
             processed. Default=None
@@ -1557,6 +1716,7 @@ class AliasDataValidator(object):
                     errors[i] = error_item["name"]
 
         if errors:
+            # NOTE this assumes all nodes passed in represent a curve.
             alias_py.dag_node.delete_nodes(errors)
 
         else:
@@ -1583,10 +1743,27 @@ class AliasDataValidator(object):
         return alias_py.dag_node.get_nodes_with_unused_curves_on_surface()
 
     @sgtk.LogManager.log_timing
+    def fix_all_curve_on_surface_unused(self, errors=None):
+        """
+        Delete unused curves on surface for all nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # NOTE must pass all error nodes specifcally. See note in fix_curve_on_surface_unused
+        self.fix_curve_on_surface_unused(errors=errors)
+        # # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # # should be processed. This will improve performance.
+        # self.fix_curve_on_surface_unused(errors=None)
+
+    @sgtk.LogManager.log_timing
     def fix_curve_on_surface_unused(self, errors=None):
         """
-        Process all curves on surface current stage, or the list of curves on surface if provided, and delete
-        unused curves on surface.
+        Delete unused curves on surface for the specified nodes.
 
         :param errors: The list of curves on surface to process, if None, all curves on surface
                               current stage will be processed. Default=None
@@ -1600,12 +1777,25 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
-            nodes=errors
-        )
+        # NOTE the curves must be found for each node and deleted in order, instead of finding
+        # all unused curves at once, since multiple nodes may point to the same curve (which
+        # results in a crash when attempting to delete the same object twice). If this is slow
+        # then we will need to revert to the old method below, but ensure we do not attempt to
+        # delete the same curve twice
+        for node in errors:
+            unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
+                nodes=[node]
+            )
+            for curve in unused_curves:
+                curve.delete_object()
 
-        for curve in unused_curves:
-            curve.delete_object()
+        # # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # # nodes, pass None instead of a list of all nodes.
+        # unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
+        #     nodes=errors
+        # )
+        # for curve in unused_curves:
+        #     curve.delete_object()
 
     @sgtk.LogManager.log_timing
     def check_curve_on_surface_construction_history(self, fail_fast=False):
@@ -1630,10 +1820,27 @@ class AliasDataValidator(object):
         return invalid_nodes
 
     @sgtk.LogManager.log_timing
+    def fix_all_curve_on_surface_construction_history(self, errors=None):
+        """
+        Delete construction history of unnused curves on surface for all nodes.
+
+        :param errors: This param is ignored, though it is required to be defiend for this
+            function to be a data validation fix callback.
+        :type errors: N/A
+        :param skip_node_types: The specified node types will not be fixed.
+        :type skip_node_types: list<alias_api.AlObjectType>
+
+        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        """
+
+        # Call the main fix function but do not pass an errors list to indicate that all nodes
+        # should be processed. This will improve performance.
+        return self.fix_curve_on_surface_construction_history(errors=None)
+
+    @sgtk.LogManager.log_timing
     def fix_curve_on_surface_construction_history(self, errors=None):
         """
-        Process all curves on surface current stage, or the list of curves on surface if provided, and delete
-        construction history for unused curves on surface.
+        Delete construction history of unnused curves on surface for the specified nodes.
 
         :param errors: The list of curves on surface to process, if None, all curves on surface
                               current stage will be processed. Default=None
@@ -1647,6 +1854,8 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
+        # NOTE performance is slower when a list of nodes is passed. When applying to all
+        # nodes, pass None instead of a list of all nodes.
         unused_cos = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
             nodes=errors
         )
