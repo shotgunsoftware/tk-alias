@@ -1,9 +1,0 @@
-Exceptions
-####################
-
-.. currentmodule:: alias_api
-
-.. autoexception:: AliasPythonException
-    :show-inheritance:
-    :members:
-    :inherited-members:
