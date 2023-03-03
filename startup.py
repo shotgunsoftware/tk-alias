@@ -288,8 +288,12 @@ class AliasLauncher(SoftwareLauncher):
             # Try to fallback to the minor verison for the api, if it exists.
             version_parts = release_version.split(".")
             if len(version_parts) >= 2:
-                minor_version = "{major}.{minor}".format(major=version_parts[0], minor=version_parts[1])
-                plugin_folder_name = "alias{minor_version}".format(minor_version=minor_version)
+                minor_version = "{major}.{minor}".format(
+                    major=version_parts[0], minor=version_parts[1]
+                )
+                plugin_folder_name = "alias{minor_version}".format(
+                    minor_version=minor_version
+                )
                 plugin_folder_path = os.path.normpath(
                     os.path.join(
                         plugins_directory,

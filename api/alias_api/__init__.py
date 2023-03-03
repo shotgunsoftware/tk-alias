@@ -151,8 +151,12 @@ def import_alias_api():
         # Try to fallback to the minor verison for the api, if it exists.
         alias_version_parts = alias_release_version.split(".")
         if len(alias_version_parts) >= 2:
-            alias_minor_version = "{major}.{minor}".format(major=alias_version_parts[0], minor=alias_version_parts[1])
-            api_folder_name = "alias{minor_version}".format(minor_version=alias_minor_version)
+            alias_minor_version = "{major}.{minor}".format(
+                major=alias_version_parts[0], minor=alias_version_parts[1]
+            )
+            api_folder_name = "alias{minor_version}".format(
+                minor_version=alias_minor_version
+            )
             api_folder_path = os.path.normpath(
                 os.path.join(
                     os.path.dirname(__file__),
