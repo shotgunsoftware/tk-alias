@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>The Alias Engine Code &mdash; tk-alias v2.1.9 documentation</title>
+  <title>The Alias Engine Code &mdash; tk-alias v2.2.0 documentation</title>
   
 
   
@@ -126,7 +126,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v2.1.9.<br>
+    <b>tk-alias</b> v2.2.0.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -689,12 +689,17 @@
     <span class="c1"># Public methods</span>
     <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
 
-    <span class="k">def</span> <span class="nf">on_plugin_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function is called by the Alias ShotGrid Plugin on initialization.</span>
+    <span class="k">def</span> <span class="nf">on_plugin_init</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">plugin_version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plugin_alias_version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plugin_python_version</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function is called by the Alias ShotGrid Plugin when it is loaded by Alias.&quot;&quot;&quot;</span>
 
-<span class="sd">        This is called once, and only once when Alias starts up.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plugin_info</span> <span class="o">=</span> <span class="s2">&quot;Loaded ShotGrid plugin v</span><span class="si">{plugin_version}</span><span class="s2"> compiled with Alias </span><span class="si">{alias_version}</span><span class="s2"> and Python </span><span class="si">{python_version}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">plugin_version</span><span class="o">=</span><span class="n">plugin_version</span><span class="p">,</span>
+            <span class="n">alias_version</span><span class="o">=</span><span class="n">plugin_alias_version</span><span class="p">,</span>
+            <span class="n">python_version</span><span class="o">=</span><span class="n">plugin_python_version</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">plugin_info</span><span class="p">)</span>
 
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SGTK_FILE_TO_OPEN&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
@@ -1184,7 +1189,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2022, Autodesk
+        &copy; Copyright 2023, Autodesk
 
     </p>
   </div> 

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Alias Engine Hooks &mdash; tk-alias v2.1.9 documentation</title>
+  <title>Alias Engine Hooks &mdash; tk-alias v2.2.0 documentation</title>
   
 
   
@@ -150,7 +150,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v2.1.9.<br>
+    <b>tk-alias</b> v2.2.0.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -1618,6 +1618,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find translator path.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
+        <span class="c1"># store the licensing information in the item properties so that the translation could be run in</span>
+        <span class="c1"># background mode</span>
+        <span class="n">alias_info</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_product_information</span><span class="p">()</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">local_properties</span><span class="o">.</span><span class="n">license_settings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;product_key&quot;</span><span class="p">:</span> <span class="n">alias_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;product_key&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;product_version&quot;</span><span class="p">:</span> <span class="n">alias_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;product_version&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;product_license_type&quot;</span><span class="p">:</span> <span class="n">alias_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;product_license_type&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;product_license_path&quot;</span><span class="p">:</span> <span class="n">alias_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;product_license_path&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">AliasTranslationPublishPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
@@ -1651,6 +1661,11 @@
             <span class="p">)</span>
             <span class="n">translator</span> <span class="o">=</span> <span class="n">tk_framework_aliastranslations</span><span class="o">.</span><span class="n">Translator</span><span class="p">(</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">publish_path</span>
+            <span class="p">)</span>
+
+            <span class="c1"># set the license information</span>
+            <span class="n">translator</span><span class="o">.</span><span class="n">translator_settings</span><span class="o">.</span><span class="n">license_settings</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span>
+                <span class="s2">&quot;license_settings&quot;</span>
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="p">(</span>
@@ -3349,10 +3364,15 @@
 <span class="sd">        :returns:               Depends on operation:</span>
 <span class="sd">                                &#39;current_path&#39; - Return the current scene</span>
 <span class="sd">                                                 file path as a String</span>
+<span class="sd">                                &#39;open&#39;         - True if file was opened, otherwise False</span>
 <span class="sd">                                &#39;reset&#39;        - True if scene was reset to an empty</span>
 <span class="sd">                                                 state, otherwise False</span>
 <span class="sd">                                all others     - None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># At the end of the scene operation, indicate if the context needs to be saved for the</span>
+        <span class="c1"># current Alias stage.</span>
+        <span class="n">save_context</span> <span class="o">=</span> <span class="n">operation</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;save_as&quot;</span><span class="p">,</span> <span class="s2">&quot;prepare_new&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;reset&quot;</span><span class="p">]</span>
 
         <span class="c1"># Use the event watcher context manager to queue any callbacks triggered by Alias</span>
         <span class="c1"># events while performing any scene operations. This ensures that all Alias file I/O</span>
@@ -3371,7 +3391,9 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">open_delete_stages_dialog</span><span class="p">()</span>
                         <span class="p">)</span>
                         <span class="k">if</span> <span class="n">open_in_current_stage</span> <span class="o">==</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">:</span>
-                            <span class="k">return</span>
+                            <span class="c1"># Do not save the context if the operation was cancelled.</span>
+                            <span class="n">save_context</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="k">return</span> <span class="kc">False</span>
 
                         <span class="k">if</span> <span class="n">open_in_current_stage</span> <span class="o">==</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span><span class="p">:</span>
                             <span class="n">alias_api</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">new_stage</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -3389,6 +3411,7 @@
                     <span class="c1"># do not reset the file if we try to open another one as we have to deal with the stages an resetting</span>
                     <span class="c1"># the current session will delete all the stages</span>
                     <span class="k">if</span> <span class="n">parent_action</span> <span class="o">==</span> <span class="s2">&quot;open_file&quot;</span><span class="p">:</span>
+                        <span class="n">save_context</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">return</span> <span class="kc">True</span>
 
                     <span class="k">if</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">is_empty_file</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">alias_api</span><span class="o">.</span><span class="n">get_stages</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -3399,6 +3422,8 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">open_delete_stages_dialog</span><span class="p">(</span><span class="n">new_file</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">open_in_current_stage</span> <span class="o">==</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">:</span>
+                        <span class="c1"># Do not save the context if the operation was cancelled.</span>
+                        <span class="n">save_context</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">return</span> <span class="kc">False</span>
 
                     <span class="k">if</span> <span class="n">open_in_current_stage</span> <span class="o">==</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span><span class="p">:</span>
@@ -3409,7 +3434,7 @@
 
                     <span class="k">return</span> <span class="kc">True</span>
             <span class="k">finally</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">operation</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;save_as&quot;</span><span class="p">,</span> <span class="s2">&quot;prepare_new&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">save_context</span><span class="p">:</span>
                     <span class="c1"># It is important that this method is executed before the event watcher</span>
                     <span class="c1"># context manager exits to ensure that the current context is saved for</span>
                     <span class="c1"># this Alias stage, before any event callbacks are triggered (whcih may</span>
@@ -3441,7 +3466,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2022, Autodesk
+        &copy; Copyright 2023, Autodesk
 
     </p>
   </div> 
