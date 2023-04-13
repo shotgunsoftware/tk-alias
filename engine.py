@@ -708,7 +708,7 @@ class AliasEngine(sgtk.platform.Engine):
     def get_tk_from_project(self, project):
         """
         Get the tank instance given the project ID.
-        
+
         This is useful when you have to deal with files from library project.
 
         This method performs the same operation as get_tk_from_project_id, except that it
@@ -745,7 +745,7 @@ class AliasEngine(sgtk.platform.Engine):
     def get_tk_from_project_id(self, project_id):
         """
         Get the tank instance given the project ID.
-        
+
         This is useful when you have to deal with files from library project.
 
         NOTE use get_tk_from_project for a more robust method to get the sgtk instance.
@@ -895,9 +895,8 @@ class AliasEngine(sgtk.platform.Engine):
             mgr.plugin_id = plugin_id
             mgr.pipeline_configuration = pipeline_config["id"]
             mgr.prepare_engine("tk-desktop", project)
-        
-        return config_local_path
 
+        return config_local_path
 
     def __get_project_pipeline_configuration(self, pipeline_configurations, project_id):
         """
