@@ -1215,6 +1215,8 @@ class AliasDataValidator(object):
                     "Failed to set rotate pivot for node '{}'".format(node.name), status
                 )
 
+        alias_api.redraw_screen()
+
     @sgtk.LogManager.log_timing
     def check_node_has_zero_transform(self, fail_fast=False, skip_node_types=None):
         """
@@ -1797,6 +1799,9 @@ class AliasDataValidator(object):
         # for curve in unused_curves:
         #     curve.delete_object()
 
+        # finally, refresh the Alias viewport after the objects deletion
+        alias_api.redraw_screen()
+
     @sgtk.LogManager.log_timing
     def check_curve_on_surface_construction_history(self, fail_fast=False):
         """
@@ -2355,6 +2360,8 @@ class AliasDataValidator(object):
                 status = alias_api.remove_reference(reference)
                 if not alias_py.utils.is_success(status):
                     alias_py.utils.raise_exception("Failed to remove reference", status)
+
+        alias_api.redraw_screen()
 
     # -------------------------------------------------------------------------------------------------------
     # Pick Functions
