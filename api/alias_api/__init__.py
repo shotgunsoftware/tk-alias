@@ -196,6 +196,7 @@ def import_alias_api():
 
     try:
         alias_api = importlib.util.module_from_spec(spec)
+        sys.modules["alias_api"] = alias_api
         spec.loader.exec_module(alias_api)
     except Exception as e:
         info_msg = (
@@ -215,7 +216,6 @@ def import_alias_api():
         )
 
     # Add the newly created module oject to sys.modules and remap the globals accessor to point at our new module
-    sys.modules["alias_api"] = alias_api
     globals()["alias_api"] = sys.modules["alias_api"]
 
 
@@ -231,5 +231,21 @@ if sys.version_info.major < 3:
 
 #
 # Import the Alias Python API module
-#
-import_alias_api()
+
+# For OpenModel, we need to ensure that the Alias DLLs are in the search path.
+# OpenAlias does not have to worry about this because all the DLLs are in the
+# exe path, which is automatically added to the search path.
+if os.path.basename(sys.executable) != "Alias.exe" and hasattr(os, "add_dll_directory"):
+
+    # get the path to the Alias exec bin folder that is stored in the TK_ALIAS_EXECPATH environment variable
+    alias_bin_path = os.environ.get("TK_ALIAS_EXECPATH")
+    if not alias_bin_path:
+        raise AliasPythonAPIImportError(
+            "Couldn't get Alias bin path: set the environment variable TK_ALIAS_EXECPATH."
+        )
+    dll_path = os.path.dirname(alias_bin_path)
+    with os.add_dll_directory(dll_path):
+        import_alias_api()
+
+else:
+    import_alias_api()
