@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Alias Engine Hooks &mdash; tk-alias v2.2.0 documentation</title>
+  <title>Alias Engine Hooks &mdash; tk-alias v2.2.1 documentation</title>
   
 
   
@@ -150,7 +150,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v2.2.0.<br>
+    <b>tk-alias</b> v2.2.1.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -696,7 +696,7 @@
 
         <span class="c1"># get the tank of the project the file we&#39;re trying to import belongs to</span>
         <span class="c1"># this will be useful to manipulate configuration settings and templates</span>
-        <span class="n">tk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_tk_from_project_id</span><span class="p">(</span><span class="n">sg_publish_data</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+        <span class="n">tk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_tk_from_project</span><span class="p">(</span><span class="n">sg_publish_data</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">])</span>
 
         <span class="c1"># then, get the reference template and the source template to be able to extract fields and build the path to</span>
         <span class="c1"># the translated file</span>

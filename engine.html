@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>The Alias Engine Code &mdash; tk-alias v2.2.0 documentation</title>
+  <title>The Alias Engine Code &mdash; tk-alias v2.2.1 documentation</title>
   
 
   
@@ -126,7 +126,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v2.2.0.<br>
+    <b>tk-alias</b> v2.2.1.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -920,9 +920,50 @@
     <span class="c1">#####################################################################################</span>
     <span class="c1"># Utils</span>
 
+    <span class="k">def</span> <span class="nf">get_tk_from_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the tank instance given the project ID.</span>
+
+<span class="sd">        This is useful when you have to deal with files from library project.</span>
+
+<span class="sd">        This method performs the same operation as get_tk_from_project_id, except that it</span>
+<span class="sd">        provides a fallback code path to ensure the pipeline configuration is loaded.</span>
+
+<span class="sd">        :param project: The project you want to get the tank instance for.</span>
+<span class="sd">        :type project: dict</span>
+
+<span class="sd">        :return: An sgtk instance.</span>
+<span class="sd">        :rtype: :class`sgtk.Sgtk`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">project_id</span> <span class="o">=</span> <span class="n">project</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
+        <span class="c1"># first of all, we need to determine if the file we&#39;re trying to import lives in the current project or in</span>
+        <span class="c1"># another one</span>
+        <span class="n">in_current_project</span> <span class="o">=</span> <span class="n">project_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">in_current_project</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span>
+
+        <span class="c1"># if the file we&#39;re trying to import lives in another project, we need to access the configuration used by this</span>
+        <span class="c1"># project in order to get the right configuration settings</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pc_local_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_pipeline_configuration_local_path</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pc_local_path</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Couldn&#39;t get tank instance for project </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">sgtk_from_path</span><span class="p">(</span><span class="n">pc_local_path</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">get_tk_from_project_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the tank instance given the project ID. This is useful when you have to deal with files from library project</span>
+<span class="sd">        Get the tank instance given the project ID.</span>
+
+<span class="sd">        This is useful when you have to deal with files from library project.</span>
+
+<span class="sd">        NOTE use get_tk_from_project for a more robust method to get the sgtk instance.</span>
 
 <span class="sd">        :param project_id: Id of the project you want to get the tank instance for</span>
 <span class="sd">        :return: An instance of :class`sgtk.Sgtk`</span>
@@ -985,14 +1026,28 @@
 
         <span class="k">return</span> <span class="n">tk</span><span class="o">.</span><span class="n">templates</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reference_template_name</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__get_pipeline_configuration_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__get_pipeline_configuration_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the path to the local configuration (the one which stands in the Sgtk cache folder) in order to be able</span>
 <span class="sd">        to build a :class`sgtk.Sgtk` instance from this path</span>
 
-<span class="sd">        :param project_id: Id of the project we want to retrieve the config for</span>
-<span class="sd">        :returns: The local path to the config if we could determine which config to use, None otherwise.</span>
+<span class="sd">        :param project: The project entity dict or id that we want to retrieve the config for.</span>
+<span class="sd">            The project entity dict is required to perform the fallback code to ensure the</span>
+<span class="sd">            pipeline config is loaded.</span>
+<span class="sd">        :type project: dict | int</span>
+
+<span class="sd">        :return: The local path to the config if we could determine which config to use, None otherwise.</span>
+<span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># For backward compatibility, allow passing the project id (instead of entity dict),</span>
+        <span class="c1"># though if only the id is given, then the fallback code to load the pipeline config</span>
+        <span class="c1"># will not be executed</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">project_id</span> <span class="o">=</span> <span class="n">project</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">project_id</span> <span class="o">=</span> <span class="n">project</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">plugin_id</span> <span class="o">=</span> <span class="s2">&quot;basic.desktop&quot;</span>
 
@@ -1046,8 +1101,17 @@
             <span class="n">pipeline_config</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
             <span class="n">LocalFileStorageManager</span><span class="o">.</span><span class="n">CACHE</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">config_local_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_local_path</span><span class="p">,</span> <span class="s2">&quot;cfg&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_local_path</span><span class="p">,</span> <span class="s2">&quot;cfg&quot;</span><span class="p">)</span>
+        <span class="c1"># If the config has not been loaded on on disk yet, force it to load before returning</span>
+        <span class="c1"># the path.</span>
+        <span class="k">if</span> <span class="n">project</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config_local_path</span><span class="p">):</span>
+            <span class="n">mgr</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">bootstrap</span><span class="o">.</span><span class="n">ToolkitManager</span><span class="p">()</span>
+            <span class="n">mgr</span><span class="o">.</span><span class="n">plugin_id</span> <span class="o">=</span> <span class="n">plugin_id</span>
+            <span class="n">mgr</span><span class="o">.</span><span class="n">pipeline_configuration</span> <span class="o">=</span> <span class="n">pipeline_config</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="n">mgr</span><span class="o">.</span><span class="n">prepare_engine</span><span class="p">(</span><span class="s2">&quot;tk-desktop&quot;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">config_local_path</span>
 
     <span class="k">def</span> <span class="nf">__get_project_pipeline_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline_configurations</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
