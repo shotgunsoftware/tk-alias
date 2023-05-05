@@ -705,9 +705,50 @@ class AliasEngine(sgtk.platform.Engine):
     #####################################################################################
     # Utils
 
+    def get_tk_from_project(self, project):
+        """
+        Get the tank instance given the project ID.
+
+        This is useful when you have to deal with files from library project.
+
+        This method performs the same operation as get_tk_from_project_id, except that it
+        provides a fallback code path to ensure the pipeline configuration is loaded.
+
+        :param project: The project you want to get the tank instance for.
+        :type project: dict
+
+        :return: An sgtk instance.
+        :rtype: :class`sgtk.Sgtk`
+        """
+
+        project_id = project["id"]
+
+        # first of all, we need to determine if the file we're trying to import lives in the current project or in
+        # another one
+        in_current_project = project_id == self.context.project["id"]
+
+        if in_current_project:
+            return self.sgtk
+
+        # if the file we're trying to import lives in another project, we need to access the configuration used by this
+        # project in order to get the right configuration settings
+        else:
+            pc_local_path = self.__get_pipeline_configuration_local_path(project)
+            if not pc_local_path:
+                self.logger.warning(
+                    "Couldn't get tank instance for project {}.".format(project_id)
+                )
+                return None
+
+            return sgtk.sgtk_from_path(pc_local_path)
+
     def get_tk_from_project_id(self, project_id):
         """
-        Get the tank instance given the project ID. This is useful when you have to deal with files from library project
+        Get the tank instance given the project ID.
+
+        This is useful when you have to deal with files from library project.
+
+        NOTE use get_tk_from_project for a more robust method to get the sgtk instance.
 
         :param project_id: Id of the project you want to get the tank instance for
         :return: An instance of :class`sgtk.Sgtk`
@@ -770,14 +811,28 @@ class AliasEngine(sgtk.platform.Engine):
 
         return tk.templates.get(reference_template_name)
 
-    def __get_pipeline_configuration_local_path(self, project_id):
+    def __get_pipeline_configuration_local_path(self, project):
         """
         Get the path to the local configuration (the one which stands in the Sgtk cache folder) in order to be able
         to build a :class`sgtk.Sgtk` instance from this path
 
-        :param project_id: Id of the project we want to retrieve the config for
-        :returns: The local path to the config if we could determine which config to use, None otherwise.
+        :param project: The project entity dict or id that we want to retrieve the config for.
+            The project entity dict is required to perform the fallback code to ensure the
+            pipeline config is loaded.
+        :type project: dict | int
+
+        :return: The local path to the config if we could determine which config to use, None otherwise.
+        :rtype: str
         """
+
+        # For backward compatibility, allow passing the project id (instead of entity dict),
+        # though if only the id is given, then the fallback code to load the pipeline config
+        # will not be executed
+        if isinstance(project, dict):
+            project_id = project["id"]
+        else:
+            project_id = project
+            project = None
 
         plugin_id = "basic.desktop"
 
@@ -831,8 +886,17 @@ class AliasEngine(sgtk.platform.Engine):
             pipeline_config["id"],
             LocalFileStorageManager.CACHE,
         )
+        config_local_path = os.path.join(config_local_path, "cfg")
 
-        return os.path.join(config_local_path, "cfg")
+        # If the config has not been loaded on on disk yet, force it to load before returning
+        # the path.
+        if project and not os.path.exists(config_local_path):
+            mgr = sgtk.bootstrap.ToolkitManager()
+            mgr.plugin_id = plugin_id
+            mgr.pipeline_configuration = pipeline_config["id"]
+            mgr.prepare_engine("tk-desktop", project)
+
+        return config_local_path
 
     def __get_project_pipeline_configuration(self, pipeline_configurations, project_id):
         """
