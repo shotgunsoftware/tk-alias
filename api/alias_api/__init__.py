@@ -216,6 +216,7 @@ def import_alias_api():
         )
 
     # Add the newly created module oject to sys.modules and remap the globals accessor to point at our new module
+    sys.modules["alias_api"] = alias_api
     globals()["alias_api"] = sys.modules["alias_api"]
 
 

@@ -350,10 +350,10 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             # If we have some parent publish data, share the thumbnail between the parent publish and it child
             if parent_sg_publish_data:
                 request_timeout = 60
-                start_time = time.clock()
+                start_time = time.perf_counter()
                 self.logger.debug("Sharing the thumbnail")
                 thumbnail_shared = False
-                while time.clock() - start_time <= request_timeout:
+                while time.perf_counter() - start_time <= request_timeout:
                     try:
                         publisher.shotgun.share_thumbnail(
                             entities=[item.properties.get("sg_publish_data")],
