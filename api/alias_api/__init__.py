@@ -216,6 +216,7 @@ def import_alias_api():
         )
 
     # Add the newly created module oject to sys.modules and remap the globals accessor to point at our new module
+    sys.modules["alias_api"] = alias_api
     globals()["alias_api"] = sys.modules["alias_api"]
 
 
@@ -237,7 +238,7 @@ if sys.version_info.major < 3:
 # exe path, which is automatically added to the search path.
 if os.path.basename(sys.executable) != "Alias.exe" and hasattr(os, "add_dll_directory"):
 
-    # get the path to the Alias exec bin folder. It should be first in the PATH environment variable
+    # get the path to the Alias exec bin folder that is stored in the TK_ALIAS_EXECPATH environment variable
     alias_bin_path = os.environ.get("TK_ALIAS_EXECPATH")
     if not alias_bin_path:
         raise AliasPythonAPIImportError(
