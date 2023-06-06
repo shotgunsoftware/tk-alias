@@ -215,7 +215,7 @@ class AliasActions(HookBaseClass):
 
         # get the tank of the project the file we're trying to import belongs to
         # this will be useful to manipulate configuration settings and templates
-        tk = self.parent.engine.get_tk_from_project_id(sg_publish_data["project"]["id"])
+        tk = self.parent.engine.get_tk_from_project(sg_publish_data["project"])
 
         # then, get the reference template and the source template to be able to extract fields and build the path to
         # the translated file
