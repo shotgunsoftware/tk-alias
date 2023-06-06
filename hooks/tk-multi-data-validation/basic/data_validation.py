@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Autodesk, Inc.
 
 import sgtk
+import alias_api
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -234,3 +235,20 @@ class AliasDataValidationHook(HookBaseClass):
         raise self.AliasDataValidationError(
             "Cannot sanitize result type '{}'".format(type(result))
         )
+
+    def post_fix_action(self, rule_ids):
+        """
+        Called once an individual fix has been resolved
+
+        :param rule_ids: List of rule IDs linked to the executed fix
+        """
+        # force Alias to refresh its viewport for a specific set of fixes
+        if not {"cos_unused", "references_exist", "node_pivots_at_origin"}.isdisjoint(
+            rule_ids
+        ):
+            alias_api.redraw_screen()
+
+    def post_fix_all_action(self):
+        """Called once all the fixes have been resolved when the "Fix All" button have been entered"""
+        # force Alias to refresh its viewport when all the fixes have been executed
+        alias_api.redraw_screen()
