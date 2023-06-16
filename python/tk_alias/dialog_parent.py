@@ -201,9 +201,6 @@ class DialogParent(object):
     _main_hwnd = None
     _proxy_window = None
 
-    def __init__(self, engine):
-        self._engine = engine
-
     def get_main_hwnd(self):
         """
         Windows specific method to find the main Alias window
@@ -261,4 +258,4 @@ class DialogParent(object):
             # for all Toolkit dialogs
             return self.get_proxy_window()
 
-        return self._engine.get_parent_window()
+        return None

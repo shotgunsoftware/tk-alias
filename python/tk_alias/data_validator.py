@@ -9,13 +9,6 @@ import sgtk
 from tank_vendor import six
 from tank.util import sgre as re
 
-import alias_api
-import alias_py.dag_node
-import alias_py.layer
-import alias_py.pick_list
-import alias_py.utils
-import alias_py.traverse_dag
-
 
 class AliasDataValidator(object):
     """
@@ -39,13 +32,16 @@ class AliasDataValidator(object):
     DEFAULT_LAYER_NAME = "DefaultLayer"
     DEFAULT_SHADER_NAME = "DefaultShader"
 
-    def __init__(self):
-        """
-        Initialize the AliasDataValidator object.
-        """
+    def __init__(self, engine):
+        """Initialize the AliasDataValidator object."""
 
-        self._camera_node_types = alias_py.utils.camera_node_types()
-        self._light_node_types = alias_py.utils.light_node_types()
+        # Use the engine api instead of importing since the module may not be ready to be
+        # imported at the time that this class is imported
+        self.alias_py = engine.alias_py
+        self.alias_py = engine.alias_py
+
+        self._camera_node_types = self.alias_py.py_utils.camera_node_types()
+        self._light_node_types = self.alias_py.py_utils.light_node_types()
 
     # -------------------------------------------------------------------------------------------------------
     # Public methods
@@ -210,10 +206,10 @@ class AliasDataValidator(object):
                 ],
                 "get_kwargs": lambda: {
                     "skip_node_types": [
-                        alias_api.AlObjectType.GroupNodeType,
-                        alias_api.AlObjectType.CurveNodeType,
-                        alias_api.AlObjectType.FaceNodeType,
-                        alias_api.AlObjectType.TextureNodeType,
+                        self.alias_py.AlObjectType.GroupNodeType,
+                        self.alias_py.AlObjectType.CurveNodeType,
+                        self.alias_py.AlObjectType.FaceNodeType,
+                        self.alias_py.AlObjectType.TextureNodeType,
                     ],
                 },
             },
@@ -282,7 +278,7 @@ class AliasDataValidator(object):
                 ],
                 "get_kwargs": lambda: {
                     "skip_node_types": [
-                        alias_api.AlObjectType.TextureNodeType,
+                        self.alias_py.AlObjectType.TextureNodeType,
                         *self._camera_node_types,
                         *self._light_node_types,
                     ]
@@ -315,8 +311,8 @@ class AliasDataValidator(object):
                 ],
                 "get_kwargs": lambda: {
                     "skip_node_types": [
-                        alias_api.AlObjectType.TextureNodeType,
-                        alias_api.AlObjectType.GroupNodeType,
+                        self.alias_py.AlObjectType.TextureNodeType,
+                        self.alias_py.AlObjectType.GroupNodeType,
                         *self._camera_node_types,
                         *self._light_node_types,
                     ]
@@ -349,8 +345,8 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {
                     "layer_name": self.DEFAULT_LAYER_NAME,
                     "accept_node_types": [
-                        alias_api.AlObjectType.GroupNodeType,
-                        alias_api.AlObjectType.TextureNodeType,
+                        self.alias_py.AlObjectType.GroupNodeType,
+                        self.alias_py.AlObjectType.TextureNodeType,
                         *self._camera_node_types,
                         *self._light_node_types,
                     ],
@@ -389,7 +385,7 @@ class AliasDataValidator(object):
                 "get_kwargs": lambda: {
                     "layer_name": self.DEFAULT_LAYER_NAME,
                     "accept_node_types": [
-                        alias_api.AlObjectType.TextureNodeType,
+                        self.alias_py.AlObjectType.TextureNodeType,
                         *self._camera_node_types,
                         *self._light_node_types,
                     ],
@@ -480,10 +476,10 @@ class AliasDataValidator(object):
                 ],
                 "get_kwargs": lambda: {
                     "accept_node_types": [
-                        alias_api.AlObjectType.CurveNodeType,
-                        alias_api.AlObjectType.FaceNodeType,
-                        alias_api.AlObjectType.SurfaceNodeType,
-                        alias_api.AlObjectType.GroupNodeType,
+                        self.alias_py.AlObjectType.CurveNodeType,
+                        self.alias_py.AlObjectType.FaceNodeType,
+                        self.alias_py.AlObjectType.SurfaceNodeType,
+                        self.alias_py.AlObjectType.GroupNodeType,
                     ],
                 },
             },
@@ -882,7 +878,7 @@ class AliasDataValidator(object):
         skip_shaders = skip_shaders or []
         unused_shaders = []
 
-        for shader in alias_api.get_shaders():
+        for shader in self.alias_py.get_shaders():
             if shader.name in skip_shaders:
                 continue
 
@@ -918,13 +914,13 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        shaders = errors or alias_api.get_shaders()
+        shaders = errors or self.alias_py.get_shaders()
 
         for shader in shaders:
             if isinstance(shader, six.string_types):
                 if shader in skip_shaders:
                     continue
-                shader = alias_api.get_shader_by_name(shader)
+                shader = self.alias_py.get_shader_by_name(shader)
                 if not shader:
                     continue
             elif shader.name in skip_shaders:
@@ -958,11 +954,11 @@ class AliasDataValidator(object):
         skip_shaders = skip_shaders or []
         non_vred_shaders = []
 
-        for shader in alias_api.get_shaders():
+        for shader in self.alias_py.get_shaders():
             if shader.name in skip_shaders:
                 continue
 
-            if shader.is_used() and not alias_api.is_copy_of_vred_shader(shader):
+            if shader.is_used() and not self.alias_py.is_copy_of_vred_shader(shader):
                 if fail_fast:
                     return False
                 non_vred_shaders.append(shader)
@@ -982,10 +978,10 @@ class AliasDataValidator(object):
         """
 
         if errors is None:
-            alias_api.delete_null_nodes()
+            self.alias_py.delete_null_nodes()
         else:
             # NOTE we could just delete the list of given nodes, but we cannot determine if a given node is null.
-            alias_py.utils.raise_exception(
+            self.alias_py.py_utils.raise_exception(
                 "Requires Alias C++ API function to determine if a node is null"
             )
 
@@ -1008,7 +1004,7 @@ class AliasDataValidator(object):
 
         skip_node_types = skip_node_types or []
 
-        nodes_with_history = alias_py.dag_node.get_nodes_with_construction_history(
+        nodes_with_history = self.alias_py.py_dag_node.get_nodes_with_construction_history(
             skip_node_types=set(skip_node_types),
         )
 
@@ -1060,12 +1056,12 @@ class AliasDataValidator(object):
 
         # NOTE performance is slower when a list of nodes is passed. When applying to all
         # nodes, pass None instead of a list of all nodes.
-        nodes = alias_py.dag_node.get_nodes_with_construction_history(
+        nodes = self.alias_py.py_dag_node.get_nodes_with_construction_history(
             nodes=errors,
             skip_node_types=set(skip_node_types),
         )
         for node in nodes:
-            alias_api.delete_history(node)
+            self.alias_py.delete_history(node)
 
     @sgtk.LogManager.log_timing
     def check_node_instances(self, fail_fast=False):
@@ -1080,7 +1076,7 @@ class AliasDataValidator(object):
         :rtype: list | bool
         """
 
-        return alias_py.dag_node.get_instanced_nodes()
+        return self.alias_py.py_dag_node.get_instanced_nodes()
 
     @sgtk.LogManager.log_timing
     def fix_all_node_instances(self, errors=None):
@@ -1124,12 +1120,12 @@ class AliasDataValidator(object):
 
         # NOTE performance is slower when a list of nodes is passed. When applying to all
         # nodes, pass None instead of a list of all nodes.
-        nodes = alias_py.dag_node.get_instanced_nodes(errors)
+        nodes = self.alias_py.py_dag_node.get_instanced_nodes(errors)
 
         for node in nodes:
-            status = alias_api.expand_instances(node)
-            if not alias_py.utils.is_success(status):
-                alias_py.utils.raise_exception(
+            status = self.alias_py.expand_instances(node)
+            if not self.alias_py.py_utils.is_success(status):
+                self.alias_py.py_utils.raise_exception(
                     "Failed to expand instanced node '{}'".format(node.name), status
                 )
 
@@ -1148,7 +1144,7 @@ class AliasDataValidator(object):
 
         skip_node_types = skip_node_types or []
 
-        return alias_py.dag_node.get_nodes_with_non_origin_pivot(
+        return self.alias_py.py_dag_node.get_nodes_with_non_origin_pivot(
             skip_node_types=set(skip_node_types),
         )
 
@@ -1196,22 +1192,22 @@ class AliasDataValidator(object):
 
         # NOTE performance is slower when a list of nodes is passed. When applying to all
         # nodes, pass None instead of a list of all nodes.
-        nodes = alias_py.dag_node.get_nodes_with_non_origin_pivot(
+        nodes = self.alias_py.py_dag_node.get_nodes_with_non_origin_pivot(
             nodes=errors,
             skip_node_types=set(skip_node_types),
         )
-        center = alias_api.Vec3(0.0, 0.0, 0.0)
+        center = self.alias_py.Vec3(0.0, 0.0, 0.0)
 
         for node in nodes:
             status = node.set_scale_pivot(center)
-            if not alias_py.utils.is_success(status):
-                alias_py.utils.raise_exception(
+            if not self.alias_py.py_utils.is_success(status):
+                self.alias_py.py_utils.raise_exception(
                     "Failed to set scale pivot for node '{}'".format(node.name), status
                 )
 
             status = node.set_rotate_pivot(center)
-            if not alias_py.utils.is_success(status):
-                alias_py.utils.raise_exception(
+            if not self.alias_py.py_utils.is_success(status):
+                self.alias_py.py_utils.raise_exception(
                     "Failed to set rotate pivot for node '{}'".format(node.name), status
                 )
 
@@ -1234,11 +1230,11 @@ class AliasDataValidator(object):
 
         skip_node_types = skip_node_types or []
 
-        all_nodes = alias_py.dag_node.get_nodes_with_non_zero_transform(
+        all_nodes = self.alias_py.py_dag_node.get_nodes_with_non_zero_transform(
             skip_node_types=set(skip_node_types),
         )
 
-        top_node_names = [n.name for n in alias_api.get_top_dag_nodes()]
+        top_node_names = [n.name for n in self.alias_py.get_top_dag_nodes()]
         nodes = []
         for node in all_nodes:
             if node.name in top_node_names:
@@ -1294,11 +1290,11 @@ class AliasDataValidator(object):
 
         @sgtk.LogManager.log_timing
         def __apply_zero_transform_top_level():
-            alias_api.zero_transform_top_level()
+            self.alias_py.zero_transform_top_level()
 
         @sgtk.LogManager.log_timing
         def __apply_zero_transform(nodes):
-            return alias_api.zero_transform(nodes)
+            return self.alias_py.zero_transform(nodes)
 
         skip_node_types = skip_node_types or []
 
@@ -1311,8 +1307,8 @@ class AliasDataValidator(object):
 
         if errors:
             status = __apply_zero_transform(errors)
-            if not alias_py.utils.is_success(status):
-                alias_py.utils.raise_exception(
+            if not self.alias_py.py_utils.is_success(status):
+                self.alias_py.py_utils.raise_exception(
                     "Failed to apply zero transform to nodes. Returned status:",
                     status,
                 )
@@ -1341,9 +1337,11 @@ class AliasDataValidator(object):
         :rtype: list | bool
         """
 
-        layer = alias_api.get_layer_by_name(layer_name)
+        layer = self.alias_py.get_layer_by_name(layer_name)
         if layer is None:
-            alias_py.utils.raise_exception("Layer not found '{}'".format(layer_name))
+            self.alias_py.py_utils.raise_exception(
+                "Layer not found '{}'".format(layer_name)
+            )
 
         accept_node_types = accept_node_types or []
         invalid_nodes = []
@@ -1382,16 +1380,18 @@ class AliasDataValidator(object):
         :rtype: list | bool
         """
 
-        layer = alias_api.get_layer_by_name(layer_name)
+        layer = self.alias_py.get_layer_by_name(layer_name)
         if layer is None:
-            alias_py.utils.raise_exception("Layer not found '{}'".format(layer_name))
+            self.alias_py.py_utils.raise_exception(
+                "Layer not found '{}'".format(layer_name)
+            )
 
         # Traverse the DAG to look for nodes that should be in the default layer, but are not.
         accept_node_types = set(accept_node_types or [])
-        input_data = alias_api.TraverseDagInputData(
+        input_data = self.alias_py.TraverseDagInputData(
             layer, False, accept_node_types, True
         )
-        result = alias_api.search_dag(input_data)
+        result = self.alias_py.search_dag(input_data)
 
         return result.nodes
 
@@ -1412,9 +1412,11 @@ class AliasDataValidator(object):
         :type accept_node_types: list<alias_api.AlObjectType>
         """
 
-        layer = alias_api.get_layer_by_name(layer_name)
+        layer = self.alias_py.get_layer_by_name(layer_name)
         if layer is None:
-            alias_py.utils.raise_exception("Layer not found '{}'".format(layer_name))
+            self.alias_py.py_utils.raise_exception(
+                "Layer not found '{}'".format(layer_name)
+            )
 
         accept_node_types = accept_node_types or []
 
@@ -1428,7 +1430,7 @@ class AliasDataValidator(object):
         if errors:
             for node in errors:
                 if isinstance(node, six.string_types):
-                    node = alias_api.find_dag_node_by_name(node)
+                    node = self.alias_py.find_dag_node_by_name(node)
 
                 if not node:
                     continue
@@ -1441,10 +1443,10 @@ class AliasDataValidator(object):
 
         else:
             # Find nodes that should be in the default layer, but are not.
-            input_data = alias_api.TraverseDagInputData(
+            input_data = self.alias_py.TraverseDagInputData(
                 layer, False, set(accept_node_types), True
             )
-            result = alias_api.search_dag(input_data)
+            result = self.alias_py.search_dag(input_data)
 
             # Place the nodes into their correct layer
             for node in result.nodes:
@@ -1472,7 +1474,7 @@ class AliasDataValidator(object):
         """
 
         invalid_nodes = []
-        nodes = alias_api.get_top_dag_nodes()
+        nodes = self.alias_py.get_top_dag_nodes()
 
         for node in nodes:
             layer = node.layer()
@@ -1509,11 +1511,11 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        nodes = errors or alias_api.get_top_dag_nodes()
+        nodes = errors or self.alias_py.get_top_dag_nodes()
 
         for node in nodes:
             if isinstance(node, six.string_types):
-                node = alias_api.find_dag_node_by_name(node)
+                node = self.alias_py.find_dag_node_by_name(node)
 
             if not node:
                 continue
@@ -1543,8 +1545,10 @@ class AliasDataValidator(object):
         :rtype: list | bool
         """
 
-        input_data = alias_api.TraverseDagInputData()
-        result = alias_api.search_node_layer_does_not_match_parent_layer(input_data)
+        input_data = self.alias_py.TraverseDagInputData()
+        result = self.alias_py.search_node_layer_does_not_match_parent_layer(
+            input_data
+        )
 
         return result.nodes
 
@@ -1569,7 +1573,7 @@ class AliasDataValidator(object):
         if errors:
             for node in errors:
                 if isinstance(node, six.string_types):
-                    node = alias_api.find_dag_node_by_name(node)
+                    node = self.alias_py.find_dag_node_by_name(node)
 
                 if not node:
                     continue
@@ -1587,8 +1591,10 @@ class AliasDataValidator(object):
                     node.set_layer(parent_node_layer)
 
         else:
-            input_data = alias_api.TraverseDagInputData()
-            result = alias_api.search_node_layer_does_not_match_parent_layer(input_data)
+            input_data = self.alias_py.TraverseDagInputData()
+            result = self.alias_py.search_node_layer_does_not_match_parent_layer(
+                input_data
+            )
             for node in result.nodes:
                 node.set_layer(node.parent_node().layer())
 
@@ -1612,7 +1618,7 @@ class AliasDataValidator(object):
 
         accept_node_types = accept_node_types or []
         invalid_nodes = []
-        nodes = alias_api.get_top_dag_nodes()
+        nodes = self.alias_py.get_top_dag_nodes()
 
         for node in nodes:
             if node.type() not in accept_node_types:
@@ -1635,7 +1641,8 @@ class AliasDataValidator(object):
         :rtype: list | bool
         """
 
-        result = alias_api.traverse_dag(alias_py.traverse_dag.node_is_template)
+        input_data = self.alias_py.TraverseDagInputData()
+        result = self.alias_py.search_node_is_template(input_data)
         return result.nodes
 
     @sgtk.LogManager.log_timing
@@ -1655,11 +1662,11 @@ class AliasDataValidator(object):
                     errors[i] = error_item["name"]
 
         if errors:
-            alias_py.dag_node.delete_nodes(errors)
+            self.alias_py.py_dag_node.delete_nodes(errors)
 
         else:
-            result = alias_api.traverse_dag(alias_py.traverse_dag.node_is_template)
-            for node in result.nodes:
+            nodes = self.check_node_templates()
+            for node in nodes:
                 node.delete_object()
 
     @sgtk.LogManager.log_timing
@@ -1676,8 +1683,8 @@ class AliasDataValidator(object):
         """
 
         # Find all (and only) AlCurveNode objects
-        return alias_py.dag_node.get_nodes_by_type(
-            [alias_api.AlObjectType.CurveNodeType]
+        return self.alias_py.py_dag_node.get_nodes_by_type(
+            [self.alias_py.AlObjectType.CurveNodeType]
         )
 
     @sgtk.LogManager.log_timing
@@ -1717,11 +1724,11 @@ class AliasDataValidator(object):
 
         if errors:
             # NOTE this assumes all nodes passed in represent a curve.
-            alias_py.dag_node.delete_nodes(errors)
+            self.alias_py.py_dag_node.delete_nodes(errors)
 
         else:
-            curve_nodes = alias_py.dag_node.get_nodes_by_type(
-                [alias_api.AlObjectType.CurveNodeType]
+            curve_nodes = self.alias_py.py_dag_node.get_nodes_by_type(
+                [self.alias_py.AlObjectType.CurveNodeType]
             )
 
             for node in curve_nodes:
@@ -1740,7 +1747,7 @@ class AliasDataValidator(object):
         :rtype: list | bool
         """
 
-        return alias_py.dag_node.get_nodes_with_unused_curves_on_surface()
+        return self.alias_py.py_dag_node.get_nodes_with_unused_curves_on_surface()
 
     @sgtk.LogManager.log_timing
     def fix_all_curve_on_surface_unused(self, errors=None):
@@ -1783,15 +1790,17 @@ class AliasDataValidator(object):
         # then we will need to revert to the old method below, but ensure we do not attempt to
         # delete the same curve twice
         for node in errors:
-            unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
-                nodes=[node]
+            unused_curves = (
+                self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes(
+                    nodes=[node]
+                )
             )
             for curve in unused_curves:
                 curve.delete_object()
 
         # # NOTE performance is slower when a list of nodes is passed. When applying to all
         # # nodes, pass None instead of a list of all nodes.
-        # unused_curves = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
+        # unused_curves = self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes(
         #     nodes=errors
         # )
         # for curve in unused_curves:
@@ -1810,11 +1819,11 @@ class AliasDataValidator(object):
         :rtype: list | bool
         """
 
-        unused_cos = alias_py.dag_node.get_unused_curves_on_surface_for_nodes()
+        unused_cos = self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes()
 
         invalid_nodes = []
         for cos in unused_cos:
-            if alias_api.has_construction_history(cos):
+            if self.alias_py.has_construction_history(cos):
                 invalid_nodes.append(cos.surface().surface_node())
 
         return invalid_nodes
@@ -1856,13 +1865,13 @@ class AliasDataValidator(object):
 
         # NOTE performance is slower when a list of nodes is passed. When applying to all
         # nodes, pass None instead of a list of all nodes.
-        unused_cos = alias_py.dag_node.get_unused_curves_on_surface_for_nodes(
+        unused_cos = self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes(
             nodes=errors
         )
 
         for cos in unused_cos:
-            if alias_api.has_construction_history(cos):
-                alias_api.delete_construction_history(cos)
+            if self.alias_py.has_construction_history(cos):
+                self.alias_py.delete_construction_history(cos)
 
     @sgtk.LogManager.log_timing
     def check_set_empty(self, fail_fast=False):
@@ -1878,7 +1887,7 @@ class AliasDataValidator(object):
         """
 
         empty_sets = []
-        alias_set = alias_api.first_set()
+        alias_set = self.alias_py.first_set()
 
         while alias_set:
             if alias_set.is_empty():
@@ -1911,10 +1920,10 @@ class AliasDataValidator(object):
             for item in errors:
                 if isinstance(item, six.string_types):
                     set_names.append(item)
-                elif isinstance(item, alias_api.AlSet):
+                elif isinstance(item, self.alias_py.AlSet):
                     set_names.append(item.name)
 
-        alias_set = alias_api.first_set()
+        alias_set = self.alias_py.first_set()
         while alias_set:
             if alias_set.is_empty():
                 if not set_names or alias_set.name in set_names:
@@ -1922,7 +1931,7 @@ class AliasDataValidator(object):
             alias_set = alias_set.next_set()
 
         if errors:
-            alias_py.dag_node.delete_nodes(errors)
+            self.alias_py.py_dag_node.delete_nodes(errors)
 
     @sgtk.LogManager.log_timing
     def check_layer_is_empty(self, fail_fast=False, skip_layers=None):
@@ -1941,7 +1950,7 @@ class AliasDataValidator(object):
 
         skip_layers = set(skip_layers or [])
         include_folders = True
-        return alias_api.get_empty_layers(include_folders, skip_layers)
+        return self.alias_py.get_empty_layers(include_folders, skip_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_is_empty(self, errors=None, skip_layers=None):
@@ -1958,7 +1967,7 @@ class AliasDataValidator(object):
 
         skip_layers = set(skip_layers or [])
         include_folders = True
-        empty_layers = alias_api.get_empty_layers(include_folders, skip_layers)
+        empty_layers = self.alias_py.get_empty_layers(include_folders, skip_layers)
 
         # If a list of layers is specified, only delete those layers.
         delete_only = []
@@ -1993,7 +2002,7 @@ class AliasDataValidator(object):
         :rtype: list | bool
         """
 
-        return alias_api.get_layers_using_multiple_shaders()
+        return self.alias_py.get_layers_using_multiple_shaders()
 
     @sgtk.LogManager.log_timing
     def check_layer_symmetry(self, fail_fast=False, skip_layers=None):
@@ -2014,12 +2023,12 @@ class AliasDataValidator(object):
         """
 
         if fail_fast:
-            has_symmetric_layers = alias_py.layer.get_symmetric_layers(
+            has_symmetric_layers = self.alias_py.py_layer.get_symmetric_layers(
                 check_exists=True, skip_layers=skip_layers
             )
             return not has_symmetric_layers
 
-        return alias_py.layer.get_symmetric_layers(skip_layers=skip_layers)
+        return self.alias_py.py_layer.get_symmetric_layers(skip_layers=skip_layers)
 
     @sgtk.LogManager.log_timing
     def fix_layer_symmetry(self, errors=None, skip_layers=None):
@@ -2043,7 +2052,7 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        layers = alias_py.layer.get_symmetric_layers(
+        layers = self.alias_py.py_layer.get_symmetric_layers(
             layers=errors, skip_layers=skip_layers
         )
 
@@ -2073,7 +2082,7 @@ class AliasDataValidator(object):
         processed_layers = set()
         marked_invalid_layers = set()
 
-        nodes = alias_api.get_top_dag_nodes()
+        nodes = self.alias_py.get_top_dag_nodes()
 
         for node in nodes:
             node_layer = node.layer()
@@ -2123,11 +2132,11 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        layers = errors or alias_api.get_layers()
+        layers = errors or self.alias_py.get_layers()
 
         for layer in layers:
             if isinstance(layer, six.string_types):
-                layer = alias_api.get_layer_by_name(layer)
+                layer = self.alias_py.get_layer_by_name(layer)
 
             if not layer:
                 continue
@@ -2140,13 +2149,13 @@ class AliasDataValidator(object):
 
             layer_top_level_nodes = []
             layer_group_nodes = []
-            for node in alias_api.get_top_dag_nodes():
+            for node in self.alias_py.get_top_dag_nodes():
                 if node.layer().name != layer_name:
                     continue
 
                 layer_top_level_nodes.append(node)
 
-                if alias_py.utils.is_group_node(node):
+                if self.alias_py.py_utils.is_group_node(node):
                     layer_group_nodes.append(node)
 
             if not layer_top_level_nodes:
@@ -2155,10 +2164,10 @@ class AliasDataValidator(object):
 
             # first case: no existing group node
             if not layer_group_nodes:
-                group_node = alias_api.AlGroupNode()
+                group_node = self.alias_py.AlGroupNode()
                 status = group_node.create()
-                if not alias_py.utils.is_success(status):
-                    alias_py.utils.raise_exception(
+                if not self.alias_py.py_utils.is_success(status):
+                    self.alias_py.py_utils.raise_exception(
                         "Failed to create group node for layer", status
                     )
 
@@ -2200,7 +2209,7 @@ class AliasDataValidator(object):
         :rtype: list | bool
         """
 
-        return alias_api.get_nesting_groups()
+        return self.alias_py.get_nesting_groups()
 
     @sgtk.LogManager.log_timing
     def fix_group_has_single_level_hierarchy(self, errors=None):
@@ -2218,7 +2227,7 @@ class AliasDataValidator(object):
         :raises alias_api.AliasPythonException: if failed to flatten all groups
         """
 
-        status = alias_py.utils.success_status()
+        status = self.alias_py.py_utils.success_status()
 
         if errors:
             if isinstance(errors, six.string_types):
@@ -2231,21 +2240,21 @@ class AliasDataValidator(object):
             groups_to_flatten = []
             for group_node in errors:
                 if isinstance(group_node, six.string_types):
-                    group_node = alias_api.find_dag_node_by_name(group_node)
+                    group_node = self.alias_py.find_dag_node_by_name(group_node)
 
                 if not group_node:
                     continue
 
                 groups_to_flatten.append(group_node)
-                flatten_status = alias_api.flatten_group_nodes(groups_to_flatten)
-                if flatten_status != alias_py.utils.success_status():
+                flatten_status = self.alias_py.flatten_group_nodes(groups_to_flatten)
+                if flatten_status != self.alias_py.py_utils.success_status():
                     status = flatten_status
 
         else:
-            status = alias_api.flatten_group_nodes()
+            status = self.alias_py.flatten_group_nodes()
 
-        if not alias_py.utils.is_success(status):
-            alias_py.utils.raise_exception("Failed to flatten group nodes", status)
+        if not self.alias_py.py_utils.is_success(status):
+            self.alias_py.py_utils.raise_exception("Failed to flatten group nodes", status)
 
     @sgtk.LogManager.log_timing
     def check_locators(self, fail_fast=False):
@@ -2264,10 +2273,10 @@ class AliasDataValidator(object):
         """
 
         if fail_fast:
-            has_locators = alias_py.utils.get_locators(check_exists=True)
+            has_locators = self.alias_py.py_utils.get_locators(check_exists=True)
             return not has_locators
 
-        return alias_py.utils.get_locators()
+        return self.alias_py.py_utils.get_locators()
 
     @sgtk.LogManager.log_timing
     def fix_locators(self, errors=None):
@@ -2291,18 +2300,20 @@ class AliasDataValidator(object):
         if errors:
             for locator in errors:
                 if isinstance(locator, six.string_types):
-                    locator = alias_api.get_locator_by_name(locator)
+                    locator = self.alias_py.get_locator_by_name(locator)
 
                 if locator:
                     status = locator.delete_object()
-                    if not alias_py.utils.is_success(status):
-                        alias_py.utils.raise_exception(
+                    if not self.alias_py.py_utils.is_success(status):
+                        self.alias_py.py_utils.raise_exception(
                             "Failed to delete locator", status
                         )
         else:
-            status = alias_api.delete_all_locators()
-            if not alias_py.utils.is_success(status):
-                alias_py.utils.raise_exception("Failed to delete all locators", status)
+            status = self.alias_py.delete_all_locators()
+            if not self.alias_py.py_utils.is_success(status):
+                self.alias_py.py_utils.raise_exception(
+                    "Failed to delete all locators", status
+                )
 
     @sgtk.LogManager.log_timing
     def check_refererences_exist(self, fail_fast=False):
@@ -2320,7 +2331,7 @@ class AliasDataValidator(object):
         :rtype: tuple<bool,list,list,dict>
         """
 
-        return alias_api.get_references()
+        return self.alias_py.get_references()
 
     @sgtk.LogManager.log_timing
     def fix_references_exist(self, errors=None):
@@ -2345,16 +2356,18 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        references = errors or alias_api.get_references()
+        references = errors or self.alias_py.get_references()
 
         for reference in references:
             if isinstance(reference, six.string_types):
-                reference = alias_api.get_reference_by_name(reference)
+                reference = self.alias_py.get_reference_by_name(reference)
 
             if reference:
-                status = alias_api.remove_reference(reference)
-                if not alias_py.utils.is_success(status):
-                    alias_py.utils.raise_exception("Failed to remove reference", status)
+                status = self.alias_py.remove_reference(reference)
+                if not self.alias_py.py_utils.is_success(status):
+                    self.alias_py.py_utils.raise_exception(
+                        "Failed to remove reference", status
+                    )
 
     # -------------------------------------------------------------------------------------------------------
     # Pick Functions
@@ -2388,7 +2401,7 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        alias_py.pick_list.pick_nodes(errors)
+        self.alias_py.py_pick_list.pick_nodes(errors)
 
     @sgtk.LogManager.log_timing
     def pick_curves_on_surface_from_nodes(self, errors=None):
@@ -2409,7 +2422,7 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        alias_py.pick_list.pick_curves_on_surface_from_nodes(errors)
+        self.alias_py.py_pick_list.pick_curves_on_surface_from_nodes(errors)
 
     @sgtk.LogManager.log_timing
     def pick_nodes_assigned_to_shaders(self, errors=None):
@@ -2420,7 +2433,7 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlShader> | list<dict>
         """
 
-        errors = errors or alias_api.get_shaders()
+        errors = errors or self.alias_py.get_shaders()
 
         if isinstance(errors, six.string_types):
             errors = [errors]
@@ -2429,7 +2442,7 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        alias_py.pick_list.pick_nodes_assigned_to_shaders(errors)
+        self.alias_py.py_pick_list.pick_nodes_assigned_to_shaders(errors)
 
     @sgtk.LogManager.log_timing
     def pick_nodes_assigned_to_layers(self, errors=None):
@@ -2440,7 +2453,7 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlLayer> | list<dict>
         """
 
-        errors = errors or alias_api.get_layers()
+        errors = errors or self.alias_py.get_layers()
 
         if isinstance(errors, six.string_types):
             errors = [errors]
@@ -2449,7 +2462,7 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        alias_py.pick_list.pick_nodes_assigned_to_layers(errors)
+        self.alias_py.py_pick_list.pick_nodes_assigned_to_layers(errors)
 
     @sgtk.LogManager.log_timing
     def pick_layers(self, errors=None):
@@ -2460,7 +2473,7 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlLayer> | list<dict>
         """
 
-        errors = errors or alias_api.get_layers()
+        errors = errors or self.alias_py.get_layers()
 
         if isinstance(errors, six.string_types):
             errors = [errors]
@@ -2469,7 +2482,7 @@ class AliasDataValidator(object):
                 if isinstance(error_item, dict):
                     errors[i] = error_item["name"]
 
-        alias_py.pick_list.pick_layers(errors)
+        self.alias_py.py_pick_list.pick_layers(errors)
 
     @sgtk.LogManager.log_timing
     def pick_locators(self, errors=None):
@@ -2481,7 +2494,7 @@ class AliasDataValidator(object):
         """
 
         if not errors:
-            alias_py.pick_list.pick_locators(None, pick_all=True)
+            self.alias_py.py_pick_list.pick_locators(None, pick_all=True)
 
         else:
             if isinstance(errors, six.string_types):
@@ -2491,4 +2504,4 @@ class AliasDataValidator(object):
                     if isinstance(error_item, dict):
                         errors[i] = error_item["name"]
 
-            alias_py.pick_list.pick_locators(errors)
+            self.alias_py.py_pick_list.pick_locators(errors)

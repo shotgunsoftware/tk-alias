@@ -322,7 +322,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
             self.parent.engine.save_file()
             # store the current session path in the root item properties
             # it will be used later in the background process to open the file before running the publishing actions
-            if "session_path" not in item.parent.properties:
+            if bg_processing and "session_path" not in item.parent.properties:
                 item.parent.properties["session_path"] = path
                 item.parent.properties[
                     "session_name"
