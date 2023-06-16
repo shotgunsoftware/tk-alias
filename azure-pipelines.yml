@@ -46,3 +46,5 @@ jobs:
 - template: build-pipeline.yml@templates
   parameters:
     has_ui_tests: false
+    additional_repositories:
+    - name: tk-framework-alias
