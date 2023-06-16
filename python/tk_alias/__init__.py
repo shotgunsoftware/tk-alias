@@ -16,3 +16,5 @@ if is_windows():
 from .menu_generation import AliasMenuGenerator
 from .alias_event_watcher import AliasEventWatcher
 from .data_validator import AliasDataValidator
+from .alias_py.alias_py import AliasPy
+from .shotgrid_alias_client import ShotGridAliasSocketIoClient
