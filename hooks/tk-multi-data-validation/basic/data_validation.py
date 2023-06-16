@@ -236,19 +236,17 @@ class AliasDataValidationHook(HookBaseClass):
             "Cannot sanitize result type '{}'".format(type(result))
         )
 
-    def post_fix_action(self, rule_ids):
+    def post_fix_action(self, rules):
         """
         Called once an individual fix has been resolved
 
-        :param rule_ids: List of rule IDs linked to the executed fix
+        :param rules: List of rule IDs linked to the executed fix
         """
+
+        rule_ids = [rule.id for rule in rules]
+
         # force Alias to refresh its viewport for a specific set of fixes
         if not {"cos_unused", "references_exist", "node_pivots_at_origin"}.isdisjoint(
             rule_ids
         ):
             alias_api.redraw_screen()
-
-    def post_fix_all_action(self):
-        """Called once all the fixes have been resolved when the "Fix All" button have been entered"""
-        # force Alias to refresh its viewport when all the fixes have been executed
-        alias_api.redraw_screen()
