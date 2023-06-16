@@ -1004,8 +1004,10 @@ class AliasDataValidator(object):
 
         skip_node_types = skip_node_types or []
 
-        nodes_with_history = self.alias_py.py_dag_node.get_nodes_with_construction_history(
-            skip_node_types=set(skip_node_types),
+        nodes_with_history = (
+            self.alias_py.py_dag_node.get_nodes_with_construction_history(
+                skip_node_types=set(skip_node_types),
+            )
         )
 
         return nodes_with_history
@@ -1546,9 +1548,7 @@ class AliasDataValidator(object):
         """
 
         input_data = self.alias_py.TraverseDagInputData()
-        result = self.alias_py.search_node_layer_does_not_match_parent_layer(
-            input_data
-        )
+        result = self.alias_py.search_node_layer_does_not_match_parent_layer(input_data)
 
         return result.nodes
 
@@ -2254,7 +2254,9 @@ class AliasDataValidator(object):
             status = self.alias_py.flatten_group_nodes()
 
         if not self.alias_py.py_utils.is_success(status):
-            self.alias_py.py_utils.raise_exception("Failed to flatten group nodes", status)
+            self.alias_py.py_utils.raise_exception(
+                "Failed to flatten group nodes", status
+            )
 
     @sgtk.LogManager.log_timing
     def check_locators(self, fail_fast=False):

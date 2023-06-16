@@ -78,7 +78,7 @@ class ShotGridAliasSocketIoClient(AliasSocketIoClient):
             parent = None
         else:
             parent = self.engine._get_dialog_parent()
-        
+
         QtGui.QMessageBox.critical(
             parent,
             "Alias Server Error",

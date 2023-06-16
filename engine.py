@@ -103,7 +103,6 @@ class AliasEngine(sgtk.platform.Engine):
         # Call the base engine init method
         super(AliasEngine, self).__init__(tk, context, engine_instance_name, env)
 
-
     # -------------------------------------------------------------------------------------------------------
     # Plugin version < 4.0.0 methods
     # -------------------------------------------------------------------------------------------------------
@@ -123,13 +122,14 @@ class AliasEngine(sgtk.platform.Engine):
         Alias version < 2024.0.
         """
 
-        self.logger.info(f"Plugin initialized: v{plugin} Alias v{alias} Python v{python}")
+        self.logger.info(
+            f"Plugin initialized: v{plugin} Alias v{alias} Python v{python}"
+        )
         self.__plugin_info = {
             "plugin_version": plugin,
             "alias_version": alias,
             "python_version": python,
         }
-
 
     # -------------------------------------------------------------------------------------------------------
     # Properties
@@ -212,7 +212,9 @@ class AliasEngine(sgtk.platform.Engine):
         if self.__sio:
             self.__server_info = self.__sio.call_threadsafe("server_info")
             self.__plugin_info = self.__server_info.get("client") or {}
-            self.logger.debug(f"Alias server info: {pprint.pformat(self.__server_info)}")
+            self.logger.debug(
+                f"Alias server info: {pprint.pformat(self.__server_info)}"
+            )
         else:
             # No server, we're in OpenModel mode.
             self.__server_info = {}
@@ -265,12 +267,12 @@ class AliasEngine(sgtk.platform.Engine):
         dialogs_still_opened = self.created_qt_dialogs[:]
         for dialog in dialogs_still_opened:
             dialog.close()
-        
+
         if self.__sio:
             if self.__sio.connected:
                 self.__sio.disconnect()
-            self.__sio = None 
-        
+            self.__sio = None
+
         if self.__qt_app:
             self.__qt_app.quit()
 
@@ -413,8 +415,10 @@ class AliasEngine(sgtk.platform.Engine):
         if not self.__qt_app:
             self.__qt_app = QtGui.QApplication(["ShotGrid Alias Engine"])
             self.__qt_app.setQuitOnLastWindowClosed(False)
+
             def _app_quit():
                 QtGui.QApplication.processEvents()
+
             self.__qt_app.aboutToQuit.connect(_app_quit)
 
     def post_qt_init(self):
@@ -804,9 +808,7 @@ class AliasEngine(sgtk.platform.Engine):
         # Return the connection status
         return self.__sio.connected
 
-    def __init_api(
-        self, hostname=None, port=None, namespace=None, force=False
-    ):
+    def __init_api(self, hostname=None, port=None, namespace=None, force=False):
         """
         Initialize the Alias Python api module to allow communication with Alias.
 
@@ -883,7 +885,6 @@ class AliasEngine(sgtk.platform.Engine):
                 if not api_module:
                     raise Exception("Failed to get Alias Python API for OpenAlias.")
 
-
         # Create the AliasPy object to wrap the api module. All Alias api requests can be made
         # directly with the AliasPy object, it will route the request to the actual api module
         self.__alias_py = self._tk_alias.AliasPy(api_module)
@@ -896,9 +897,12 @@ class AliasEngine(sgtk.platform.Engine):
         try:
             # Sanity check that the module can be imported.
             import alias_api
+
             assert alias_api is self.__alias_py
         except Exception as import_error:
-            raise Exception(f"Failed to set up the Alias Python API module\n{import_error}")
+            raise Exception(
+                f"Failed to set up the Alias Python API module\n{import_error}"
+            )
 
     def __init_alias_event_watcher(self):
         """

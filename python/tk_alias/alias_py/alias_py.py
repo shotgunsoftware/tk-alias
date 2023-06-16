@@ -33,8 +33,7 @@ class AliasPy:
     """
 
     class ApiAttributeNotSupported(AttributeError):
-        """Thrown when an Alias Python API accessing an attribute that is not supported.""" 
-
+        """Thrown when an Alias Python API accessing an attribute that is not supported."""
 
     def __init__(self, api_module):
         """Initialize wrapper class."""
@@ -89,7 +88,7 @@ class AliasPy:
 
         try:
             # Get the attribute from the api module
-            # 
+            #
             # NOTE if attributes exist in multiple api versions, but require different
             # handling (e.g. function signature changed), then a patch function will need
             # to be run before returning the attribute immediately if it exists.
@@ -109,7 +108,6 @@ class AliasPy:
                 )
 
             return patched_attr
-
 
     # Properties
     # ----------------------------------------------------------------------------------------
@@ -139,7 +137,6 @@ class AliasPy:
     def py_utils(self):
         """Get the helper module for performing general functionality in Alias."""
         return self.__utils
-
 
     # Private methods
     # ----------------------------------------------------------------------------------------

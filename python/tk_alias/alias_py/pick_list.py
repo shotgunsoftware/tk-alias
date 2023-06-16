@@ -65,8 +65,10 @@ class AliasPyPickList(AliasPyBase):
         if clear_pick_list:
             self.alias_py.clear_pick_list()
 
-        unused_curves = self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes(
-            nodes=nodes
+        unused_curves = (
+            self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes(
+                nodes=nodes
+            )
         )
 
         for curve in unused_curves:

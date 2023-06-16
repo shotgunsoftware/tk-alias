@@ -98,23 +98,31 @@ class AliasLauncher(SoftwareLauncher):
             # Ensure the plugin is ready to be launched with Alias. This will install the
             # Toolkit plugin com.sg.basic.alias that will bootstrap the engine once the Alias
             # plugin is loaded. It will also ensure the necessary Python version is available.
-            plugin_file_path, plugin_env = self.__ensure_plugin_ready(framework_location, release_version, exec_path)
+            plugin_file_path, plugin_env = self.__ensure_plugin_ready(
+                framework_location, release_version, exec_path
+            )
 
             # Set up the environment variables required for Alias Plugin to load and launch the
             # ShotGrid Alias Engine
-            # 
+            #
             # Append executable folder to PATH environment variable
             server_python_exe = plugin_env.get("ALIAS_PLUGIN_SERVER_PYTHON")
             if server_python_exe:
-                sgtk.util.append_path_to_env_var("PATH", os.path.dirname(server_python_exe))
+                sgtk.util.append_path_to_env_var(
+                    "PATH", os.path.dirname(server_python_exe)
+                )
             else:
-                sgtk.util.append_path_to_env_var("PATH", os.path.dirname(sys.executable))
+                sgtk.util.append_path_to_env_var(
+                    "PATH", os.path.dirname(sys.executable)
+                )
                 # We're going to append all of this Python process's sys.path to the
                 # PYTHONPATH environment variable. This will ensure that we have access
                 # to all libraries available in this process. We're appending instead of
                 # setting because we don't want to stomp on any PYTHONPATH that might already
                 # exist that we want to persist
-                sgtk.util.append_path_to_env_var("PYTHONPATH", os.pathsep.join(sys.path))
+                sgtk.util.append_path_to_env_var(
+                    "PYTHONPATH", os.pathsep.join(sys.path)
+                )
 
             # Make the 'start_engine' function available to the Alias Plugin
             startup_path = os.path.join(self.disk_location, "startup")
@@ -144,11 +152,15 @@ class AliasLauncher(SoftwareLauncher):
                 required_env["SGTK_FILE_TO_OPEN"] = file_to_open
 
             # Get the launch app path and args
-            app_path, app_args = self.__prepare_launch_args(args, code_name, plugin_file_path, exec_path, server_python_exe)
+            app_path, app_args = self.__prepare_launch_args(
+                args, code_name, plugin_file_path, exec_path, server_python_exe
+            )
             return LaunchInformation(app_path, app_args, required_env)
 
         except Exception as prepare_launch_error:
-            error_msg = f"Error preparing launch for {self.engine_name}: {prepare_launch_error}"
+            error_msg = (
+                f"Error preparing launch for {self.engine_name}: {prepare_launch_error}"
+            )
             raise Exception(error_msg)
 
     def scan_software(self):
@@ -272,7 +284,9 @@ class AliasLauncher(SoftwareLauncher):
     ##########################################################################################
     # private methods
 
-    def __prepare_launch_args(self, args, code_name, plugin_file_path, alias_exe, python_exe=None):
+    def __prepare_launch_args(
+        self, args, code_name, plugin_file_path, alias_exe, python_exe=None
+    ):
         """
         Prepare the command line arguments to launch Alias.
 
@@ -313,11 +327,11 @@ class AliasLauncher(SoftwareLauncher):
         else:
             # Launching Alias indirectly to ensure the Alias Plugin uses a specific Python
             # version - wrap the command line to launch Alias with the given python executable
-            app_args += f' -P \\\"{plugin_file_path}\\\"'
-            python_args = f"import os;os.system(r'start /B \\\"App\\\" \\\"{alias_exe}\\\" {app_args}')"
-            app_args = f"-c \"{python_args}\""
+            app_args += f' -P \\"{plugin_file_path}\\"'
+            python_args = f'import os;os.system(r\'start /B \\"App\\" \\"{alias_exe}\\" {app_args}\')'
+            app_args = f'-c "{python_args}"'
             app_path = python_exe
-        
+
         return app_path, app_args
 
     def __get_framework_location(self, framework_name):
@@ -387,6 +401,7 @@ class AliasLauncher(SoftwareLauncher):
         bootstrap_python_path = os.path.join(framework_location, "python")
         sys.path.insert(0, bootstrap_python_path)
         import tk_framework_alias_utils.startup as startup_utils
+
         sys.path.remove(bootstrap_python_path)
 
         # Get the pipeline config id

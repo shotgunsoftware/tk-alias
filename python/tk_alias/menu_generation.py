@@ -67,10 +67,16 @@ class AliasMenuGenerator(object):
         self._context_menu = self._add_context_menu()
 
         # Add a plugin submenu for dev only
-        if not self.engine.in_alias_process and os.environ.get("TK_DEBUG") in ("1", "true", "True"):
+        if not self.engine.in_alias_process and os.environ.get("TK_DEBUG") in (
+            "1",
+            "true",
+            "True",
+        ):
             plugin_menu = self.alias_menu.add_menu("Plugin")
             self.alias_menu.add_command(
-                "Restart ShotGrid Client", self.engine.restart_process, parent=plugin_menu
+                "Restart ShotGrid Client",
+                self.engine.restart_process,
+                parent=plugin_menu,
             )
 
         # Now enumerate all items and create menu objects for them.
