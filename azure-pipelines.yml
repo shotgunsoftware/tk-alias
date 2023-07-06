@@ -48,3 +48,4 @@ jobs:
     has_ui_tests: false
     additional_repositories:
     - name: tk-framework-alias
+      ref: main
