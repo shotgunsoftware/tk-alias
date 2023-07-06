@@ -15,7 +15,7 @@ tk-multi-data-validation
 AliasDataValidationHook
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This hook will get the validation rule data from the :ref:`data_validator` and pass it to the tk-multi-data-validation App.
+This hook will get the validation rule data from the AliasDataValidator and pass it to the tk-multi-data-validation App.
 
 .. literalinclude:: ../hooks/tk-multi-data-validation/basic/data_validation.py
     :language: python
