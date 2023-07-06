@@ -8,7 +8,7 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-import alias_api
+from .framework_alias import AliasClientNotConnected
 
 
 class AliasEventWatcher(object):
@@ -45,7 +45,7 @@ class AliasEventWatcher(object):
         AliasEventWAtcher watcher methods `start_watching` and `stop_watching`.
         """
 
-        def __init__(self, ignore_events=False):
+        def __init__(self, alias_api, ignore_events=False):
             """
             Initialize the context manager.
 
@@ -54,7 +54,8 @@ class AliasEventWatcher(object):
             :type ignore_events: bool
             """
 
-            self.ignore_events = ignore_events
+            self.__alias_api = alias_api
+            self.__ignore_events = ignore_events
 
         def __enter__(self):
             """
@@ -67,7 +68,7 @@ class AliasEventWatcher(object):
             queued.
             """
 
-            alias_api.queue_events(True)
+            self.__alias_api.queue_events(True)
 
         def __exit__(self, exc_type, exc_value, exc_tb):
             """
@@ -84,18 +85,18 @@ class AliasEventWatcher(object):
 
             # TODO handle exceptions
 
-            if self.ignore_events:
+            if self.__ignore_events:
                 # Clear the queued events, but do not trigger their callacks.
-                alias_api.clear_queued_events()
+                self.__alias_api.clear_queued_events()
 
             # Trigger any Python callbacks for the queued events. The queue will become
             # empty after this.
-            alias_api.queue_events(False)
+            self.__alias_api.queue_events(False)
 
-    def __init__(self):
-        """
-        Initialize the Alias event watcher.
-        """
+    def __init__(self, engine):
+        """Initialize the Alias event watcher."""
+
+        self.__alias_api = engine.alias_py
 
         # Store the Alias message event callbacks that have been registered. For example,
         #
@@ -136,6 +137,23 @@ class AliasEventWatcher(object):
     # Public methods
     # -------------------------------------------------------------------------------------------------------
 
+    def create_context_manager(self, ignore_events=False):
+        """
+        Factory method to create a ContextManager instance.
+
+        Pass the alias_api from this event watcher to the context manager to execute
+        Alias Python API requests.
+
+        :param ignore_events: Set to True to avoid triggering Python callbacks for any
+            Alias message events that occur during the scope of the context manager. Default
+            is False.
+        :type ignore_events: bool
+        """
+
+        return AliasEventWatcher.ContextManager(
+            self.__alias_api, ignore_events=ignore_events
+        )
+
     def get_callbacks(self, scene_event):
         """
         Get the list of Python callback functions for the Alias event type.
@@ -169,11 +187,13 @@ class AliasEventWatcher(object):
         for ev in scene_events:
             if self.__is_callback_registered(ev, cb_fn):
                 continue
+
             # we only want to register the callback if we're currently watching
             # otherwise, we just want to add the callback to the list of registered callbacks
             # it will be properly registered next time the watcher is started
             if self.is_watching:
-                status, callback_id = alias_api.add_message_handler(ev, cb_fn)
+                status, callback_id = self.__alias_api.add_message_handler(ev, cb_fn)
+
             self.__scene_events.setdefault(ev, {})[cb_fn] = callback_id
 
     def unregister_alias_callback(self, cb_fn, scene_events):
@@ -198,7 +218,7 @@ class AliasEventWatcher(object):
             # Remove the callback from the list, and use the callback id to remove
             # the Alias message handler.
             callback_id = self.__scene_events[ev].pop(cb_fn)
-            alias_api.remove_message_handler(ev, callback_id)
+            self.__alias_api.remove_message_handler(ev, callback_id)
 
     def start_watching(self):
         """
@@ -224,9 +244,9 @@ class AliasEventWatcher(object):
             return
 
         for ev, callbacks in self.__scene_events.items():
-            for cb_fn in callbacks.keys():
-                status, callback_id = alias_api.add_message_handler(ev, cb_fn)
-                if status == int(alias_api.AlStatusCode.Success):
+            for cb_fn in callbacks:
+                status, callback_id = self.__alias_api.add_message_handler(ev, cb_fn)
+                if status == self.__alias_api.AlStatusCode.Success.value:
                     self.__scene_events[ev][cb_fn] = callback_id
 
         self.__is_watching = True
@@ -245,14 +265,21 @@ class AliasEventWatcher(object):
         :type force: bool
         """
 
-        if not self.is_watching:
+        if not force and not self.is_watching:
             return
 
         for ev, callbacks in self.__scene_events.items():
             for cb_fn, callback_id in callbacks.items():
                 if not callback_id:
                     return
-                alias_api.remove_message_handler(ev, callback_id)
+
+                try:
+                    self.__alias_api.remove_message_handler(ev, callback_id)
+                except AliasClientNotConnected:
+                    # Alias communication has already been disconnected. In this case,
+                    # the server will have removed all the message handlers.
+                    pass
+
                 self.__scene_events[ev][cb_fn] = None
 
         self.__is_watching = False

@@ -8,13 +8,14 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from sgtk.util import is_windows
 
-if is_windows():
-    from .dialog_parent import DialogParent
+class AliasPyBase:
+    def __init__(self, alias_py):
+        """Initialize the AliasPy base helper class."""
 
-from .menu_generation import AliasMenuGenerator
-from .alias_event_watcher import AliasEventWatcher
-from .data_validator import AliasDataValidator
-from .alias_py.alias_py import AliasPy
-from .shotgrid_alias_client import ShotGridAliasSocketIoClient
+        self.__alias_py = alias_py
+
+    @property
+    def alias_py(self):
+        """Get the AliasPy module to access the Alias api."""
+        return self.__alias_py

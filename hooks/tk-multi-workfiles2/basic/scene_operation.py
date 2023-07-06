@@ -76,7 +76,7 @@ class SceneOperation(HookClass):
         # events while performing any scene operations. This ensures that all Alias file I/O
         # operations are complete before executing any event callbacks that may interfere
         # with Alias
-        with self.parent.engine.event_watcher.ContextManager():
+        with self.parent.engine.event_watcher.create_context_manager():
             try:
                 if operation == "current_path":
                     return alias_api.get_current_path()

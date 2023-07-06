@@ -20,8 +20,4 @@ Contents
    :maxdepth: 2
 
    engine
-   data_validator
-   event_watcher
-   menu
    hooks
-   alias_python_api

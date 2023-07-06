@@ -1,50 +1,110 @@
-# Copyright (c) 2019 Shotgun Software Inc.
+# Copyright (c) 2023 Autodesk Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# This work is provided "AS IS" and subject to the ShotGrid Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
 # By accessing, using, copying or modifying this work you indicate your
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
-# not expressly granted therein are reserved by Shotgun Software Inc.
+# agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Autodesk Inc.
+
 
 import os
 import sys
+import pprint
 
 import sgtk
 from sgtk.util import LocalFileStorageManager
 
 
 class AliasEngine(sgtk.platform.Engine):
-    """
-    An Alias DCC engine for Shotgun Toolkit.
-    """
+    """Alias engine for ShotGrid Toolkit."""
+
+    # The name of the hidden window, used to parent SG widgets to the Alias main window.
+    __PROXY_WINDOW_TITLE = "sgtk dialog owner proxy"
 
     def __init__(self, tk, context, engine_instance_name, env):
-        """Initialize custom attributes."""
-        # Custom attributes
-        self._tk_alias = None
-        self._qt_app = None
-        self._plugin_is_ready = False
-        self.alias_codename = None
-        self.alias_execpath = None
-        self.alias_bindir = None
-        self.alias_version = None
-        self._dialog_parent = None
-        self.__event_watcher = None
-        self.__data_validator = None
+        """Initialize the engine."""
 
-        self._menu_generator = None
+        # Get all environment variables that the engine cares about
+        self.alias_execpath = os.getenv("TK_ALIAS_EXECPATH", None)
+        self.alias_bindir = os.path.dirname(self.alias_execpath)
+        self.alias_codename = os.getenv("TK_ALIAS_CODENAME", "autostudio")
+        self.alias_version = os.getenv("TK_ALIAS_VERSION", None)
+        self.__hostname = os.getenv("SHOTGRID_ALIAS_HOST", None)
+        self.__namespace = os.getenv("SHOTGRID_ALIAS_NAMESPACE", None)
+        self.__port = os.getenv("SHOTGRID_ALIAS_PORT", None)
+        if self.__port is not None:
+            self.__port = int(self.__port)
+
+        # The tk-alias python module
+        self._tk_alias = None
+
+        # Keep track of the ShotGrid context by stage name and path to allow context switching.
         self._contexts_by_stage_name = {}
         self._contexts_by_path = {}
+
+        # The menu generator is responsible for adding the ShotGrid menu to the Alias window.
+        self.__menu_generator = None
+
+        # The event watcher manages handling Alias event callbacks.
+        self.__event_watcher = None
+
+        # The data validator provides the functionality for validating Alias data. This is
+        # set up to be used by the Data Validation App.
+        self.__data_validator = None
+
+        # A socketio client used to communicate with Alias in OpenModel
+        self.__sio = None
+        # Information about the server that the socketio client is connected to.
+        self.__server_info = {}
+        # Information about the plugin that bootstrapped the engine
+        self.__plugin_info = {}
+
+        # This module will be initialized with the Alias Python API and utility functions on
+        # calling '__init_api'
+        self.__alias_py = None
+
+        # Create a QWidget to parent all ShotGrid windows to. This widget will set its parent
+        # as the Alias main window.
+        self.__proxy_window = None
+
+        # When running in the same process as Alias (for Alias versions <2024.0), the engine
+        # will create the qt app instance.
+        self.__qt_app = None
 
         if not hasattr(sys, "argv"):
             sys.argv = [""]
 
+        # Flag inidicating if ShotGrid is running in the same process as Alias. This will
+        # determine how ShotGrid will communicate with Alias.
+        self.__in_alias_process = os.path.basename(sys.executable) == "Alias.exe"
+        open_model = os.getenv("TK_ALIAS_OPEN_MODEL")
+        if open_model is None:
+            # For backward compatibility, OpenModel mode is when not executing in the same process
+            # as Alias (unless )
+            self.__is_open_model = not self.__in_alias_process
+        else:
+            self.__is_open_model = open_model in ("1", "true", "True")
+
+        # Determine if the engine is running with a GUI or not
+        if "TK_ALIAS_HAS_UI" in os.environ:
+            # Found the environment variable to explicitly turn on/off GUI mode.
+            self.__has_ui = os.environ.get("TK_ALIAS_HAS_UI", False) in (
+                "1",
+                "true",
+                "True",
+            )
+        else:
+            # Not explicitly defined to have a UI, we will say there is a UI if running in the
+            # same process as Alias (for backward compatibility)
+            self.__has_ui = self.__in_alias_process
+
+        # Call the base engine init method
         super(AliasEngine, self).__init__(tk, context, engine_instance_name, env)
 
     # -------------------------------------------------------------------------------------------------------
-    # Static methods
+    # Plugin version < 4.0.0 methods
     # -------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -54,23 +114,29 @@ class AliasEngine(sgtk.platform.Engine):
         C++ Plugin to ensure that its reference to the engine is not stale (e.g. the
         plugin's reference will become stale after the engine has been reloaded).
         """
-
         return sgtk.platform.current_engine()
 
-    @staticmethod
-    def get_parent_window():
+    def on_plugin_init(self, plugin, alias, python):
         """
-        Return the current active window Qt window.
-
-        This is a fallback method to get the main window, if `_get_dialog_parent` cannot be used.
+        Called on plugin initialization for shotgrid.plugin (plugin version <= 3) and for
+        Alias version < 2024.0.
         """
-        from sgtk.platform.qt import QtGui
 
-        return QtGui.QApplication.activeWindow()
+        self.logger.info(
+            f"Plugin initialized: v{plugin} Alias v{alias} Python v{python}"
+        )
+        self.__plugin_info = {
+            "plugin_version": plugin,
+            "alias_version": alias,
+            "python_version": python,
+        }
 
     # -------------------------------------------------------------------------------------------------------
     # Properties
     # -------------------------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------------------------
+    # Base Engine properties
 
     @property
     def host_info(self):
@@ -80,24 +146,40 @@ class AliasEngine(sgtk.platform.Engine):
         :returns: A {"name": application name, "version": application version}
                   dictionary. eg: {"name": "AfterFX", "version": "2017.1.1"}
         """
-        return dict(name="Alias", version="unknown")
+        return dict(name="Alias", version=self.plugin_info.get("alias_version"))
 
     @property
     def has_ui(self):
-        """
-        Detect and return if Alias is running in interactive/non-interactive mode
-        """
-        if os.path.basename(sys.executable) == "Alias.exe":
-            return True
-        else:
-            return False
+        """Return True if Alias is running in interactive mode (OpenAlias), otherwise False (for OpenModel)."""
+        return self.__has_ui
 
     @property
     def context_change_allowed(self):
-        """
-        Specifies that context changes are allowed by the engine.
-        """
+        """Specifies that context changes are allowed by the engine."""
         return True
+
+    # -------------------------------------------------------------------------------------------------------
+    # Alias Engine properties
+
+    @property
+    def plugin_info(self):
+        """Get the information about the plugin the engine is running with."""
+        return self.__plugin_info
+
+    @property
+    def in_alias_process(self):
+        """Get whether or not the engine is running in the same process as Alias or not."""
+        return self.__in_alias_process
+
+    @property
+    def alias_py(self):
+        """
+        Get the AliasPy object that can be used to communicate with Alias.
+
+        Use the AliasPy.api property to access the Alias API and make requests. Use the other
+        AliasPy properties for api helper methods.
+        """
+        return self.__alias_py
 
     @property
     def event_watcher(self):
@@ -121,149 +203,78 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.logger.debug("%s: Initializing..." % (self,))
 
-        from sgtk.platform.qt import QtCore, QtGui
-
-        # unicode characters returned by the shotgun api need to be converted
-        # to display correctly in all of the app windows
-        # tell QT to interpret C strings as utf-8
-        utf8 = QtCore.QTextCodec.codecForName("utf-8")
-        QtCore.QTextCodec.setCodecForCStrings(utf8)
-        self.logger.debug("set utf-8 codec for widget text")
-
-        pyside_folder = os.path.dirname(QtCore.__file__)
-        site_packages_folder = os.path.dirname(pyside_folder)
-        lib_folder = os.path.dirname(site_packages_folder)
-        python_folder = os.path.dirname(lib_folder)
-        shotgun_create_folder = os.path.dirname(python_folder)
-        qt_folder = os.path.join(shotgun_create_folder, "Qt")
-
-        # PySide plugins
-        plugins_dir = os.path.join(pyside_folder, "plugins")
-        if os.path.exists(plugins_dir):
-            QtCore.QCoreApplication.addLibraryPath(plugins_dir)
-
-        # QT plugins
-        plugins_dir = os.path.join(qt_folder, "plugins")
-        if os.path.exists(plugins_dir):
-            QtCore.QCoreApplication.addLibraryPath(plugins_dir)
-
-        # Init QT main loop
-        if self.has_ui:
-            self._init_qt_app()
-
-        # Defer importing the Alias Python API until now so that a proper info message can be displayed to
-        # user if the api failed to import.
-        # NOTE: Ensure this check runs after the Qt app is created and before attempting to import the
-        # alias_api module, which means any engine functions that requires the alias_api module should import
-        # the module at the function declaration. TODO: move all alias_api functionality outside the engine
-        # and to its own module.
-        try:
-            import alias_api
-        except Exception as api_import_error:
-            error_msg = str(api_import_error)
-            self.logger.critical(error_msg)
-            if self.has_ui:
-                QtGui.QMessageBox.critical(
-                    self.get_parent_window(),
-                    "Failed to import the Alias Python API",
-                    error_msg,
-                )
-
-        # import python/tk_alias module
+        # Import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
 
-        # dialog parent handler
-        self._dialog_parent = (
-            self._tk_alias.DialogParent(engine=self) if self.has_ui else None
-        )
+        # Initialize the Alias Python API module (requires tk_alias module)
+        self.__init_api(self.__hostname, self.__port, self.__namespace)
 
-        # event watcher
-        self.__event_watcher = self._init_alias_event_watcher()
-
-        # data validator
-        self.__data_validator = self._tk_alias.AliasDataValidator()
-
-        # Env vars
-        self.alias_execpath = os.getenv("TK_ALIAS_EXECPATH", None)
-        self.alias_bindir = os.path.dirname(self.alias_execpath)
-        self.alias_codename = os.getenv("TK_ALIAS_CODENAME", "autostudio")
-
-        # Be sure the current version is supported
-        self.alias_version = os.getenv("TK_ALIAS_VERSION", None)
-        if not self.alias_version:
-            self.logger.debug("Couldn't get Alias version. Skip version comparison")
-            return
-
-        if int(self.alias_version[0:4]) > self.get_setting(
-            "compatibility_dialog_min_version", 2021
-        ):
-            msg = (
-                "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
-                "You can continue to use the Toolkit but you may experience bugs or "
-                "instability.  Please report any issues you see to %s"
-                % (self.alias_version, sgtk.support_url)
+        if self.__sio:
+            self.__server_info = self.__sio.call_threadsafe("server_info")
+            self.__plugin_info = self.__server_info.get("client") or {}
+            self.logger.debug(
+                f"Alias server info: {pprint.pformat(self.__server_info)}"
             )
-            self.logger.warning(msg)
-            if self.has_ui:
-                QtGui.QMessageBox.warning(
-                    self.get_parent_window(),
-                    "Warning - ShotGrid Pipeline Toolkit!",
-                    msg,
-                )
-        elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
-            "compatibility_dialog_old_version"
-        ):
-            msg = (
-                "The ShotGrid Pipeline Toolkit is not fully capable with Alias %s. "
-                "You should consider upgrading to a more recent version of Alias. "
-                "Please report any issues you see to %s"
-                % (self.alias_version, sgtk.support_url)
-            )
-            self.logger.warning(msg)
-            if self.has_ui:
-                QtGui.QMessageBox.warning(
-                    self.get_parent_window(),
-                    "Warning - ShotGrid Pipeline Toolkit!",
-                    msg,
-                )
+        else:
+            # No server, we're in OpenModel mode.
+            self.__server_info = {}
 
     def post_app_init(self):
+        """This method called after all apps have been loaded."""
+
+        from sgtk.platform.qt import QtGui
+
+        # If qt is already running (e.g. on engine restart) do the post qt init now, otherwise
+        # post_qt_init will be called in startup/bootstrap.py after engine created.
+        instance = QtGui.QApplication.instance()
+        if instance:
+            self.post_qt_init()
+
+    def post_context_change(self, old_context, new_context):
         """
-        Executed by the system and typically implemented by deriving classes.
-        This method called after all apps have been loaded.
+        Runs after a context change has occurred.
+
+        :param old_context: The previous context.
+        :param new_context: The current context.
         """
 
-        self.logger.debug("%s: Post Initializing...", self)
+        self.logger.debug("%s: Post context change...", self)
 
-        # init menu
+        # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
         if self.has_ui:
-            self._menu_generator = self._tk_alias.AliasMenuGenerator(engine=self)
-            self._menu_generator.create_menu(clean_menu=False)
-
-        self._run_app_instance_commands()
+            self.__menu_generator.build()
 
     def destroy_engine(self):
-        """
-        Called when the engine should tear down itself and all its apps.
-        """
+        """Called when the engine should tear down itself and all its apps."""
 
         self.logger.debug("%s: Destroying...", self)
 
-        # Clean the menu
-        if self.has_ui:
-            self._menu_generator.clean_menu()
+        if self.__event_watcher:
+            self.__event_watcher.shutdown()
+            self.__event_watcher = None
 
-        self.event_watcher.shutdown()
+        if self.__menu_generator:
+            if not self.__sio or self.__sio.connected:
+                self.__menu_generator.clean_menu()
+            self.__menu_generator = None
 
-        # Close all Shotgun app dialogs that are still opened since
-        # some apps do threads cleanup in their onClose event handler
-        # Note that this function is called when the engine is restarted (through "Reload Engine and Apps")
-
+        # Close all Shotgun app dialogs that are still opened since some apps do threads
+        # cleanup in their onClose event handler
+        # Note that this function is called when the engine is restarted (through "Reload
+        # Engine and Apps")
+        #
         # Important: Copy the list of dialogs still opened since the call to close() will modify created_qt_dialogs
         dialogs_still_opened = self.created_qt_dialogs[:]
-
         for dialog in dialogs_still_opened:
             dialog.close()
+
+        if self.__sio:
+            if self.__sio.connected:
+                self.__sio.disconnect()
+            self.__sio = None
+
+        if self.__qt_app:
+            self.__qt_app.quit()
 
     def show_panel(self, panel_id, title, bundle, widget_class, *args, **kwargs):
         """
@@ -300,6 +311,7 @@ class AliasEngine(sgtk.platform.Engine):
                 break
         # in case we can't find an existing widget, create a new one
         else:
+            # Widgets application
             widget_instance = self.show_dialog(
                 title, bundle, widget_class, *args, **kwargs
             )
@@ -308,11 +320,17 @@ class AliasEngine(sgtk.platform.Engine):
         return widget_instance
 
     def _get_dialog_parent(self):
-        """
-        Get Alias dialog parent window.
-        """
+        """Get Alias dialog parent window."""
 
-        return self._dialog_parent.get_dialog_parent()
+        # No parent dialog if the engine is not running in GUI mode.
+        if not self.has_ui:
+            return None
+
+        window = self.__get_or_create_proxy_window()
+        if window:
+            return window
+
+        return super(AliasEngine, self)._get_dialog_parent()
 
     def _emit_log_message(self, handler, record):
         """
@@ -329,181 +347,136 @@ class AliasEngine(sgtk.platform.Engine):
         pass
 
     # -------------------------------------------------------------------------------------------------------
-    # Protected methods
+    # Public methods
     # -------------------------------------------------------------------------------------------------------
 
-    def _init_qt_app(self):
+    def restart_process(self):
         """
-        Initialize QT application.
+        Restart the process that the engine is running in.
+
+        This is only applicable when the engine has a socketio client set up to communicate
+        with Alias (e.g. OpenAlias mode).
         """
+
+        if self.__menu_generator:
+            self.__menu_generator.clean_menu()
+
+        if self.__sio:
+            self.__sio.emit_threadsafe("restart")
+        else:
+            raise NotImplementedError()
+
+    def shutdown(self):
+        """
+        Shutdown the application running the engine.
+
+        This method attempts to exit the Qt application runnign the engine, which will be
+        responsible for ensuring that the engine is destroyed properly (e.g. calling destroy
+        on the engine itself).
+        """
+
         from sgtk.platform.qt import QtGui
 
-        self.logger.debug("%s: Initializing QtApp", self)
+        qt_app = QtGui.QApplication.instance() or self.__qt_app
+        if qt_app:
+            qt_app.quit()
+        else:
+            # Destroy the engine if there is no qt app
+            self.destroy()
 
-        # Get current instance
-        instance = QtGui.QApplication.instance()
+    def __init_qt_app(self):
+        """
+        Initialize the Qt Application.
 
-        # Create instance
-        if not instance:
-            self._qt_app = QtGui.QApplication(sys.argv)
-            self._qt_app.setQuitOnLastWindowClosed(False)
-            self.logger.info("Created QApplication instance: {0}".format(self._qt_app))
+        This should only be called when ShotGrid is running in the same process as Alias, and
+        Alias does not create a Qt Application (for Alias < 2024.0).
+        """
+
+        from sgtk.platform.qt import QtCore, QtGui
+
+        pyside_folder = os.path.dirname(QtCore.__file__)
+        site_packages_folder = os.path.dirname(pyside_folder)
+        lib_folder = os.path.dirname(site_packages_folder)
+        python_folder = os.path.dirname(lib_folder)
+        shotgun_create_folder = os.path.dirname(python_folder)
+        qt_folder = os.path.join(shotgun_create_folder, "Qt")
+
+        # PySide plugins
+        plugins_dir = os.path.join(pyside_folder, "plugins")
+        if os.path.exists(plugins_dir):
+            QtCore.QCoreApplication.addLibraryPath(plugins_dir)
+
+        # QT plugins
+        plugins_dir = os.path.join(qt_folder, "plugins")
+        if os.path.exists(plugins_dir):
+            QtCore.QCoreApplication.addLibraryPath(plugins_dir)
+
+        self.__qt_app = QtGui.QApplication.instance()
+        if not self.__qt_app:
+            self.__qt_app = QtGui.QApplication(["ShotGrid Alias Engine"])
+            self.__qt_app.setQuitOnLastWindowClosed(False)
 
             def _app_quit():
                 QtGui.QApplication.processEvents()
 
-            QtGui.QApplication.instance().aboutToQuit.connect(_app_quit)
-        # Use current instance
-        else:
-            self._qt_app = instance
+            self.__qt_app.aboutToQuit.connect(_app_quit)
 
-        # Make the QApplication use the dark theme. Must be called after the QApplication is instantiated
-        self._initialize_dark_look_and_feel()
-
-    def _init_alias_event_watcher(self):
+    def post_qt_init(self):
         """
-        Initialize the Alis event watcher.
+        Initialize the engine after Qt has been initialized and an app has been created.
 
-        Register any initial Alias message event callbacks, and start watching for events immediately.
-
-        NOTE: registering callback for event AlMessageType.DagNameModified causes a crash on startup.
-        This looks like a bug where Alias is not ready to handle events yet but we can register them.
-
-        :return: The Alias event watcher object.
-        :rtype: AliasEventWatcher
+        This is used by the startup/bootstrap.py to finish setting up the engine after the
+        Qt app instance has been created, but before the event loop has started.
         """
 
-        import alias_api
+        from sgtk.platform.qt import QtCore, QtGui
 
-        event_watcher = self._tk_alias.AliasEventWatcher()
-
-        # Register event callbacks
-        # NOTE: cannot call engine class methods directly, must use lambda in order to have
-        # access to the engine object to call its class methods. The event callbacks must
-        # take one parameter, which is the result passed from the Alias Python API for the
-        # Alias event
-        event_watcher.register_alias_callback(
-            lambda result, engine=self: engine.on_stage_active(result),
-            alias_api.AlMessageType.StageActive,
-        )
-
-        # Now start watching the events. This should be called after registering events to
-        # ensure the event watcher starts listening.
-        event_watcher.start_watching()
-
-        return event_watcher
-
-    def _run_app_instance_commands(self):
-        """
-        Runs the series of app instance commands listed in the 'run_at_startup' setting
-        of the environment configuration yaml file.
-        """
-
-        # Build a dictionary mapping app instance names to dictionaries of commands they registered with the engine.
-        app_instance_commands = {}
-        for (command_name, value) in self.commands.items():
-            app_instance = value["properties"].get("app")
-            if app_instance:
-                # Add entry 'command name: command function' to the command dictionary of this app instance.
-                command_dict = app_instance_commands.setdefault(
-                    app_instance.instance_name, {}
-                )
-                command_dict[command_name] = value["callback"]
-
-        commands_to_run = []
-        # Run the series of app instance commands listed in the 'run_at_startup' setting.
-        for app_setting_dict in self.get_setting("run_at_startup", []):
-
-            app_instance_name = app_setting_dict["app_instance"]
-            # Menu name of the command to run or '' to run all commands of the given app instance.
-            setting_command_name = app_setting_dict["name"]
-
-            # Retrieve the command dictionary of the given app instance.
-            command_dict = app_instance_commands.get(app_instance_name)
-
-            if command_dict is None:
-                self.logger.warning(
-                    "%s configuration setting 'run_at_startup' requests app '%s' that is not installed.",
-                    self.name,
-                    app_instance_name,
-                )
-            else:
-                if not setting_command_name:
-                    # Run all commands of the given app instance.
-                    for (command_name, command_function) in command_dict.items():
-                        self.logger.debug(
-                            "%s startup running app '%s' command '%s'.",
-                            self.name,
-                            app_instance_name,
-                            command_name,
-                        )
-                        commands_to_run.append(command_function)
-                else:
-                    # Run the command whose name is listed in the 'run_at_startup' setting.
-                    command_function = command_dict.get(setting_command_name)
-                    if command_function:
-                        self.logger.debug(
-                            "%s startup running app '%s' command '%s'.",
-                            self.name,
-                            app_instance_name,
-                            setting_command_name,
-                        )
-                        commands_to_run.append(command_function)
-                    else:
-                        known_commands = ", ".join(
-                            "'%s'" % name for name in command_dict
-                        )
-                        self.logger.warning(
-                            "%s configuration setting 'run_at_startup' requests app '%s' unknown command '%s'. "
-                            "Known commands: %s",
-                            self.name,
-                            app_instance_name,
-                            setting_command_name,
-                            known_commands,
-                        )
-
-        # no commands to run. just bail
-        if not commands_to_run:
+        instance = QtGui.QApplication.instance()
+        if not instance:
+            # Nothing to do if there is no QApplication running.
+            self.logger.warning(
+                "Attempted to initialize for Qt but Qt application instance not found."
+            )
+            self.__has_ui = False
             return
 
-        # finally, run the commands
-        for command in commands_to_run:
-            command()
+        # Ensure that the has ui flag has been set, though it should have been set on engine
+        # creation to ensure it was initialized properly.
+        self.__has_ui = True
 
-    # -------------------------------------------------------------------------------------------------------
-    # Public methods
-    # -------------------------------------------------------------------------------------------------------
+        # Initialie the SG Toolkit style to the application.
+        self._initialize_dark_look_and_feel()
 
-    def on_plugin_init(
-        self, plugin_version=None, plugin_alias_version=None, plugin_python_version=None
-    ):
-        """This function is called by the Alias ShotGrid Plugin when it is loaded by Alias."""
+        # unicode characters returned by the shotgun api need to be converted
+        # to display correctly in all of the app windows
+        # tell QT to interpret C strings as utf-8
+        utf8 = QtCore.QTextCodec.codecForName("utf-8")
+        QtCore.QTextCodec.setCodecForCStrings(utf8)
+        self.logger.debug("set utf-8 codec for widget text")
 
-        plugin_info = "Loaded ShotGrid plugin v{plugin_version} compiled with Alias {alias_version} and Python {python_version}".format(
-            plugin_version=plugin_version,
-            alias_version=plugin_alias_version,
-            python_version=plugin_python_version,
-        )
-        self.logger.info(plugin_info)
+        # Create the parent dialog for ShotGrid widgets
+        self.__get_or_create_proxy_window()
 
+        # Check that the Alias version is supported. Pop up a warning dialog if not.
+        self.__check_version_support()
+
+        # Initialize engine members that require Qt
+        self.__menu_generator = self._tk_alias.menu_generation.AliasMenuGenerator(self)
+        self.__data_validator = self._tk_alias.data_validator.AliasDataValidator(self)
+        self.__event_watcher = self.__init_alias_event_watcher()
+
+        # Build the ShotGrid menu in Alias. It will be added to the Alias main menu bar.
+        self.__menu_generator.build()
+
+        # Run the start up commands
+        self.__run_app_instance_commands()
+
+        # Check if there is a file set to open on startup
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
         if path:
             self.open_file(path)
-
-    def post_context_change(self, old_context, new_context):
-        """
-        Runs after a context change has occurred.
-
-        :param old_context: The previous context.
-        :param new_context: The current context.
-        """
-
-        self.logger.debug("%s: Post context change...", self)
-
-        # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
-        if self.has_ui:
-            self._menu_generator.create_menu()
-            self._menu_generator.refresh()
+            # clear the env var after loading so that it doesn't get reopened on an engine restart.
+            del os.environ["SGTK_FILE_TO_OPEN"]
 
     def save_context_for_stage(self, context=None):
         """
@@ -515,12 +488,10 @@ class AliasEngine(sgtk.platform.Engine):
                          the current one.
         """
 
-        import alias_api
-
         if not context:
             context = self.context
 
-        current_stage = alias_api.get_current_stage()
+        current_stage = self.alias_py.get_current_stage()
         if not current_stage:
             return
 
@@ -537,10 +508,8 @@ class AliasEngine(sgtk.platform.Engine):
         the context is saved for the current stage.
         """
 
-        import alias_api
-
-        status = alias_api.save_file()
-        if status != int(alias_api.AlStatusCode.Success):
+        status = self.alias_py.save_file()
+        if status != self.alias_py.AlStatusCode.Success.value:
             self.logger.error(
                 "Alias Python API Error: save_file returned non-success status code {}".format(
                     status
@@ -559,10 +528,8 @@ class AliasEngine(sgtk.platform.Engine):
         :type path: str
         """
 
-        import alias_api
-
-        status = alias_api.save_file_as(path)
-        if status != int(alias_api.AlStatusCode.Success):
+        status = self.alias_py.save_file_as(path)
+        if status != self.alias_py.AlStatusCode.Success.value:
             self.logger.error(
                 "Alias Python API Error: save_file_as('{}') returned non-success status code {}".format(
                     path, status
@@ -581,10 +548,8 @@ class AliasEngine(sgtk.platform.Engine):
         :type path: str
         """
 
-        import alias_api
-
-        status = alias_api.open_file(path)
-        if status != int(alias_api.AlStatusCode.Success):
+        status = self.alias_py.open_file(path)
+        if status != self.alias_py.AlStatusCode.Success.value:
             self.logger.error(
                 "Alias Python API Error: open_file('{}') returned non-success status code {}".format(
                     path, status
@@ -607,9 +572,7 @@ class AliasEngine(sgtk.platform.Engine):
         :type result: alias_api.PythonCallbackMessageResult
         """
 
-        import alias_api
-
-        current_stage = alias_api.get_current_stage()
+        current_stage = self.alias_py.get_current_stage()
 
         # Do nothing if the current stage is invalid
         if not current_stage or (not current_stage.name and not current_stage.path):
@@ -662,7 +625,7 @@ class AliasEngine(sgtk.platform.Engine):
             from sgtk.platform.qt import QtGui
 
             file_dialog = QtGui.QFileDialog(
-                parent=self.get_parent_window(),
+                parent=self._get_dialog_parent(),
                 caption="Save As",
                 directory=os.path.expanduser("~"),
                 filter="Alias file (*.wire)",
@@ -697,7 +660,7 @@ class AliasEngine(sgtk.platform.Engine):
             QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel
         )
         answer = QtGui.QMessageBox.question(
-            self.get_parent_window(), "Open", message, message_type
+            self._get_dialog_parent(), "Open", message, message_type
         )
 
         return answer
@@ -810,6 +773,336 @@ class AliasEngine(sgtk.platform.Engine):
             return
 
         return tk.templates.get(reference_template_name)
+
+    # -------------------------------------------------------------------------------------------------------
+    # Private methods
+    # -------------------------------------------------------------------------------------------------------
+
+    def __setup_sio(self, hostname, port, namespace):
+        """
+        Set up the socketio communication with Alias.
+
+        Create a socketio client to connect to the running Alias server.
+
+        :param hostname: The api server host name to connect to.
+        :type hostname: str
+        :param port: The api server port name to connect to.
+        :type port: int
+        :param namespace: The api server namespace to connect to.
+        :type namespace: str
+
+        :return: True if the socketio client was created and is connected to the server, False
+            otherwise.
+        :rtype: bool
+        """
+
+        # Create and connect to the server to communicate with Alias
+        self.__sio = self._tk_alias.ShotGridAliasSocketIoClient(self, namespace)
+
+        if not self.__sio:
+            raise Exception("Failed to create socketio client")
+
+        # Connect to the server to start communicating
+        self.__sio.start(hostname, port)
+
+        # Return the connection status
+        return self.__sio.connected
+
+    def __init_api(self, hostname=None, port=None, namespace=None, force=False):
+        """
+        Initialize the Alias Python api module to allow communication with Alias.
+
+        The api can be initialized for either OpenAlias (GUI) or OpenModel (headless/batch)
+        mode.
+
+        For OpenAlias, the hostname, port and namespace arguments must be provided. These are
+        required to connect to the running instance of Alias via a socketio server, which will
+        provide the Alias API access.
+
+        For OpenModel, none of the arguments are needed. Instead of connecting to a server to
+        access the Alias API, the Alias Python API module can be directly imported (since it
+        does not need to communicate with a running instance of Alias).
+
+        :param hostname: For OpenAlias, the server host name to connect to, to access the api.
+        :type hostname: str
+        :param port: For OpenAlias, the server port to connect to, to access the api.
+        :type port: int
+        :param namespace: For OpenAlias, the server namespace to connect to, to access the api.
+        :type namespace: str
+        :param force: Force the api to be initialized, even if it has already been initialized.
+        :type force: bool
+        """
+
+        if self.__alias_py and not force:
+            # Already initialized.
+            return
+
+        if self.__in_alias_process:
+            # ShotGrid is running in the same process as Alias. This is the old way that the
+            # engine was set up for, and will not work with Alias versions that use Qt for its
+            # GUI (>=2024.0).
+            try:
+                import alias_api
+            except Exception as api_import_error:
+                raise Exception(
+                    f"Failed to import Alias Python API in same process as Alias.\n{api_import_error}"
+                )
+            api_module = alias_api
+
+            if self.__has_ui:
+                # When running ShotGrid in the same process as Alias, the qt app needs to be
+                # created by the engine
+                self.__init_qt_app()
+        else:
+            # ShotGrid is running in a separate process than Alias. This is the new way how
+            # the engine operates: the Alias plugin will bootstrap the engine in a separate
+            # process than Alias (to avoid Qt conflicts between QtQuick/QML and QWidgets).
+
+            if self.__is_open_model or None in (hostname, port, namespace):
+                # Run in OpenModel model (headless/batch), directly import the Alias Python API
+                # module for OpenModel, which should already be imported via importing the
+                # tk-framework-alias module (in python/tk_alias/framework_alias.py).
+                try:
+                    import alias_api_om
+                except Exception as api_import_error:
+                    raise Exception(
+                        f"Failed to import Alias Python API for OpenModel.\n{api_import_error}"
+                    )
+
+                api_module = alias_api_om
+                # Initialize the universe to make the api ready for requests.
+                api_module.initialize_universe()
+            else:
+                # Run in OpenAlias mode, an instance of Alias should be running with a server
+                # listening for client connections to communicate with. Using the socket
+                # communication, the api will be imported.
+                connected = self.__setup_sio(hostname, port, namespace)
+                if not connected:
+                    raise Exception("Failed to connect to Alias api server")
+
+                # Get the server info and api module through the socket connection
+                api_module = self.__sio.get_alias_api()
+                if not api_module:
+                    raise Exception("Failed to get Alias Python API for OpenAlias.")
+
+        # Create the AliasPy object to wrap the api module. All Alias api requests can be made
+        # directly with the AliasPy object, it will route the request to the actual api module
+        self.__alias_py = self._tk_alias.AliasPy(api_module)
+
+        # Allow the AliasPy object to be imported. This is for backward compatibility with
+        # previous engine versions aceessing the alias_api.pyd module directly through import
+        sys_module_name = "alias_api"
+        sys.modules[sys_module_name] = self.__alias_py
+
+        try:
+            # Sanity check that the module can be imported.
+            import alias_api
+
+            assert alias_api is self.__alias_py
+        except Exception as import_error:
+            raise Exception(
+                f"Failed to set up the Alias Python API module\n{import_error}"
+            )
+
+    def __init_alias_event_watcher(self):
+        """
+        Initialize the Alias event watcher.
+
+        Register any initial Alias message event callbacks, and start watching for events immediately.
+
+        NOTE: registering callback for event AlMessageType.DagNameModified causes a crash on startup.
+        This looks like a bug where Alias is not ready to handle events yet but we can register them.
+
+        :return: The Alias event watcher object.
+        :rtype: AliasEventWatcher
+        """
+
+        event_watcher = self._tk_alias.alias_event_watcher.AliasEventWatcher(self)
+
+        # Register event callbacks
+        event_watcher.register_alias_callback(
+            self.on_stage_active,
+            self.alias_py.AlMessageType.StageActive,
+        )
+
+        # Now start watching the events. This should be called after registering events to
+        # ensure the event watcher starts listening.
+        event_watcher.start_watching()
+
+        return event_watcher
+
+    def __check_version_support(self):
+        """
+        Check that the Alias version is supported.
+
+        The Alias version must be set before calling this method.
+
+        The Qt application must be created before calling this method.
+        """
+
+        from sgtk.platform.qt import QtGui
+
+        if not self.alias_version:
+            self.logger.debug("Couldn't get Alias version. Skip version comparison")
+            return False
+
+        if int(self.alias_version[0:4]) > self.get_setting(
+            "compatibility_dialog_min_version", 2020
+        ):
+            msg = (
+                "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
+                "You can continue to use the Toolkit but you may experience bugs or "
+                "instability.  Please report any issues you see to %s"
+                % (self.alias_version, sgtk.support_url)
+            )
+            self.logger.warning(msg)
+            if self.has_ui:
+                QtGui.QMessageBox.warning(
+                    self._get_dialog_parent(),
+                    "Warning - ShotGrid Pipeline Toolkit!",
+                    msg,
+                )
+                return False
+
+        elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
+            "compatibility_dialog_old_version"
+        ):
+            msg = (
+                "The ShotGrid Pipeline Toolkit is not fully capable with Alias %s. "
+                "You should consider upgrading to a more recent version of Alias. "
+                "Please report any issues you see to %s"
+                % (self.alias_version, sgtk.support_url)
+            )
+            self.logger.warning(msg)
+            if self.has_ui:
+                QtGui.QMessageBox.warning(
+                    self._get_dialog_parent(),
+                    "Warning - ShotGrid Pipeline Toolkit!",
+                    msg,
+                )
+                return False
+
+        # Version successfully checked and is supported
+        return True
+
+    def __get_or_create_proxy_window(self):
+        """
+        Create a widget to parent all ShotGrid windows to.
+
+        This widget itself will be parented to the Alias main window.
+
+        This method must be called after Qt and the Alias Python API has been initialized.
+        """
+
+        if not self.has_ui:
+            return None
+
+        # import alias_api
+        from sgtk.platform.qt import QtGui
+
+        if not self.__proxy_window:
+            if hasattr(self.alias_py, "set_parent_window"):
+                # The Alias API version >= 4.0.0 provides functions to manage the Alias main
+                # window (e.g. set as parent to ShotGrid windows)
+                self.__proxy_window = QtGui.QWidget()
+                self.__proxy_window.setWindowTitle(self.__PROXY_WINDOW_TITLE)
+                self.alias_py.set_parent_window(self.__proxy_window.winId())
+            else:
+                self.__proxy_window = (
+                    self._tk_alias.DialogParent() if self.has_ui else None
+                )
+
+        if isinstance(self.__proxy_window, self._tk_alias.DialogParent):
+            window = self.__proxy_window.get_dialog_parent()
+            if window:
+                return window
+            else:
+                return QtGui.QApplication.activeWindow()
+        else:
+            # Adjust window to center of Alias main window (this will only take effect when using
+            # Alias Python API version >= 4.0.0
+            self.alias_py.adjust_window(self.__proxy_window.winId())
+            return self.__proxy_window
+
+    def __run_app_instance_commands(self):
+        """
+        Runs the series of app instance commands listed in the 'run_at_startup' setting
+        of the environment configuration yaml file.
+        """
+
+        # Build a dictionary mapping app instance names to dictionaries of commands they registered with the engine.
+        app_instance_commands = {}
+        for (command_name, value) in self.commands.items():
+            app_instance = value["properties"].get("app")
+            if app_instance:
+                # Add entry 'command name: command function' to the command dictionary of this app instance.
+                command_dict = app_instance_commands.setdefault(
+                    app_instance.instance_name, {}
+                )
+                command_dict[command_name] = value["callback"]
+
+        commands_to_run = []
+        # Run the series of app instance commands listed in the 'run_at_startup' setting.
+        for app_setting_dict in self.get_setting("run_at_startup", []):
+
+            app_instance_name = app_setting_dict["app_instance"]
+            # Menu name of the command to run or '' to run all commands of the given app instance.
+            setting_command_name = app_setting_dict["name"]
+
+            # Retrieve the command dictionary of the given app instance.
+            command_dict = app_instance_commands.get(app_instance_name)
+
+            if command_dict is None:
+                self.logger.warning(
+                    "%s configuration setting 'run_at_startup' requests app '%s' that is not installed.",
+                    self.name,
+                    app_instance_name,
+                )
+            else:
+                if not setting_command_name:
+                    # Run all commands of the given app instance.
+                    for (command_name, command_function) in command_dict.items():
+                        self.logger.debug(
+                            "%s startup running app '%s' command '%s'.",
+                            self.name,
+                            app_instance_name,
+                            command_name,
+                        )
+                        commands_to_run.append(command_function)
+                else:
+                    # Run the command whose name is listed in the 'run_at_startup' setting.
+                    command_function = command_dict.get(setting_command_name)
+                    if command_function:
+                        self.logger.debug(
+                            "%s startup running app '%s' command '%s'.",
+                            self.name,
+                            app_instance_name,
+                            setting_command_name,
+                        )
+                        commands_to_run.append(command_function)
+                    else:
+                        known_commands = ", ".join(
+                            "'%s'" % name for name in command_dict
+                        )
+                        self.logger.warning(
+                            "%s configuration setting 'run_at_startup' requests app '%s' unknown command '%s'. "
+                            "Known commands: %s",
+                            self.name,
+                            app_instance_name,
+                            setting_command_name,
+                            known_commands,
+                        )
+
+        # no commands to run. just bail
+        if not commands_to_run:
+            return
+
+        # finally, run the commands
+        for command in commands_to_run:
+            command()
+
+    #####################################################################################
+    # Pipeline config utils
 
     def __get_pipeline_configuration_local_path(self, project):
         """
@@ -940,76 +1233,3 @@ class AliasEngine(sgtk.platform.Engine):
             except KeyError:
                 self.logger.warning("No project_id key for {}.".format(pc))
         return None
-
-    # -------------------------------------------------------------------------------------------------------
-    # Deprecated methods - to be removed in next major version v3.0.0
-    # -------------------------------------------------------------------------------------------------------
-
-    def execute_api_ops_and_defer_event_callbacks(self, alias_api_ops, event_types):
-        """
-        Marked as deprecated and to be removed in v3.0.0. Use AliasEventWatcher.ContextManager to handle
-        triggering Python callbacks to ensure there is no conflict while performing Alias operations.
-
-        Call an Alias API function while blocking any Alias event callbacks until the
-        API function is done executing. Once finished, the registered Python callbacks
-        will be triggered for the event types provided. Any event types not provided
-        will not be triggered at all by the API function executed.
-        NOTE since the callbacks are deferred to after the event operation has completed,
-        we do not have access to the Alias callback return result that we normally get.
-        TODO implement this deferred event handling in the Alias Python API side, for now
-        we will just pass None for the message result to the Python callback function.
-        Implementing the deferred event handling will also improve the way we currently
-        ignore event callbacks by unregistering and re-registering events.
-        :param alias_api_ops: The name of the main Alias API function to execute.
-        :type alias_api_ops: list<AliasApiOp>, where AliasApiOp is of format:
-            tuple<alias_api_func_name, func_args, func_keyword_args>
-                alias_api_func: str
-                obj: If None the alias_api_func is a function of the `alias_api` module.
-                     If not None, the alias_api_func is a method of the `obj`.
-                args: list
-                kwargs: dict
-        :param event_types: The Alias event types to defer callbacks until the main
-                            operation is complete. Any event types that are not listed
-                            will not be triggered at all for for this operation.
-        :type event_types: list<AlMessageType>
-        """
-
-        import alias_api
-
-        # Check that all api functions exist, if not abort
-        for api_func, obj, _, _ in alias_api_ops:
-            obj = obj or alias_api
-            if not hasattr(obj, api_func):
-                self.logger.error(
-                    "Failed execute_api_ops_and_defer_event_callbcaks: Alias Python API function not found '{}.{}'".format(
-                        obj, api_func
-                    )
-                )
-                return
-
-        if not isinstance(event_types, list):
-            event_types = [event_types]
-
-        if not self.event_watcher.is_watching:
-            # If the event watcher is already paused, just execute the the operations normally.
-            for api_func, obj, args, kwargs in alias_api_ops:
-                obj = obj or alias_api
-                getattr(obj, api_func)(*args, **kwargs)
-
-        else:
-            # Pause the event watcher
-            self.event_watcher.stop_watching()
-
-            # Execute all alias api operations in order
-            for api_func, obj, args, kwargs in alias_api_ops:
-                obj = obj or alias_api
-                getattr(obj, api_func)(*args, **kwargs)
-
-            # Enable the event watcher now that the operations have completed
-            self.event_watcher.start_watching()
-
-            # Now manually trigger the registered callbacks for the event types
-            for event_type in event_types:
-                callback_fns = self.event_watcher.get_callbacks(event_type)
-                for callback_fn in callback_fns:
-                    callback_fn(msg=None)
