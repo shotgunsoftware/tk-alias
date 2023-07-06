@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Alias Engine Hooks &mdash; tk-alias v2.2.1 documentation</title>
+  <title>Alias Engine Hooks &mdash; tk-alias v3.0.0 documentation</title>
   
 
   
@@ -38,8 +38,7 @@
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Alias Python API" href="alias_python_api.html" />
-    <link rel="prev" title="ShotGrid Menu in Alias" href="menu.html" /> 
+    <link rel="prev" title="The Alias Engine Code" href="engine.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,9 +94,6 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="engine.html">The Alias Engine Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_validator.html">Data Validator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="event_watcher.html">Event Watcher</a></li>
-<li class="toctree-l1"><a class="reference internal" href="menu.html">ShotGrid Menu in Alias</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Alias Engine Hooks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tk-multi-data-validation">tk-multi-data-validation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#aliasdatavalidationhook">AliasDataValidationHook</a></li>
@@ -126,7 +122,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="alias_python_api.html">Alias Python API</a></li>
 </ul>
 
             
@@ -150,7 +145,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v2.2.1.<br>
+    <b>tk-alias</b> v3.0.0.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -234,7 +229,7 @@
 <span id="hooks-tk-multi-data-validation"></span><h2>tk-multi-data-validation<a class="headerlink" href="#tk-multi-data-validation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="aliasdatavalidationhook">
 <span id="hooks-tk-multi-data-validation-data-validator"></span><h3>AliasDataValidationHook<a class="headerlink" href="#aliasdatavalidationhook" title="Permalink to this headline">¶</a></h3>
-<p>This hook will get the validation rule data from the <a class="reference internal" href="data_validator.html#data-validator"><span class="std std-ref">Data Validator</span></a> and pass it to the tk-multi-data-validation App.</p>
+<p>This hook will get the validation rule data from the AliasDataValidator and pass it to the tk-multi-data-validation App.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2022 Autodesk, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -246,21 +241,22 @@
 <span class="c1"># not expressly granted therein are reserved by Autodesk, Inc.</span>
 
 <span class="kn">import</span> <span class="nn">sgtk</span>
+<span class="kn">import</span> <span class="nn">alias_api</span>
 
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
 
 
 <span class="k">class</span> <span class="nc">AliasDataValidationHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Hook to define Alias data validation functionality.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hook to define Alias data validation functionality.&quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">AliasDataValidationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Custom exception class to report Alias Data Validation errors.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom exception class to report Alias Data Validation errors.&quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">SanitizedResult</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Class to represent a sanitized check result object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Class to represent a sanitized check result object.&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_valid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Initialize the object with the given data.</span>
 
 <span class="sd">            :param is_valid: The success status that the check function reported. If not provided, the validity will be determined based on if there are any errors.</span>
@@ -288,7 +284,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">get_validation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the validation rule data set to validate an Alias scene.</span>
 
 <span class="sd">        This method will retrieve the default validation rules returned by</span>
@@ -419,7 +415,7 @@
         <span class="k">return</span> <span class="n">data</span>
 
     <span class="k">def</span> <span class="nf">sanitize_check_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sanitize the value returned by any validate function to conform to the standard format.</span>
 
 <span class="sd">        Convert the incoming list of Alias objects (that are errors) to conform to the standard</span>
@@ -471,6 +467,21 @@
         <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">AliasDataValidationError</span><span class="p">(</span>
             <span class="s2">&quot;Cannot sanitize result type &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
         <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">post_fix_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rules</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called once an individual fix has been resolved</span>
+
+<span class="sd">        :param rules: List of rule IDs linked to the executed fix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rule_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">]</span>
+
+        <span class="c1"># force Alias to refresh its viewport for a specific set of fixes</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">{</span><span class="s2">&quot;cos_unused&quot;</span><span class="p">,</span> <span class="s2">&quot;references_exist&quot;</span><span class="p">,</span> <span class="s2">&quot;node_pivots_at_origin&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">isdisjoint</span><span class="p">(</span>
+            <span class="n">rule_ids</span>
+        <span class="p">):</span>
+            <span class="n">alias_api</span><span class="o">.</span><span class="n">redraw_screen</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -505,7 +516,7 @@
 
 <span class="k">class</span> <span class="nc">AliasActions</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">generate_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">ui_area</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of action instances for a particular publish.</span>
 <span class="sd">        This method is called each time a user clicks a publish somewhere in the UI.</span>
 <span class="sd">        The data returned from this hook will be used to populate the actions menu for a publish.</span>
@@ -602,7 +613,7 @@
         <span class="k">return</span> <span class="n">action_instances</span>
 
     <span class="k">def</span> <span class="nf">execute_multiple_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the specified action on a list of items.</span>
 
 <span class="sd">        The default implementation dispatches each item from ``actions`` to</span>
@@ -633,7 +644,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">execute_action</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute a given action. The data sent to this be method will</span>
 <span class="sd">        represent one of the actions enumerated by the generate_actions method.</span>
 
@@ -667,7 +678,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_import_subdivision</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an Alias reference.</span>
 
 <span class="sd">        :param path: Path to the file.</span>
@@ -677,7 +688,7 @@
         <span class="n">alias_api</span><span class="o">.</span><span class="n">create_reference</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_import_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import the file into the current Alias session.</span>
 
 <span class="sd">        :param path: Path to file.</span>
@@ -687,7 +698,7 @@
         <span class="n">alias_api</span><span class="o">.</span><span class="n">import_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_import_file_as_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import the file as an Alias reference, converting it on the fly as wref.</span>
 
 <span class="sd">        :param path:            Path to the file.</span>
@@ -741,7 +752,7 @@
         <span class="n">alias_api</span><span class="o">.</span><span class="n">create_reference</span><span class="p">(</span><span class="n">reference_path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_texture_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import an image as Canvas in Alias</span>
 
 <span class="sd">        :param path:  Path to the image.</span>
@@ -751,7 +762,7 @@
         <span class="n">alias_api</span><span class="o">.</span><span class="n">create_texture_node</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_import_subdivision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import a file as subdivision in the current Alias session.</span>
 
 <span class="sd">        :param path: Path to the file.</span>
@@ -792,13 +803,13 @@
 
 
 <span class="k">class</span> <span class="nc">PublishAnnotationsPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plugin for publishing annotations of the current alias open session</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One line display name describing the plugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Publish Annotations to ShotGrid&quot;</span>
@@ -817,7 +828,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of item types that this plugin is interested in.</span>
 
 <span class="sd">        Only items matching entries in this list will be presented to the</span>
@@ -827,7 +838,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;alias.session&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method called by the publisher to determine if an item is of any</span>
 <span class="sd">        interest to this plugin. Only items matching the filters defined via the</span>
 <span class="sd">        item_filters property will be presented to this method.</span>
@@ -859,7 +870,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;checked&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates the given item to check that it is ok to publish. Returns a</span>
 <span class="sd">        boolean to indicate validity.</span>
 
@@ -873,7 +884,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the publish logic for the given item and settings.</span>
 
 <span class="sd">        :param settings: Dictionary of Settings. The keys are strings, matching</span>
@@ -920,7 +931,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the finalization pass. This pass executes once all the publish</span>
 <span class="sd">        tasks have completed, and can for example be used to version up files.</span>
 
@@ -959,7 +970,7 @@
 
 
 <span class="k">class</span> <span class="nc">AliasSessionPublishPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plugin for publishing an open alias session.</span>
 
 <span class="sd">    This hook relies on functionality found in the base file publisher hook in</span>
@@ -974,7 +985,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verbose, multi-line description of what the plugin does. This can</span>
 <span class="sd">        contain simple html for formatting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1031,7 +1042,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dictionary defining the settings that this plugin expects to receive</span>
 <span class="sd">        through the settings parameter in the accept, validate, publish and</span>
 <span class="sd">        finalize methods.</span>
@@ -1070,7 +1081,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of item types that this plugin is interested in.</span>
 
 <span class="sd">        Only items matching entries in this list will be presented to the</span>
@@ -1080,7 +1091,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;alias.session&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method called by the publisher to determine if an item is of any</span>
 <span class="sd">        interest to this plugin. Only items matching the filters defined via the</span>
 <span class="sd">        item_filters property will be presented to this method.</span>
@@ -1128,7 +1139,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;checked&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates the given item to check that it is ok to publish. Returns a</span>
 <span class="sd">        boolean to indicate validity.</span>
 
@@ -1242,7 +1253,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">AliasSessionPublishPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the publish logic for the given item and settings.</span>
 
 <span class="sd">        :param settings: Dictionary of Settings. The keys are strings, matching</span>
@@ -1265,7 +1276,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">save_file</span><span class="p">()</span>
             <span class="c1"># store the current session path in the root item properties</span>
             <span class="c1"># it will be used later in the background process to open the file before running the publishing actions</span>
-            <span class="k">if</span> <span class="s2">&quot;session_path&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bg_processing</span> <span class="ow">and</span> <span class="s2">&quot;session_path&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;session_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span>
                     <span class="s2">&quot;session_name&quot;</span>
@@ -1290,7 +1301,7 @@
             <span class="nb">super</span><span class="p">(</span><span class="n">AliasSessionPublishPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the finalization pass. This pass executes once all the publish</span>
 <span class="sd">        tasks have completed, and can for example be used to version up files.</span>
 
@@ -1316,7 +1327,7 @@
 
 
 <span class="k">def</span> <span class="nf">_alias_find_additional_session_dependencies</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find additional dependencies from the session</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1330,7 +1341,7 @@
 
 
 <span class="k">def</span> <span class="nf">_session_path</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the path to the current session</span>
 <span class="sd">    :return:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1361,7 +1372,7 @@
 
 
 <span class="k">class</span> <span class="nc">AliasTranslationPublishPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plugin for publishing an open alias session.</span>
 
 <span class="sd">    This hook relies on functionality found in the base file publisher hook in</span>
@@ -1376,7 +1387,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verbose, multi-line description of what the plugin does. This can</span>
 <span class="sd">        contain simple html for formatting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1400,7 +1411,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dictionary defining the settings that this plugin expects to receive</span>
 <span class="sd">        through the settings parameter in the accept, validate, publish and</span>
 <span class="sd">        finalize methods.</span>
@@ -1452,7 +1463,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of item types that this plugin is interested in.</span>
 
 <span class="sd">        Only items matching entries in this list will be presented to the</span>
@@ -1462,7 +1473,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;alias.session.translation&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method called by the publisher to determine if an item is of any</span>
 <span class="sd">        interest to this plugin. Only items matching the filters defined via the</span>
 <span class="sd">        item_filters property will be presented to this method.</span>
@@ -1525,7 +1536,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;checked&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates the given item to check that it is ok to publish. Returns a</span>
 <span class="sd">        boolean to indicate validity.</span>
 
@@ -1631,7 +1642,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">AliasTranslationPublishPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the publish logic for the given item and settings.</span>
 <span class="sd">        :param settings: Dictionary of Settings. The keys are strings, matching</span>
 <span class="sd">            the keys returned in the settings property. The values are `Setting`</span>
@@ -1693,10 +1704,10 @@
             <span class="c1"># If we have some parent publish data, share the thumbnail between the parent publish and it child</span>
             <span class="k">if</span> <span class="n">parent_sg_publish_data</span><span class="p">:</span>
                 <span class="n">request_timeout</span> <span class="o">=</span> <span class="mi">60</span>
-                <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+                <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sharing the thumbnail&quot;</span><span class="p">)</span>
                 <span class="n">thumbnail_shared</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span> <span class="o">&lt;=</span> <span class="n">request_timeout</span><span class="p">:</span>
+                <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span> <span class="o">&lt;=</span> <span class="n">request_timeout</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">publisher</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">share_thumbnail</span><span class="p">(</span>
                             <span class="n">entities</span><span class="o">=</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sg_publish_data&quot;</span><span class="p">)],</span>
@@ -1713,7 +1724,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Thumbnail couln&#39;t be shared&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the finalization pass. This pass executes once all the publish</span>
 <span class="sd">        tasks have completed, and can for example be used to version up files.</span>
 
@@ -1741,7 +1752,7 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_publish_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a publish template for the supplied settings and item.</span>
 
 <span class="sd">        :param settings: This plugin instance&#39;s configured settings</span>
@@ -1762,7 +1773,7 @@
         <span class="k">return</span> <span class="n">publish_template</span>
 
     <span class="k">def</span> <span class="nf">get_publish_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a publish type for the supplied settings and item.</span>
 
 <span class="sd">        :param settings: This plugin instance&#39;s configured settings</span>
@@ -1804,7 +1815,7 @@
         <span class="k">return</span> <span class="n">publish_type</span>
 
     <span class="k">def</span> <span class="nf">get_publish_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the publish name for the supplied settings and item.</span>
 
 <span class="sd">        :param settings: This plugin instance&#39;s configured settings</span>
@@ -1819,7 +1830,7 @@
         <span class="k">return</span> <span class="n">publisher</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">get_publish_name</span><span class="p">(</span><span class="n">publish_path</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_copy_work_to_publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method handles copying work file path(s) to a designated publish</span>
 <span class="sd">        location.</span>
 
@@ -1847,7 +1858,7 @@
 
 
 <span class="k">def</span> <span class="nf">_session_path</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the path to the current session</span>
 <span class="sd">    :return:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1876,13 +1887,13 @@
 
 
 <span class="k">class</span> <span class="nc">AliasPublishVariantsPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plugin for publishing variants of the current alias open session</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One line display name describing the plugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Publish Variants to ShotGrid&quot;</span>
@@ -1903,7 +1914,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of item types that this plugin is interested in.</span>
 
 <span class="sd">        Only items matching entries in this list will be presented to the</span>
@@ -1913,7 +1924,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;alias.session&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method called by the publisher to determine if an item is of any</span>
 <span class="sd">        interest to this plugin. Only items matching the filters defined via the</span>
 <span class="sd">        item_filters property will be presented to this method.</span>
@@ -1945,7 +1956,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;checked&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates the given item to check that it is ok to publish. Returns a</span>
 <span class="sd">        boolean to indicate validity.</span>
 
@@ -1959,7 +1970,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the publish logic for the given item and settings.</span>
 
 <span class="sd">        :param settings: Dictionary of Settings. The keys are strings, matching</span>
@@ -2020,7 +2031,7 @@
                 <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the finalization pass. This pass executes once all the publish</span>
 <span class="sd">        tasks have completed, and can for example be used to version up files.</span>
 
@@ -2060,14 +2071,14 @@
 
 
 <span class="k">class</span> <span class="nc">AliasStartVersionControlPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple plugin to insert a version number into the alias file path if one</span>
 <span class="sd">    does not exist.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Path to an png icon on disk</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2076,14 +2087,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One line display name describing the plugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Begin file versioning&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verbose, multi-line description of what the plugin does. This can</span>
 <span class="sd">        contain simple html for formatting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2105,7 +2116,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of item types that this plugin is interested in.</span>
 
 <span class="sd">        Only items matching entries in this list will be presented to the</span>
@@ -2116,7 +2127,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dictionary defining the settings that this plugin expects to receive</span>
 <span class="sd">        through the settings parameter in the accept, validate, publish and</span>
 <span class="sd">        finalize methods.</span>
@@ -2136,7 +2147,7 @@
         <span class="k">return</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method called by the publisher to determine if an item is of any</span>
 <span class="sd">        interest to this plugin. Only items matching the filters defined via the</span>
 <span class="sd">        item_filters property will be presented to this method.</span>
@@ -2191,7 +2202,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;checked&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates the given item to check that it is ok to publish.</span>
 
 <span class="sd">        Returns a boolean to indicate validity.</span>
@@ -2237,7 +2248,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the publish logic for the given item and settings.</span>
 
 <span class="sd">        :param settings: Dictionary of Settings. The keys are strings, matching</span>
@@ -2264,7 +2275,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  Alias file path: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">version_path</span><span class="p">,))</span>
 
     <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the finalization pass. This pass executes once</span>
 <span class="sd">        all the publish tasks have completed, and can for example</span>
 <span class="sd">        be used to version up files.</span>
@@ -2277,7 +2288,7 @@
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_get_version_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Try to extract and return a version number for the supplied path.</span>
 
 <span class="sd">        :param path: The path to the current session</span>
@@ -2314,7 +2325,7 @@
 
 
 <span class="k">def</span> <span class="nf">_session_path</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the path to the current session</span>
 <span class="sd">    :return:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2323,7 +2334,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_version_docs_action</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple helper for returning a log action to show version docs</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span>
@@ -2355,7 +2366,7 @@
 
 
 <span class="k">class</span> <span class="nc">UploadVersionPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plugin for sending quicktimes and images to ShotGrid for review.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2392,7 +2403,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Path to an png icon on disk</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2400,7 +2411,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dictionary defining the settings that this plugin expects to recieve</span>
 <span class="sd">        through the settings parameter in the accept, validate, publish and</span>
 <span class="sd">        finalize methods.</span>
@@ -2449,7 +2460,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">item_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List of item types that this plugin is interested in.</span>
 
 <span class="sd">        Only items matching entries in this list will be presented to the</span>
@@ -2459,7 +2470,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;alias.session&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method called by the publisher to determine if an item is of any</span>
 <span class="sd">        interest to this plugin. Only items matching the filters defined via the</span>
 <span class="sd">        item_filters property will be presented to this method.</span>
@@ -2487,7 +2498,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accepted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;checked&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates the given item to check that it is ok to publish. Returns a</span>
 <span class="sd">        boolean to indicate validity.</span>
 
@@ -2540,7 +2551,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the publish logic for the given item and settings.</span>
 <span class="sd">        :param settings: Dictionary of Settings. The keys are strings, matching</span>
 <span class="sd">            the keys returned in the settings property. The values are `Setting`</span>
@@ -2647,7 +2658,7 @@
                 <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the finalization pass. This pass executes once all the publish</span>
 <span class="sd">        tasks have completed, and can for example be used to version up files.</span>
 
@@ -2668,7 +2679,7 @@
     <span class="c1"># Methods for creating/displaying custom plugin interface</span>
 
     <span class="k">def</span> <span class="nf">create_settings_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a Qt widget, for the supplied parent widget (a container widget</span>
 <span class="sd">        on the right side of the publish UI).</span>
 
@@ -2726,7 +2737,7 @@
         <span class="k">return</span> <span class="n">widget</span>
 
     <span class="k">def</span> <span class="nf">get_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is required to be defined in order for the custom UI to show up in the app.</span>
 
 <span class="sd">        Invoked by the Publisher when the selection changes. This method gathers the settings</span>
@@ -2773,7 +2784,7 @@
         <span class="k">return</span> <span class="n">ui_settings</span>
 
     <span class="k">def</span> <span class="nf">set_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is required to be defined in order for the custom UI to show up in the app.</span>
 
 <span class="sd">        Allows the custom UI to populate its fields with the settings from the</span>
@@ -2852,7 +2863,7 @@
             <span class="n">version_type_combobox</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">version_type_index</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_on_version_type_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version_type</span><span class="p">,</span> <span class="n">description_label</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Slot called when the Version Type combobox selector index changes.</span>
 
 <span class="sd">        Update the description based on the current Version Type.</span>
@@ -2915,7 +2926,7 @@
     <span class="c1"># Protected functions</span>
 
     <span class="k">def</span> <span class="nf">_translate_file_to_lmv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">use_framework_translator</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translate the current Alias file as an LMV package in order to upload it to ShotGrid as a 3D Version</span>
 
 <span class="sd">        :param item: Item to process</span>
@@ -2944,7 +2955,7 @@
         <span class="k">return</span> <span class="n">package_path</span><span class="p">,</span> <span class="n">thumbnail_path</span><span class="p">,</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">output_directory</span>
 
     <span class="k">def</span> <span class="nf">_get_thumbnail_from_lmv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">use_framework_translator</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract the thumbnail from the source file, using the LMV conversion</span>
 
 <span class="sd">        :param item: Item to process</span>
@@ -2973,7 +2984,7 @@
         <span class="k">return</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">thumbnail_path</span>
 
     <span class="k">def</span> <span class="nf">_is_3d_viewer_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Look up the ShotGrid site preference to check if the 3D Viewer is enabled. Return True</span>
 <span class="sd">        if the 3D Viewer is enabled, False if it is disabled, or None if the 3D Viewer Enabled</span>
 <span class="sd">        site pref could not be accessed.</span>
@@ -3025,12 +3036,12 @@
 
 
 <span class="k">class</span> <span class="nc">AliasActions</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ShotGrid Panel Actions for Alias</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">generate_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_data</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">ui_area</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of action instances for a particular publish.</span>
 <span class="sd">        This method is called each time a user clicks a publish somewhere in the UI.</span>
 <span class="sd">        The data returned from this hook will be used to populate the actions menu for a publish.</span>
@@ -3135,7 +3146,7 @@
         <span class="k">return</span> <span class="n">action_instances</span>
 
     <span class="k">def</span> <span class="nf">execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute a given action. The data sent to this be method will</span>
 <span class="sd">        represent one of the actions enumerated by the generate_actions method.</span>
 
@@ -3178,7 +3189,7 @@
                 <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">execute_multiple_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executes the specified action on a list of items.</span>
 
 <span class="sd">        The default implementation dispatches each item from ``actions`` to</span>
@@ -3209,7 +3220,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">execute_action</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an Alias reference.</span>
 
 <span class="sd">        :param path: Path to the file.</span>
@@ -3219,7 +3230,7 @@
         <span class="n">alias_api</span><span class="o">.</span><span class="n">create_reference</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_import_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import the file into the current Alias session.</span>
 
 <span class="sd">        :param path: Path to file.</span>
@@ -3229,7 +3240,7 @@
         <span class="n">alias_api</span><span class="o">.</span><span class="n">import_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_import_file_as_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import the file as an Alias reference, converting it on the fly as wref.</span>
 
 <span class="sd">        :param path: Path to the file.</span>
@@ -3266,7 +3277,7 @@
         <span class="n">alias_api</span><span class="o">.</span><span class="n">create_reference</span><span class="p">(</span><span class="n">reference_path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_texture_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import an image as Canvas in Alias</span>
 
 <span class="sd">        :param path:  Path to the image.</span>
@@ -3276,7 +3287,7 @@
         <span class="n">alias_api</span><span class="o">.</span><span class="n">create_texture_node</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_import_subdivision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import a file as subdivision in the current Alias session.</span>
 
 <span class="sd">        :param path: Path to the file.</span>
@@ -3320,7 +3331,7 @@
 
 
 <span class="k">class</span> <span class="nc">SceneOperation</span><span class="p">(</span><span class="n">HookClass</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hook called to perform an operation with the</span>
 <span class="sd">    current file</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3335,7 +3346,7 @@
         <span class="n">read_only</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main hook entry point</span>
 
 <span class="sd">        :param operation:       String</span>
@@ -3378,7 +3389,7 @@
         <span class="c1"># events while performing any scene operations. This ensures that all Alias file I/O</span>
         <span class="c1"># operations are complete before executing any event callbacks that may interfere</span>
         <span class="c1"># with Alias</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">event_watcher</span><span class="o">.</span><span class="n">ContextManager</span><span class="p">():</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">event_watcher</span><span class="o">.</span><span class="n">create_context_manager</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;current_path&quot;</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_current_path</span><span class="p">()</span>
@@ -3454,10 +3465,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="alias_python_api.html" class="btn btn-neutral float-right" title="Alias Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="menu.html" class="btn btn-neutral float-left" title="ShotGrid Menu in Alias" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="engine.html" class="btn btn-neutral float-left" title="The Alias Engine Code" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
