@@ -606,18 +606,12 @@ class AliasEngine(sgtk.platform.Engine):
         Try to open tk-multi-workfiles2 Save As... dialog if it exists otherwise
         launch a Qt file browser for the Save As...
         """
-        open_dialog_func = None
-        kwargs = {}
-        workfiles = self.apps.get("tk-multi-workfiles2", None)
 
+        workfiles = self.apps.get("tk-multi-workfiles2", None)
         if workfiles:
             if hasattr(workfiles, "show_file_save_dlg"):
-                open_dialog_func = workfiles.show_file_save_dlg
-                kwargs["use_modal_dialog"] = True
-
-        if open_dialog_func:
-            open_dialog_func(**kwargs)
-
+                kwargs = {"use_modal_dialog": True}
+                workfiles.show_file_save_dlg(**kwargs)
         else:
             # Alias doesn't appear to have a "save as" dialog accessible via
             # python. so open our own Qt file dialog.
@@ -641,8 +635,8 @@ class AliasEngine(sgtk.platform.Engine):
             if os.path.splitext(path)[-1] != ".wire":
                 path = "{0}.wire".format(path)
 
-        if path:
-            self.save_file_as(path)
+            if path:
+                self.save_file_as(path)
 
     def open_delete_stages_dialog(self, new_file=False):
         """
