@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Alias Engine Hooks &mdash; tk-alias v3.0.0 documentation</title>
+  <title>Alias Engine Hooks &mdash; tk-alias v3.0.1 documentation</title>
   
 
   
@@ -145,7 +145,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.0.0.<br>
+    <b>tk-alias</b> v3.0.1.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -1130,7 +1130,7 @@
             <span class="c1"># validation will succeed.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;The Alias session has not been saved.&quot;</span><span class="p">,</span>
-                <span class="n">extra</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span><span class="p">,</span>
+                <span class="n">extra</span><span class="o">=</span><span class="n">_get_save_as_action</span><span class="p">(),</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -1160,7 +1160,8 @@
             <span class="c1"># validation fails.</span>
             <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;The Alias session has not been saved.&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">error_msg</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span>
+                <span class="n">error_msg</span><span class="p">,</span>
+                <span class="n">extra</span><span class="o">=</span><span class="n">_get_save_as_action</span><span class="p">(),</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
 
@@ -1347,6 +1348,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_current_path</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_get_save_as_action</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple helper for returning a log action to show the &quot;File Save As&quot; dialog&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;action_button&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Save As...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Save the current session&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1526,7 +1538,7 @@
             <span class="c1"># validation will succeed.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;The Alias session has not been saved.&quot;</span><span class="p">,</span>
-                <span class="n">extra</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span><span class="p">,</span>
+                <span class="n">extra</span><span class="o">=</span><span class="n">_get_save_as_action</span><span class="p">(),</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -1558,7 +1570,8 @@
             <span class="c1"># validation fails.</span>
             <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;The Alias session has not been saved.&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">error_msg</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span>
+                <span class="n">error_msg</span><span class="p">,</span>
+                <span class="n">extra</span><span class="o">=</span><span class="n">_get_save_as_action</span><span class="p">(),</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
 
@@ -1864,6 +1877,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_current_path</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_get_save_as_action</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple helper for returning a log action to show the &quot;File Save As&quot; dialog&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;action_button&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Save As...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Save the current session&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2189,7 +2213,7 @@
             <span class="c1"># validation will succeed.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;The Alias session has not been saved.&quot;</span><span class="p">,</span>
-                <span class="n">extra</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span><span class="p">,</span>
+                <span class="n">extra</span><span class="o">=</span><span class="n">_get_save_as_action</span><span class="p">(),</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -2222,9 +2246,7 @@
             <span class="c1"># the session still requires saving. provide a save button.</span>
             <span class="c1"># validation fails</span>
             <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;The Alias session has not been saved.&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">error_msg</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">_get_save_as_action</span><span class="p">())</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
 
         <span class="c1"># NOTE: If the plugin is attached to an item, that means no version</span>
@@ -2240,9 +2262,7 @@
                 <span class="s2">&quot;A file already exists with a version number. Please &quot;</span>
                 <span class="s2">&quot;choose another name.&quot;</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">error_msg</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">_get_save_as_action</span><span class="p">())</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">True</span>
@@ -2331,6 +2351,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_current_path</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_get_save_as_action</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple helper for returning a log action to show the &quot;File Save As&quot; dialog&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;action_button&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Save As...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Save the current session&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span><span class="o">.</span><span class="n">open_save_as_dialog</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 
 
 <span class="k">def</span> <span class="nf">_get_version_docs_action</span><span class="p">():</span>

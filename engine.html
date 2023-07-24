@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>The Alias Engine Code &mdash; tk-alias v3.0.0 documentation</title>
+  <title>The Alias Engine Code &mdash; tk-alias v3.0.1 documentation</title>
   
 
   
@@ -119,7 +119,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.0.0.<br>
+    <b>tk-alias</b> v3.0.1.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -807,18 +807,12 @@
 <span class="sd">        Try to open tk-multi-workfiles2 Save As... dialog if it exists otherwise</span>
 <span class="sd">        launch a Qt file browser for the Save As...</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">open_dialog_func</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">workfiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tk-multi-workfiles2&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
+        <span class="n">workfiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tk-multi-workfiles2&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">workfiles</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">workfiles</span><span class="p">,</span> <span class="s2">&quot;show_file_save_dlg&quot;</span><span class="p">):</span>
-                <span class="n">open_dialog_func</span> <span class="o">=</span> <span class="n">workfiles</span><span class="o">.</span><span class="n">show_file_save_dlg</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;use_modal_dialog&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">open_dialog_func</span><span class="p">:</span>
-            <span class="n">open_dialog_func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;use_modal_dialog&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+                <span class="n">workfiles</span><span class="o">.</span><span class="n">show_file_save_dlg</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Alias doesn&#39;t appear to have a &quot;save as&quot; dialog accessible via</span>
             <span class="c1"># python. so open our own Qt file dialog.</span>
@@ -842,8 +836,8 @@
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;.wire&quot;</span><span class="p">:</span>
                 <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">.wire&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save_file_as</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_file_as</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">open_delete_stages_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_file</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
