@@ -8,7 +8,7 @@
 This repository is a part of the ShotGrid Pipeline Toolkit.
 
 - For more information about this engine and for release notes, *see the wiki section*.
-- For general information and documentation, click here: https://developer.shotgridsoftware.com/d587be80/?title=Integrations+User+Guide
+- For general information and documentation, click here: https://help.autodesk.com/view/SGDEV/ENU/?contextId=SA_INTEGRATIONS_USER_GUIDE
 - For information about ShotGrid in general, click here: https://help.autodesk.com/view/SGSUB/ENU
 
 ## Using this engine in your Setup
@@ -16,8 +16,8 @@ This repository is a part of the ShotGrid Pipeline Toolkit.
 All the engines that are part of our standard engine suite are pushed to our App Store.
 This is where you typically go if you want to install an engine into a project you are
 working on. For an overview of all the Apps and Engines in the Toolkit App Store,
-click here: https://developer.shotgridsoftware.com/162eaa4b/?title=Pipeline+Integration+Components
+click here: https://help.autodesk.com/view/SGDEV/ENU/?contextId=PC_TOOLKIT_APPS
 
 ## Have a Question?
 
-Don't hesitate to contact us! You can find us on https://developer.shotgridsoftware.com
+Don't hesitate to contact us! You can find us on https://www.autodesk.com/support/contact-support
