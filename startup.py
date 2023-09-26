@@ -80,12 +80,6 @@ class AliasLauncher(SoftwareLauncher):
 
         self.logger.debug("Preparing Alias Launch...")
 
-        # import sys
-        # sys.path.append("C:\\python_libs")
-        # import ptvsd
-        # ptvsd.enable_attach()
-        # ptvsd.wait_for_attach()
-
         try:
             # The alias framework is required to launch Alias with the correct plugin
             framework_location = self.__get_framework_location("tk-framework-alias")
