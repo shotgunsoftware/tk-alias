@@ -220,7 +220,7 @@ class UploadVersionPlugin(HookBaseClass):
             # be sure to strip the extension from the publish name
             path_components = publisher.util.get_file_path_components(path)
             filename = path_components["filename"]
-            (publish_name, extension) = os.path.splitext(filename)
+            (publish_name, _) = os.path.splitext(filename)
             item.properties["publish_name"] = publish_name
 
             # create the Version in ShotGrid
