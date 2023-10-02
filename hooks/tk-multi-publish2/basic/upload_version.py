@@ -227,10 +227,18 @@ class UploadVersionPlugin(HookBaseClass):
             super(UploadVersionPlugin, self).publish(settings, item)
 
             # get or create the media content for the item and upload it to ShotGrid
-            media_package_path, thumbnail_path, temp_dir = self._get_media_content(settings, item)
-            if media_package_path is None and thumbnail_path is None and temp_dir is None:
+            media_package_path, thumbnail_path, temp_dir = self._get_media_content(
+                settings, item
+            )
+            if (
+                media_package_path is None
+                and thumbnail_path is None
+                and temp_dir is None
+            ):
                 media_type = settings.get("Version Type").value
-                self.logger.warning(f"No media content generated for type: {media_type}")
+                self.logger.warning(
+                    f"No media content generated for type: {media_type}"
+                )
 
             version_type = item.properties["sg_version_data"]["type"]
             version_id = item.properties["sg_version_data"]["id"]
@@ -252,7 +260,9 @@ class UploadVersionPlugin(HookBaseClass):
                     path=uploaded_movie_path,
                     field_name="sg_uploaded_movie",
                 )
-                self.logger.info(f"Uploaded Version media from path {uploaded_movie_path}")
+                self.logger.info(
+                    f"Uploaded Version media from path {uploaded_movie_path}"
+                )
 
             if thumbnail_path:
                 # Always upload the generated thumbnail to the Version (this will override any
@@ -262,7 +272,9 @@ class UploadVersionPlugin(HookBaseClass):
                     entity_id=version_id,
                     path=thumbnail_path,
                 )
-                self.logger.info(f"Uploaded Version thumbnail from path {thumbnail_path}")
+                self.logger.info(
+                    f"Uploaded Version thumbnail from path {thumbnail_path}"
+                )
 
                 if not item.get_thumbnail_as_path():
                     # Upload the thumbnail to the associated Published File, if one has not
@@ -567,7 +579,7 @@ class UploadVersionPlugin(HookBaseClass):
         :rtype: Tuple[str,str,str]
         """
 
-        media_package_path = None 
+        media_package_path = None
         thumbnail_path = None
         temp_dir = None
 
@@ -592,7 +604,7 @@ class UploadVersionPlugin(HookBaseClass):
                 temp_dir, thumbnail_path = self._get_thumbnail_from_lmv(
                     item, use_framework_translator
                 )
-        
+
         return media_package_path, thumbnail_path, temp_dir
 
     def _translate_file_to_lmv(self, item, use_framework_translator):
