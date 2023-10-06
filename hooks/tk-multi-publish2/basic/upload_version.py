@@ -270,16 +270,6 @@ class UploadVersionPlugin(HookBaseClass):
                     f"Uploaded Version media from path {uploaded_movie_path}"
                 )
 
-            if thumbnail_path:
-                self.parent.shotgun.upload_thumbnail(
-                    entity_type=version_type,
-                    entity_id=version_id,
-                    path=thumbnail_path,
-                )
-                self.logger.info(
-                    f"Uploaded Version thumbnail from path {thumbnail_path}"
-                )
-
             # Remove the temporary directory or files created to generate media content
             self._cleanup_temp_files(media_package_path)
 
