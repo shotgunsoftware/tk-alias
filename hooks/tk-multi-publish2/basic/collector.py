@@ -9,9 +9,11 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
+import tempfile
 
 import sgtk
-import alias_api
+from sgtk.platform.qt import QtGui
+
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -46,6 +48,11 @@ class AliasSessionCollector(HookBaseClass):
 
         return collector_settings
 
+    @property
+    def alias_py(self):
+        """Get the Alias api module."""
+        return self.parent.engine.alias_py
+
     def process_current_session(self, settings, parent_item):
         """
         Analyzes the current scene open in a DCC and parents a subtree of items
@@ -62,7 +69,7 @@ class AliasSessionCollector(HookBaseClass):
             parent_item.properties["bg_processing"] = bg_processing.value
 
         # get the path to the current file
-        path = alias_api.get_current_path()
+        path = self.alias_py.get_current_path()
 
         # determine the display name for the item
         if path:
@@ -79,6 +86,9 @@ class AliasSessionCollector(HookBaseClass):
         # get the icon path to display for this item
         icon_path = os.path.join(self.disk_location, os.pardir, "icons", "alias.png")
         session_item.set_icon_from_path(icon_path)
+
+        # set the default thumbnail to the current Alias viewport
+        session_item.thumbnail = self._get_thumbnail_pixmap()
 
         # add a new item for Alias translations to separate them from the main session item
         translation_item = session_item.create_item(
@@ -111,3 +121,32 @@ class AliasSessionCollector(HookBaseClass):
         vred_item.set_icon_from_path(icon_path)
 
         self.logger.info("Collected current Alias file")
+
+    def _get_thumbnail_pixmap(self):
+        """
+        Generate a thumbnail from the current Alias viewport.
+
+        :return: A thumbnail of the current Alias viewport.
+        :rtype: QtGui.QPixmap
+        """
+
+        pixmap = None
+        thumbnail_path = None
+
+        try:
+            thumbnail_path = tempfile.NamedTemporaryFile(
+                suffix=".jpg", prefix="sgtk_thumb", delete=False
+            ).name
+            status = self.alias_py.store_current_window(thumbnail_path)
+            if not self.alias_py.py_utils.is_success(status):
+                self.logger.warning(f"Alias API store_current_window returned non-success status code '{status}'")
+            pixmap = QtGui.QPixmap(thumbnail_path)
+        except Exception as e:
+            self.logger.error(f"Failed to set default thumbnail: {e}")
+        finally:
+            try:
+                os.remove(thumbnail_path)
+            except:
+                pass
+
+        return pixmap
