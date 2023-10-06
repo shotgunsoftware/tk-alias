@@ -260,6 +260,8 @@ class UploadVersionPlugin(HookBaseClass):
 
             uploaded_movie_path = media_package_path or thumbnail_path
             if uploaded_movie_path:
+                # Uplod to the `sg_uploaded_movie` field on the Version so that the Version
+                # thumbnail shows the "play" button on hover from ShotGrid Web
                 self.parent.shotgun.upload(
                     entity_type=version_type,
                     entity_id=version_id,
