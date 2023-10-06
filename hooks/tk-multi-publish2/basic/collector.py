@@ -139,7 +139,9 @@ class AliasSessionCollector(HookBaseClass):
             ).name
             status = self.alias_py.store_current_window(thumbnail_path)
             if not self.alias_py.py_utils.is_success(status):
-                self.logger.warning(f"Alias API store_current_window returned non-success status code '{status}'")
+                self.logger.warning(
+                    f"Alias API store_current_window returned non-success status code '{status}'"
+                )
             pixmap = QtGui.QPixmap(thumbnail_path)
         except Exception as e:
             self.logger.error(f"Failed to set default thumbnail: {e}")
