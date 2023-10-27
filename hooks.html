@@ -1,55 +1,35 @@
 
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Alias Engine Hooks &mdash; tk-alias v3.0.1 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alias Engine Hooks &mdash; tk-alias v3.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="The Alias Engine Code" href="engine.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
     <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
@@ -63,35 +43,20 @@
     
 
           
-            <a href="index.html" class="icon icon-home"> tk-alias
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            tk-alias
           </a>
-
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="engine.html">The Alias Engine Code</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Alias Engine Hooks</a><ul>
@@ -124,8 +89,6 @@
 </li>
 </ul>
 
-            
-          
 
     <a href='genindex.html'>Alphabetic Index</a>
 
@@ -145,7 +108,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.0.1.<br>
+    <b>tk-alias</b> v3.0.2.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -168,67 +131,32 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">tk-alias</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>Alias Engine Hooks</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Alias Engine Hooks</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="alias-engine-hooks">
-<span id="hooks"></span><h1>Alias Engine Hooks<a class="headerlink" href="#alias-engine-hooks" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="alias-engine-hooks">
+<span id="hooks"></span><h1>Alias Engine Hooks<a class="headerlink" href="#alias-engine-hooks" title="Permalink to this heading"></a></h1>
 <p>The Alias Engine defines hooks to customize the Toolkit Apps that it uses. See below for App specific hook details.</p>
-<div class="section" id="tk-multi-data-validation">
-<span id="hooks-tk-multi-data-validation"></span><h2>tk-multi-data-validation<a class="headerlink" href="#tk-multi-data-validation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="aliasdatavalidationhook">
-<span id="hooks-tk-multi-data-validation-data-validator"></span><h3>AliasDataValidationHook<a class="headerlink" href="#aliasdatavalidationhook" title="Permalink to this headline">¶</a></h3>
+<section id="tk-multi-data-validation">
+<span id="hooks-tk-multi-data-validation"></span><h2>tk-multi-data-validation<a class="headerlink" href="#tk-multi-data-validation" title="Permalink to this heading"></a></h2>
+<section id="aliasdatavalidationhook">
+<span id="hooks-tk-multi-data-validation-data-validator"></span><h3>AliasDataValidationHook<a class="headerlink" href="#aliasdatavalidationhook" title="Permalink to this heading"></a></h3>
 <p>This hook will get the validation rule data from the AliasDataValidator and pass it to the tk-multi-data-validation App.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2022 Autodesk, Inc.</span>
 <span class="c1">#</span>
@@ -484,12 +412,12 @@
             <span class="n">alias_api</span><span class="o">.</span><span class="n">redraw_screen</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="tk-multi-loader2">
-<span id="hooks-tk-multi-loader2"></span><h2>tk-multi-loader2<a class="headerlink" href="#tk-multi-loader2" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="aliasactions">
-<span id="hooks-tk-multi-loader2-scene-actions"></span><h3>AliasActions<a class="headerlink" href="#aliasactions" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="tk-multi-loader2">
+<span id="hooks-tk-multi-loader2"></span><h2>tk-multi-loader2<a class="headerlink" href="#tk-multi-loader2" title="Permalink to this heading"></a></h2>
+<section id="aliasactions">
+<span id="hooks-tk-multi-loader2-scene-actions"></span><h3>AliasActions<a class="headerlink" href="#aliasactions" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2015 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -780,12 +708,12 @@
             <span class="k">raise</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AliasPythonException</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="tk-multi-publish2">
-<span id="hooks-tk-multi-publish2"></span><h2>tk-multi-publish2<a class="headerlink" href="#tk-multi-publish2" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="publishannotationsplugin">
-<span id="hooks-tk-multi-publish2-publish-annotations"></span><h3>PublishAnnotationsPlugin<a class="headerlink" href="#publishannotationsplugin" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="tk-multi-publish2">
+<span id="hooks-tk-multi-publish2"></span><h2>tk-multi-publish2<a class="headerlink" href="#tk-multi-publish2" title="Permalink to this heading"></a></h2>
+<section id="publishannotationsplugin">
+<span id="hooks-tk-multi-publish2-publish-annotations"></span><h3>PublishAnnotationsPlugin<a class="headerlink" href="#publishannotationsplugin" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -949,9 +877,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Annotations published successfully&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="aliassessionpublishplugin">
-<span id="hooks-tk-multi-publish2-publish-session"></span><h3>AliasSessionPublishPlugin<a class="headerlink" href="#aliassessionpublishplugin" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="aliassessionpublishplugin">
+<span id="hooks-tk-multi-publish2-publish-session"></span><h3>AliasSessionPublishPlugin<a class="headerlink" href="#aliassessionpublishplugin" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -990,7 +918,7 @@
 <span class="sd">        contain simple html for formatting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">loader_url</span> <span class="o">=</span> <span class="s2">&quot;https://developer.shotgridsoftware.com/a4c0a4f1/?title=Loader&quot;</span>
+        <span class="n">loader_url</span> <span class="o">=</span> <span class="s2">&quot;https://help.autodesk.com/view/SGDEV/ENU/?contextId=PC_APP_LOADER&quot;</span>
 
         <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Publishes the file to ShotGrid. A &lt;b&gt;Publish&lt;/b&gt; entry will be</span>
@@ -1361,9 +1289,9 @@
     <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="aliastranslationpublishplugin">
-<span id="hooks-tk-multi-publish2-publish-translation"></span><h3>AliasTranslationPublishPlugin<a class="headerlink" href="#aliastranslationpublishplugin" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="aliastranslationpublishplugin">
+<span id="hooks-tk-multi-publish2-publish-translation"></span><h3>AliasTranslationPublishPlugin<a class="headerlink" href="#aliastranslationpublishplugin" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -1404,7 +1332,7 @@
 <span class="sd">        contain simple html for formatting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">loader_url</span> <span class="o">=</span> <span class="s2">&quot;https://developer.shotgridsoftware.com/a4c0a4f1/?title=Loader&quot;</span>
+        <span class="n">loader_url</span> <span class="o">=</span> <span class="s2">&quot;https://help.autodesk.com/view/SGDEV/ENU/?contextId=PC_APP_LOADER&quot;</span>
 
         <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Publishes the file to ShotGrid. A &lt;b&gt;Publish&lt;/b&gt; entry will be</span>
@@ -1890,9 +1818,9 @@
     <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="aliaspublishvariantsplugin">
-<span id="hooks-tk-multi-publish2-publish-variants"></span><h3>AliasPublishVariantsPlugin<a class="headerlink" href="#aliaspublishvariantsplugin" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="aliaspublishvariantsplugin">
+<span id="hooks-tk-multi-publish2-publish-variants"></span><h3>AliasPublishVariantsPlugin<a class="headerlink" href="#aliaspublishvariantsplugin" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -2073,9 +2001,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Variants published successfully&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="aliasstartversioncontrolplugin">
-<span id="hooks-tk-multi-publish2-start-version-control"></span><h3>AliasStartVersionControlPlugin<a class="headerlink" href="#aliasstartversioncontrolplugin" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="aliasstartversioncontrolplugin">
+<span id="hooks-tk-multi-publish2-start-version-control"></span><h3>AliasStartVersionControlPlugin<a class="headerlink" href="#aliasstartversioncontrolplugin" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -2377,9 +2305,9 @@
     <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="uploadversionplugin">
-<span id="hooks-tk-multi-publish2-upload-version"></span><h3>UploadVersionPlugin<a class="headerlink" href="#uploadversionplugin" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="uploadversionplugin">
+<span id="hooks-tk-multi-publish2-upload-version"></span><h3>UploadVersionPlugin<a class="headerlink" href="#uploadversionplugin" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -3039,12 +2967,12 @@
         <span class="k">return</span> <span class="n">prefs</span><span class="p">[</span><span class="n">enable_3d_viewer_pref</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="tk-multi-shotgunpanel">
-<h2>tk-multi-shotgunpanel<a class="headerlink" href="#tk-multi-shotgunpanel" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="hooks-tk-multi-shotgunpanel-scene-actions">
-<span id="id1"></span><h3>AliasActions<a class="headerlink" href="#hooks-tk-multi-shotgunpanel-scene-actions" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="tk-multi-shotgunpanel">
+<h2>tk-multi-shotgunpanel<a class="headerlink" href="#tk-multi-shotgunpanel" title="Permalink to this heading"></a></h2>
+<section id="hooks-tk-multi-shotgunpanel-scene-actions">
+<span id="id1"></span><h3>AliasActions<a class="headerlink" href="#hooks-tk-multi-shotgunpanel-scene-actions" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2015 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -3336,12 +3264,12 @@
             <span class="k">raise</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AliasPythonException</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="tk-multi-workfiles2">
-<h2>tk-multi-workfiles2<a class="headerlink" href="#tk-multi-workfiles2" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="sceneoperation">
-<span id="hooks-tk-multi-workfiles2-scene-operations"></span><h3>SceneOperation<a class="headerlink" href="#sceneoperation" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="tk-multi-workfiles2">
+<h2>tk-multi-workfiles2<a class="headerlink" href="#tk-multi-workfiles2" title="Permalink to this heading"></a></h2>
+<section id="sceneoperation">
+<span id="hooks-tk-multi-workfiles2-scene-operations"></span><h3>SceneOperation<a class="headerlink" href="#sceneoperation" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2017 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -3484,54 +3412,35 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">save_context_for_stage</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="engine.html" class="btn btn-neutral float-left" title="The Alias Engine Code" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="engine.html" class="btn btn-neutral float-left" title="The Alias Engine Code" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2023, Autodesk
+    <p>&#169; Copyright 2023, Autodesk.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  
 
   <script type="text/javascript">
