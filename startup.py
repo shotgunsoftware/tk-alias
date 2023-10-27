@@ -63,7 +63,7 @@ class AliasLauncher(SoftwareLauncher):
     @property
     def minimum_supported_version(self):
         """The minimum software version that is supported by the launcher."""
-        return "2019"
+        return "2022"
 
     def prepare_launch(self, exec_path, args, file_to_open=None):
         """
@@ -79,12 +79,6 @@ class AliasLauncher(SoftwareLauncher):
         """
 
         self.logger.debug("Preparing Alias Launch...")
-
-        # import sys
-        # sys.path.append("C:\\python_libs")
-        # import ptvsd
-        # ptvsd.enable_attach()
-        # ptvsd.wait_for_attach()
 
         try:
             # The alias framework is required to launch Alias with the correct plugin
