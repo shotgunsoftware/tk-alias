@@ -16,17 +16,9 @@ import sgtk
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
-class UploadVersionPlugin(HookBaseClass):
-    """
-    Plugin for sending quicktimes and images to ShotGrid for review.
-    """
 
-    # Translation workers are responsible for performing the LMV translation.
-    # 'local': a local translator will be used, determined based on file type and current engine
-    # 'framework':  the tk-framework-lmv translator will be used (default)
-    TRANSLATION_WORKER_LOCAL = "local"
-    TRANSLATION_WORKER_FRAMEWORK = "framework"
-    TRANSLATION_WORKERS = [TRANSLATION_WORKER_LOCAL, TRANSLATION_WORKER_FRAMEWORK]
+class UploadVersionPlugin(HookBaseClass):
+    """Plugin for uploading Versions to ShotGrid for review."""
 
     # Version Type string constants
     VERSION_TYPE_2D = "2D Version"
@@ -97,11 +89,6 @@ class UploadVersionPlugin(HookBaseClass):
                 "default": False,
                 "description": "Upload content to ShotGrid?",
             },
-            "Translation Worker": {
-                "type": "str",
-                "default": self.TRANSLATION_WORKER_FRAMEWORK,
-                "description": "Specify the worker to use to perform LMV translation.",
-            },
         }
 
         # update the base settings
@@ -160,6 +147,11 @@ class UploadVersionPlugin(HookBaseClass):
         :returns: True if item is valid, False otherwise.
         """
 
+        path = item.get_property("path")
+        if not path:
+            self.logger.error("No path found for item")
+            return False
+
         # Validate fails if the Version Type is not supported
         version_type = settings.get("Version Type").value
         if version_type not in self.VERSION_TYPE_OPTIONS:
@@ -188,16 +180,18 @@ class UploadVersionPlugin(HookBaseClass):
         if not framework_lmv:
             self.logger.error("Could not run LMV translation: missing ATF framework")
             return False
-
-        translation_worker = settings.get("Translation Worker").value
-        if translation_worker not in self.TRANSLATION_WORKERS:
+        
+        translator = framework_lmv.import_module("translator")
+        lmv_translator = translator.LMVTranslator(path, self.parent.sgtk, item.context)
+        lmv_translator_path = lmv_translator.get_translator_path()
+        if not lmv_translator_path:
             self.logger.error(
-                "Unknown Translation Worker '{worker}'. Translation worker must be one of {workers}".format(
-                    worker=translation_worker,
-                    workers=", ".join(self.TRANSLATION_WORKERS),
-                )
+                "Missing translator for Alias. Alias must be installed locally to run LMV translation."
             )
             return False
+
+        # Store the translator in the item properties so it can be used later
+        item.properties["lmv_translator"] = lmv_translator
 
         return True
 
@@ -577,16 +571,12 @@ class UploadVersionPlugin(HookBaseClass):
         elif os.path.isfile(path):
             os.remove(path)
 
-    def _translate_file_to_lmv(
-        self, item, use_framework_translator, thumbnail_path=None
-    ):
+    def _translate_file_to_lmv(self, item, thumbnail_path=None):
         """
         Translate the current Alias file as an LMV package in order to upload it to ShotGrid as a 3D Version
 
         :param item: Item to process
         :type item: PublishItem
-        :param use_framework_translator: True will force the translator shipped with tk-framework-lmv to be used
-        :type use_framework_translator: bool
         :param thumbnail_path: Optionally pass a thumbnail file path to override the LMV
             thumbnail (this thumbnail will be included in the LMV packaged zip file).
         :type thumbnail_path: str
