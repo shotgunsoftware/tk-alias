@@ -46,9 +46,7 @@ class UploadVersionPlugin(HookBaseClass):
 
     @property
     def icon(self):
-        """
-        Path to an png icon on disk
-        """
+        """Path to an png icon on disk."""
 
         return os.path.join(self.disk_location, os.pardir, "icons", "review.png")
 
@@ -231,15 +229,7 @@ class UploadVersionPlugin(HookBaseClass):
             if media_version_type == self.VERSION_TYPE_3D:
                 # Pass the thumbnail retrieved to override the LMV thumbnail, and ignore the
                 # LMV thumbnail output
-                use_framework_translator = (
-                    settings.get("Translation Worker").value
-                    == self.TRANSLATION_WORKER_FRAMEWORK
-                )
-                media_package_path, _, _ = self._translate_file_to_lmv(
-                    item,
-                    use_framework_translator=use_framework_translator,
-                    thumbnail_path=thumbnail_path,
-                )
+                media_package_path, _, _ = self._translate_file_to_lmv(item)
                 self.logger.info("Translated file to LMV")
 
             if media_package_path:
@@ -265,6 +255,14 @@ class UploadVersionPlugin(HookBaseClass):
                 self.logger.info(
                     f"Uploaded Version media from path {uploaded_movie_path}"
                 )
+
+            if thumbnail_path:
+                self.parent.shotgun.upload_thumbnail(
+                    entity_type=version_type,
+                    entity_id=version_id,
+                    path=thumbnail_path,
+                )
+                self.logger.info(f"Uploaded Version thumbnail from path {thumbnail_path}")
 
             # Remove the temporary directory or files created to generate media content
             self._cleanup_temp_files(media_package_path)
@@ -382,7 +380,6 @@ class UploadVersionPlugin(HookBaseClass):
         version_type_combobox = widget.property("version_type_combobox")
         if version_type_combobox:
             version_type_index = version_type_combobox.currentIndex()
-            # if version_type_index >= 0 and version_type_index < len(self.VERSION_TYPE_OPTIONS):
             if 0 <= version_type_index < len(self.VERSION_TYPE_OPTIONS):
                 self.VERSION_TYPE_OPTIONS[version_type_index]
                 ui_settings["Version Type"] = self.VERSION_TYPE_OPTIONS[
@@ -587,52 +584,15 @@ class UploadVersionPlugin(HookBaseClass):
             - The path to the temporary folder where the LMV files have been processed
         """
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
-        translator = framework_lmv.import_module("translator")
-
-        file_name = str(item.properties["sg_version_data"]["id"])
-        thumbnail_path = thumbnail_path or item.get_thumbnail_as_path()
-
         # Translate the file to LMV
-        lmv_translator = translator.LMVTranslator(item.properties.path)
-        lmv_translator.translate(use_framework_translator=use_framework_translator)
+        lmv_translator = item.properties["lmv_translator"]
+        lmv_translator.translate()
 
         # Package up the LMV files into a zip file
-        package_path, lmv_thumbnail_path = lmv_translator.package(
-            svf_file_name=file_name,
-            thumbnail_path=thumbnail_path,
-        )
+        file_name = str(item.properties["sg_version_data"]["id"])
+        package_path, lmv_thumbnail_path = lmv_translator.package(svf_file_name=file_name)
 
         return package_path, lmv_thumbnail_path, lmv_translator.output_directory
-
-    def _get_thumbnail_from_lmv(self, item, use_framework_translator):
-        """
-        Extract the thumbnail from the source file, using the LMV conversion
-
-        :param item: Item to process
-        :param use_framework_translator: True will force the translator shipped with tk-framework-lmv to be used
-        :returns:
-            - The path to the temporary folder where the LMV files have been processed
-            - The path to the LMV thumbnail
-        """
-
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
-        translator = framework_lmv.import_module("translator")
-
-        # translate the file to lmv
-        lmv_translator = translator.LMVTranslator(item.properties.path)
-        self.logger.info("Converting file to LMV")
-        lmv_translator.translate(use_framework_translator=use_framework_translator)
-
-        self.logger.info("Extracting thumbnails from LMV")
-        thumbnail_path = lmv_translator.extract_thumbnail()
-        if not thumbnail_path:
-            self.logger.warning(
-                "Couldn't retrieve thumbnail data from LMV. Version won't have any associated media"
-            )
-            return lmv_translator.output_directory
-
-        return lmv_translator.output_directory, thumbnail_path
 
     def _is_3d_viewer_enabled(self):
         """
