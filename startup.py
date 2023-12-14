@@ -260,8 +260,16 @@ class AliasLauncher(SoftwareLauncher):
             os.path.dirname(alias_bindir), "resources", "AboutBox.txt"
         )
 
-        with open(about_box_file, "r") as f:
-            about_box_file_first_line = f.readline().split("\r")[0].strip()
+        try:
+            # First try to read the file with utf-8 encoding. Any errors will be replaced with
+            # the Unicode replacement.
+            with open(about_box_file, "r", encoding="utf-8", errors="replace") as f:
+                about_box_file_first_line = f.readline().split("\r")[0].strip()
+        except UnicodeDecodeError:
+            # Fallback to trying to read the file with the latin-1 encoding. This encoding is
+            # more lenient.
+            with open(about_box_file, "r", encoding="latin-1") as f:
+                about_box_file_first_line = f.readline().split("\r")[0].strip()
 
         release_prefix = "Alias " + code_name
         releases = about_box_file_first_line.strip().split(",")
