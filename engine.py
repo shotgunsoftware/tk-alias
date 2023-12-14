@@ -191,6 +191,11 @@ class AliasEngine(sgtk.platform.Engine):
         """Get the AliasDataValidator object to help validate the Alias data."""
         return self.__data_validator
 
+    @property
+    def executable_path(self):
+        """Get the path to the currently running Alias executable."""
+        return self.alias_execpath
+
     # -------------------------------------------------------------------------------------------------------
     # Override base Engine class methods
     # -------------------------------------------------------------------------------------------------------
