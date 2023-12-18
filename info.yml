@@ -12,6 +12,11 @@
 
 # expected fields in the configuration file for this engine
 configuration:
+    hook_menu_customization:
+        type: hook
+        description: "A hook that customizes the ShotGrid menu in Alias."
+        default_value: "{self}/menu_customization.py"
+
     debug_logging:
         type: bool
         description: Controls whether debug messages should be emitted to the logger
