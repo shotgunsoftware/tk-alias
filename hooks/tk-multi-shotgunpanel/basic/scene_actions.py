@@ -15,6 +15,7 @@ Hook that loads defines all the available actions, broken down by publish type.
 import os
 import sgtk
 import alias_api
+import tempfile
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
@@ -117,6 +118,16 @@ class AliasActions(HookBaseClass):
                 }
             )
 
+        if "import_note_attachments" in actions:
+            action_instances.append(
+                {
+                    "name": "import_note_attachments",
+                    "params": None,
+                    "caption": "Import Note attachment(s) as canvas image(s)",
+                    "description": "This will create a new canvas for each image attached to the note.",
+                }
+            )
+
         if "import_subdiv" in actions:
             action_instances.append(
                 {
@@ -160,6 +171,9 @@ class AliasActions(HookBaseClass):
         elif name == "texture_node":
             path = self.get_publish_path(sg_data)
             self._create_texture_node(path)
+
+        if name == "import_note_attachments":
+            self._import_note_attachments_as_canvas(sg_data)
 
         elif name == "import_subdiv":
             path = self.get_publish_path(sg_data)
@@ -269,6 +283,31 @@ class AliasActions(HookBaseClass):
         if not os.path.exists(path):
             raise Exception("File not found on disk - '%s'" % path)
         alias_api.create_texture_node(path, True)
+
+    def _import_note_attachments_as_canvas(self, sg_data):
+        """
+        Import the Note attachments as canvas images.
+                    
+        This will create a new canvas for each image attached to the note.
+
+        :param sg_data: The ShotGrid entity dict for the note.
+        :type sg_data: dict
+        """
+
+        if not sg_data or not sg_data.get("id"):
+            return
+
+        sg_note = self.parent.shotgun.find_one(
+            "Note", [["id", "is", sg_data["id"]]], ["attachments"]
+        )
+        if not sg_note:
+            return
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            for attachment in sg_note["attachments"]:
+                temp_path = os.path.join(temp_dir, attachment["name"])
+                self.parent.shotgun.download_attachment(attachment, temp_path)
+                alias_api.create_texture_node(temp_path)
 
     def _import_subdivision(self, path):
         """
