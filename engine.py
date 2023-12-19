@@ -15,6 +15,7 @@ import pprint
 
 import sgtk
 from sgtk.util import LocalFileStorageManager
+from tank.errors import TankInitError
 
 
 class AliasEngine(sgtk.platform.Engine):
@@ -697,7 +698,16 @@ class AliasEngine(sgtk.platform.Engine):
                 )
                 return None
 
-            return sgtk.sgtk_from_path(pc_local_path)
+            try:
+                return sgtk.sgtk_from_path(pc_local_path)
+            except TankInitError:
+                raise TankInitError(
+                    """
+                    Unable to reference files from projects with a 'site' pipeline configuration.
+                    To fix this, add the project name to the 'Project' field on the pipeline configuration used by the source project.
+                    Warning, this could effect other projects using this config. See this doc for reference.
+                    """
+                )
 
     def get_tk_from_project_id(self, project_id):
         """
@@ -725,11 +735,20 @@ class AliasEngine(sgtk.platform.Engine):
             pc_local_path = self.__get_pipeline_configuration_local_path(project_id)
             if not pc_local_path:
                 self.logger.warning(
-                    "Couldn't get tank instance for project {}.".format(project_id)
+                    "Couldn't get tank instance for project {}.\n{}".format(project_id, e)
                 )
                 return None
 
-            return sgtk.sgtk_from_path(pc_local_path)
+            try:
+                return sgtk.sgtk_from_path(pc_local_path)
+            except TankInitError as e:
+                raise TankInitError(
+                    """
+                    Unable to reference files from projects with a 'site' pipeline configuration.
+                    To fix this, add the project name to the 'Project' field on the pipeline configuration used by the source project.
+                    Warning, this could effect other projects using this config. See this <a href=https://help.autodesk.com/view/SGDEV/ENU/?guid=SGD_pg_integrations_admin_guides_integrations_admin_guide_html#locking-off-updates><b>doc.</b></a> for reference."
+                    """
+                )
 
     def get_reference_template(self, tk, sg_data):
         """
