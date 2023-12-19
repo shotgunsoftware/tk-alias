@@ -287,7 +287,7 @@ class AliasActions(HookBaseClass):
     def _import_note_attachments_as_canvas(self, sg_data):
         """
         Import the Note attachments as canvas images.
-                    
+
         This will create a new canvas for each image attached to the note.
 
         :param sg_data: The ShotGrid entity dict for the note.
