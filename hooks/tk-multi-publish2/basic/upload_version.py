@@ -173,7 +173,7 @@ class UploadVersionPlugin(HookBaseClass):
                     "Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead."
                 )
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
+        framework_lmv = self.load_framework("tk-framework-lmv_v1.x.x")
         if not framework_lmv:
             self.logger.error("Could not run LMV translation: missing ATF framework")
             return False
@@ -585,7 +585,7 @@ class UploadVersionPlugin(HookBaseClass):
         path = item.get_property("path")
 
         # Translate the file to LMV
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
+        framework_lmv = self.load_framework("tk-framework-lmv_v1.x.x")
         translator = framework_lmv.import_module("translator")
         lmv_translator = translator.LMVTranslator(path, self.parent.sgtk, item.context)
         lmv_translator.translate()
