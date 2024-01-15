@@ -479,7 +479,12 @@ class AliasEngine(sgtk.platform.Engine):
         # Check if there is a file set to open on startup
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
         if path:
-            self.open_file(path)
+            # Add a timer to delay opening the file for 5 seconds. This is a work around for
+            # Alias < 2024 not being ready to open a file on engine startup. This is not a
+            # bullet proof method, but it should work in most cases, and there is not a
+            # better alternative to support older versions of Alias at this point.
+            from sgtk.platform.qt import QtCore
+            QtCore.QTimer.singleShot(1000*5, lambda: self.open_file(path))
             # clear the env var after loading so that it doesn't get reopened on an engine restart.
             del os.environ["SGTK_FILE_TO_OPEN"]
 
