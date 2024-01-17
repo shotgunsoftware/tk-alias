@@ -80,3 +80,4 @@ requires_core_version: "v0.19.18"
 frameworks:
   - {"name": "tk-framework-aliastranslations", "version": "v0.2.3"}
   - {"name": "tk-framework-alias", "version": "v1.x.x", "minimum_version": "v1.0.1"}
+  - {"name": "tk-framework-lmv", "version": "v1.x.x"}
