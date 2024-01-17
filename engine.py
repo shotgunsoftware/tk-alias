@@ -514,9 +514,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         status = self.alias_py.save_file()
-        if status != self.alias_py.AlStatusCode.Success.value:
-            self.logger.error(
-                "Alias Python API Error: save_file returned non-success status code {}".format(
+        if status == self.alias_py.AlStatusCode.Failure.value:
+            self.logger.error("Alias Python API save_file failed")
+        elif status != self.alias_py.AlStatusCode.Success.value:
+            self.logger.warning(
+                "Alias Python API save_file returned non-success status code {}".format(
                     status
                 )
             )
@@ -534,9 +536,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         status = self.alias_py.save_file_as(path)
-        if status != self.alias_py.AlStatusCode.Success.value:
-            self.logger.error(
-                "Alias Python API Error: save_file_as('{}') returned non-success status code {}".format(
+        if status == self.alias_py.AlStatusCode.Failure.value:
+            self.logger.error("Alias Python API save_file_as failed")
+        elif status != self.alias_py.AlStatusCode.Success.value:
+            self.logger.warning(
+                "Alias Python API save_file_as('{}') returned non-success status code {}".format(
                     path, status
                 )
             )
@@ -554,9 +558,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         status = self.alias_py.open_file(path)
-        if status != self.alias_py.AlStatusCode.Success.value:
-            self.logger.error(
-                "Alias Python API Error: open_file('{}') returned non-success status code {}".format(
+        if status == self.alias_py.AlStatusCode.Failure.value:
+            self.logger.error("Alias Python API open_file failed")
+        elif status != self.alias_py.AlStatusCode.Success.value:
+            self.logger.warning(
+                "Alias Python API open_file('{}') returned non-success status code {}".format(
                     path, status
                 )
             )

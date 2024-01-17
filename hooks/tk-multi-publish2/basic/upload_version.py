@@ -174,19 +174,21 @@ class UploadVersionPlugin(HookBaseClass):
                     "Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead."
                 )
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
-        if not framework_lmv:
-            self.logger.error("Could not run LMV translation: missing ATF framework")
-            return False
+            framework_lmv = self.load_framework("tk-framework-lmv_v1.x.x")
+            if not framework_lmv:
+                self.logger.error("Missing required framework tk-framework-lmv v1.x.x")
+                return False
 
-        translator = framework_lmv.import_module("translator")
-        lmv_translator = translator.LMVTranslator(path, self.parent.sgtk, item.context)
-        lmv_translator_path = lmv_translator.get_translator_path()
-        if not lmv_translator_path:
-            self.logger.error(
-                "Missing translator for Alias. Alias must be installed locally to run LMV translation."
+            translator = framework_lmv.import_module("translator")
+            lmv_translator = translator.LMVTranslator(
+                path, self.parent.sgtk, item.context
             )
-            return False
+            lmv_translator_path = lmv_translator.get_translator_path()
+            if not lmv_translator_path:
+                self.logger.error(
+                    "Missing translator for Alias. Alias must be installed locally to run LMV translation."
+                )
+                return False
 
         return True
 
@@ -586,7 +588,7 @@ class UploadVersionPlugin(HookBaseClass):
         path = item.get_property("path")
 
         # Translate the file to LMV
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
+        framework_lmv = self.load_framework("tk-framework-lmv_v1.x.x")
         translator = framework_lmv.import_module("translator")
         lmv_translator = translator.LMVTranslator(path, self.parent.sgtk, item.context)
         lmv_translator.translate()
