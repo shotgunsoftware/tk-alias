@@ -365,13 +365,15 @@ class AliasEngine(sgtk.platform.Engine):
 
         if not self.__sio:
             raise NotImplementedError()
-            
+
         if self.__menu_generator:
             status = self.__menu_generator.alias_menu.remove()
             if status == self.alias_py.AlStatusCode.Failure.value:
                 self.logger.error("Failed to remove ShotGrid menu from Alias")
             elif status != self.alias_py.AlStatusCode.Success.value:
-                self.logger.warning(f"Alias Python API menu.remove() returned non-success status code {status}")
+                self.logger.warning(
+                    f"Alias Python API menu.remove() returned non-success status code {status}"
+                )
         self.__menu_generator = None
 
         self.__sio.emit_threadsafe("restart")
