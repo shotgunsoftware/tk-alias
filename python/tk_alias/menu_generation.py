@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from collections import OrderedDict
 import os
 
 from tank_vendor import six
@@ -16,6 +17,8 @@ from sgtk.util import is_windows, is_macos, is_linux
 
 class AliasMenuGenerator(object):
     """Menu handling for Alias."""
+
+    MENU_CUSTOMIZATION_HOOK = "hook_menu_customization"
 
     def __init__(self, engine):
         """
@@ -26,6 +29,11 @@ class AliasMenuGenerator(object):
         """
 
         self.__engine = engine
+
+        menu_customization_path = engine.get_setting(self.MENU_CUSTOMIZATION_HOOK)
+        self.__menu_customization_hook_instance = engine.create_hook_instance(
+            menu_customization_path
+        )
 
         if self._version_check(engine.alias_version, "2024.0") >= 0:
             self.__menu_name = "ShotGrid"
@@ -79,17 +87,19 @@ class AliasMenuGenerator(object):
                 parent=plugin_menu,
             )
 
-        # Now enumerate all items and create menu objects for them.
+        # Call the hook to get the engine commands in order.
+        menu_commands = self.__menu_customization_hook_instance.sorted_menu_commands(
+            self.engine.commands
+        )
+
+        # Convert command dictionaries to list of AppCommand objects
         menu_items = []
-        for (cmd_name, cmd_details) in self.engine.commands.items():
+        for (cmd_name, cmd_details) in menu_commands:
             menu_items.append(AppCommand(cmd_name, cmd_details))
 
-        # Sort list of commands in name order
-        menu_items.sort(key=lambda x: x.name)
-
-        # Add favourites
+        # Add favourites in the order that they are defined in the config settings.
         add_separator = True
-        for fav in self.engine.get_setting("menu_favourites"):
+        for fav in self.engine.get_setting("menu_favourites", []):
             app_instance_name = fav["app_instance"]
             menu_name = fav["name"]
 
@@ -103,9 +113,9 @@ class AliasMenuGenerator(object):
                     # Only add a separator for the first menu item
                     add_separator = False
 
-        # Go through all of the menu items.
-        # Separate them out into various sections.
-        commands_by_app = {}
+        # Add the rest of the menu commands. Use an OrderedDict to ensure the ordering of menu
+        # command is preservered (for Python < 3.7)
+        commands_by_app = OrderedDict()
         add_separator = True
         for cmd in menu_items:
 
@@ -164,7 +174,7 @@ class AliasMenuGenerator(object):
         """
 
         add_separator = True
-        for app_name in sorted(commands_by_app.keys()):
+        for app_name in commands_by_app:
             if len(commands_by_app[app_name]) > 1:
                 # more than one menu entry fort his app
                 # make a sub menu and put all items in the sub menu
