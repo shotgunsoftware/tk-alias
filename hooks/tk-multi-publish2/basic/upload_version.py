@@ -228,7 +228,9 @@ class UploadVersionPlugin(HookBaseClass):
             if media_version_type == self.VERSION_TYPE_3D:
                 # Pass the thumbnail retrieved to override the LMV thumbnail, and ignore the
                 # LMV thumbnail output
-                media_package_path, _, _ = self._translate_file_to_lmv(item, thumbnail_path=thumbnail_path)
+                media_package_path, _, _ = self._translate_file_to_lmv(
+                    item, thumbnail_path=thumbnail_path
+                )
                 self.logger.info("Translated file to LMV")
 
             if media_package_path:
