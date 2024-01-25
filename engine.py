@@ -367,7 +367,7 @@ class AliasEngine(sgtk.platform.Engine):
             raise NotImplementedError()
 
         if self.__menu_generator:
-            status = self.__menu_generator.alias_menu.remove()
+            status = self.__menu_generator.remove_menu()
             if status == self.alias_py.AlStatusCode.Failure.value:
                 self.logger.error("Failed to remove ShotGrid menu from Alias")
             elif status != self.alias_py.AlStatusCode.Success.value:
