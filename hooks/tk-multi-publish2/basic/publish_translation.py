@@ -269,12 +269,21 @@ class AliasTranslationPublishPlugin(HookBaseClass):
 
         # if we don't have translator settings, we can't publish
         if not translator.translation_type:
-            self.logger.warning("Couldn't find the translation type.")
+            self.logger.warning(
+                f"Couldn't find the translation type {translator.translator_type}."
+            )
             return False
 
         if not translator.translator_path:
-            self.logger.warning("Couldn't find translator path.")
+            self.logger.warning(f"Couldn't determine which translator to use.")
             return False
+
+        if not os.path.exists(translator.translator_path):
+            self.logger.warning(
+                f"Translator path does not exist {translator.translator_path}."
+            )
+            return False
+        self.logger.info(f"Translator in use: {translator.translator_path}.")
 
         # store the licensing information in the item properties so that the translation could be run in
         # background mode

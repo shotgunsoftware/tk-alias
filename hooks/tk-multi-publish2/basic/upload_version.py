@@ -39,7 +39,8 @@ class UploadVersionPlugin(HookBaseClass):
         VERSION_TYPE_3D: """
                 Create a Version in ShotGrid for Review.<br/><br/>
                 A 3D Version (LMV translation of your file/scene's geometry) will be created in ShotGrid.
-                This Version can then be reviewed via ShotGrid's many review apps.
+                This Version can then be reviewed via ShotGrid's many review apps.<br/><br/>
+                References in your file will not be included in the 3D version.
             """,
     }
 
