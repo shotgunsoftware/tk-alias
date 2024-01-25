@@ -143,7 +143,7 @@ class AliasMenuGenerator(object):
         if not self.alias_menu:
             return self.engine.alias_py.AlStatusCode.InvalidObject
         status = self.alias_menu.remove()
-        self.alias_menu = None
+        self.__alias_menu = None
         return status
 
     def clean_menu(self):

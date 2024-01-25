@@ -363,14 +363,18 @@ class AliasEngine(sgtk.platform.Engine):
         with Alias (e.g. OpenAlias mode).
         """
 
+        self.logger.info("Restarting the Alias Engine...")
+
         if not self.__sio:
             raise NotImplementedError()
 
         if self.__menu_generator:
             status = self.__menu_generator.remove_menu()
-            if status == self.alias_py.AlStatusCode.Failure.value:
+            if status == self.alias_py.AlStatusCode.Success.value:
+                self.logger.debug("Removed ShotGrid menu from Alias successfully.")
+            elif status == self.alias_py.AlStatusCode.Failure.value:
                 self.logger.error("Failed to remove ShotGrid menu from Alias")
-            elif status != self.alias_py.AlStatusCode.Success.value:
+            else:
                 self.logger.warning(
                     f"Alias Python API menu.remove() returned non-success status code {status}"
                 )
@@ -386,6 +390,8 @@ class AliasEngine(sgtk.platform.Engine):
         responsible for ensuring that the engine is destroyed properly (e.g. calling destroy
         on the engine itself).
         """
+
+        self.logger.info("Shutting down the Alias Engine...")
 
         from sgtk.platform.qt import QtGui
 
