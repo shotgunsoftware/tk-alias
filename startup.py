@@ -409,8 +409,10 @@ class AliasLauncher(SoftwareLauncher):
         # Get the pipeline config id
         engine = sgtk.platform.current_engine()
         pipeline_config_id = engine.sgtk.pipeline_configuration.get_shotgun_id()
-        entity_type = self.context.project["type"]
-        entity_id = self.context.project["id"]
+        # Get the entity from the current context
+        entity_dict = self.context.task or self.context.entity or self.context.project
+        entity_type = entity_dict["type"]
+        entity_id = entity_dict["id"]
 
         # Ensure the basic.alias plugin is installed and up to date
         return startup_utils.ensure_plugin_ready(
