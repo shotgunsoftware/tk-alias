@@ -492,8 +492,16 @@ class AliasEngine(sgtk.platform.Engine):
         # Check if there is a file set to open on startup
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
         if path:
-            self.open_file(path)
-            # clear the env var after loading so that it doesn't get reopened on an engine restart.
+            if self.__sio:
+                self.open_file(path)
+            else:
+                # Add a timer to delay opening the file for 5 seconds. This is a work around for
+                # Alias when running SG in the same process (<2024), which is not ready to open
+                # a file on engine startup. This is not a bullet proof solution, but it should
+                # work in most cases, and there is not a better alternative to support older
+                # versions of Alias.
+                QtCore.QTimer.singleShot(1000 * 5, lambda: self.open_file(path))
+            # Clear the env var after loading so that it doesn't get reopened on an engine restart.
             del os.environ["SGTK_FILE_TO_OPEN"]
 
     def save_context_for_stage(self, context=None):

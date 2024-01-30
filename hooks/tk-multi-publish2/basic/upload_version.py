@@ -228,7 +228,9 @@ class UploadVersionPlugin(HookBaseClass):
             if media_version_type == self.VERSION_TYPE_3D:
                 # Pass the thumbnail retrieved to override the LMV thumbnail, and ignore the
                 # LMV thumbnail output
-                media_package_path, _, _ = self._translate_file_to_lmv(item)
+                media_package_path, _, _ = self._translate_file_to_lmv(
+                    item, thumbnail_path=thumbnail_path
+                )
                 self.logger.info("Translated file to LMV")
 
             if media_package_path:
@@ -586,6 +588,7 @@ class UploadVersionPlugin(HookBaseClass):
         """
 
         path = item.get_property("path")
+        thumbnail_path = thumbnail_path or item.get_thumbnail_as_path()
 
         # Translate the file to LMV
         framework_lmv = self.load_framework("tk-framework-lmv_v1.x.x")
@@ -596,7 +599,8 @@ class UploadVersionPlugin(HookBaseClass):
         # Package up the LMV files into a zip file
         file_name = str(item.properties["sg_version_data"]["id"])
         package_path, lmv_thumbnail_path = lmv_translator.package(
-            svf_file_name=file_name
+            svf_file_name=file_name,
+            thumbnail_path=thumbnail_path,
         )
 
         return package_path, lmv_thumbnail_path, lmv_translator.output_directory
