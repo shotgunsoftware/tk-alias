@@ -246,7 +246,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("%s: Post context change...", self)
 
         # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
-        if self.has_ui:
+        if self.has_ui and self.__menu_generator:
             self.__menu_generator.build()
 
     def destroy_engine(self):
@@ -363,13 +363,24 @@ class AliasEngine(sgtk.platform.Engine):
         with Alias (e.g. OpenAlias mode).
         """
 
-        if self.__menu_generator:
-            self.__menu_generator.clean_menu()
+        self.logger.info("Restarting the Alias Engine...")
 
-        if self.__sio:
-            self.__sio.emit_threadsafe("restart")
-        else:
+        if not self.__sio:
             raise NotImplementedError()
+
+        if self.__menu_generator:
+            status = self.__menu_generator.remove_menu()
+            if status == self.alias_py.AlStatusCode.Success.value:
+                self.logger.debug("Removed ShotGrid menu from Alias successfully.")
+            elif status == self.alias_py.AlStatusCode.Failure.value:
+                self.logger.error("Failed to remove ShotGrid menu from Alias")
+            else:
+                self.logger.warning(
+                    f"Alias Python API menu.remove() returned non-success status code {status}"
+                )
+        self.__menu_generator = None
+
+        self.__sio.emit_threadsafe("restart")
 
     def shutdown(self):
         """
@@ -379,6 +390,8 @@ class AliasEngine(sgtk.platform.Engine):
         responsible for ensuring that the engine is destroyed properly (e.g. calling destroy
         on the engine itself).
         """
+
+        self.logger.info("Shutting down the Alias Engine...")
 
         from sgtk.platform.qt import QtGui
 

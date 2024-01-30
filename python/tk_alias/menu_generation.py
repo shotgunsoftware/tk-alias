@@ -137,6 +137,15 @@ class AliasMenuGenerator(object):
         # add all the apps to the main menu
         self._add_apps_to_menu(commands_by_app)
 
+    def remove_menu(self):
+        """Remove the ShotGrid menu from Alias. The menu will be destroyed."""
+
+        if not self.alias_menu:
+            return self.engine.alias_py.AlStatusCode.InvalidObject
+        status = self.alias_menu.remove()
+        self.__alias_menu = None
+        return status
+
     def clean_menu(self):
         """Clean the ShotGrid menu in Alias by removing all its entries."""
 
