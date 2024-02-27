@@ -22,7 +22,7 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 class AliasActions(HookBaseClass):
     """
-    ShotGrid Panel Actions for Alias
+    Flow Production Tracking Panel Actions for Alias
     """
 
     def generate_actions(self, sg_data, actions, ui_area):
@@ -57,7 +57,7 @@ class AliasActions(HookBaseClass):
         one object is returned for an action, use the params key to pass additional
         data into the run_action hook.
 
-        :param sg_data: ShotGrid data dictionary with all the standard publish fields.
+        :param sg_data: Flow Production Tracking data dictionary with all the standard publish fields.
         :param actions: List of action strings which have been defined in the app configuration.
         :param ui_area: String denoting the UI Area (see above).
         :returns List of dictionaries, each with keys name, params, caption and description
@@ -147,13 +147,14 @@ class AliasActions(HookBaseClass):
 
         :param name: Action name string representing one of the items returned by generate_actions.
         :param params: Params data, as specified by generate_actions.
-        :param sg_data: ShotGrid data dictionary with all the standard publish fields.
+        :param sg_data: Flow Production Tracking data dictionary with all the standard publish fields.
         :returns: No return value expected.
         """
 
         self.logger.debug(
             "Execute action called for action %s. "
-            "Parameters: %s. ShotGrid Data: %s" % (name, params, sg_data)
+            "Parameters: %s. Flow Production Tracking Data: %s"
+            % (name, params, sg_data)
         )
 
         if name == "reference":
@@ -197,7 +198,7 @@ class AliasActions(HookBaseClass):
         Each entry will have the following values:
 
             name: Name of the action to execute
-            sg_data: Publish information coming from ShotGrid
+            sg_data: Publish information coming from Flow Production Tracking
             params: Parameters passed down from the generate_actions hook.
 
         .. note::
@@ -290,7 +291,7 @@ class AliasActions(HookBaseClass):
 
         This will create a new canvas for each image attached to the note.
 
-        :param sg_data: The ShotGrid entity dict for the note.
+        :param sg_data: The Flow Production Tracking entity dict for the note.
         :type sg_data: dict
         """
 

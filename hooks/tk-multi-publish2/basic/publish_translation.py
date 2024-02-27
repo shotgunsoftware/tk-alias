@@ -41,13 +41,14 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         loader_url = "https://help.autodesk.com/view/SGDEV/ENU/?contextId=PC_APP_LOADER"
 
         return """
-        Publishes the file to ShotGrid. A <b>Publish</b> entry will be
-        created in ShotGrid which will include a reference to the file's current
-        path on disk. If a publish template is configured, a copy of the
-        current session will be copied to the publish template path which
-        will be the file that is published. Other users will be able to access
-        the published file via the <b><a href='%s'>Loader</a></b> so long as
-        they have access to the file's location on disk.
+        Publishes the file to Flow Production Tracking. A <b>Publish</b>
+        entry will be created in Flow Production Tracking which will include
+        a reference to the file's current path on disk. If a publish template
+        is configured, a copy of the current session will be copied to the
+        publish template path which will be the file that is published. Other
+        users will be able to access the published file via the <b>
+        <a href='%s'>Loader</a></b> so long as they have access to the file's
+        location on disk.
 
         <br><br><b color='red'>NOTE:</b> it's not possible to publish a WREF file
         if you already have WREF files loaded in your current session.
@@ -401,7 +402,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
                 extra={
                     "action_show_in_shotgun": {
                         "label": "Show Publish",
-                        "tooltip": "Reveal the published file in ShotGrid.",
+                        "tooltip": "Reveal the published file in Flow Production Tracking.",
                         "entity": item.properties["sg_publish_data"],
                     }
                 },

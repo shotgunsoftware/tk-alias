@@ -24,7 +24,7 @@ class PublishAnnotationsPlugin(HookBaseClass):
         """
         One line display name describing the plugin
         """
-        return "Publish Annotations to ShotGrid"
+        return "Publish Annotations to Flow Production Tracking"
 
     @property
     def description(self):
@@ -33,8 +33,8 @@ class PublishAnnotationsPlugin(HookBaseClass):
             This plugin exports all annotations created using the Locator Annotation tool in Alias.
         </p>
         <p>
-            Each annotation will create a Note in ShotGrid. All Notes are linked to this version and file. Use this to
-            sync all review notes made in Alias with ShotGrid.
+            Each annotation will create a Note in Flow Production Tracking. All Notes are linked to this version and file. Use this to
+            sync all review notes made in Alias with Flow Production Tracking.
         </p>
         """
 

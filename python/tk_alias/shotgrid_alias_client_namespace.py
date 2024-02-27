@@ -12,7 +12,7 @@ from .framework_alias import AliasClientNamespace
 
 
 class ShotGridAliasClientNamespace(AliasClientNamespace):
-    """Namespace for ShotGrid specific communication with Alias."""
+    """Namespace for Flow Production Tracking specific communication with Alias."""
 
     def on_shutdown(self):
         """

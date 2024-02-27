@@ -24,7 +24,7 @@ class AliasLauncher(SoftwareLauncher):
     context.
     """
 
-    # The name used to establish the ShotGrid Alias Engine client with Alias
+    # The name used to establish the Flow Production Tracking Alias Engine client with Alias
     TK_ALIAS_CLIENT_NAME = "shotgrid"
 
     # Product code names
@@ -97,7 +97,7 @@ class AliasLauncher(SoftwareLauncher):
             )
 
             # Set up the environment variables required for Alias Plugin to load and launch the
-            # ShotGrid Alias Engine
+            # Flow Production Tracking Alias Engine
             #
             # Append executable folder to PATH environment variable
             server_python_exe = plugin_env.get("ALIAS_PLUGIN_SERVER_PYTHON")
@@ -387,7 +387,7 @@ class AliasLauncher(SoftwareLauncher):
         :type alias_version: str
         :param alias_exec_path: The file path to the Alias application executable.
         :type alias_exec_path: str
-        :param client_name: The name for this Alias ShotGrid client application.
+        :param client_name: The name for this Alias Flow Production Tracking client application.
         :type client_name: str
         :param client_exe: The file path to the python script to bootstrap the Shotgrid
             client application.
