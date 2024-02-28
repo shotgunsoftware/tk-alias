@@ -25,7 +25,7 @@ class AliasLauncher(SoftwareLauncher):
     """
 
     # The name used to establish the Flow Production Tracking Alias Engine client with Alias
-    TK_ALIAS_CLIENT_NAME = "flow production tracking"
+    TK_ALIAS_CLIENT_NAME = "flow-production-tracking"
 
     # Product code names
     CODE_NAMES = {

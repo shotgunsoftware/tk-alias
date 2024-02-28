@@ -36,7 +36,7 @@ class AliasMenuGenerator(object):
         )
 
         if self._version_check(engine.alias_version, "2024.0") >= 0:
-            self.__menu_name = "Flow Production Tracking"
+            self.__menu_name = "ShotGrid"
         elif self._version_check(engine.alias_version, "2022.2") >= 0:
             self.__menu_name = "al_shotgrid"
         else:
