@@ -153,7 +153,7 @@ class AliasSessionCollector(HookBaseClass):
             "alias.standalone.translation", "Alias Translations", "All Alias Translations"
         )
         translation_item.properties["alias_api"] = api.alias_api
-        translation_item.properties["path"] = path
+        translation_item.properties["path"] = evaluated_path
         # Add it as global import instead
         sys_module_name = "alias_api"
         sys.modules[sys_module_name] = api.alias_api

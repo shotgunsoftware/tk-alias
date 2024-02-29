@@ -14,6 +14,14 @@ import time
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
+try:
+    import sys
+    sys.path.append("C:\\python_libs")
+    import ptvsd
+    ptvsd.enable_attach()
+    ptvsd.wait_for_attach()
+except:
+    pass
 
 class AliasStandaloneTranslationPublishPlugin(HookBaseClass):
     """
@@ -291,78 +299,89 @@ class AliasStandaloneTranslationPublishPlugin(HookBaseClass):
         :param item: Item to process
         """
 
-        # get the publish "mode" stored inside of the root item properties
-        bg_processing = item.parent.parent.properties.get("bg_processing", False)
-        in_bg_process = item.parent.parent.properties.get("in_bg_process", False)
+        publisher = self.parent
 
-        if not bg_processing or (bg_processing and in_bg_process):
+        # get the path to create and publish
+        publish_path = self.get_publish_path(settings, item)
 
-            publisher = self.parent
+        # ensure the publish folder exists:
+        publish_folder = os.path.dirname(publish_path)
+        self.parent.ensure_folder_exists(publish_folder)
 
-            # get the path to create and publish
-            publish_path = self.get_publish_path(settings, item)
+        # # need to build a new instance of the translator for each translation because the type is changing
+        # framework = self.load_framework("tk-framework-aliastranslations_v0.x.x")
+        # tk_framework_aliastranslations = framework.import_module(
+        #     "tk_framework_aliastranslations"
+        # )
+        # translator = tk_framework_aliastranslations.Translator(
+        #     item.properties.path, publish_path
+        # )
 
-            # ensure the publish folder exists:
-            publish_folder = os.path.dirname(publish_path)
-            self.parent.ensure_folder_exists(publish_folder)
+        # # set the license information
+        # translator.translator_settings.license_settings = item.get_property(
+        #     "license_settings"
+        # )
 
-            # need to build a new instance of the translator for each translation because the type is changing
-            framework = self.load_framework("tk-framework-aliastranslations_v0.x.x")
-            tk_framework_aliastranslations = framework.import_module(
-                "tk_framework_aliastranslations"
-            )
-            translator = tk_framework_aliastranslations.Translator(
-                item.properties.path, publish_path
-            )
+        # if (
+        #     settings.get("Translator Settings")
+        #     and settings.get("Translator Settings").value
+        # ):
+        #     for setting in settings.get("Translator Settings").value:
+        #         translator.add_extra_param(
+        #             setting.get("name"), setting.get("value")
+        #         )
 
-            # set the license information
-            translator.translator_settings.license_settings = item.get_property(
-                "license_settings"
-            )
+        # try:
+        #     translator.execute()
+        # except Exception as e:
+        #     self.logger.error("Failed to run translation: %s" % e)
+        #     return
+        
+        # Just use the alias api to open the EDF and save it as a wire
+        import alias_api
 
-            if (
-                settings.get("Translator Settings")
-                and settings.get("Translator Settings").value
-            ):
-                for setting in settings.get("Translator Settings").value:
-                    translator.add_extra_param(
-                        setting.get("name"), setting.get("value")
+        edf = item.properties.path
+        wire = publish_path
+
+        alias_api.initialize_universe()
+        # status = alias_api.store(edf, False)
+        import_status = alias_api.import_file(edf)
+        save_status = alias_api.save_file_as(wire)
+
+
+        if not os.path.exists(wire):
+            raise FileNotFoundError(f"Translation failed. Wire not found: {wire}")
+
+        # ----
+
+        parent_sg_publish_data = item.parent.properties.get("sg_publish_data")
+
+        if parent_sg_publish_data and not item.description:
+            item.description = parent_sg_publish_data["description"]
+
+        super(AliasStandaloneTranslationPublishPlugin, self).publish(settings, item)
+
+        # If we have some parent publish data, share the thumbnail between the parent publish and it child
+        if parent_sg_publish_data:
+            request_timeout = 60
+            start_time = time.perf_counter()
+            self.logger.debug("Sharing the thumbnail")
+            thumbnail_shared = False
+            while time.perf_counter() - start_time <= request_timeout:
+                try:
+                    publisher.shotgun.share_thumbnail(
+                        entities=[item.properties.get("sg_publish_data")],
+                        source_entity=parent_sg_publish_data,
                     )
+                    self.logger.debug("Thumbnail shared successfully")
+                    thumbnail_shared = True
+                    break
+                except Exception as e:
+                    pass
+                time.sleep(1)
 
-            try:
-                translator.execute()
-            except Exception as e:
-                self.logger.error("Failed to run translation: %s" % e)
-                return
-
-            parent_sg_publish_data = item.parent.properties.get("sg_publish_data")
-
-            if parent_sg_publish_data and not item.description:
-                item.description = parent_sg_publish_data["description"]
-
-            super(AliasStandaloneTranslationPublishPlugin, self).publish(settings, item)
-
-            # If we have some parent publish data, share the thumbnail between the parent publish and it child
-            if parent_sg_publish_data:
-                request_timeout = 60
-                start_time = time.perf_counter()
-                self.logger.debug("Sharing the thumbnail")
-                thumbnail_shared = False
-                while time.perf_counter() - start_time <= request_timeout:
-                    try:
-                        publisher.shotgun.share_thumbnail(
-                            entities=[item.properties.get("sg_publish_data")],
-                            source_entity=parent_sg_publish_data,
-                        )
-                        self.logger.debug("Thumbnail shared successfully")
-                        thumbnail_shared = True
-                        break
-                    except Exception as e:
-                        pass
-                    time.sleep(1)
-
-                if not thumbnail_shared:
-                    self.logger.debug("Thumbnail couln't be shared")
+            if not thumbnail_shared:
+                self.logger.debug("Thumbnail couln't be shared")
 
     def finalize(self, settings, item):
         """
@@ -387,7 +406,8 @@ class AliasStandaloneTranslationPublishPlugin(HookBaseClass):
                     "action_show_in_shotgun": {
                         "label": "Show Publish",
                         "tooltip": "Reveal the published file in ShotGrid.",
-                        "entity": item.properties["sg_publish_data"],
+                        # "entity": item.properties["sg_publish_data"],
+                        "entity": item.properties.get("sg_publish_data"),
                     }
                 },
             )
