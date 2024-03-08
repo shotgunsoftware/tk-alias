@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Alias Engine Code &mdash; tk-alias v3.0.2 documentation</title>
+  <title>The Alias Engine Code &mdash; tk-alias v3.0.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-    <a href='http://developer.shotgridsoftware.com'>
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -82,12 +82,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.0.2.<br>
+    <b>tk-alias</b> v3.0.3.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
 
@@ -320,6 +320,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the AliasDataValidator object to help validate the Alias data.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data_validator</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">executable_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the path to the currently running Alias executable.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_execpath</span>
+
     <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Override base Engine class methods</span>
     <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
@@ -370,7 +375,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Post context change...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
         <span class="c1"># Rebuild the menu only if we change of context and if we&#39;re running Alias in interactive mode</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">destroy_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -487,13 +492,24 @@
 <span class="sd">        with Alias (e.g. OpenAlias mode).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="o">.</span><span class="n">clean_menu</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Restarting the Alias Engine...&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="o">.</span><span class="n">emit_threadsafe</span><span class="p">(</span><span class="s2">&quot;restart&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="o">.</span><span class="n">remove_menu</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removed ShotGrid menu from Alias successfully.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Failure</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to remove ShotGrid menu from Alias&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Alias Python API menu.remove() returned non-success status code </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="o">.</span><span class="n">emit_threadsafe</span><span class="p">(</span><span class="s2">&quot;restart&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -503,6 +519,8 @@
 <span class="sd">        responsible for ensuring that the engine is destroyed properly (e.g. calling destroy</span>
 <span class="sd">        on the engine itself).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Shutting down the Alias Engine...&quot;</span><span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
 
@@ -603,8 +621,16 @@
         <span class="c1"># Check if there is a file set to open on startup</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SGTK_FILE_TO_OPEN&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-            <span class="c1"># clear the env var after loading so that it doesn&#39;t get reopened on an engine restart.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Add a timer to delay opening the file for 5 seconds. This is a work around for</span>
+                <span class="c1"># Alias when running SG in the same process (&lt;2024), which is not ready to open</span>
+                <span class="c1"># a file on engine startup. This is not a bullet proof solution, but it should</span>
+                <span class="c1"># work in most cases, and there is not a better alternative to support older</span>
+                <span class="c1"># versions of Alias.</span>
+                <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="mi">1000</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="c1"># Clear the env var after loading so that it doesn&#39;t get reopened on an engine restart.</span>
             <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SGTK_FILE_TO_OPEN&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">save_context_for_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -638,9 +664,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">save_file</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Alias Python API Error: save_file returned non-success status code </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Failure</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Alias Python API save_file failed&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Alias Python API save_file returned non-success status code </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">status</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -658,9 +686,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">save_file_as</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Alias Python API Error: save_file_as(&#39;</span><span class="si">{}</span><span class="s2">&#39;) returned non-success status code </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Failure</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Alias Python API save_file_as failed&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Alias Python API save_file_as(&#39;</span><span class="si">{}</span><span class="s2">&#39;) returned non-success status code </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">path</span><span class="p">,</span> <span class="n">status</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -678,9 +708,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Alias Python API Error: open_file(&#39;</span><span class="si">{}</span><span class="s2">&#39;) returned non-success status code </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Failure</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Alias Python API open_file failed&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Alias Python API open_file(&#39;</span><span class="si">{}</span><span class="s2">&#39;) returned non-success status code </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">path</span><span class="p">,</span> <span class="n">status</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -1371,7 +1403,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Autodesk.</p>
+    <p>&#169; Copyright 2024, Autodesk.</p>
   </div>
 
    

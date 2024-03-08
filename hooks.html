@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alias Engine Hooks &mdash; tk-alias v3.0.2 documentation</title>
+  <title>Alias Engine Hooks &mdash; tk-alias v3.0.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-    <a href='http://developer.shotgridsoftware.com'>
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -108,12 +108,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.0.2.<br>
+    <b>tk-alias</b> v3.0.3.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
 
@@ -1563,12 +1563,21 @@
 
         <span class="c1"># if we don&#39;t have translator settings, we can&#39;t publish</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">translator</span><span class="o">.</span><span class="n">translation_type</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find the translation type.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Couldn&#39;t find the translation type </span><span class="si">{</span><span class="n">translator</span><span class="o">.</span><span class="n">translator_type</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">translator</span><span class="o">.</span><span class="n">translator_path</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find translator path.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t determine which translator to use.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">translator</span><span class="o">.</span><span class="n">translator_path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Translator path does not exist </span><span class="si">{</span><span class="n">translator</span><span class="o">.</span><span class="n">translator_path</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Translator in use: </span><span class="si">{</span><span class="n">translator</span><span class="o">.</span><span class="n">translator_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
         <span class="c1"># store the licensing information in the item properties so that the translation could be run in</span>
         <span class="c1"># background mode</span>
@@ -2319,22 +2328,15 @@
 <span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
 <span class="kn">import</span> <span class="nn">sgtk</span>
 
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
 
 
 <span class="k">class</span> <span class="nc">UploadVersionPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Plugin for sending quicktimes and images to ShotGrid for review.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># Translation workers are responsible for performing the LMV translation.</span>
-    <span class="c1"># &#39;local&#39;: a local translator will be used, determined based on file type and current engine</span>
-    <span class="c1"># &#39;framework&#39;:  the tk-framework-lmv translator will be used (default)</span>
-    <span class="n">TRANSLATION_WORKER_LOCAL</span> <span class="o">=</span> <span class="s2">&quot;local&quot;</span>
-    <span class="n">TRANSLATION_WORKER_FRAMEWORK</span> <span class="o">=</span> <span class="s2">&quot;framework&quot;</span>
-    <span class="n">TRANSLATION_WORKERS</span> <span class="o">=</span> <span class="p">[</span><span class="n">TRANSLATION_WORKER_LOCAL</span><span class="p">,</span> <span class="n">TRANSLATION_WORKER_FRAMEWORK</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin for uploading Versions to ShotGrid for review.&quot;&quot;&quot;</span>
 
     <span class="c1"># Version Type string constants</span>
     <span class="n">VERSION_TYPE_2D</span> <span class="o">=</span> <span class="s2">&quot;2D Version&quot;</span>
@@ -2356,15 +2358,14 @@
         <span class="n">VERSION_TYPE_3D</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                Create a Version in ShotGrid for Review.&lt;br/&gt;&lt;br/&gt;</span>
 <span class="s2">                A 3D Version (LMV translation of your file/scene&#39;s geometry) will be created in ShotGrid.</span>
-<span class="s2">                This Version can then be reviewed via ShotGrid&#39;s many review apps.</span>
+<span class="s2">                This Version can then be reviewed via ShotGrid&#39;s many review apps.&lt;br/&gt;&lt;br/&gt;</span>
+<span class="s2">                References in your file will not be included in the 3D version.</span>
 <span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Path to an png icon on disk</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Path to an png icon on disk.&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disk_location</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="s2">&quot;icons&quot;</span><span class="p">,</span> <span class="s2">&quot;review.png&quot;</span><span class="p">)</span>
 
@@ -2404,11 +2405,6 @@
                 <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Upload content to ShotGrid?&quot;</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="s2">&quot;Translation Worker&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">TRANSLATION_WORKER_FRAMEWORK</span><span class="p">,</span>
-                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Specify the worker to use to perform LMV translation.&quot;</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">}</span>
 
@@ -2468,6 +2464,11 @@
 <span class="sd">        :returns: True if item is valid, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No path found for item&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
         <span class="c1"># Validate fails if the Version Type is not supported</span>
         <span class="n">version_type</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Version Type&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
         <span class="k">if</span> <span class="n">version_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">VERSION_TYPE_OPTIONS</span><span class="p">:</span>
@@ -2492,20 +2493,21 @@
                     <span class="s2">&quot;Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead.&quot;</span>
                 <span class="p">)</span>
 
-        <span class="n">framework_lmv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_framework</span><span class="p">(</span><span class="s2">&quot;tk-framework-lmv_v0.x.x&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">framework_lmv</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not run LMV translation: missing ATF framework&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">framework_lmv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_framework</span><span class="p">(</span><span class="s2">&quot;tk-framework-lmv_v1.x.x&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">framework_lmv</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing required framework tk-framework-lmv v1.x.x&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">translation_worker</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Translation Worker&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">if</span> <span class="n">translation_worker</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">TRANSLATION_WORKERS</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Unknown Translation Worker &#39;</span><span class="si">{worker}</span><span class="s2">&#39;. Translation worker must be one of </span><span class="si">{workers}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">worker</span><span class="o">=</span><span class="n">translation_worker</span><span class="p">,</span>
-                    <span class="n">workers</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TRANSLATION_WORKERS</span><span class="p">),</span>
-                <span class="p">)</span>
+            <span class="n">translator</span> <span class="o">=</span> <span class="n">framework_lmv</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;translator&quot;</span><span class="p">)</span>
+            <span class="n">lmv_translator</span> <span class="o">=</span> <span class="n">translator</span><span class="o">.</span><span class="n">LMVTranslator</span><span class="p">(</span>
+                <span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">context</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">lmv_translator_path</span> <span class="o">=</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">get_translator_path</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">lmv_translator_path</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Missing translator for Alias. Alias must be installed locally to run LMV translation.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span>
 
@@ -2518,7 +2520,7 @@
 <span class="sd">        :param item: Item to process</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># get the publish &quot;mode&quot; stored inside of the root item properties</span>
+        <span class="c1"># Get the publish &quot;mode&quot; stored inside of the root item properties</span>
         <span class="n">bg_processing</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bg_processing&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">in_bg_process</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_bg_process&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
@@ -2527,94 +2529,65 @@
             <span class="n">publisher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
 
-            <span class="c1"># be sure to strip the extension from the publish name</span>
+            <span class="c1"># Be sure to strip the extension from the publish name</span>
             <span class="n">path_components</span> <span class="o">=</span> <span class="n">publisher</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">get_file_path_components</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">path_components</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
-            <span class="p">(</span><span class="n">publish_name</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">publish_name</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
             <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;publish_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_name</span>
 
-            <span class="c1"># create the Version in ShotGrid</span>
+            <span class="c1"># Create the Version in ShotGrid</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">UploadVersionPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
-            <span class="c1"># Get the version type to create</span>
-            <span class="n">version_type</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Version Type&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-
-            <span class="c1"># generate the Version content: LMV file (for 3D) or simple 2D thumbnail</span>
-            <span class="k">if</span> <span class="n">version_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">VERSION_TYPE_3D</span><span class="p">:</span>
-                <span class="n">use_framework_translator</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Translation Worker&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-                    <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TRANSLATION_WORKER_FRAMEWORK</span>
+            <span class="c1"># Generate media content and upload to ShotGrid</span>
+            <span class="n">version_type</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+            <span class="n">version_id</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="n">thumbnail_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_thumbnail_as_path</span><span class="p">()</span>
+            <span class="n">media_package_path</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">media_version_type</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Version Type&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="n">media_version_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">VERSION_TYPE_3D</span><span class="p">:</span>
+                <span class="c1"># Pass the thumbnail retrieved to override the LMV thumbnail, and ignore the</span>
+                <span class="c1"># LMV thumbnail output</span>
+                <span class="n">media_package_path</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translate_file_to_lmv</span><span class="p">(</span>
+                    <span class="n">item</span><span class="p">,</span> <span class="n">thumbnail_path</span><span class="o">=</span><span class="n">thumbnail_path</span>
                 <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating LMV files from source file&quot;</span><span class="p">)</span>
-                <span class="c1"># translate the file to lmv and upload the corresponding package to the Version</span>
-                <span class="p">(</span>
-                    <span class="n">package_path</span><span class="p">,</span>
-                    <span class="n">thumbnail_path</span><span class="p">,</span>
-                    <span class="n">output_directory</span><span class="p">,</span>
-                <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translate_file_to_lmv</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">use_framework_translator</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Uploading LMV files to ShotGrid&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Translated file to LMV&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">media_package_path</span><span class="p">:</span>
+                <span class="c1"># For 3D media, a media package path will be generated. Set the translation</span>
+                <span class="c1"># type on the Version in order to view 3D media in ShotGrid Web.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                    <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span>
-                    <span class="n">entity_id</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                    <span class="n">entity_type</span><span class="o">=</span><span class="n">version_type</span><span class="p">,</span>
+                    <span class="n">entity_id</span><span class="o">=</span><span class="n">version_id</span><span class="p">,</span>
                     <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sg_translation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;LMV&quot;</span><span class="p">},</span>
                 <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Set Version translation type to LMV&quot;</span><span class="p">)</span>
+
+            <span class="n">uploaded_movie_path</span> <span class="o">=</span> <span class="n">media_package_path</span> <span class="ow">or</span> <span class="n">thumbnail_path</span>
+            <span class="k">if</span> <span class="n">uploaded_movie_path</span><span class="p">:</span>
+                <span class="c1"># Uplod to the `sg_uploaded_movie` field on the Version so that the Version</span>
+                <span class="c1"># thumbnail shows the &quot;play&quot; button on hover from ShotGrid Web</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
-                    <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span>
-                    <span class="n">entity_id</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
-                    <span class="n">path</span><span class="o">=</span><span class="n">package_path</span><span class="p">,</span>
+                    <span class="n">entity_type</span><span class="o">=</span><span class="n">version_type</span><span class="p">,</span>
+                    <span class="n">entity_id</span><span class="o">=</span><span class="n">version_id</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">uploaded_movie_path</span><span class="p">,</span>
                     <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;sg_uploaded_movie&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="c1"># if the Version thumbnail is empty, update it with the newly created thumbnail</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">get_thumbnail_as_path</span><span class="p">()</span> <span class="ow">and</span> <span class="n">thumbnail_path</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span>
-                        <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span>
-                        <span class="n">entity_id</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
-                        <span class="n">path</span><span class="o">=</span><span class="n">thumbnail_path</span><span class="p">,</span>
-                    <span class="p">)</span>
-                <span class="c1"># delete the temporary folder on disk</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Deleting temporary folder&quot;</span><span class="p">)</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">output_directory</span><span class="p">)</span>
-
-            <span class="k">elif</span> <span class="n">version_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">VERSION_TYPE_2D</span><span class="p">:</span>
-                <span class="n">thumbnail_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_thumbnail_as_path</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using thumbnail image as Version media&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">thumbnail_path</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
-                        <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span>
-                        <span class="n">entity_id</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
-                        <span class="n">path</span><span class="o">=</span><span class="n">thumbnail_path</span><span class="p">,</span>
-                        <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;sg_uploaded_movie&quot;</span><span class="p">,</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">use_framework_translator</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Translation Worker&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-                        <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TRANSLATION_WORKER_FRAMEWORK</span>
-                    <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converting file to LMV to extract thumbnails&quot;</span><span class="p">)</span>
-                    <span class="n">output_directory</span><span class="p">,</span> <span class="n">thumbnail_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_thumbnail_from_lmv</span><span class="p">(</span>
-                        <span class="n">item</span><span class="p">,</span> <span class="n">use_framework_translator</span>
-                    <span class="p">)</span>
-                    <span class="k">if</span> <span class="n">thumbnail_path</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Uploading LMV thumbnail file to ShotGrid&quot;</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
-                            <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span>
-                            <span class="n">entity_id</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
-                            <span class="n">path</span><span class="o">=</span><span class="n">thumbnail_path</span><span class="p">,</span>
-                            <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;sg_uploaded_movie&quot;</span><span class="p">,</span>
-                        <span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span>
-                            <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span>
-                            <span class="n">entity_id</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
-                            <span class="n">path</span><span class="o">=</span><span class="n">thumbnail_path</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Deleting temporary folder&quot;</span><span class="p">)</span>
-                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">output_directory</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="s2">&quot;Failed to generate thumbnail for Version Type &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">version_type</span>
-                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Uploaded Version media from path </span><span class="si">{</span><span class="n">uploaded_movie_path</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">thumbnail_path</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span>
+                    <span class="n">entity_type</span><span class="o">=</span><span class="n">version_type</span><span class="p">,</span>
+                    <span class="n">entity_id</span><span class="o">=</span><span class="n">version_id</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">thumbnail_path</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Uploaded Version thumbnail from path </span><span class="si">{</span><span class="n">thumbnail_path</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Remove the temporary directory or files created to generate media content</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_temp_files</span><span class="p">(</span><span class="n">media_package_path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2729,7 +2702,6 @@
         <span class="n">version_type_combobox</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="s2">&quot;version_type_combobox&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">version_type_combobox</span><span class="p">:</span>
             <span class="n">version_type_index</span> <span class="o">=</span> <span class="n">version_type_combobox</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
-            <span class="c1"># if version_type_index &gt;= 0 and version_type_index &lt; len(self.VERSION_TYPE_OPTIONS):</span>
             <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">version_type_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">VERSION_TYPE_OPTIONS</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">VERSION_TYPE_OPTIONS</span><span class="p">[</span><span class="n">version_type_index</span><span class="p">]</span>
                 <span class="n">ui_settings</span><span class="p">[</span><span class="s2">&quot;Version Type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">VERSION_TYPE_OPTIONS</span><span class="p">[</span>
@@ -2884,63 +2856,73 @@
     <span class="c1">############################################################################</span>
     <span class="c1"># Protected functions</span>
 
-    <span class="k">def</span> <span class="nf">_translate_file_to_lmv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">use_framework_translator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_cleanup_temp_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">remove_from_root</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove any temporary directories or files from the given path.</span>
+
+<span class="sd">        If `remove_from_root` is True, the top most level directory of the given path is</span>
+<span class="sd">        used to remove all sub directories and files.</span>
+
+<span class="sd">        :param path: The file path to remove temporary files and/or directories from.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param remove_from_root: True will remove directories and files from the top most level</span>
+<span class="sd">            directory within the root temporary directory, else False will remove the single</span>
+<span class="sd">            file or directory (and its children). Default is True.</span>
+<span class="sd">        :type remove_from_root: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">return</span>  <span class="c1"># Cannot clean up a path that does not exist</span>
+
+        <span class="n">tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">([</span><span class="n">path</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">])</span> <span class="o">!=</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="c1"># Not a temporary directory or file</span>
+
+        <span class="k">if</span> <span class="n">remove_from_root</span><span class="p">:</span>
+            <span class="c1"># Get the top most level of the path that is inside the root temp dir</span>
+            <span class="n">relative_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">relative_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_translate_file_to_lmv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">thumbnail_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translate the current Alias file as an LMV package in order to upload it to ShotGrid as a 3D Version</span>
 
 <span class="sd">        :param item: Item to process</span>
-<span class="sd">        :param use_framework_translator: True will force the translator shipped with tk-framework-lmv to be used</span>
+<span class="sd">        :type item: PublishItem</span>
+<span class="sd">        :param thumbnail_path: Optionally pass a thumbnail file path to override the LMV</span>
+<span class="sd">            thumbnail (this thumbnail will be included in the LMV packaged zip file).</span>
+<span class="sd">        :type thumbnail_path: str</span>
+
 <span class="sd">        :returns:</span>
 <span class="sd">            - The path to the LMV zip file</span>
 <span class="sd">            - The path to the LMV thumbnail</span>
 <span class="sd">            - The path to the temporary folder where the LMV files have been processed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">framework_lmv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_framework</span><span class="p">(</span><span class="s2">&quot;tk-framework-lmv_v0.x.x&quot;</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+        <span class="n">thumbnail_path</span> <span class="o">=</span> <span class="n">thumbnail_path</span> <span class="ow">or</span> <span class="n">item</span><span class="o">.</span><span class="n">get_thumbnail_as_path</span><span class="p">()</span>
+
+        <span class="c1"># Translate the file to LMV</span>
+        <span class="n">framework_lmv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_framework</span><span class="p">(</span><span class="s2">&quot;tk-framework-lmv_v1.x.x&quot;</span><span class="p">)</span>
         <span class="n">translator</span> <span class="o">=</span> <span class="n">framework_lmv</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;translator&quot;</span><span class="p">)</span>
+        <span class="n">lmv_translator</span> <span class="o">=</span> <span class="n">translator</span><span class="o">.</span><span class="n">LMVTranslator</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">lmv_translator</span><span class="o">.</span><span class="n">translate</span><span class="p">()</span>
 
-        <span class="c1"># translate the file to lmv</span>
-        <span class="n">lmv_translator</span> <span class="o">=</span> <span class="n">translator</span><span class="o">.</span><span class="n">LMVTranslator</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Converting file to LMV&quot;</span><span class="p">)</span>
-        <span class="n">lmv_translator</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">use_framework_translator</span><span class="o">=</span><span class="n">use_framework_translator</span><span class="p">)</span>
-
-        <span class="c1"># package it up</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Packaging LMV files&quot;</span><span class="p">)</span>
-        <span class="n">package_path</span><span class="p">,</span> <span class="n">thumbnail_path</span> <span class="o">=</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">package</span><span class="p">(</span>
-            <span class="n">svf_file_name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]),</span>
-            <span class="n">thumbnail_path</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">get_thumbnail_as_path</span><span class="p">(),</span>
+        <span class="c1"># Package up the LMV files into a zip file</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+        <span class="n">package_path</span><span class="p">,</span> <span class="n">lmv_thumbnail_path</span> <span class="o">=</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">package</span><span class="p">(</span>
+            <span class="n">svf_file_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span>
+            <span class="n">thumbnail_path</span><span class="o">=</span><span class="n">thumbnail_path</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">package_path</span><span class="p">,</span> <span class="n">thumbnail_path</span><span class="p">,</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">output_directory</span>
-
-    <span class="k">def</span> <span class="nf">_get_thumbnail_from_lmv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">use_framework_translator</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extract the thumbnail from the source file, using the LMV conversion</span>
-
-<span class="sd">        :param item: Item to process</span>
-<span class="sd">        :param use_framework_translator: True will force the translator shipped with tk-framework-lmv to be used</span>
-<span class="sd">        :returns:</span>
-<span class="sd">            - The path to the temporary folder where the LMV files have been processed</span>
-<span class="sd">            - The path to the LMV thumbnail</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">framework_lmv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_framework</span><span class="p">(</span><span class="s2">&quot;tk-framework-lmv_v0.x.x&quot;</span><span class="p">)</span>
-        <span class="n">translator</span> <span class="o">=</span> <span class="n">framework_lmv</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;translator&quot;</span><span class="p">)</span>
-
-        <span class="c1"># translate the file to lmv</span>
-        <span class="n">lmv_translator</span> <span class="o">=</span> <span class="n">translator</span><span class="o">.</span><span class="n">LMVTranslator</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Converting file to LMV&quot;</span><span class="p">)</span>
-        <span class="n">lmv_translator</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">use_framework_translator</span><span class="o">=</span><span class="n">use_framework_translator</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Extracting thumbnails from LMV&quot;</span><span class="p">)</span>
-        <span class="n">thumbnail_path</span> <span class="o">=</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">extract_thumbnail</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">thumbnail_path</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Couldn&#39;t retrieve thumbnail data from LMV. Version won&#39;t have any associated media&quot;</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">output_directory</span>
-
-        <span class="k">return</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">thumbnail_path</span>
+        <span class="k">return</span> <span class="n">package_path</span><span class="p">,</span> <span class="n">lmv_thumbnail_path</span><span class="p">,</span> <span class="n">lmv_translator</span><span class="o">.</span><span class="n">output_directory</span>
 
     <span class="k">def</span> <span class="nf">_is_3d_viewer_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2990,6 +2972,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sgtk</span>
 <span class="kn">import</span> <span class="nn">alias_api</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
 
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
 
@@ -3092,6 +3075,16 @@
                 <span class="p">}</span>
             <span class="p">)</span>
 
+        <span class="k">if</span> <span class="s2">&quot;import_note_attachments&quot;</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="n">action_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;import_note_attachments&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;caption&quot;</span><span class="p">:</span> <span class="s2">&quot;Import Note attachment(s) as canvas image(s)&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;This will create a new canvas for each image attached to the note.&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="s2">&quot;import_subdiv&quot;</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
             <span class="n">action_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
@@ -3135,6 +3128,9 @@
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;texture_node&quot;</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_publish_path</span><span class="p">(</span><span class="n">sg_data</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_texture_node</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;import_note_attachments&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_import_note_attachments_as_canvas</span><span class="p">(</span><span class="n">sg_data</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;import_subdiv&quot;</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_publish_path</span><span class="p">(</span><span class="n">sg_data</span><span class="p">)</span>
@@ -3244,6 +3240,31 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;File not found on disk - &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
         <span class="n">alias_api</span><span class="o">.</span><span class="n">create_texture_node</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_import_note_attachments_as_canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Import the Note attachments as canvas images.</span>
+
+<span class="sd">        This will create a new canvas for each image attached to the note.</span>
+
+<span class="sd">        :param sg_data: The ShotGrid entity dict for the note.</span>
+<span class="sd">        :type sg_data: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sg_data</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sg_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="n">sg_note</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
+            <span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="n">sg_data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]]],</span> <span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sg_note</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp_dir</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">sg_note</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">]:</span>
+                <span class="n">temp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">download_attachment</span><span class="p">(</span><span class="n">attachment</span><span class="p">,</span> <span class="n">temp_path</span><span class="p">)</span>
+                <span class="n">alias_api</span><span class="o">.</span><span class="n">create_texture_node</span><span class="p">(</span><span class="n">temp_path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_import_subdivision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3426,7 +3447,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Autodesk.</p>
+    <p>&#169; Copyright 2024, Autodesk.</p>
   </div>
 
    
