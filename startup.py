@@ -260,8 +260,16 @@ class AliasLauncher(SoftwareLauncher):
             os.path.dirname(alias_bindir), "resources", "AboutBox.txt"
         )
 
-        with open(about_box_file, "r") as f:
-            about_box_file_first_line = f.readline().split("\r")[0].strip()
+        try:
+            # First try to read the file with utf-8 encoding. Any errors will be replaced with
+            # the Unicode replacement.
+            with open(about_box_file, "r", encoding="utf-8", errors="replace") as f:
+                about_box_file_first_line = f.readline().split("\r")[0].strip()
+        except UnicodeDecodeError:
+            # Fallback to trying to read the file with the latin-1 encoding. This encoding is
+            # more lenient.
+            with open(about_box_file, "r", encoding="latin-1") as f:
+                about_box_file_first_line = f.readline().split("\r")[0].strip()
 
         release_prefix = "Alias " + code_name
         releases = about_box_file_first_line.strip().split(",")
@@ -401,8 +409,10 @@ class AliasLauncher(SoftwareLauncher):
         # Get the pipeline config id
         engine = sgtk.platform.current_engine()
         pipeline_config_id = engine.sgtk.pipeline_configuration.get_shotgun_id()
-        entity_type = self.context.project["type"]
-        entity_id = self.context.project["id"]
+        # Get the entity from the current context
+        entity_dict = self.context.task or self.context.entity or self.context.project
+        entity_type = entity_dict["type"]
+        entity_id = entity_dict["id"]
 
         # Ensure the basic.alias plugin is installed and up to date
         return startup_utils.ensure_plugin_ready(

@@ -9,22 +9,15 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import os
 import shutil
+import tempfile
+
 import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class UploadVersionPlugin(HookBaseClass):
-    """
-    Plugin for sending quicktimes and images to ShotGrid for review.
-    """
-
-    # Translation workers are responsible for performing the LMV translation.
-    # 'local': a local translator will be used, determined based on file type and current engine
-    # 'framework':  the tk-framework-lmv translator will be used (default)
-    TRANSLATION_WORKER_LOCAL = "local"
-    TRANSLATION_WORKER_FRAMEWORK = "framework"
-    TRANSLATION_WORKERS = [TRANSLATION_WORKER_LOCAL, TRANSLATION_WORKER_FRAMEWORK]
+    """Plugin for uploading Versions to ShotGrid for review."""
 
     # Version Type string constants
     VERSION_TYPE_2D = "2D Version"
@@ -46,15 +39,14 @@ class UploadVersionPlugin(HookBaseClass):
         VERSION_TYPE_3D: """
                 Create a Version in ShotGrid for Review.<br/><br/>
                 A 3D Version (LMV translation of your file/scene's geometry) will be created in ShotGrid.
-                This Version can then be reviewed via ShotGrid's many review apps.
+                This Version can then be reviewed via ShotGrid's many review apps.<br/><br/>
+                References in your file will not be included in the 3D version.
             """,
     }
 
     @property
     def icon(self):
-        """
-        Path to an png icon on disk
-        """
+        """Path to an png icon on disk."""
 
         return os.path.join(self.disk_location, os.pardir, "icons", "review.png")
 
@@ -94,11 +86,6 @@ class UploadVersionPlugin(HookBaseClass):
                 "type": "bool",
                 "default": False,
                 "description": "Upload content to ShotGrid?",
-            },
-            "Translation Worker": {
-                "type": "str",
-                "default": self.TRANSLATION_WORKER_FRAMEWORK,
-                "description": "Specify the worker to use to perform LMV translation.",
             },
         }
 
@@ -158,6 +145,11 @@ class UploadVersionPlugin(HookBaseClass):
         :returns: True if item is valid, False otherwise.
         """
 
+        path = item.get_property("path")
+        if not path:
+            self.logger.error("No path found for item")
+            return False
+
         # Validate fails if the Version Type is not supported
         version_type = settings.get("Version Type").value
         if version_type not in self.VERSION_TYPE_OPTIONS:
@@ -182,20 +174,21 @@ class UploadVersionPlugin(HookBaseClass):
                     "Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead."
                 )
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
-        if not framework_lmv:
-            self.logger.error("Could not run LMV translation: missing ATF framework")
-            return False
+            framework_lmv = self.load_framework("tk-framework-lmv_v1.x.x")
+            if not framework_lmv:
+                self.logger.error("Missing required framework tk-framework-lmv v1.x.x")
+                return False
 
-        translation_worker = settings.get("Translation Worker").value
-        if translation_worker not in self.TRANSLATION_WORKERS:
-            self.logger.error(
-                "Unknown Translation Worker '{worker}'. Translation worker must be one of {workers}".format(
-                    worker=translation_worker,
-                    workers=", ".join(self.TRANSLATION_WORKERS),
-                )
+            translator = framework_lmv.import_module("translator")
+            lmv_translator = translator.LMVTranslator(
+                path, self.parent.sgtk, item.context
             )
-            return False
+            lmv_translator_path = lmv_translator.get_translator_path()
+            if not lmv_translator_path:
+                self.logger.error(
+                    "Missing translator for Alias. Alias must be installed locally to run LMV translation."
+                )
+                return False
 
         return True
 
@@ -208,7 +201,7 @@ class UploadVersionPlugin(HookBaseClass):
         :param item: Item to process
         """
 
-        # get the publish "mode" stored inside of the root item properties
+        # Get the publish "mode" stored inside of the root item properties
         bg_processing = item.parent.properties.get("bg_processing", False)
         in_bg_process = item.parent.properties.get("in_bg_process", False)
 
@@ -217,94 +210,65 @@ class UploadVersionPlugin(HookBaseClass):
             publisher = self.parent
             path = item.properties["path"]
 
-            # be sure to strip the extension from the publish name
+            # Be sure to strip the extension from the publish name
             path_components = publisher.util.get_file_path_components(path)
             filename = path_components["filename"]
-            (publish_name, extension) = os.path.splitext(filename)
+            (publish_name, _) = os.path.splitext(filename)
             item.properties["publish_name"] = publish_name
 
-            # create the Version in ShotGrid
+            # Create the Version in ShotGrid
             super(UploadVersionPlugin, self).publish(settings, item)
 
-            # Get the version type to create
-            version_type = settings.get("Version Type").value
-
-            # generate the Version content: LMV file (for 3D) or simple 2D thumbnail
-            if version_type == self.VERSION_TYPE_3D:
-                use_framework_translator = (
-                    settings.get("Translation Worker").value
-                    == self.TRANSLATION_WORKER_FRAMEWORK
+            # Generate media content and upload to ShotGrid
+            version_type = item.properties["sg_version_data"]["type"]
+            version_id = item.properties["sg_version_data"]["id"]
+            thumbnail_path = item.get_thumbnail_as_path()
+            media_package_path = None
+            media_version_type = settings.get("Version Type").value
+            if media_version_type == self.VERSION_TYPE_3D:
+                # Pass the thumbnail retrieved to override the LMV thumbnail, and ignore the
+                # LMV thumbnail output
+                media_package_path, _, _ = self._translate_file_to_lmv(
+                    item, thumbnail_path=thumbnail_path
                 )
-                self.logger.debug("Creating LMV files from source file")
-                # translate the file to lmv and upload the corresponding package to the Version
-                (
-                    package_path,
-                    thumbnail_path,
-                    output_directory,
-                ) = self._translate_file_to_lmv(item, use_framework_translator)
-                self.logger.info("Uploading LMV files to ShotGrid")
+                self.logger.info("Translated file to LMV")
+
+            if media_package_path:
+                # For 3D media, a media package path will be generated. Set the translation
+                # type on the Version in order to view 3D media in ShotGrid Web.
                 self.parent.shotgun.update(
-                    entity_type="Version",
-                    entity_id=item.properties["sg_version_data"]["id"],
+                    entity_type=version_type,
+                    entity_id=version_id,
                     data={"sg_translation_type": "LMV"},
                 )
+                self.logger.info("Set Version translation type to LMV")
+
+            uploaded_movie_path = media_package_path or thumbnail_path
+            if uploaded_movie_path:
+                # Uplod to the `sg_uploaded_movie` field on the Version so that the Version
+                # thumbnail shows the "play" button on hover from ShotGrid Web
                 self.parent.shotgun.upload(
-                    entity_type="Version",
-                    entity_id=item.properties["sg_version_data"]["id"],
-                    path=package_path,
+                    entity_type=version_type,
+                    entity_id=version_id,
+                    path=uploaded_movie_path,
                     field_name="sg_uploaded_movie",
                 )
-                # if the Version thumbnail is empty, update it with the newly created thumbnail
-                if not item.get_thumbnail_as_path() and thumbnail_path:
-                    self.parent.shotgun.upload_thumbnail(
-                        entity_type="Version",
-                        entity_id=item.properties["sg_version_data"]["id"],
-                        path=thumbnail_path,
-                    )
-                # delete the temporary folder on disk
-                self.logger.debug("Deleting temporary folder")
-                shutil.rmtree(output_directory)
-
-            elif version_type == self.VERSION_TYPE_2D:
-                thumbnail_path = item.get_thumbnail_as_path()
-                self.logger.debug("Using thumbnail image as Version media")
-                if thumbnail_path:
-                    self.parent.shotgun.upload(
-                        entity_type="Version",
-                        entity_id=item.properties["sg_version_data"]["id"],
-                        path=thumbnail_path,
-                        field_name="sg_uploaded_movie",
-                    )
-                else:
-                    use_framework_translator = (
-                        settings.get("Translation Worker").value
-                        == self.TRANSLATION_WORKER_FRAMEWORK
-                    )
-                    self.logger.debug("Converting file to LMV to extract thumbnails")
-                    output_directory, thumbnail_path = self._get_thumbnail_from_lmv(
-                        item, use_framework_translator
-                    )
-                    if thumbnail_path:
-                        self.logger.info("Uploading LMV thumbnail file to ShotGrid")
-                        self.parent.shotgun.upload(
-                            entity_type="Version",
-                            entity_id=item.properties["sg_version_data"]["id"],
-                            path=thumbnail_path,
-                            field_name="sg_uploaded_movie",
-                        )
-                        self.parent.shotgun.upload_thumbnail(
-                            entity_type="Version",
-                            entity_id=item.properties["sg_version_data"]["id"],
-                            path=thumbnail_path,
-                        )
-                    self.logger.debug("Deleting temporary folder")
-                    shutil.rmtree(output_directory)
-            else:
-                raise NotImplementedError(
-                    "Failed to generate thumbnail for Version Type '{}'".format(
-                        version_type
-                    )
+                self.logger.info(
+                    f"Uploaded Version media from path {uploaded_movie_path}"
                 )
+
+            if thumbnail_path:
+                self.parent.shotgun.upload_thumbnail(
+                    entity_type=version_type,
+                    entity_id=version_id,
+                    path=thumbnail_path,
+                )
+                self.logger.info(
+                    f"Uploaded Version thumbnail from path {thumbnail_path}"
+                )
+
+            # Remove the temporary directory or files created to generate media content
+            self._cleanup_temp_files(media_package_path)
 
     def finalize(self, settings, item):
         """
@@ -419,7 +383,6 @@ class UploadVersionPlugin(HookBaseClass):
         version_type_combobox = widget.property("version_type_combobox")
         if version_type_combobox:
             version_type_index = version_type_combobox.currentIndex()
-            # if version_type_index >= 0 and version_type_index < len(self.VERSION_TYPE_OPTIONS):
             if 0 <= version_type_index < len(self.VERSION_TYPE_OPTIONS):
                 self.VERSION_TYPE_OPTIONS[version_type_index]
                 ui_settings["Version Type"] = self.VERSION_TYPE_OPTIONS[
@@ -574,63 +537,73 @@ class UploadVersionPlugin(HookBaseClass):
     ############################################################################
     # Protected functions
 
-    def _translate_file_to_lmv(self, item, use_framework_translator):
+    def _cleanup_temp_files(self, path, remove_from_root=True):
+        """
+        Remove any temporary directories or files from the given path.
+
+        If `remove_from_root` is True, the top most level directory of the given path is
+        used to remove all sub directories and files.
+
+        :param path: The file path to remove temporary files and/or directories from.
+        :type path: str
+        :param remove_from_root: True will remove directories and files from the top most level
+            directory within the root temporary directory, else False will remove the single
+            file or directory (and its children). Default is True.
+        :type remove_from_root: bool
+        """
+
+        if path is None or not os.path.exists(path):
+            return  # Cannot clean up a path that does not exist
+
+        tempdir = tempfile.gettempdir()
+        if os.path.commonpath([path, tempdir]) != tempdir:
+            return  # Not a temporary directory or file
+
+        if remove_from_root:
+            # Get the top most level of the path that is inside the root temp dir
+            relative_path = os.path.relpath(path, tempdir)
+            path = os.path.normpath(
+                os.path.join(tempdir, relative_path.split(os.path.sep)[0])
+            )
+
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        elif os.path.isfile(path):
+            os.remove(path)
+
+    def _translate_file_to_lmv(self, item, thumbnail_path=None):
         """
         Translate the current Alias file as an LMV package in order to upload it to ShotGrid as a 3D Version
 
         :param item: Item to process
-        :param use_framework_translator: True will force the translator shipped with tk-framework-lmv to be used
+        :type item: PublishItem
+        :param thumbnail_path: Optionally pass a thumbnail file path to override the LMV
+            thumbnail (this thumbnail will be included in the LMV packaged zip file).
+        :type thumbnail_path: str
+
         :returns:
             - The path to the LMV zip file
             - The path to the LMV thumbnail
             - The path to the temporary folder where the LMV files have been processed
         """
 
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
+        path = item.get_property("path")
+        thumbnail_path = thumbnail_path or item.get_thumbnail_as_path()
+
+        # Translate the file to LMV
+        framework_lmv = self.load_framework("tk-framework-lmv_v1.x.x")
         translator = framework_lmv.import_module("translator")
+        lmv_translator = translator.LMVTranslator(path, self.parent.sgtk, item.context)
+        lmv_translator.translate()
 
-        # translate the file to lmv
-        lmv_translator = translator.LMVTranslator(item.properties.path)
-        self.logger.info("Converting file to LMV")
-        lmv_translator.translate(use_framework_translator=use_framework_translator)
-
-        # package it up
-        self.logger.info("Packaging LMV files")
-        package_path, thumbnail_path = lmv_translator.package(
-            svf_file_name=str(item.properties["sg_version_data"]["id"]),
-            thumbnail_path=item.get_thumbnail_as_path(),
+        # Package up the LMV files into a zip file
+        file_name = str(item.properties["sg_version_data"]["id"])
+        package_path, lmv_thumbnail_path = lmv_translator.package(
+            svf_file_name=file_name,
+            thumbnail_path=thumbnail_path,
         )
 
-        return package_path, thumbnail_path, lmv_translator.output_directory
-
-    def _get_thumbnail_from_lmv(self, item, use_framework_translator):
-        """
-        Extract the thumbnail from the source file, using the LMV conversion
-
-        :param item: Item to process
-        :param use_framework_translator: True will force the translator shipped with tk-framework-lmv to be used
-        :returns:
-            - The path to the temporary folder where the LMV files have been processed
-            - The path to the LMV thumbnail
-        """
-
-        framework_lmv = self.load_framework("tk-framework-lmv_v0.x.x")
-        translator = framework_lmv.import_module("translator")
-
-        # translate the file to lmv
-        lmv_translator = translator.LMVTranslator(item.properties.path)
-        self.logger.info("Converting file to LMV")
-        lmv_translator.translate(use_framework_translator=use_framework_translator)
-
-        self.logger.info("Extracting thumbnails from LMV")
-        thumbnail_path = lmv_translator.extract_thumbnail()
-        if not thumbnail_path:
-            self.logger.warning(
-                "Couldn't retrieve thumbnail data from LMV. Version won't have any associated media"
-            )
-            return lmv_translator.output_directory
-
-        return lmv_translator.output_directory, thumbnail_path
+        return package_path, lmv_thumbnail_path, lmv_translator.output_directory
 
     def _is_3d_viewer_enabled(self):
         """

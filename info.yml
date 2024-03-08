@@ -12,6 +12,11 @@
 
 # expected fields in the configuration file for this engine
 configuration:
+    hook_menu_customization:
+        type: hook
+        description: "A hook that customizes the ShotGrid menu in Alias."
+        default_value: "{self}/menu_customization.py"
+
     debug_logging:
         type: bool
         description: Controls whether debug messages should be emitted to the logger
@@ -78,5 +83,6 @@ requires_shotgun_version:
 requires_core_version: "v0.19.18"
 
 frameworks:
-  - {"name": "tk-framework-aliastranslations", "version": "v0.2.3"}
-  - {"name": "tk-framework-alias", "version": "v1.x.x", "minimum_version": "v1.0.1"}
+  - {"name": "tk-framework-aliastranslations", "version": "v0.x.x", "minimum_version": "v0.2.3"}
+  - {"name": "tk-framework-alias", "version": "v1.x.x", "minimum_version": "v1.2.0"}
+  - {"name": "tk-framework-lmv", "version": "v1.x.x"}

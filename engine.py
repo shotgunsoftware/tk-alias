@@ -191,6 +191,11 @@ class AliasEngine(sgtk.platform.Engine):
         """Get the AliasDataValidator object to help validate the Alias data."""
         return self.__data_validator
 
+    @property
+    def executable_path(self):
+        """Get the path to the currently running Alias executable."""
+        return self.alias_execpath
+
     # -------------------------------------------------------------------------------------------------------
     # Override base Engine class methods
     # -------------------------------------------------------------------------------------------------------
@@ -241,7 +246,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.logger.debug("%s: Post context change...", self)
 
         # Rebuild the menu only if we change of context and if we're running Alias in interactive mode
-        if self.has_ui:
+        if self.has_ui and self.__menu_generator:
             self.__menu_generator.build()
 
     def destroy_engine(self):
@@ -358,13 +363,24 @@ class AliasEngine(sgtk.platform.Engine):
         with Alias (e.g. OpenAlias mode).
         """
 
-        if self.__menu_generator:
-            self.__menu_generator.clean_menu()
+        self.logger.info("Restarting the Alias Engine...")
 
-        if self.__sio:
-            self.__sio.emit_threadsafe("restart")
-        else:
+        if not self.__sio:
             raise NotImplementedError()
+
+        if self.__menu_generator:
+            status = self.__menu_generator.remove_menu()
+            if status == self.alias_py.AlStatusCode.Success.value:
+                self.logger.debug("Removed ShotGrid menu from Alias successfully.")
+            elif status == self.alias_py.AlStatusCode.Failure.value:
+                self.logger.error("Failed to remove ShotGrid menu from Alias")
+            else:
+                self.logger.warning(
+                    f"Alias Python API menu.remove() returned non-success status code {status}"
+                )
+        self.__menu_generator = None
+
+        self.__sio.emit_threadsafe("restart")
 
     def shutdown(self):
         """
@@ -374,6 +390,8 @@ class AliasEngine(sgtk.platform.Engine):
         responsible for ensuring that the engine is destroyed properly (e.g. calling destroy
         on the engine itself).
         """
+
+        self.logger.info("Shutting down the Alias Engine...")
 
         from sgtk.platform.qt import QtGui
 
@@ -474,8 +492,16 @@ class AliasEngine(sgtk.platform.Engine):
         # Check if there is a file set to open on startup
         path = os.environ.get("SGTK_FILE_TO_OPEN", None)
         if path:
-            self.open_file(path)
-            # clear the env var after loading so that it doesn't get reopened on an engine restart.
+            if self.__sio:
+                self.open_file(path)
+            else:
+                # Add a timer to delay opening the file for 5 seconds. This is a work around for
+                # Alias when running SG in the same process (<2024), which is not ready to open
+                # a file on engine startup. This is not a bullet proof solution, but it should
+                # work in most cases, and there is not a better alternative to support older
+                # versions of Alias.
+                QtCore.QTimer.singleShot(1000 * 5, lambda: self.open_file(path))
+            # Clear the env var after loading so that it doesn't get reopened on an engine restart.
             del os.environ["SGTK_FILE_TO_OPEN"]
 
     def save_context_for_stage(self, context=None):
@@ -509,9 +535,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         status = self.alias_py.save_file()
-        if status != self.alias_py.AlStatusCode.Success.value:
-            self.logger.error(
-                "Alias Python API Error: save_file returned non-success status code {}".format(
+        if status == self.alias_py.AlStatusCode.Failure.value:
+            self.logger.error("Alias Python API save_file failed")
+        elif status != self.alias_py.AlStatusCode.Success.value:
+            self.logger.warning(
+                "Alias Python API save_file returned non-success status code {}".format(
                     status
                 )
             )
@@ -529,9 +557,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         status = self.alias_py.save_file_as(path)
-        if status != self.alias_py.AlStatusCode.Success.value:
-            self.logger.error(
-                "Alias Python API Error: save_file_as('{}') returned non-success status code {}".format(
+        if status == self.alias_py.AlStatusCode.Failure.value:
+            self.logger.error("Alias Python API save_file_as failed")
+        elif status != self.alias_py.AlStatusCode.Success.value:
+            self.logger.warning(
+                "Alias Python API save_file_as('{}') returned non-success status code {}".format(
                     path, status
                 )
             )
@@ -549,9 +579,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         status = self.alias_py.open_file(path)
-        if status != self.alias_py.AlStatusCode.Success.value:
-            self.logger.error(
-                "Alias Python API Error: open_file('{}') returned non-success status code {}".format(
+        if status == self.alias_py.AlStatusCode.Failure.value:
+            self.logger.error("Alias Python API open_file failed")
+        elif status != self.alias_py.AlStatusCode.Success.value:
+            self.logger.warning(
+                "Alias Python API open_file('{}') returned non-success status code {}".format(
                     path, status
                 )
             )
