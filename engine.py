@@ -260,7 +260,9 @@ class AliasEngine(sgtk.platform.Engine):
 
         if self.__menu_generator:
             if self.__sio and not self.__sio.connected:
-                self.logger.error("No connection to Alias server. Can't remove ShotGrid menu.")
+                self.logger.error(
+                    "No connection to Alias server. Can't remove ShotGrid menu."
+                )
             else:
                 self.__menu_generator.remove_menu()
             self.__menu_generator = None
