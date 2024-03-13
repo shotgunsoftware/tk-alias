@@ -142,14 +142,17 @@ class AliasMenuGenerator(object):
 
         if not self.alias_menu:
             return self.engine.alias_py.AlStatusCode.InvalidObject
-        status = self.alias_menu.remove()
+        if hasattr(self.alias_menu, "remove"):
+            status = self.alias_menu.remove()
+        else:
+            status = self.clean_menu()
         self.__alias_menu = None
         return status
 
     def clean_menu(self):
         """Clean the ShotGrid menu in Alias by removing all its entries."""
 
-        self.alias_menu.clean()
+        return self.alias_menu.clean()
 
     def _add_context_menu(self):
         """
