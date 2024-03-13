@@ -259,8 +259,10 @@ class AliasEngine(sgtk.platform.Engine):
             self.__event_watcher = None
 
         if self.__menu_generator:
-            if not self.__sio or self.__sio.connected:
-                self.__menu_generator.clean_menu()
+            if self.__sio and not self.__sio.connected:
+                self.logger.error("No connection to Alias server. Can't remove ShotGrid menu.")
+            else:
+                self.__menu_generator.remove_menu()
             self.__menu_generator = None
 
         # Close all Shotgun app dialogs that are still opened since some apps do threads
