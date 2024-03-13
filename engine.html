@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Alias Engine Code &mdash; tk-alias v3.0.3 documentation</title>
+  <title>The Alias Engine Code &mdash; tk-alias v3.0.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -82,7 +82,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.0.3.<br>
+    <b>tk-alias</b> v3.0.4.<br>
     
         This documentation is part of the ShotGrid Pipeline Toolkit.
     
@@ -388,8 +388,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__event_watcher</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="o">.</span><span class="n">clean_menu</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;No connection to Alias server. Can&#39;t remove ShotGrid menu.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="o">.</span><span class="n">remove_menu</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Close all Shotgun app dialogs that are still opened since some apps do threads</span>
