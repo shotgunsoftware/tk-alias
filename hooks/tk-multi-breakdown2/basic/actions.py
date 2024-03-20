@@ -107,15 +107,27 @@ class AliasBreakdown2Actions(HookBaseClass):
 
         file_item = params.get("file_item")
         if not file_item:
-            raise TankError("Failed to execute action {name}. Missing param 'file_item'.".format(name=name))
+            raise TankError(
+                "Failed to execute action {name}. Missing param 'file_item'.".format(
+                    name=name
+                )
+            )
 
         path = file_item.path
         if not path:
-            raise TankError("Failed to execute action {name}. Missing reference file path in FileItem.".format(name=name))
+            raise TankError(
+                "Failed to execute action {name}. Missing reference file path in FileItem.".format(
+                    name=name
+                )
+            )
 
         reference = self.alias_py.get_reference_by_path(path)
         if not reference:
-            raise TankError("Failed to execute action {name}. Failed to find Alias reference with path {path}.".format(name=name, path=path))
-            
+            raise TankError(
+                "Failed to execute action {name}. Failed to find Alias reference with path {path}.".format(
+                    name=name, path=path
+                )
+            )
+
         if name == "remove_reference":
             self.alias_py.remove_reference(reference)
