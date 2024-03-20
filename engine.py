@@ -18,7 +18,7 @@ from sgtk.util import LocalFileStorageManager
 
 
 class AliasEngine(sgtk.platform.Engine):
-    """Alias engine for ShotGrid Toolkit."""
+    """Alias engine for Flow Production Tracking Toolkit."""
 
     # The name of the hidden window, used to parent SG widgets to the Alias main window.
     __PROXY_WINDOW_TITLE = "sgtk dialog owner proxy"
@@ -40,11 +40,11 @@ class AliasEngine(sgtk.platform.Engine):
         # The tk-alias python module
         self._tk_alias = None
 
-        # Keep track of the ShotGrid context by stage name and path to allow context switching.
+        # Keep track of the Flow Production Tracking context by stage name and path to allow context switching.
         self._contexts_by_stage_name = {}
         self._contexts_by_path = {}
 
-        # The menu generator is responsible for adding the ShotGrid menu to the Alias window.
+        # The menu generator is responsible for adding the Flow Production Tracking menu to the Alias window.
         self.__menu_generator = None
 
         # The event watcher manages handling Alias event callbacks.
@@ -65,7 +65,7 @@ class AliasEngine(sgtk.platform.Engine):
         # calling '__init_api'
         self.__alias_py = None
 
-        # Create a QWidget to parent all ShotGrid windows to. This widget will set its parent
+        # Create a QWidget to parent all Flow Production Tracking windows to. This widget will set its parent
         # as the Alias main window.
         self.__proxy_window = None
 
@@ -76,8 +76,8 @@ class AliasEngine(sgtk.platform.Engine):
         if not hasattr(sys, "argv"):
             sys.argv = [""]
 
-        # Flag inidicating if ShotGrid is running in the same process as Alias. This will
-        # determine how ShotGrid will communicate with Alias.
+        # Flag inidicating if Flow Production Tracking is running in the same process as Alias. This will
+        # determine how Flow Production Tracking will communicate with Alias.
         self.__in_alias_process = os.path.basename(sys.executable) == "Alias.exe"
         open_model = os.getenv("TK_ALIAS_OPEN_MODEL")
         if open_model is None:
@@ -375,9 +375,13 @@ class AliasEngine(sgtk.platform.Engine):
         if self.__menu_generator:
             status = self.__menu_generator.remove_menu()
             if status == self.alias_py.AlStatusCode.Success.value:
-                self.logger.debug("Removed ShotGrid menu from Alias successfully.")
+                self.logger.debug(
+                    "Removed Flow Production Tracking menu from Alias successfully."
+                )
             elif status == self.alias_py.AlStatusCode.Failure.value:
-                self.logger.error("Failed to remove ShotGrid menu from Alias")
+                self.logger.error(
+                    "Failed to remove Flow Production Tracking menu from Alias"
+                )
             else:
                 self.logger.warning(
                     f"Alias Python API menu.remove() returned non-success status code {status}"
@@ -410,7 +414,7 @@ class AliasEngine(sgtk.platform.Engine):
         """
         Initialize the Qt Application.
 
-        This should only be called when ShotGrid is running in the same process as Alias, and
+        This should only be called when Flow Production Tracking is running in the same process as Alias, and
         Alias does not create a Qt Application (for Alias < 2024.0).
         """
 
@@ -435,7 +439,9 @@ class AliasEngine(sgtk.platform.Engine):
 
         self.__qt_app = QtGui.QApplication.instance()
         if not self.__qt_app:
-            self.__qt_app = QtGui.QApplication(["ShotGrid Alias Engine"])
+            self.__qt_app = QtGui.QApplication(
+                ["Flow Production Tracking Alias Engine"]
+            )
             self.__qt_app.setQuitOnLastWindowClosed(False)
 
             def _app_quit():
@@ -476,7 +482,7 @@ class AliasEngine(sgtk.platform.Engine):
         QtCore.QTextCodec.setCodecForCStrings(utf8)
         self.logger.debug("set utf-8 codec for widget text")
 
-        # Create the parent dialog for ShotGrid widgets
+        # Create the parent dialog for Flow Production Tracking widgets
         self.__get_or_create_proxy_window()
 
         # Check that the Alias version is supported. Pop up a warning dialog if not.
@@ -487,7 +493,7 @@ class AliasEngine(sgtk.platform.Engine):
         self.__data_validator = self._tk_alias.data_validator.AliasDataValidator(self)
         self.__event_watcher = self.__init_alias_event_watcher()
 
-        # Build the ShotGrid menu in Alias. It will be added to the Alias main menu bar.
+        # Build the Flow Production Tracking menu in Alias. It will be added to the Alias main menu bar.
         self.__menu_generator.build()
 
         # Run the start up commands
@@ -602,7 +608,7 @@ class AliasEngine(sgtk.platform.Engine):
         """
         This is a callback that is triggered by Alias "StageCreated" events.
 
-        Update the ShotGrid context according to the current stage (since it may have changed).
+        Update the Flow Production Tracking context according to the current stage (since it may have changed).
 
         :param result: The result of the Alias stage created event.
         :type result: alias_api.PythonCallbackMessageResult
@@ -868,7 +874,7 @@ class AliasEngine(sgtk.platform.Engine):
             return
 
         if self.__in_alias_process:
-            # ShotGrid is running in the same process as Alias. This is the old way that the
+            # Flow Production Tracking is running in the same process as Alias. This is the old way that the
             # engine was set up for, and will not work with Alias versions that use Qt for its
             # GUI (>=2024.0).
             try:
@@ -880,11 +886,11 @@ class AliasEngine(sgtk.platform.Engine):
             api_module = alias_api
 
             if self.__has_ui:
-                # When running ShotGrid in the same process as Alias, the qt app needs to be
+                # When running Flow Production Tracking in the same process as Alias, the qt app needs to be
                 # created by the engine
                 self.__init_qt_app()
         else:
-            # ShotGrid is running in a separate process than Alias. This is the new way how
+            # Flow Production Tracking is running in a separate process than Alias. This is the new way how
             # the engine operates: the Alias plugin will bootstrap the engine in a separate
             # process than Alias (to avoid Qt conflicts between QtQuick/QML and QWidgets).
 
@@ -980,16 +986,16 @@ class AliasEngine(sgtk.platform.Engine):
             "compatibility_dialog_min_version", 2020
         ):
             msg = (
-                "The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias %s. "
-                "You can continue to use the Toolkit but you may experience bugs or "
-                "instability.  Please report any issues you see to %s"
-                % (self.alias_version, sgtk.support_url)
+                "The Flow Production Tracking Toolkit has not yet been fully tested "
+                "with Alias %s. You can continue to use the Toolkit but you may "
+                "experience bugs or instability.  Please report any issues you see "
+                "to %s" % (self.alias_version, sgtk.support_url)
             )
             self.logger.warning(msg)
             if self.has_ui:
                 QtGui.QMessageBox.warning(
                     self._get_dialog_parent(),
-                    "Warning - ShotGrid Pipeline Toolkit!",
+                    "Warning - Flow Production Tracking Toolkit!",
                     msg,
                 )
                 return False
@@ -998,16 +1004,16 @@ class AliasEngine(sgtk.platform.Engine):
             "compatibility_dialog_old_version"
         ):
             msg = (
-                "The ShotGrid Pipeline Toolkit is not fully capable with Alias %s. "
-                "You should consider upgrading to a more recent version of Alias. "
-                "Please report any issues you see to %s"
+                "The Flow Production Tracking Toolkit is not fully capable with "
+                "Alias %s. You should consider upgrading to a more recent version "
+                "of Alias. Please report any issues you see to %s"
                 % (self.alias_version, sgtk.support_url)
             )
             self.logger.warning(msg)
             if self.has_ui:
                 QtGui.QMessageBox.warning(
                     self._get_dialog_parent(),
-                    "Warning - ShotGrid Pipeline Toolkit!",
+                    "Warning - Flow Production Tracking Toolkit!",
                     msg,
                 )
                 return False
@@ -1017,7 +1023,7 @@ class AliasEngine(sgtk.platform.Engine):
 
     def __get_or_create_proxy_window(self):
         """
-        Create a widget to parent all ShotGrid windows to.
+        Create a widget to parent all Flow Production Tracking windows to.
 
         This widget itself will be parented to the Alias main window.
 
@@ -1033,7 +1039,7 @@ class AliasEngine(sgtk.platform.Engine):
         if not self.__proxy_window:
             if hasattr(self.alias_py, "set_parent_window"):
                 # The Alias API version >= 4.0.0 provides functions to manage the Alias main
-                # window (e.g. set as parent to ShotGrid windows)
+                # window (e.g. set as parent to Flow Production Tracking windows)
                 self.__proxy_window = QtGui.QWidget()
                 self.__proxy_window.setWindowTitle(self.__PROXY_WINDOW_TITLE)
                 self.alias_py.set_parent_window(self.__proxy_window.winId())

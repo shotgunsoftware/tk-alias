@@ -36,7 +36,7 @@ class AliasMenuGenerator(object):
         )
 
         if self._version_check(engine.alias_version, "2024.0") >= 0:
-            self.__menu_name = "ShotGrid"
+            self.__menu_name = "Flow Production Tracking"
         elif self._version_check(engine.alias_version, "2022.2") >= 0:
             self.__menu_name = "al_shotgrid"
         else:
@@ -58,14 +58,14 @@ class AliasMenuGenerator(object):
 
     def build(self):
         """
-        Build the ShotGrid menu shown in Alias.
+        Build the Flow Production Tracking menu shown in Alias.
 
         If the menu has already been created, it will be rebuilt based on the Alias Engine's
         current context.
         """
 
         if self.alias_menu is None:
-            # First, create the ShotGrid menu in Alias.
+            # First, create the Flow Production Tracking menu in Alias.
             self.__alias_menu = self.engine.alias_py.Menu(self.menu_name)
         else:
             # Make sure we're starting with a fresh menu
@@ -82,7 +82,7 @@ class AliasMenuGenerator(object):
         ):
             plugin_menu = self.alias_menu.add_menu("Plugin")
             self.alias_menu.add_command(
-                "Restart ShotGrid Client",
+                "Restart Flow Production Tracking Client",
                 self.engine.restart_process,
                 parent=plugin_menu,
             )
@@ -138,7 +138,7 @@ class AliasMenuGenerator(object):
         self._add_apps_to_menu(commands_by_app)
 
     def remove_menu(self):
-        """Remove the ShotGrid menu from Alias. The menu will be destroyed."""
+        """Remove the Flow Production Tracking menu from Alias. The menu will be destroyed."""
 
         if not self.alias_menu:
             return self.engine.alias_py.AlStatusCode.InvalidObject
@@ -150,7 +150,7 @@ class AliasMenuGenerator(object):
         return status
 
     def clean_menu(self):
-        """Clean the ShotGrid menu in Alias by removing all its entries."""
+        """Clean the Flow Production Tracking menu in Alias by removing all its entries."""
 
         return self.alias_menu.clean()
 
@@ -169,7 +169,7 @@ class AliasMenuGenerator(object):
 
         # Add the context submenu actions
         self.alias_menu.add_command(
-            "Jump to ShotGrid", self._jump_to_sg, parent=ctx_menu
+            "Jump to Flow Production Tracking", self._jump_to_sg, parent=ctx_menu
         )
         if ctx.filesystem_locations:
             self.alias_menu.add_command(
@@ -211,7 +211,7 @@ class AliasMenuGenerator(object):
 
     def _jump_to_sg(self):
         """
-        Jump to ShotGrid, launch web browser
+        Jump to Flow Production Tracking, launch web browser
         """
 
         # Defer import to avoid import error for unit tests

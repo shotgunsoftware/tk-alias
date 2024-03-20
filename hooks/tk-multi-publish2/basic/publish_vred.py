@@ -38,7 +38,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         return """
         <p>
             This plugin will create a new VRED .vpb file by importing the current Alias session file once it has been published to
-            ShotGrid.<p>
+            Flow Production Tracking.<p>
             This plugin requires that you have an installation of VRED Professional on the same workstation as Alias.
             If you do not have Administrator rights to install this yourself, please contact your System Administrator to have it installed.
 
@@ -315,16 +315,16 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         :returns: True if item is valid, False otherwise.
         """
 
-        # be sure the "Publish to ShotGrid" publish plugin is also selected
+        # be sure the "Publish to Flow Production Tracking" publish plugin is also selected
         root_item = self.__get_root_item(item)
         is_plugin_checked = False
         for d in root_item.descendants:
             for t in d.tasks:
-                if t.name == "Publish to ShotGrid" and t.checked:
+                if t.name == "Publish to Flow Production Tracking" and t.checked:
                     is_plugin_checked = True
         if not is_plugin_checked:
             self.logger.error(
-                'Please, check the "Publish to ShotGrid" publish plugin to be able to create the VRED scene'
+                'Please, check the "Publish to Flow Production Tracking" publish plugin to be able to create the VRED scene'
             )
             return False
 
@@ -650,7 +650,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         Go through the publish tree to find the Alias session publish data.
 
         :param item: Item to process
-        :return: The publish data as ShotGrid dictionary
+        :return: The publish data as Flow Production Tracking dictionary
         """
 
         root_item = self.__get_root_item(item)
@@ -729,7 +729,9 @@ class CustomWidget(QtGui.QWidget):
         self.filename_layout.addWidget(self.filename)
 
         # publish option
-        self.publish_to_shotgrid = QtGui.QCheckBox("Publish the VRED Scene to ShotGrid")
+        self.publish_to_shotgrid = QtGui.QCheckBox(
+            "Publish the VRED Scene to Flow Production Tracking"
+        )
         self.publish_to_shotgrid.setChecked(True)
 
         # layout the widgets

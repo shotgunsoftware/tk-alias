@@ -17,7 +17,7 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class UploadVersionPlugin(HookBaseClass):
-    """Plugin for uploading Versions to ShotGrid for review."""
+    """Plugin for uploading Versions to Flow Production Tracking for review."""
 
     # Version Type string constants
     VERSION_TYPE_2D = "2D Version"
@@ -32,15 +32,15 @@ class UploadVersionPlugin(HookBaseClass):
     # Descriptions for Version Types
     VERSION_TYPE_DESCRIPTIONS = {
         VERSION_TYPE_2D: """
-                Create a Version in ShotGrid for Review.<br/><br/>
-                A 2D Version (image or video representation of your file/scene) will be created in ShotGrid.
-                This Version can then be reviewed via ShotGrid's many review apps.
+                Create a Version in Flow Production Tracking for Review.<br/><br/>
+                A 2D Version (image or video representation of your file/scene) will be created in Flow Production Tracking.
+                This Version can then be reviewed via Flow Production Tracking's many review apps.
             """,
         VERSION_TYPE_3D: """
-                Create a Version in ShotGrid for Review.<br/><br/>
-                A 3D Version (LMV translation of your file/scene's geometry) will be created in ShotGrid.
-                This Version can then be reviewed via ShotGrid's many review apps.<br/><br/>
-                References in your file will not be included in the 3D version.
+                Create a Version in Flow Production Tracking for Review.<br/><br/>
+                A 3D Version (LMV translation of your file/scene's geometry) will be created in
+                Flow Production Tracking. This Version can then be reviewed via Flow Production Tracking's
+                many review apps.<br/><br/> References in your file will not be included in the 3D version.
             """,
     }
 
@@ -85,7 +85,7 @@ class UploadVersionPlugin(HookBaseClass):
             "Upload": {
                 "type": "bool",
                 "default": False,
-                "description": "Upload content to ShotGrid?",
+                "description": "Upload content to Flow Production Tracking?",
             },
         }
 
@@ -171,7 +171,7 @@ class UploadVersionPlugin(HookBaseClass):
             elif not is_3d_viewer_enabled:
                 self.logger.warning("Your site does not have 3D Review enabled.")
                 self.logger.warning(
-                    "Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead."
+                    "Please contact Autodesk support to have 3D Review enabled on your Flow Production Tracking site or use the 2D Version publish option instead."
                 )
 
             framework_lmv = self.load_framework("tk-framework-lmv_v1.x.x")
@@ -216,10 +216,10 @@ class UploadVersionPlugin(HookBaseClass):
             (publish_name, _) = os.path.splitext(filename)
             item.properties["publish_name"] = publish_name
 
-            # Create the Version in ShotGrid
+            # Create the Version in Flow Production Tracking
             super(UploadVersionPlugin, self).publish(settings, item)
 
-            # Generate media content and upload to ShotGrid
+            # Generate media content and upload to Flow Production Tracking
             version_type = item.properties["sg_version_data"]["type"]
             version_id = item.properties["sg_version_data"]["id"]
             thumbnail_path = item.get_thumbnail_as_path()
@@ -235,7 +235,7 @@ class UploadVersionPlugin(HookBaseClass):
 
             if media_package_path:
                 # For 3D media, a media package path will be generated. Set the translation
-                # type on the Version in order to view 3D media in ShotGrid Web.
+                # type on the Version in order to view 3D media in Flow Production Tracking Web.
                 self.parent.shotgun.update(
                     entity_type=version_type,
                     entity_id=version_id,
@@ -246,7 +246,7 @@ class UploadVersionPlugin(HookBaseClass):
             uploaded_movie_path = media_package_path or thumbnail_path
             if uploaded_movie_path:
                 # Uplod to the `sg_uploaded_movie` field on the Version so that the Version
-                # thumbnail shows the "play" button on hover from ShotGrid Web
+                # thumbnail shows the "play" button on hover from Flow Production Tracking Web
                 self.parent.shotgun.upload(
                     entity_type=version_type,
                     entity_id=version_id,
@@ -522,7 +522,7 @@ class UploadVersionPlugin(HookBaseClass):
                     </b>
                     <br/><br/>
                     <b>
-                        Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead.
+                        Please contact Autodesk support to have 3D Review enabled on your Flow Production Tracking site or use the 2D Version publish option instead.
                     </b>
                 """
 
@@ -573,7 +573,7 @@ class UploadVersionPlugin(HookBaseClass):
 
     def _translate_file_to_lmv(self, item, thumbnail_path=None):
         """
-        Translate the current Alias file as an LMV package in order to upload it to ShotGrid as a 3D Version
+        Translate the current Alias file as an LMV package in order to upload it to Flow Production Tracking as a 3D Version
 
         :param item: Item to process
         :type item: PublishItem
@@ -607,15 +607,15 @@ class UploadVersionPlugin(HookBaseClass):
 
     def _is_3d_viewer_enabled(self):
         """
-        Look up the ShotGrid site preference to check if the 3D Viewer is enabled. Return True
+        Look up the Flow Production Tracking site preference to check if the 3D Viewer is enabled. Return True
         if the 3D Viewer is enabled, False if it is disabled, or None if the 3D Viewer Enabled
         site pref could not be accessed.
 
-        If the ShotGrid API returns an empty dictionary, the hidden site preference could not be
+        If the Flow Production Tracking API returns an empty dictionary, the hidden site preference could not be
         accessed. Ensure that the hidden site preference "API hidden allowed list of preferences"
         contains the "enable_3d_viewer" in its list.
 
-        :return: True if the 3D Viewer is enabled for the ShotGrid site, False if it is disabled,
+        :return: True if the 3D Viewer is enabled for the Flow Production Tracking site, False if it is disabled,
                  or None if the 3D Viewer site pref could not be accessed.
         :rtype: bool
         """

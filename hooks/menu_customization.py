@@ -14,7 +14,7 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class MenuCustomization(HookBaseClass):
-    """Hook to allow customizing the ShotGrid menu in Alias."""
+    """Hook to allow customizing the Flow Production Tracking menu in Alias."""
 
     def sorted_menu_commands(self, commands):
         """

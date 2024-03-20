@@ -13,10 +13,10 @@ from .shotgrid_alias_client_namespace import ShotGridAliasClientNamespace
 
 
 class ShotGridAliasSocketIoClient(AliasSocketIoClient):
-    """A ShotGrid specific client."""
+    """A Flow Production Tracking specific client."""
 
     def __init__(self, engine, namespace, *args, **kwargs):
-        """Initialize the ShotGrid Alias socketio client."""
+        """Initialize the Flow Production Tracking Alias socketio client."""
 
         super(ShotGridAliasSocketIoClient, self).__init__(*args, **kwargs)
 
@@ -30,12 +30,12 @@ class ShotGridAliasSocketIoClient(AliasSocketIoClient):
 
     @property
     def engine(self):
-        """Get the ShotGrid Alias Engine that is running this client io"""
+        """Get the Flow Production Tracking Alias Engine that is running this client io"""
         return self.__engine
 
     @property
     def qt_app(self):
-        """Get the running ShotGrid client Qt application instance."""
+        """Get the running Flow Production Tracking client Qt application instance."""
         if not self.__qt_app:
             from sgtk.platform.qt import QtGui
 
@@ -55,7 +55,7 @@ class ShotGridAliasSocketIoClient(AliasSocketIoClient):
         """
         Process GUI events.
 
-        ShotGrid runs a Qt application for its GUI, so this method will process Qt GUI events,
+        Flow Production Tracking runs a Qt application for its GUI, so this method will process Qt GUI events,
         excluding user input events.
 
         This method is called while waiting for an sio event to return. This allows Alias to
