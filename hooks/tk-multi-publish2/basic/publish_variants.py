@@ -25,16 +25,16 @@ class AliasPublishVariantsPlugin(HookBaseClass):
         """
         One line display name describing the plugin
         """
-        return "Publish Variants to ShotGrid"
+        return "Publish Variants to Flow Production Tracking"
 
     @property
     def description(self):
         return """
         <p>
-            This plugin exports all Variant images created in Alias and makes a Note in ShotGrid for each one.
+            This plugin exports all Variant images created in Alias and makes a Note in Flow Production Tracking for each one.
         </p>
         <p>
-            All Notes are linked this version & file. Use this to sync all review notes made in Alias with ShotGrid.
+            All Notes are linked this version & file. Use this to sync all review notes made in Alias with Flow Production Tracking.
         </p>
         <p>
             To see the Variant images that will be exported, check the Alias Variant Lister.
