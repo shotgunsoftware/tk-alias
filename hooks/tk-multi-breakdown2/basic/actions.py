@@ -113,7 +113,7 @@ class AliasBreakdown2Actions(HookBaseClass):
                 )
             )
 
-        path = file_item.path
+        path = file_item.get("path")
         if not path:
             raise TankError(
                 "Failed to execute action {name}. Missing reference file path in FileItem.".format(
