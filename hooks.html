@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alias Engine Hooks &mdash; tk-alias v3.0.4 documentation</title>
+  <title>Alias Engine Hooks &mdash; tk-alias v3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -108,12 +108,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.0.4.<br>
+    <b>tk-alias</b> v3.1.0.<br>
     
-        This documentation is part of the ShotGrid Pipeline Toolkit.
+        This documentation is part of the Flow Production Tracking.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
 
@@ -475,7 +475,7 @@
 <span class="sd">        one object is returned for an action, use the params key to pass additional</span>
 <span class="sd">        data into the run_action hook.</span>
 
-<span class="sd">        :param sg_publish_data: ShotGrid data dictionary with all the standard publish fields.</span>
+<span class="sd">        :param sg_publish_data: Flow Production Tracking data dictionary with all the standard publish fields.</span>
 <span class="sd">        :param actions: List of action strings which have been defined in the app configuration.</span>
 <span class="sd">        :param ui_area: String denoting the UI Area (see above).</span>
 <span class="sd">        :returns List of dictionaries, each with keys name, params, caption and description</span>
@@ -551,7 +551,7 @@
 <span class="sd">        Each entry will have the following values:</span>
 
 <span class="sd">            name: Name of the action to execute</span>
-<span class="sd">            sg_publish_data: Publish information coming from ShotGrid</span>
+<span class="sd">            sg_publish_data: Publish information coming from Flow Production Tracking</span>
 <span class="sd">            params: Parameters passed down from the generate_actions hook.</span>
 
 <span class="sd">        .. note::</span>
@@ -578,7 +578,7 @@
 
 <span class="sd">        :param name: Action name string representing one of the items returned by generate_actions.</span>
 <span class="sd">        :param params: Params data, as specified by generate_actions.</span>
-<span class="sd">        :param sg_publish_data: ShotGrid data dictionary with all the standard publish fields.</span>
+<span class="sd">        :param sg_publish_data: Flow Production Tracking data dictionary with all the standard publish fields.</span>
 <span class="sd">        :returns: No return value expected.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -630,7 +630,7 @@
 <span class="sd">        Import the file as an Alias reference, converting it on the fly as wref.</span>
 
 <span class="sd">        :param path:            Path to the file.</span>
-<span class="sd">        :param sg_publish_data: ShotGrid data dictionary with all the standard publish fields</span>
+<span class="sd">        :param sg_publish_data: Flow Production Tracking data dictionary with all the standard publish fields</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># get the tank of the project the file we&#39;re trying to import belongs to</span>
@@ -740,7 +740,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One line display name describing the plugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;Publish Annotations to ShotGrid&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Publish Annotations to Flow Production Tracking&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -749,8 +749,8 @@
 <span class="s2">            This plugin exports all annotations created using the Locator Annotation tool in Alias.</span>
 <span class="s2">        &lt;/p&gt;</span>
 <span class="s2">        &lt;p&gt;</span>
-<span class="s2">            Each annotation will create a Note in ShotGrid. All Notes are linked to this version and file. Use this to</span>
-<span class="s2">            sync all review notes made in Alias with ShotGrid.</span>
+<span class="s2">            Each annotation will create a Note in Flow Production Tracking. All Notes are linked to this version and file. Use this to</span>
+<span class="s2">            sync all review notes made in Alias with Flow Production Tracking.</span>
 <span class="s2">        &lt;/p&gt;</span>
 <span class="s2">        &quot;&quot;&quot;</span>
 
@@ -921,12 +921,13 @@
         <span class="n">loader_url</span> <span class="o">=</span> <span class="s2">&quot;https://help.autodesk.com/view/SGDEV/ENU/?contextId=PC_APP_LOADER&quot;</span>
 
         <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Publishes the file to ShotGrid. A &lt;b&gt;Publish&lt;/b&gt; entry will be</span>
-<span class="s2">        created in ShotGrid which will include a reference to the file&#39;s current</span>
-<span class="s2">        path on disk. If a publish template is configured, a copy of the</span>
-<span class="s2">        current session will be copied to the publish template path which</span>
-<span class="s2">        will be the file that is published. Other users will be able to access</span>
-<span class="s2">        the published file via the &lt;b&gt;&lt;a href=&#39;</span><span class="si">%s</span><span class="s2">&#39;&gt;Loader&lt;/a&gt;&lt;/b&gt; so long as</span>
+<span class="s2">        Publishes the file to Flow Production Tracking. A &lt;b&gt;Publish&lt;/b&gt;</span>
+<span class="s2">        entry will be created in Flow Production Tracking which will</span>
+<span class="s2">        include a reference to the file&#39;s current path on disk. If a</span>
+<span class="s2">        publish template is configured, a copy of the current session</span>
+<span class="s2">        will be copied to the publish template path which will be the</span>
+<span class="s2">        file that is published. Other users will be able to access the</span>
+<span class="s2">        published file via the &lt;b&gt;&lt;a href=&#39;</span><span class="si">%s</span><span class="s2">&#39;&gt;Loader&lt;/a&gt;&lt;/b&gt; so long as</span>
 <span class="s2">        they have access to the file&#39;s location on disk.</span>
 
 <span class="s2">        If the session has not been saved, validation will fail and a button</span>
@@ -937,8 +938,9 @@
 <span class="s2">        file to the next version after publishing.</span>
 
 <span class="s2">        The &lt;code&gt;version&lt;/code&gt; field of the resulting &lt;b&gt;Publish&lt;/b&gt; in</span>
-<span class="s2">        ShotGrid will also reflect the version number identified in the filename.</span>
-<span class="s2">        The basic worklfow recognizes the following version formats by default:</span>
+<span class="s2">        Flow Production Tracking will also reflect the version number identified</span>
+<span class="s2">        in the filename. The basic worklfow recognizes the following version</span>
+<span class="s2">        formats by default:</span>
 
 <span class="s2">        &lt;ul&gt;</span>
 <span class="s2">        &lt;li&gt;&lt;code&gt;filename.v###.ext&lt;/code&gt;&lt;/li&gt;</span>
@@ -1335,13 +1337,14 @@
         <span class="n">loader_url</span> <span class="o">=</span> <span class="s2">&quot;https://help.autodesk.com/view/SGDEV/ENU/?contextId=PC_APP_LOADER&quot;</span>
 
         <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        Publishes the file to ShotGrid. A &lt;b&gt;Publish&lt;/b&gt; entry will be</span>
-<span class="s2">        created in ShotGrid which will include a reference to the file&#39;s current</span>
-<span class="s2">        path on disk. If a publish template is configured, a copy of the</span>
-<span class="s2">        current session will be copied to the publish template path which</span>
-<span class="s2">        will be the file that is published. Other users will be able to access</span>
-<span class="s2">        the published file via the &lt;b&gt;&lt;a href=&#39;</span><span class="si">%s</span><span class="s2">&#39;&gt;Loader&lt;/a&gt;&lt;/b&gt; so long as</span>
-<span class="s2">        they have access to the file&#39;s location on disk.</span>
+<span class="s2">        Publishes the file to Flow Production Tracking. A &lt;b&gt;Publish&lt;/b&gt;</span>
+<span class="s2">        entry will be created in Flow Production Tracking which will include</span>
+<span class="s2">        a reference to the file&#39;s current path on disk. If a publish template</span>
+<span class="s2">        is configured, a copy of the current session will be copied to the</span>
+<span class="s2">        publish template path which will be the file that is published. Other</span>
+<span class="s2">        users will be able to access the published file via the &lt;b&gt;</span>
+<span class="s2">        &lt;a href=&#39;</span><span class="si">%s</span><span class="s2">&#39;&gt;Loader&lt;/a&gt;&lt;/b&gt; so long as they have access to the file&#39;s</span>
+<span class="s2">        location on disk.</span>
 
 <span class="s2">        &lt;br&gt;&lt;br&gt;&lt;b color=&#39;red&#39;&gt;NOTE:&lt;/b&gt; it&#39;s not possible to publish a WREF file</span>
 <span class="s2">        if you already have WREF files loaded in your current session.</span>
@@ -1695,7 +1698,7 @@
                 <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;action_show_in_shotgun&quot;</span><span class="p">:</span> <span class="p">{</span>
                         <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Show Publish&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Reveal the published file in ShotGrid.&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;tooltip&quot;</span><span class="p">:</span> <span class="s2">&quot;Reveal the published file in Flow Production Tracking.&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_publish_data&quot;</span><span class="p">],</span>
                     <span class="p">}</span>
                 <span class="p">},</span>
@@ -1857,16 +1860,16 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One line display name describing the plugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;Publish Variants to ShotGrid&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Publish Variants to Flow Production Tracking&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        &lt;p&gt;</span>
-<span class="s2">            This plugin exports all Variant images created in Alias and makes a Note in ShotGrid for each one.</span>
+<span class="s2">            This plugin exports all Variant images created in Alias and makes a Note in Flow Production Tracking for each one.</span>
 <span class="s2">        &lt;/p&gt;</span>
 <span class="s2">        &lt;p&gt;</span>
-<span class="s2">            All Notes are linked this version &amp; file. Use this to sync all review notes made in Alias with ShotGrid.</span>
+<span class="s2">            All Notes are linked this version &amp; file. Use this to sync all review notes made in Alias with Flow Production Tracking.</span>
 <span class="s2">        &lt;/p&gt;</span>
 <span class="s2">        &lt;p&gt;</span>
 <span class="s2">            To see the Variant images that will be exported, check the Alias Variant Lister.</span>
@@ -2336,7 +2339,7 @@
 
 
 <span class="k">class</span> <span class="nc">UploadVersionPlugin</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin for uploading Versions to ShotGrid for review.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin for uploading Versions to Flow Production Tracking for review.&quot;&quot;&quot;</span>
 
     <span class="c1"># Version Type string constants</span>
     <span class="n">VERSION_TYPE_2D</span> <span class="o">=</span> <span class="s2">&quot;2D Version&quot;</span>
@@ -2351,15 +2354,15 @@
     <span class="c1"># Descriptions for Version Types</span>
     <span class="n">VERSION_TYPE_DESCRIPTIONS</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">VERSION_TYPE_2D</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">                Create a Version in ShotGrid for Review.&lt;br/&gt;&lt;br/&gt;</span>
-<span class="s2">                A 2D Version (image or video representation of your file/scene) will be created in ShotGrid.</span>
-<span class="s2">                This Version can then be reviewed via ShotGrid&#39;s many review apps.</span>
+<span class="s2">                Create a Version in Flow Production Tracking for Review.&lt;br/&gt;&lt;br/&gt;</span>
+<span class="s2">                A 2D Version (image or video representation of your file/scene) will be created in Flow Production Tracking.</span>
+<span class="s2">                This Version can then be reviewed via Flow Production Tracking&#39;s many review apps.</span>
 <span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
         <span class="n">VERSION_TYPE_3D</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">                Create a Version in ShotGrid for Review.&lt;br/&gt;&lt;br/&gt;</span>
-<span class="s2">                A 3D Version (LMV translation of your file/scene&#39;s geometry) will be created in ShotGrid.</span>
-<span class="s2">                This Version can then be reviewed via ShotGrid&#39;s many review apps.&lt;br/&gt;&lt;br/&gt;</span>
-<span class="s2">                References in your file will not be included in the 3D version.</span>
+<span class="s2">                Create a Version in Flow Production Tracking for Review.&lt;br/&gt;&lt;br/&gt;</span>
+<span class="s2">                A 3D Version (LMV translation of your file/scene&#39;s geometry) will be created in</span>
+<span class="s2">                Flow Production Tracking. This Version can then be reviewed via Flow Production Tracking&#39;s</span>
+<span class="s2">                many review apps.&lt;br/&gt;&lt;br/&gt; References in your file will not be included in the 3D version.</span>
 <span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
     <span class="p">}</span>
 
@@ -2404,7 +2407,7 @@
             <span class="s2">&quot;Upload&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Upload content to ShotGrid?&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Upload content to Flow Production Tracking?&quot;</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">}</span>
 
@@ -2490,7 +2493,7 @@
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_3d_viewer_enabled</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Your site does not have 3D Review enabled.&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead.&quot;</span>
+                    <span class="s2">&quot;Please contact Autodesk support to have 3D Review enabled on your Flow Production Tracking site or use the 2D Version publish option instead.&quot;</span>
                 <span class="p">)</span>
 
             <span class="n">framework_lmv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_framework</span><span class="p">(</span><span class="s2">&quot;tk-framework-lmv_v1.x.x&quot;</span><span class="p">)</span>
@@ -2535,10 +2538,10 @@
             <span class="p">(</span><span class="n">publish_name</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
             <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;publish_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_name</span>
 
-            <span class="c1"># Create the Version in ShotGrid</span>
+            <span class="c1"># Create the Version in Flow Production Tracking</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">UploadVersionPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
-            <span class="c1"># Generate media content and upload to ShotGrid</span>
+            <span class="c1"># Generate media content and upload to Flow Production Tracking</span>
             <span class="n">version_type</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
             <span class="n">version_id</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;sg_version_data&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
             <span class="n">thumbnail_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_thumbnail_as_path</span><span class="p">()</span>
@@ -2554,7 +2557,7 @@
 
             <span class="k">if</span> <span class="n">media_package_path</span><span class="p">:</span>
                 <span class="c1"># For 3D media, a media package path will be generated. Set the translation</span>
-                <span class="c1"># type on the Version in order to view 3D media in ShotGrid Web.</span>
+                <span class="c1"># type on the Version in order to view 3D media in Flow Production Tracking Web.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                     <span class="n">entity_type</span><span class="o">=</span><span class="n">version_type</span><span class="p">,</span>
                     <span class="n">entity_id</span><span class="o">=</span><span class="n">version_id</span><span class="p">,</span>
@@ -2565,7 +2568,7 @@
             <span class="n">uploaded_movie_path</span> <span class="o">=</span> <span class="n">media_package_path</span> <span class="ow">or</span> <span class="n">thumbnail_path</span>
             <span class="k">if</span> <span class="n">uploaded_movie_path</span><span class="p">:</span>
                 <span class="c1"># Uplod to the `sg_uploaded_movie` field on the Version so that the Version</span>
-                <span class="c1"># thumbnail shows the &quot;play&quot; button on hover from ShotGrid Web</span>
+                <span class="c1"># thumbnail shows the &quot;play&quot; button on hover from Flow Production Tracking Web</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
                     <span class="n">entity_type</span><span class="o">=</span><span class="n">version_type</span><span class="p">,</span>
                     <span class="n">entity_id</span><span class="o">=</span><span class="n">version_id</span><span class="p">,</span>
@@ -2841,7 +2844,7 @@
 <span class="s2">                    &lt;/b&gt;</span>
 <span class="s2">                    &lt;br/&gt;&lt;br/&gt;</span>
 <span class="s2">                    &lt;b&gt;</span>
-<span class="s2">                        Please contact Autodesk support to have 3D Review enabled on your ShotGrid site or use the 2D Version publish option instead.</span>
+<span class="s2">                        Please contact Autodesk support to have 3D Review enabled on your Flow Production Tracking site or use the 2D Version publish option instead.</span>
 <span class="s2">                    &lt;/b&gt;</span>
 <span class="s2">                &quot;&quot;&quot;</span>
 
@@ -2892,7 +2895,7 @@
 
     <span class="k">def</span> <span class="nf">_translate_file_to_lmv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">thumbnail_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Translate the current Alias file as an LMV package in order to upload it to ShotGrid as a 3D Version</span>
+<span class="sd">        Translate the current Alias file as an LMV package in order to upload it to Flow Production Tracking as a 3D Version</span>
 
 <span class="sd">        :param item: Item to process</span>
 <span class="sd">        :type item: PublishItem</span>
@@ -2926,15 +2929,15 @@
 
     <span class="k">def</span> <span class="nf">_is_3d_viewer_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Look up the ShotGrid site preference to check if the 3D Viewer is enabled. Return True</span>
+<span class="sd">        Look up the Flow Production Tracking site preference to check if the 3D Viewer is enabled. Return True</span>
 <span class="sd">        if the 3D Viewer is enabled, False if it is disabled, or None if the 3D Viewer Enabled</span>
 <span class="sd">        site pref could not be accessed.</span>
 
-<span class="sd">        If the ShotGrid API returns an empty dictionary, the hidden site preference could not be</span>
+<span class="sd">        If the Flow Production Tracking API returns an empty dictionary, the hidden site preference could not be</span>
 <span class="sd">        accessed. Ensure that the hidden site preference &quot;API hidden allowed list of preferences&quot;</span>
 <span class="sd">        contains the &quot;enable_3d_viewer&quot; in its list.</span>
 
-<span class="sd">        :return: True if the 3D Viewer is enabled for the ShotGrid site, False if it is disabled,</span>
+<span class="sd">        :return: True if the 3D Viewer is enabled for the Flow Production Tracking site, False if it is disabled,</span>
 <span class="sd">                 or None if the 3D Viewer site pref could not be accessed.</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2979,7 +2982,7 @@
 
 <span class="k">class</span> <span class="nc">AliasActions</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    ShotGrid Panel Actions for Alias</span>
+<span class="sd">    Flow Production Tracking Panel Actions for Alias</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">generate_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_data</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">ui_area</span><span class="p">):</span>
@@ -3014,7 +3017,7 @@
 <span class="sd">        one object is returned for an action, use the params key to pass additional</span>
 <span class="sd">        data into the run_action hook.</span>
 
-<span class="sd">        :param sg_data: ShotGrid data dictionary with all the standard publish fields.</span>
+<span class="sd">        :param sg_data: Flow Production Tracking data dictionary with all the standard publish fields.</span>
 <span class="sd">        :param actions: List of action strings which have been defined in the app configuration.</span>
 <span class="sd">        :param ui_area: String denoting the UI Area (see above).</span>
 <span class="sd">        :returns List of dictionaries, each with keys name, params, caption and description</span>
@@ -3104,13 +3107,14 @@
 
 <span class="sd">        :param name: Action name string representing one of the items returned by generate_actions.</span>
 <span class="sd">        :param params: Params data, as specified by generate_actions.</span>
-<span class="sd">        :param sg_data: ShotGrid data dictionary with all the standard publish fields.</span>
+<span class="sd">        :param sg_data: Flow Production Tracking data dictionary with all the standard publish fields.</span>
 <span class="sd">        :returns: No return value expected.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="s2">&quot;Execute action called for action </span><span class="si">%s</span><span class="s2">. &quot;</span>
-            <span class="s2">&quot;Parameters: </span><span class="si">%s</span><span class="s2">. ShotGrid Data: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_data</span><span class="p">)</span>
+            <span class="s2">&quot;Parameters: </span><span class="si">%s</span><span class="s2">. Flow Production Tracking Data: </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_data</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;reference&quot;</span><span class="p">:</span>
@@ -3154,7 +3158,7 @@
 <span class="sd">        Each entry will have the following values:</span>
 
 <span class="sd">            name: Name of the action to execute</span>
-<span class="sd">            sg_data: Publish information coming from ShotGrid</span>
+<span class="sd">            sg_data: Publish information coming from Flow Production Tracking</span>
 <span class="sd">            params: Parameters passed down from the generate_actions hook.</span>
 
 <span class="sd">        .. note::</span>
@@ -3247,7 +3251,7 @@
 
 <span class="sd">        This will create a new canvas for each image attached to the note.</span>
 
-<span class="sd">        :param sg_data: The ShotGrid entity dict for the note.</span>
+<span class="sd">        :param sg_data: The Flow Production Tracking entity dict for the note.</span>
 <span class="sd">        :type sg_data: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 

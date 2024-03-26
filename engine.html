@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Alias Engine Code &mdash; tk-alias v3.0.4 documentation</title>
+  <title>The Alias Engine Code &mdash; tk-alias v3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -82,12 +82,12 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.0.4.<br>
+    <b>tk-alias</b> v3.1.0.<br>
     
-        This documentation is part of the ShotGrid Pipeline Toolkit.
+        This documentation is part of the Flow Production Tracking.
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
 
@@ -147,7 +147,7 @@
 
 
 <span class="k">class</span> <span class="nc">AliasEngine</span><span class="p">(</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">Engine</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias engine for ShotGrid Toolkit.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias engine for Flow Production Tracking Toolkit.&quot;&quot;&quot;</span>
 
     <span class="c1"># The name of the hidden window, used to parent SG widgets to the Alias main window.</span>
     <span class="n">__PROXY_WINDOW_TITLE</span> <span class="o">=</span> <span class="s2">&quot;sgtk dialog owner proxy&quot;</span>
@@ -169,11 +169,11 @@
         <span class="c1"># The tk-alias python module</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># Keep track of the ShotGrid context by stage name and path to allow context switching.</span>
+        <span class="c1"># Keep track of the Flow Production Tracking context by stage name and path to allow context switching.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_path</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="c1"># The menu generator is responsible for adding the ShotGrid menu to the Alias window.</span>
+        <span class="c1"># The menu generator is responsible for adding the Flow Production Tracking menu to the Alias window.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># The event watcher manages handling Alias event callbacks.</span>
@@ -194,7 +194,7 @@
         <span class="c1"># calling &#39;__init_api&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__alias_py</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># Create a QWidget to parent all ShotGrid windows to. This widget will set its parent</span>
+        <span class="c1"># Create a QWidget to parent all Flow Production Tracking windows to. This widget will set its parent</span>
         <span class="c1"># as the Alias main window.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__proxy_window</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -205,8 +205,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;argv&quot;</span><span class="p">):</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
 
-        <span class="c1"># Flag inidicating if ShotGrid is running in the same process as Alias. This will</span>
-        <span class="c1"># determine how ShotGrid will communicate with Alias.</span>
+        <span class="c1"># Flag inidicating if Flow Production Tracking is running in the same process as Alias. This will</span>
+        <span class="c1"># determine how Flow Production Tracking will communicate with Alias.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__in_alias_process</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Alias.exe&quot;</span>
         <span class="n">open_model</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;TK_ALIAS_OPEN_MODEL&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">open_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -504,9 +504,13 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="p">:</span>
             <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="o">.</span><span class="n">remove_menu</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removed ShotGrid menu from Alias successfully.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Removed Flow Production Tracking menu from Alias successfully.&quot;</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Failure</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to remove ShotGrid menu from Alias&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to remove Flow Production Tracking menu from Alias&quot;</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Alias Python API menu.remove() returned non-success status code </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -539,7 +543,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the Qt Application.</span>
 
-<span class="sd">        This should only be called when ShotGrid is running in the same process as Alias, and</span>
+<span class="sd">        This should only be called when Flow Production Tracking is running in the same process as Alias, and</span>
 <span class="sd">        Alias does not create a Qt Application (for Alias &lt; 2024.0).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -564,7 +568,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__qt_app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__qt_app</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__qt_app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="p">([</span><span class="s2">&quot;ShotGrid Alias Engine&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__qt_app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;Flow Production Tracking Alias Engine&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__qt_app</span><span class="o">.</span><span class="n">setQuitOnLastWindowClosed</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
             <span class="k">def</span> <span class="nf">_app_quit</span><span class="p">():</span>
@@ -605,7 +611,7 @@
         <span class="n">QtCore</span><span class="o">.</span><span class="n">QTextCodec</span><span class="o">.</span><span class="n">setCodecForCStrings</span><span class="p">(</span><span class="n">utf8</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;set utf-8 codec for widget text&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Create the parent dialog for ShotGrid widgets</span>
+        <span class="c1"># Create the parent dialog for Flow Production Tracking widgets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__get_or_create_proxy_window</span><span class="p">()</span>
 
         <span class="c1"># Check that the Alias version is supported. Pop up a warning dialog if not.</span>
@@ -616,7 +622,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__data_validator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span><span class="o">.</span><span class="n">data_validator</span><span class="o">.</span><span class="n">AliasDataValidator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__event_watcher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__init_alias_event_watcher</span><span class="p">()</span>
 
-        <span class="c1"># Build the ShotGrid menu in Alias. It will be added to the Alias main menu bar.</span>
+        <span class="c1"># Build the Flow Production Tracking menu in Alias. It will be added to the Alias main menu bar.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__menu_generator</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 
         <span class="c1"># Run the start up commands</span>
@@ -731,7 +737,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a callback that is triggered by Alias &quot;StageCreated&quot; events.</span>
 
-<span class="sd">        Update the ShotGrid context according to the current stage (since it may have changed).</span>
+<span class="sd">        Update the Flow Production Tracking context according to the current stage (since it may have changed).</span>
 
 <span class="sd">        :param result: The result of the Alias stage created event.</span>
 <span class="sd">        :type result: alias_api.PythonCallbackMessageResult</span>
@@ -997,7 +1003,7 @@
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_alias_process</span><span class="p">:</span>
-            <span class="c1"># ShotGrid is running in the same process as Alias. This is the old way that the</span>
+            <span class="c1"># Flow Production Tracking is running in the same process as Alias. This is the old way that the</span>
             <span class="c1"># engine was set up for, and will not work with Alias versions that use Qt for its</span>
             <span class="c1"># GUI (&gt;=2024.0).</span>
             <span class="k">try</span><span class="p">:</span>
@@ -1009,11 +1015,11 @@
             <span class="n">api_module</span> <span class="o">=</span> <span class="n">alias_api</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__has_ui</span><span class="p">:</span>
-                <span class="c1"># When running ShotGrid in the same process as Alias, the qt app needs to be</span>
+                <span class="c1"># When running Flow Production Tracking in the same process as Alias, the qt app needs to be</span>
                 <span class="c1"># created by the engine</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__init_qt_app</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># ShotGrid is running in a separate process than Alias. This is the new way how</span>
+            <span class="c1"># Flow Production Tracking is running in a separate process than Alias. This is the new way how</span>
             <span class="c1"># the engine operates: the Alias plugin will bootstrap the engine in a separate</span>
             <span class="c1"># process than Alias (to avoid Qt conflicts between QtQuick/QML and QWidgets).</span>
 
@@ -1109,16 +1115,16 @@
             <span class="s2">&quot;compatibility_dialog_min_version&quot;</span><span class="p">,</span> <span class="mi">2020</span>
         <span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;The ShotGrid Pipeline Toolkit has not yet been fully tested with Alias </span><span class="si">%s</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;You can continue to use the Toolkit but you may experience bugs or &quot;</span>
-                <span class="s2">&quot;instability.  Please report any issues you see to </span><span class="si">%s</span><span class="s2">&quot;</span>
-                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">support_url</span><span class="p">)</span>
+                <span class="s2">&quot;The Flow Production Tracking Toolkit has not yet been fully tested &quot;</span>
+                <span class="s2">&quot;with Alias </span><span class="si">%s</span><span class="s2">. You can continue to use the Toolkit but you may &quot;</span>
+                <span class="s2">&quot;experience bugs or instability.  Please report any issues you see &quot;</span>
+                <span class="s2">&quot;to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">support_url</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
                 <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialog_parent</span><span class="p">(),</span>
-                    <span class="s2">&quot;Warning - ShotGrid Pipeline Toolkit!&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Warning - Flow Production Tracking Toolkit!&quot;</span><span class="p">,</span>
                     <span class="n">msg</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -1127,16 +1133,16 @@
             <span class="s2">&quot;compatibility_dialog_old_version&quot;</span>
         <span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;The ShotGrid Pipeline Toolkit is not fully capable with Alias </span><span class="si">%s</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;You should consider upgrading to a more recent version of Alias. &quot;</span>
-                <span class="s2">&quot;Please report any issues you see to </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;The Flow Production Tracking Toolkit is not fully capable with &quot;</span>
+                <span class="s2">&quot;Alias </span><span class="si">%s</span><span class="s2">. You should consider upgrading to a more recent version &quot;</span>
+                <span class="s2">&quot;of Alias. Please report any issues you see to </span><span class="si">%s</span><span class="s2">&quot;</span>
                 <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">support_url</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
                 <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialog_parent</span><span class="p">(),</span>
-                    <span class="s2">&quot;Warning - ShotGrid Pipeline Toolkit!&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Warning - Flow Production Tracking Toolkit!&quot;</span><span class="p">,</span>
                     <span class="n">msg</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -1146,7 +1152,7 @@
 
     <span class="k">def</span> <span class="nf">__get_or_create_proxy_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a widget to parent all ShotGrid windows to.</span>
+<span class="sd">        Create a widget to parent all Flow Production Tracking windows to.</span>
 
 <span class="sd">        This widget itself will be parented to the Alias main window.</span>
 
@@ -1162,7 +1168,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__proxy_window</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="p">,</span> <span class="s2">&quot;set_parent_window&quot;</span><span class="p">):</span>
                 <span class="c1"># The Alias API version &gt;= 4.0.0 provides functions to manage the Alias main</span>
-                <span class="c1"># window (e.g. set as parent to ShotGrid windows)</span>
+                <span class="c1"># window (e.g. set as parent to Flow Production Tracking windows)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__proxy_window</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__proxy_window</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__PROXY_WINDOW_TITLE</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">set_parent_window</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__proxy_window</span><span class="o">.</span><span class="n">winId</span><span class="p">())</span>
