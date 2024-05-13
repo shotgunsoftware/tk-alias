@@ -38,7 +38,6 @@ class AliasDataValidator(object):
         # Use the engine api instead of importing since the module may not be ready to be
         # imported at the time that this class is imported
         self.alias_py = engine.alias_py
-        self.alias_py = engine.alias_py
 
         self._camera_node_types = self.alias_py.py_utils.camera_node_types()
         self._light_node_types = self.alias_py.py_utils.light_node_types()
