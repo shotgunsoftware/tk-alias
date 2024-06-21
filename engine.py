@@ -830,12 +830,13 @@ class AliasEngine(sgtk.platform.Engine):
         set up correctly in this case.
         """
 
-        if self.__in_alias_process:
+        if self.__in_alias_process or not self.__is_open_model:
             # The framework should have been initialized by startup.py
             # prepare_launch.
             return True
 
         # Executing in headless mode, ensure the framework is initialized.
+        self.logger.info("Initializing tk-framework-alias for headless mode")
 
         # Ensure the environment variables are set to import the Alias Python API module
         os.environ["ALIAS_PLUGIN_CLIENT_ALIAS_VERSION"] = self.alias_version
