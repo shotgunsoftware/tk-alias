@@ -834,7 +834,7 @@ class AliasEngine(sgtk.platform.Engine):
             # The framework should have been initialized by startup.py
             # prepare_launch.
             return True
-        
+
         # Executing in headless mode, ensure the framework is initialized.
 
         # Ensure the environment variables are set to import the Alias Python API module
@@ -859,14 +859,15 @@ class AliasEngine(sgtk.platform.Engine):
         # import the framework server module.
         if not startup_utils.ensure_python_c_extension_packages_installed(
             python_version=(sys.version_info.major, sys.version_info.minor),
-            logger=self.logger
+            logger=self.logger,
         ):
-            self.logger.error("Failed to install required python packages for tk-framework-alias.")
+            self.logger.error(
+                "Failed to install required python packages for tk-framework-alias."
+            )
             return False
 
         # Successfully initialized framework for headless mode.
         return True
-
 
     def __setup_sio(self, hostname, port, namespace):
         """
