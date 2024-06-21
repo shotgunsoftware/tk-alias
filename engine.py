@@ -82,7 +82,7 @@ class AliasEngine(sgtk.platform.Engine):
         open_model = os.getenv("TK_ALIAS_OPEN_MODEL")
         if open_model is None:
             # For backward compatibility, OpenModel mode is when not executing in the same process
-            # as Alias (unless )
+            # as Alias
             self.__is_open_model = not self.__in_alias_process
         else:
             self.__is_open_model = open_model in ("1", "true", "True")
@@ -207,6 +207,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         self.logger.debug("%s: Initializing..." % (self,))
+
+        # Ensure that the framework has been initialiazed. This must be called
+        # before import 'tk-alias' module, since this module will attempt to
+        # import the framework.
+        self.__ensure_framework()
 
         # Import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
