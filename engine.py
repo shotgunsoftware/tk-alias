@@ -825,9 +825,9 @@ class AliasEngine(sgtk.platform.Engine):
 
         When the engine is launched from FPT Desktop, the engine startup is
         executed which initializes the framework. However, when the engine is
-        bootstrapped in a headless mode, the framework is not guaranteed to be
-        initialized. The engine depends on the framework, so ensure that it is
-        set up correctly in this case.
+        bootstrapped in a headless mode (OpenModel), the framework is not
+        guaranteed to be initialized. The engine depends on the framework, so
+        ensure that it is set up correctly in this case.
         """
 
         if self.__in_alias_process or not self.__is_open_model:
@@ -835,7 +835,8 @@ class AliasEngine(sgtk.platform.Engine):
             # prepare_launch.
             return True
 
-        # Executing in headless mode, ensure the framework is initialized.
+        # Executing in headless mode (OpenModel), ensure the framework is
+        # initialized.
         self.logger.info("Initializing tk-framework-alias for headless mode")
 
         # Ensure the environment variables are set to import the Alias Python API module
