@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Alias Engine Code &mdash; tk-alias v3.3.0 documentation</title>
+  <title>The Alias Engine Code &mdash; tk-alias v3.3.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -82,7 +82,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.3.0.<br>
+    <b>tk-alias</b> v3.3.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -211,7 +211,7 @@
         <span class="n">open_model</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;TK_ALIAS_OPEN_MODEL&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">open_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># For backward compatibility, OpenModel mode is when not executing in the same process</span>
-            <span class="c1"># as Alias (unless )</span>
+            <span class="c1"># as Alias</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__is_open_model</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_alias_process</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__is_open_model</span> <span class="o">=</span> <span class="n">open_model</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">)</span>
@@ -336,6 +336,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Initializing...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,))</span>
+
+        <span class="c1"># Ensure that the framework has been initialiazed. This must be called</span>
+        <span class="c1"># before import &#39;tk-alias&#39; module, since this module will attempt to</span>
+        <span class="c1"># import the framework.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ensure_framework</span><span class="p">()</span>
 
         <span class="c1"># Import python/tk_alias module</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;tk_alias&quot;</span><span class="p">)</span>
@@ -942,6 +947,58 @@
     <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Private methods</span>
     <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">__ensure_framework</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensure that tk-framework-alias is initialized.</span>
+
+<span class="sd">        When the engine is launched from FPT Desktop, the engine startup is</span>
+<span class="sd">        executed which initializes the framework. However, when the engine is</span>
+<span class="sd">        bootstrapped in a headless mode (OpenModel), the framework is not</span>
+<span class="sd">        guaranteed to be initialized. The engine depends on the framework, so</span>
+<span class="sd">        ensure that it is set up correctly in this case.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_alias_process</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_open_model</span><span class="p">:</span>
+            <span class="c1"># The framework should have been initialized by startup.py</span>
+            <span class="c1"># prepare_launch.</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Executing in headless mode (OpenModel), ensure the framework is</span>
+        <span class="c1"># initialized.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initializing tk-framework-alias for headless mode&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Ensure the environment variables are set to import the Alias Python API module</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;ALIAS_PLUGIN_CLIENT_ALIAS_VERSION&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;ALIAS_PLUGIN_CLIENT_ALIAS_EXECPATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_execpath</span>
+
+        <span class="c1"># Get the framework location and add it to the python path. This is</span>
+        <span class="c1"># required since the framework uses absolute imports.</span>
+        <span class="n">tk_alias_framework</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frameworks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tk-framework-alias&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tk_alias_framework</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing required tk-framework-alias framework.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">framework_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frameworks</span><span class="p">[</span><span class="s2">&quot;tk-framework-alias&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">disk_location</span>
+        <span class="n">framework_python_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">framework_location</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">framework_python_path</span><span class="p">)</span>
+
+        <span class="c1"># Get the startup utils to help initialize the framework.</span>
+        <span class="kn">import</span> <span class="nn">tk_framework_alias_utils.startup</span> <span class="k">as</span> <span class="nn">startup_utils</span>
+
+        <span class="c1"># Ensure the python c extension packages are installed in order to</span>
+        <span class="c1"># import the framework server module.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">startup_utils</span><span class="o">.</span><span class="n">ensure_python_c_extension_packages_installed</span><span class="p">(</span>
+            <span class="n">python_version</span><span class="o">=</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="p">),</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to install required python packages for tk-framework-alias.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Successfully initialized framework for headless mode.</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">__setup_sio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">namespace</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
