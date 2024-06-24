@@ -82,7 +82,7 @@ class AliasEngine(sgtk.platform.Engine):
         open_model = os.getenv("TK_ALIAS_OPEN_MODEL")
         if open_model is None:
             # For backward compatibility, OpenModel mode is when not executing in the same process
-            # as Alias (unless )
+            # as Alias
             self.__is_open_model = not self.__in_alias_process
         else:
             self.__is_open_model = open_model in ("1", "true", "True")
@@ -207,6 +207,11 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         self.logger.debug("%s: Initializing..." % (self,))
+
+        # Ensure that the framework has been initialiazed. This must be called
+        # before import 'tk-alias' module, since this module will attempt to
+        # import the framework.
+        self.__ensure_framework()
 
         # Import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
@@ -813,6 +818,58 @@ class AliasEngine(sgtk.platform.Engine):
     # -------------------------------------------------------------------------------------------------------
     # Private methods
     # -------------------------------------------------------------------------------------------------------
+
+    def __ensure_framework(self):
+        """
+        Ensure that tk-framework-alias is initialized.
+
+        When the engine is launched from FPT Desktop, the engine startup is
+        executed which initializes the framework. However, when the engine is
+        bootstrapped in a headless mode (OpenModel), the framework is not
+        guaranteed to be initialized. The engine depends on the framework, so
+        ensure that it is set up correctly in this case.
+        """
+
+        if self.__in_alias_process or not self.__is_open_model:
+            # The framework should have been initialized by startup.py
+            # prepare_launch.
+            return True
+
+        # Executing in headless mode (OpenModel), ensure the framework is
+        # initialized.
+        self.logger.info("Initializing tk-framework-alias for headless mode")
+
+        # Ensure the environment variables are set to import the Alias Python API module
+        os.environ["ALIAS_PLUGIN_CLIENT_ALIAS_VERSION"] = self.alias_version
+        os.environ["ALIAS_PLUGIN_CLIENT_ALIAS_EXECPATH"] = self.alias_execpath
+
+        # Get the framework location and add it to the python path. This is
+        # required since the framework uses absolute imports.
+        tk_alias_framework = self.frameworks.get("tk-framework-alias")
+        if not tk_alias_framework:
+            self.logger.error("Missing required tk-framework-alias framework.")
+            return False
+
+        framework_location = self.frameworks["tk-framework-alias"].disk_location
+        framework_python_path = os.path.join(framework_location, "python")
+        sys.path.insert(0, framework_python_path)
+
+        # Get the startup utils to help initialize the framework.
+        import tk_framework_alias_utils.startup as startup_utils
+
+        # Ensure the python c extension packages are installed in order to
+        # import the framework server module.
+        if not startup_utils.ensure_python_c_extension_packages_installed(
+            python_version=(sys.version_info.major, sys.version_info.minor),
+            logger=self.logger,
+        ):
+            self.logger.error(
+                "Failed to install required python packages for tk-framework-alias."
+            )
+            return False
+
+        # Successfully initialized framework for headless mode.
+        return True
 
     def __setup_sio(self, hostname, port, namespace):
         """
