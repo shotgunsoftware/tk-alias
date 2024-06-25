@@ -45,7 +45,7 @@ variables:
 jobs:
 - template: build-pipeline.yml@templates
   parameters:
-    has_unit_tests: false
+    has_unit_tests: true
     additional_repositories:
     - name: tk-framework-alias
       ref: main
