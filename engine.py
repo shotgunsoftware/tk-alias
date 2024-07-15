@@ -442,6 +442,10 @@ class AliasEngine(sgtk.platform.Engine):
         if os.path.exists(plugins_dir):
             QtCore.QCoreApplication.addLibraryPath(plugins_dir)
 
+        # Enable High DPI support in Qt5 (default enabled in Qt6)
+        if QtCore.qVersion()[0] == "5":
+            QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+
         self.__qt_app = QtGui.QApplication.instance()
         if not self.__qt_app:
             self.__qt_app = QtGui.QApplication(
