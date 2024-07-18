@@ -6,7 +6,7 @@
 # Source Code License included in this distribution package. See LICENSE.
 
 import sgtk
-from tank_vendor import six
+
 from tank.util import sgre as re
 
 
@@ -906,7 +906,7 @@ class AliasDataValidator(object):
 
         skip_shaders = skip_shaders or []
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -916,7 +916,7 @@ class AliasDataValidator(object):
         shaders = errors or self.alias_py.get_shaders()
 
         for shader in shaders:
-            if isinstance(shader, six.string_types):
+            if isinstance(shader, str):
                 if shader in skip_shaders:
                     continue
                 shader = self.alias_py.get_shader_by_name(shader)
@@ -1048,7 +1048,7 @@ class AliasDataValidator(object):
 
         skip_node_types = skip_node_types or []
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1112,7 +1112,7 @@ class AliasDataValidator(object):
         :raises alias_api.AliasPythonException: if a node instance failed to expand
         """
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1184,7 +1184,7 @@ class AliasDataValidator(object):
 
         skip_node_types = skip_node_types or []
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1299,7 +1299,7 @@ class AliasDataValidator(object):
 
         skip_node_types = skip_node_types or []
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1421,7 +1421,7 @@ class AliasDataValidator(object):
 
         accept_node_types = accept_node_types or []
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1430,7 +1430,7 @@ class AliasDataValidator(object):
 
         if errors:
             for node in errors:
-                if isinstance(node, six.string_types):
+                if isinstance(node, str):
                     node = self.alias_py.find_dag_node_by_name(node)
 
                 if not node:
@@ -1505,7 +1505,7 @@ class AliasDataValidator(object):
         :type skip_layers: list<str>
         """
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1515,7 +1515,7 @@ class AliasDataValidator(object):
         nodes = errors or self.alias_py.get_top_dag_nodes()
 
         for node in nodes:
-            if isinstance(node, six.string_types):
+            if isinstance(node, str):
                 node = self.alias_py.find_dag_node_by_name(node)
 
             if not node:
@@ -1562,7 +1562,7 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlDagNode> | list<dict>
         """
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1571,7 +1571,7 @@ class AliasDataValidator(object):
 
         if errors:
             for node in errors:
-                if isinstance(node, six.string_types):
+                if isinstance(node, str):
                     node = self.alias_py.find_dag_node_by_name(node)
 
                 if not node:
@@ -1776,7 +1776,7 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlCurveOnSurface> | list<dict>
         """
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1855,7 +1855,7 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlCurveOnSurface> | list<dict>
         """
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1906,7 +1906,7 @@ class AliasDataValidator(object):
         :type errors: str | list<str> | list<AlDagNode> | list<dict>
         """
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -1917,7 +1917,7 @@ class AliasDataValidator(object):
         set_names = []
         if errors:
             for item in errors:
-                if isinstance(item, six.string_types):
+                if isinstance(item, str):
                     set_names.append(item)
                 elif isinstance(item, self.alias_py.AlSet):
                     set_names.append(item.name)
@@ -1971,7 +1971,7 @@ class AliasDataValidator(object):
         # If a list of layers is specified, only delete those layers.
         delete_only = []
         if errors:
-            if isinstance(errors, six.string_types):
+            if isinstance(errors, str):
                 errors = [errors]
             elif isinstance(errors, list):
                 for i, error_item in enumerate(errors):
@@ -1979,7 +1979,7 @@ class AliasDataValidator(object):
                         errors[i] = error_item["name"]
 
             for layer in errors:
-                if isinstance(layer, six.string_types):
+                if isinstance(layer, str):
                     delete_only.append(layer)
                 else:
                     delete_only.append(layer.name)
@@ -2044,7 +2044,7 @@ class AliasDataValidator(object):
         :type skip_layers: list<str>
         """
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -2124,7 +2124,7 @@ class AliasDataValidator(object):
 
         # TODO this algorithm to fix the layer could probably be cleaned up and optimized.
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -2134,7 +2134,7 @@ class AliasDataValidator(object):
         layers = errors or self.alias_py.get_layers()
 
         for layer in layers:
-            if isinstance(layer, six.string_types):
+            if isinstance(layer, str):
                 layer = self.alias_py.get_layer_by_name(layer)
 
             if not layer:
@@ -2229,7 +2229,7 @@ class AliasDataValidator(object):
         status = self.alias_py.py_utils.success_status()
 
         if errors:
-            if isinstance(errors, six.string_types):
+            if isinstance(errors, str):
                 errors = [errors]
             elif isinstance(errors, list):
                 for i, error_item in enumerate(errors):
@@ -2238,7 +2238,7 @@ class AliasDataValidator(object):
 
             groups_to_flatten = []
             for group_node in errors:
-                if isinstance(group_node, six.string_types):
+                if isinstance(group_node, str):
                     group_node = self.alias_py.find_dag_node_by_name(group_node)
 
                 if not group_node:
@@ -2291,7 +2291,7 @@ class AliasDataValidator(object):
         :raises alias_api.AliasPythonException: if failed to delete locator object
         """
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -2300,7 +2300,7 @@ class AliasDataValidator(object):
 
         if errors:
             for locator in errors:
-                if isinstance(locator, six.string_types):
+                if isinstance(locator, str):
                     locator = self.alias_py.get_locator_by_name(locator)
 
                 if locator:
@@ -2350,7 +2350,7 @@ class AliasDataValidator(object):
         :raises alias_api.AliasPythonException: if failed to remove a reference
         """
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -2360,7 +2360,7 @@ class AliasDataValidator(object):
         references = errors or self.alias_py.get_references()
 
         for reference in references:
-            if isinstance(reference, six.string_types):
+            if isinstance(reference, str):
                 reference = self.alias_py.get_reference_by_name(reference)
 
             if reference:
@@ -2395,7 +2395,7 @@ class AliasDataValidator(object):
         if not errors:
             return
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -2416,7 +2416,7 @@ class AliasDataValidator(object):
         if not errors:
             return
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -2436,7 +2436,7 @@ class AliasDataValidator(object):
 
         errors = errors or self.alias_py.get_shaders()
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -2456,7 +2456,7 @@ class AliasDataValidator(object):
 
         errors = errors or self.alias_py.get_layers()
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -2476,7 +2476,7 @@ class AliasDataValidator(object):
 
         errors = errors or self.alias_py.get_layers()
 
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         elif isinstance(errors, list):
             for i, error_item in enumerate(errors):
@@ -2498,7 +2498,7 @@ class AliasDataValidator(object):
             self.alias_py.py_pick_list.pick_locators(None, pick_all=True)
 
         else:
-            if isinstance(errors, six.string_types):
+            if isinstance(errors, str):
                 errors = [errors]
             elif isinstance(errors, list):
                 for i, error_item in enumerate(errors):

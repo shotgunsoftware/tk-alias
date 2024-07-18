@@ -8,8 +8,6 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from tank_vendor import six
-
 from .base import AliasPyBase
 
 
@@ -39,7 +37,7 @@ class AliasPyPickList(AliasPyBase):
             self.alias_py.clear_pick_list()
 
         for node in nodes:
-            if isinstance(node, six.string_types):
+            if isinstance(node, str):
                 node = self.alias_py.find_dag_node_by_name(node)
 
             if node:
@@ -99,7 +97,7 @@ class AliasPyPickList(AliasPyBase):
             self.alias_py.clear_pick_list()
 
         for shader in shaders:
-            if isinstance(shader, six.string_types):
+            if isinstance(shader, str):
                 if shader in skip_shaders:
                     continue
 
@@ -132,7 +130,7 @@ class AliasPyPickList(AliasPyBase):
             self.alias_py.clear_pick_list()
 
         for layer in layers:
-            if isinstance(layer, six.string_types):
+            if isinstance(layer, str):
                 layer = self.alias_py.get_layer_by_name(layer)
 
             if layer:
@@ -158,7 +156,7 @@ class AliasPyPickList(AliasPyBase):
         :type redraw: bool
         """
 
-        if isinstance(layers, six.string_types):
+        if isinstance(layers, str):
             layers = [layers]
 
         if clear_pick_list or pick_all:
@@ -171,7 +169,7 @@ class AliasPyPickList(AliasPyBase):
 
         if not pick_all:
             for layer in layers:
-                if isinstance(layer, six.string_types):
+                if isinstance(layer, str):
                     layer = self.alias_py.get_layer_by_name(layer)
 
                 if layer:
@@ -206,7 +204,7 @@ class AliasPyPickList(AliasPyBase):
 
         if not pick_all:
             for locator in locators:
-                if isinstance(locator, six.string_types):
+                if isinstance(locator, str):
                     locator = self.alias_py.get_locator_by_name(locator)
 
                 if locator:

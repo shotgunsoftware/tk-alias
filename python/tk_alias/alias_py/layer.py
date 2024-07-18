@@ -8,8 +8,6 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from tank_vendor import six
-
 from .base import AliasPyBase
 
 
@@ -43,7 +41,7 @@ class AliasPyLayer(AliasPyBase):
         layers = layers or self.alias_py.get_layers()
 
         for layer in layers:
-            if isinstance(layer, six.string_types):
+            if isinstance(layer, str):
                 layer = self.alias_py.get_layer_by_name(layer)
 
             if (
