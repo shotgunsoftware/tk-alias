@@ -455,9 +455,7 @@ class AliasEngine(sgtk.platform.Engine):
             elif "QT_SCREEN_SCALE_FACTORS" in os.environ:
                 pass
             else:
-                QtCore.QCoreApplication.setAttribute(
-                    QtCore.Qt.AA_EnableHighDpiScaling
-                )
+                QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
         self.__qt_app = QtGui.QApplication.instance()
         if not self.__qt_app:
