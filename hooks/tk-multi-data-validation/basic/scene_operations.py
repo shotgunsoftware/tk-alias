@@ -58,11 +58,17 @@ class AliasSceneOperationsHook(HookBaseClass):
             )
         )
 
-        # Define the list of Alias event to that will trigger the change callback.
+        # Define the list of Alias event to that will trigger the change
+        # callback.
+        # NOTE: turning off the following change events, since Alias does not
+        # optimize emitting events, and so listening for these events will
+        # severely degrade performance:
+        # - DagNodeDeleted
+        # - DagNameModified
         change_event_names = [
             "DagNodeModified",
-            "DagNodeDeleted",
-            "DagNameModified",
+            # "DagNodeDeleted",
+            # "DagNameModified",
             "ShaderAdded",
             "ShaderDeleted",
             "LayerAdded",
