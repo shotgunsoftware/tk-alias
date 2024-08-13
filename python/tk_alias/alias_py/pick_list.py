@@ -8,9 +8,15 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from tank_vendor import six
+from typing import List, Union, Optional
 
 from .base import AliasPyBase
+from .al_typing import (
+    AlDagNodeList,
+    AlLocatorList,
+    AlShaderList,
+    AlLayerList,
+)
 
 
 class AliasPyPickList(AliasPyBase):
@@ -23,47 +29,44 @@ class AliasPyPickList(AliasPyBase):
     # Pick functions
     # -------------------------------------------------------------------------------------------------------
 
-    def pick_nodes(self, nodes, clear_pick_list=True, redraw=True):
+    def pick_nodes(
+        self, nodes: Union[List[str], AlDagNodeList], clear_pick_list=True, redraw=True
+    ):
         """
         Pick the given nodes.
 
         :param nodes: The nodes to pick.
-        :type nodes: list<AlDagNode>
-        :param clear_pick_list: True will clear the current pick list before anything is picked.
-        :type clear_pick_list: bool
-        :param redraw: True will refresh the Alias scene to reflect the pick changes.
-        :type redraw: bool
+        :param clear_pick_list: True will clear the current pick list before
+            anything is picked.
+        :param redraw: True will refresh the Alias scene to reflect the pick
+            changes.
         """
 
-        if clear_pick_list:
-            self.alias_py.clear_pick_list()
+        with self.alias_py.batch_context_manager(is_async=True):
+            if clear_pick_list:
+                self.alias_py.clear_pick_list()
 
-        for node in nodes:
-            if isinstance(node, six.string_types):
-                node = self.alias_py.find_dag_node_by_name(node)
+            if nodes:
+                self.alias_py.pick_nodes(nodes)
 
-            if node:
-                node.pick()
-
-        if redraw:
-            self.alias_py.redraw_screen()
+            if redraw:
+                self.alias_py.redraw_screen()
 
     def pick_curves_on_surface_from_nodes(
-        self, nodes, clear_pick_list=True, redraw=True
+        self,
+        nodes: Union[List[str], AlDagNodeList],
+        clear_pick_list: Optional[bool] = True,
+        redraw: Optional[bool] = True,
     ):
         """
         Pick the curves on surface from the given nodes.
 
         :param nodes: The nodes to pick curves on surface from.
-        :type nodes: list<AlDagNode>
-        :param clear_pick_list: True will clear the current pick list before anything is picked.
-        :type clear_pick_list: bool
-        :param redraw: True will refresh the Alias scene to reflect the pick changes.
-        :type redraw: bool
+        :param clear_pick_list: True will clear the current pick list before
+            anything is picked.
+        :param redraw: True will refresh the Alias scene to reflect the pick
+            changes.
         """
-
-        if clear_pick_list:
-            self.alias_py.clear_pick_list()
 
         unused_curves = (
             self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes(
@@ -71,52 +74,50 @@ class AliasPyPickList(AliasPyBase):
             )
         )
 
-        for curve in unused_curves:
-            curve.pick()
+        with self.alias_py.batch_context_manager(is_async=True):
+            if clear_pick_list:
+                self.alias_py.clear_pick_list()
 
-        if redraw:
-            self.alias_py.redraw_screen()
+            if unused_curves:
+                self.alias_py.pick_all(unused_curves)
+
+            if redraw:
+                self.alias_py.redraw_screen()
 
     def pick_nodes_assigned_to_shaders(
-        self, shaders, clear_pick_list=True, redraw=True, skip_shaders=None
+        self,
+        shaders: Union[List[str], AlShaderList],
+        clear_pick_list: Optional[bool] = True,
+        redraw: Optional[bool] = True,
+        skip_shaders: Optional[List[str]] = None,
     ):
         """
         Pick the nodes assigned to the given shaders.
 
         :param shaders: The shaders to pick nodes from
-        :type shaders: list<AlShader>
-        :param clear_pick_list: True will clear the current pick list before anything is picked.
-        :type clear_pick_list: bool
-        :param redraw: True will refresh the Alias scene to reflect the pick changes.
-        :type redraw: bool
-        :param skip_shaders: A list of shader names to skip (their assigned nodes will not be picked)
-        :type skip_shaders: list<str>
+        :param clear_pick_list: True will clear the current pick list before
+            anything is picked.
+        :param redraw: True will refresh the Alias scene to reflect the pick
+            changes.
+        :param skip_shaders: DEPRECATED. This param will be ignored.
         """
 
-        skip_shaders = skip_shaders or []
+        if not shaders:
+            return
 
-        if clear_pick_list:
-            self.alias_py.clear_pick_list()
+        with self.alias_py.batch_context_manager(is_async=True):
+            if clear_pick_list:
+                self.alias_py.clear_pick_list()
+            self.alias_py.pick_nodes_assigned_to_shaders(shaders)
+            if redraw:
+                self.alias_py.redraw_screen()
 
-        for shader in shaders:
-            if isinstance(shader, six.string_types):
-                if shader in skip_shaders:
-                    continue
-
-                shader = self.alias_py.get_shader_by_name(shader)
-                if not shader:
-                    continue
-
-            elif shader.name in skip_shaders:
-                continue
-
-            for node in shader.get_assigned_nodes():
-                node.pick()
-
-        if redraw:
-            self.alias_py.redraw_screen()
-
-    def pick_nodes_assigned_to_layers(self, layers, clear_pick_list=True, redraw=True):
+    def pick_nodes_assigned_to_layers(
+        self,
+        layers: Union[List[str], AlLayerList],
+        clear_pick_list: Optional[bool] = True,
+        redraw: Optional[bool] = True,
+    ):
         """
         Pick the nodes assigned to the given layers.
 
@@ -128,89 +129,73 @@ class AliasPyPickList(AliasPyBase):
         :type redraw: bool
         """
 
-        if clear_pick_list:
-            self.alias_py.clear_pick_list()
+        with self.alias_py.batch_context_manager(is_async=True):
+            if clear_pick_list:
+                self.alias_py.clear_pick_list()
 
-        for layer in layers:
-            if isinstance(layer, six.string_types):
-                layer = self.alias_py.get_layer_by_name(layer)
+            self.alias_py.pick_nodes_assigned_to_layers(layers)
 
-            if layer:
-                for node in layer.get_assigned_nodes():
-                    node.pick()
-
-        if redraw:
-            self.alias_py.redraw_screen()
+            if redraw:
+                self.alias_py.redraw_screen()
 
     def pick_layers(
-        self, layers=None, pick_all=False, clear_pick_list=True, redraw=True
+        self,
+        layers: Optional[Union[List[str], AlLayerList]] = None,
+        pick_all: Optional[bool] = False,
+        clear_pick_list: Optional[bool] = True,
+        redraw: Optional[bool] = True,
     ):
         """
         Pick the given layers.
 
         :param layers: The layers to pick.
-        :type layers: list<AlLayer>
-        :param pick_all: Pick all the layers in the current scene. The layers list will be ignored.
-        :type pick_all: bool
-        :param clear_pick_list: True will clear the current pick list before anything is picked.
-        :type clear_pick_list: bool
-        :param redraw: True will refresh the Alias scene to reflect the pick changes.
-        :type redraw: bool
+        :param pick_all: Pick all the layers in the current scene. The layers
+            list will be ignored.
+        :param clear_pick_list: True will clear the current pick list before
+            anything is picked.
+        :param redraw: True will refresh the Alias scene to reflect the pick
+            changes.
         """
 
-        if isinstance(layers, six.string_types):
-            layers = [layers]
+        with self.alias_py.batch_context_manager(is_async=True):
+            if pick_all:
+                self.alias_py.pick_all_layers()
+            elif clear_pick_list:
+                self.alias_py.unpick_all_layers()
 
-        if clear_pick_list or pick_all:
-            # NOTE this does not clear the node pick list, this unpicks all the layers.
-            for layer in self.alias_py.get_layers():
-                if pick_all:
-                    layer.pick()
-                else:
-                    layer.unpick()
+            if not pick_all and layers:
+                self.alias_py.pick_layers(layers)
 
-        if not pick_all:
-            for layer in layers:
-                if isinstance(layer, six.string_types):
-                    layer = self.alias_py.get_layer_by_name(layer)
-
-                if layer:
-                    layer.pick()
-
-        if redraw:
-            self.alias_py.redraw_screen()
+            if redraw:
+                self.alias_py.redraw_screen()
 
     def pick_locators(
-        self, locators, pick_all=False, clear_pick_list=True, redraw=True
+        self,
+        locators: Optional[Union[List[str], AlLocatorList]] = None,
+        pick_all: Optional[bool] = False,
+        clear_pick_list: Optional[bool] = True,
+        redraw: Optional[bool] = True,
     ):
         """
         Pick the given locators.
 
         :param locators: The locators to pick.
-        :type locators: list<AlLocator>
-        :param pick_all: Pick all the locators in the current scene. The locators list will be ignored.
-        :type pick_all: bool
-        :param clear_pick_list: True will clear the current pick list before anything is picked.
-        :type clear_pick_list: bool
-        :param redraw: True will refresh the Alias scene to reflect the pick changes.
-        :type redraw: bool
+        :param pick_all: Pick all the locators in the current scene. The
+            locators list will be ignored.
+        :param clear_pick_list: True will clear the current pick list before
+            anything is picked.
+        :param redraw: True will refresh the Alias scene to reflect the pick
+            changes.
         """
 
-        if clear_pick_list or pick_all:
-            # NOTE this does not clear the node pick list, this unpicks all the locators.
-            for locator in self.alias_py.get_locators():
-                if pick_all:
-                    locator.pick()
-                else:
-                    locator.unpick()
+        with self.alias_py.batch_context_manager(is_async=True):
+            if pick_all:
+                self.alias_py.pick_all_locators()
+            elif clear_pick_list:
+                self.alias_py.unpick_all_locators()
 
-        if not pick_all:
-            for locator in locators:
-                if isinstance(locator, six.string_types):
-                    locator = self.alias_py.get_locator_by_name(locator)
+            if not pick_all and locators:
+                self.alias_py.pick_locators(locators)
 
-                if locator:
-                    locator.pick()
-
-        if redraw:
-            self.alias_py.redraw_screen()
+            if redraw:
+                self.alias_py.redraw_screen()
