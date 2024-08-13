@@ -42,7 +42,7 @@ class AliasPyPickList(AliasPyBase):
             changes.
         """
 
-        with self.alias_py.batch_context_manager(is_async=True):
+        with self.alias_py.request_context_manager(is_async=True):
             if clear_pick_list:
                 self.alias_py.clear_pick_list()
 
@@ -74,7 +74,7 @@ class AliasPyPickList(AliasPyBase):
             )
         )
 
-        with self.alias_py.batch_context_manager(is_async=True):
+        with self.alias_py.request_context_manager(is_async=True):
             if clear_pick_list:
                 self.alias_py.clear_pick_list()
 
@@ -105,7 +105,7 @@ class AliasPyPickList(AliasPyBase):
         if not shaders:
             return
 
-        with self.alias_py.batch_context_manager(is_async=True):
+        with self.alias_py.request_context_manager(is_async=True):
             if clear_pick_list:
                 self.alias_py.clear_pick_list()
             self.alias_py.pick_nodes_assigned_to_shaders(shaders)
@@ -129,7 +129,7 @@ class AliasPyPickList(AliasPyBase):
         :type redraw: bool
         """
 
-        with self.alias_py.batch_context_manager(is_async=True):
+        with self.alias_py.request_context_manager(is_async=True):
             if clear_pick_list:
                 self.alias_py.clear_pick_list()
 
@@ -157,7 +157,7 @@ class AliasPyPickList(AliasPyBase):
             changes.
         """
 
-        with self.alias_py.batch_context_manager(is_async=True):
+        with self.alias_py.request_context_manager(is_async=True):
             if pick_all:
                 self.alias_py.pick_all_layers()
             elif clear_pick_list:
@@ -188,7 +188,7 @@ class AliasPyPickList(AliasPyBase):
             changes.
         """
 
-        with self.alias_py.batch_context_manager(is_async=True):
+        with self.alias_py.request_context_manager(is_async=True):
             if pick_all:
                 self.alias_py.pick_all_locators()
             elif clear_pick_list:

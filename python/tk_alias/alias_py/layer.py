@@ -56,7 +56,7 @@ class AliasPyLayer(AliasPyBase):
         else:
             layers = self.alias_py.get_layers(ignore_names=set(skip_layers))
 
-        with self.alias_py.batch_context_manager() as manager:
+        with self.alias_py.request_context_manager() as manager:
             for layer in layers:
                 layer.symmetric
 
