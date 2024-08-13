@@ -12,6 +12,14 @@ from .base import AliasPyBase
 
 
 class AliasPyTraverseDag(AliasPyBase):
+    """
+    ********** DEPRECATED **********
+    WARNING: This class is deprecated and will be removed in a future release.
+    Please use the `AliasPyDagNode` class instead.
+
+    It is not advisable to use traverse callbacks, performance will be slow.
+    """
+
     def __init__(self, alpy):
         super(AliasPyTraverseDag, self).__init__(alpy)
 

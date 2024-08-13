@@ -8,7 +8,8 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from tank_vendor import six
+from typing import Optional, List, Union
+from .al_typing import AlLayerList
 
 from .base import AliasPyBase
 
@@ -23,36 +24,42 @@ class AliasPyLayer(AliasPyBase):
     # AlLayer functions
     # -------------------------------------------------------------------------------------------------------
 
-    def get_symmetric_layers(self, layers=None, check_exists=False, skip_layers=None):
+    def get_symmetric_layers(
+        self,
+        layers: Optional[Union[List[str], AlLayerList]] = None,
+        check_exists: Optional[bool] = False,
+        skip_layers: Optional[List[str]] = None,
+    ) -> AlLayerList:
         """
         Get the list of all layers with symmetry property turned on.
 
-        :param layers: The layers to check. If not provided, all layers in the current scene will be checked.
-        :type layers: list<AlLayer> | list<str>
-        :param check_exists: Set to True to return immediately upon finding a layer with symmetry.
-        :type check_exists: bool
-        :param skip_layers: A list of layer names to skip in checking for symmetry
-        :type skip_layers: list<str>
+        :param layers: The layers to check. If not provided, all layers in the
+            current scene will be checked.
+        :param check_exists: DEPRECATED. This parameter will be ignored.
+        :param skip_layers: The layer names to skip in checking for symmetry
 
-        :return: If `check_exists` is True, return True if a layer was found with symmetry, else False.
-                If `check_exists` is False, return the list of layers with symmetry.
-        :rtype: bool | list<AlLayer>
+        :return: The layers with symmetry property turned on.
         """
 
-        symmetric_layers = []
-        layers = layers or self.alias_py.get_layers()
+        if layers:
+            if isinstance(layers[0], str):
+                layer_names = [
+                    layer_name for layer_name in layers if layer_name not in skip_layers
+                ]
+                layers = self.alias_py.get_layers_by_name(layer_names)
+            else:
+                layers = [
+                    layer
+                    for layer in layers
+                    if not skip_layers or layer.get_name() not in skip_layers
+                ]
+        else:
+            layers = self.alias_py.get_layers(ignore_names=set(skip_layers))
 
-        for layer in layers:
-            if isinstance(layer, six.string_types):
-                layer = self.alias_py.get_layer_by_name(layer)
+        with self.alias_py.batch_context_manager() as manager:
+            for layer in layers:
+                layer.symmetric
 
-            if (
-                layer
-                and (not skip_layers or layer.name not in skip_layers)
-                and layer.symmetric
-            ):
-                if check_exists:
-                    return True
-                symmetric_layers.append(layer)
-
-        return False if check_exists else symmetric_layers
+        return [
+            layers[i] for i, is_symmetric in enumerate(manager.result) if is_symmetric
+        ]
