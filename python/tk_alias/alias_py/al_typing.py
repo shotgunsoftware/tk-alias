@@ -13,6 +13,9 @@ from typing import TypeVar, List
 AlDagNode = TypeVar("AlDagNode")
 AlDagNodeList = List[AlDagNode]
 
+AlObject = TypeVar("AlObject")
+AlObjectList = List[AlObject]
+
 AlObjectType = TypeVar("AlObjectType")
 AlObjectTypeList = List[AlObjectType]
 
