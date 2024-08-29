@@ -74,7 +74,6 @@ class AliasDataValidator(object):
         # count exceeds this value, the validation check will only return True
         # or False to indicate if errors were found. This is to help
         # performance of the validation operations.
-        # TODO add this to info.yml
         self._max_error_count = engine.get_setting(
             "data_validation_max_error_count",
             1000,

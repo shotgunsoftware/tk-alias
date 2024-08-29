@@ -71,6 +71,13 @@ configuration:
         description:    "Disable warning about older versions of Alias"
         default_value:  True
 
+    data_validation_max_error_count:
+        type: int
+        description: "The maximum number of errors to display in the Data
+                     Validation App details panel. Lowering this number can
+                     improve performance when there are many errors."
+        default_value: 500
+
 # the Shotgun fields that this engine needs in order to operate correctly
 requires_shotgun_fields:
 
