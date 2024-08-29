@@ -79,7 +79,7 @@ class AliasPyPickList(AliasPyBase):
                 self.alias_py.clear_pick_list()
 
             if unused_curves:
-                self.alias_py.pick_all(unused_curves)
+                self.alias_py.pick(unused_curves)
 
             if redraw:
                 self.alias_py.redraw_screen()

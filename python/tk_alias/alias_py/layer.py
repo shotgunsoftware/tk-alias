@@ -51,14 +51,14 @@ class AliasPyLayer(AliasPyBase):
                 layers = [
                     layer
                     for layer in layers
-                    if not skip_layers or layer.get_name() not in skip_layers
+                    if not skip_layers or layer.name not in skip_layers
                 ]
         else:
             layers = self.alias_py.get_layers(ignore_names=set(skip_layers))
 
         with self.alias_py.request_context_manager() as manager:
             for layer in layers:
-                layer.symmetric
+                manager.result.append(layer.symmetric)
 
         return [
             layers[i] for i, is_symmetric in enumerate(manager.result) if is_symmetric

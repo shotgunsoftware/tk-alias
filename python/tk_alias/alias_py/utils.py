@@ -11,7 +11,7 @@
 from typing import Union, Optional
 
 from .base import AliasPyBase
-from .al_typing import AlLocatorList
+from .al_typing import AlLocatorList, AlObject, AlObjectType
 
 
 class AliasPyUtils(AliasPyBase):
@@ -97,7 +97,7 @@ class AliasPyUtils(AliasPyBase):
         :rtype: bool
         """
 
-        return alias_object.get_type() == self.alias_py.AlObjectType.GroupNodeType
+        return alias_object.type() == self.alias_py.AlObjectType.GroupNodeType
 
     def camera_node_types(self):
         """

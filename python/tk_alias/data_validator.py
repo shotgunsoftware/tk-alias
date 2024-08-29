@@ -74,8 +74,8 @@ class AliasDataValidator(object):
         # count exceeds this value, the validation check will only return True
         # or False to indicate if errors were found. This is to help
         # performance of the validation operations.
+        # TODO add this to info.yml
         self._max_error_count = engine.get_setting(
-            # "data_validation_max_error_count", 1000
             "data_validation_max_error_count",
             1000,
         )
@@ -929,13 +929,15 @@ class AliasDataValidator(object):
         shaders = [
             shader
             for shader in self.alias_py.get_shaders()
-            if shader.get_name() not in skip_shaders
+            if shader.name not in skip_shaders
         ]
+
         # Perform batch operation to check which shaders are used. This is
         # faster than iterating one by one.
         with self.alias_py.request_context_manager() as manager:
             for shader in shaders:
-                shader.is_used()
+                manager.result.append(shader.is_used())
+
         # Return the unused shaders based on the manager result
         return [shaders[i] for i, is_used in enumerate(manager.result) if not is_used]
 
@@ -1010,13 +1012,13 @@ class AliasDataValidator(object):
         shaders = [
             shader
             for shader in self.alias_py.get_shaders()
-            if shader.get_name() not in skip_shaders
+            if shader.name not in skip_shaders
         ]
         # Perform batch operation to check which shaders are used. This is
         # faster than iterating one by one.
         with self.alias_py.request_context_manager() as manager:
             for shader in shaders:
-                shader.is_used()
+                manager.result.append(shader.is_used())
         # Return the unused shaders based on the manager result
         used_shaders = [
             shaders[i] for i, is_used in enumerate(manager.result) if is_used
@@ -1024,7 +1026,7 @@ class AliasDataValidator(object):
         # Perform batch operation to check which shaders are VRED compatible.
         with self.alias_py.request_context_manager() as manager:
             for shader in used_shaders:
-                self.alias_py.is_copy_of_vred_shader(shader)
+                manager.result.append(self.alias_py.is_copy_of_vred_shader(shader))
         # Return the incompatible vred shaders based on the manager result
         return [
             used_shaders[i]
@@ -1071,20 +1073,27 @@ class AliasDataValidator(object):
         self,
         fail_fast: Optional[bool] = False,
         skip_node_types: Optional[AlObjectTypeList] = None,
+        force_return_errors: Optional[bool] = False,
     ) -> AlDagNodeList:
         """
         Check for nodes with construction history in the current stage.
 
         :param fail_fast: DEPRECATED. This parameter is ignored.
         :param skip_node_types: The specified node types will not be checked.
+        :param force_return_errors: If True, the function will return the list
+            of errors found, else the list of errors will only be returned if
+            the number of errors is less than or equal to the maximum number of
+            errors allowed to return. Default is False.
 
         :return: The list of nodes that have construction history.
         """
 
         skip_node_types_set = set(skip_node_types or [])
-        return self.alias_py.py_dag_node.get_nodes_with_construction_history(
+        result = self.alias_py.py_dag_node.get_nodes_with_construction_history(
             skip_node_types=skip_node_types_set,
+            return_nodes=False,
         )
+        return self.__return_node_result(result, force_return_errors)
 
     @sgtk.LogManager.log_timing
     def fix_node_has_construction_history(
@@ -1119,9 +1128,9 @@ class AliasDataValidator(object):
             if self.__is_str_list(nodes):
                 nodes = self.alias_py.get_dag_nodes_by_name(nodes)
         else:
-            nodes = self.alias_py.py_dag_node.get_nodes_with_construction_history(
-                nodes=errors,
+            nodes = self.alias_py.py_dag_node.check_node_has_construction_history(
                 skip_node_types=skip_node_types_set,
+                force_return_errors=True,
             )
 
         self.alias_py.delete_history(nodes)
@@ -1173,7 +1182,7 @@ class AliasDataValidator(object):
             # ensure the nodes are instanced.
             nodes = self.__parse_errors(errors)
             if not self.__is_str_list(nodes):
-                nodes = [node.get_name() for node in nodes]
+                nodes = [node.name for node in nodes]
             input_data = self.alias_py.TraverseDagInputData(set(nodes), True)
 
         else:
@@ -1308,7 +1317,7 @@ class AliasDataValidator(object):
         if errors:
             nodes = self.__parse_errors(errors)
             if not self.__is_str_list(nodes):
-                nodes = [node.get_name() for node in nodes]
+                nodes = [node.name for node in nodes]
             input_data = self.alias_py.TraverseDagInputData(set(nodes), True)
             result = self.alias_py.search_node_has_non_zero_transform(
                 input_data,
@@ -1362,7 +1371,7 @@ class AliasDataValidator(object):
 
         invalid_nodes = []
         for node in nodes:
-            if node.get_type() not in accept_node_types:
+            if node.type() not in accept_node_types:
                 if fail_fast:
                     return False
                 invalid_nodes.append(node)
@@ -1483,13 +1492,8 @@ class AliasDataValidator(object):
         nodes = self.alias_py.get_top_dag_nodes()
 
         layers = self.alias_py.get_layers(nodes)
-        # with self.alias_py.request_context_manager() as manager:
-        #     for node in nodes:
-        #         node.layer()
-
-        # for i, layer in enumerate(manager.result):
         for i, layer in enumerate(layers):
-            if not layer or (skip_layers and layer.get_name() in skip_layers):
+            if not layer or (skip_layers and layer.name in skip_layers):
                 continue
 
             # Get the node for the layer
@@ -1497,8 +1501,8 @@ class AliasDataValidator(object):
 
             # Check the layer and node names match, which means they are the same or the ndoe name is the
             # layer name plus the suffix "#n" where 'n' is a number.
-            reg = r"^{}(#?\d)*$".format(layer.get_name())
-            if not re.match(reg, node.get_name()):
+            reg = r"^{}(#?\d)*$".format(layer.name)
+            if not re.match(reg, node.name):
                 if fail_fast:
                     return False
                 invalid_nodes.append(node)
@@ -1538,21 +1542,17 @@ class AliasDataValidator(object):
 
         # Get all layers in at once
         layers = self.alias_py.get_layers(nodes)
-        # with self.alias_py.request_context_manager() as manager:
-        #     for node in nodes:
-        #         node.layer()
 
         # Rename all nodes at once
         with self.alias_py.request_context_manager():
-            # for i, layer in enumerate(manager.result):
             for i, layer in enumerate(layers):
                 if not layer:
                     continue
                 # Get the node for the layer
                 node = nodes[i]
-                node_layer_name = layer.get_name()
+                node_layer_name = layer.name
                 reg = r"^{}(#?\d)*$".format(node_layer_name)
-                if not re.match(reg, node.get_name()):
+                if not re.match(reg, node.name):
                     node.name = node_layer_name
 
     @sgtk.LogManager.log_timing
@@ -1608,7 +1608,7 @@ class AliasDataValidator(object):
                 force_return_errors=True
             )
 
-        status = self.alias_py.move_children_to_parent_layer(parent_nodes)
+        status = self.alias_py.assign_children_to_parent_layer(parent_nodes)
         if not self.alias_py.py_utils.is_success(status):
             raise self.AliasDataValidatorError(
                 "Failed to move all nodes to their parent layer.",
@@ -1640,7 +1640,7 @@ class AliasDataValidator(object):
         nodes = self.alias_py.get_top_dag_nodes()
         invalid_nodes = []
         for node in nodes:
-            if node.get_type() not in accept_node_types:
+            if node.type() not in accept_node_types:
                 if fail_fast:
                     return False
                 invalid_nodes.append(node)
@@ -1791,7 +1791,7 @@ class AliasDataValidator(object):
         if errors:
             node_names = self.__parse_errors(errors)
             if not self.__is_str_list(node_names):
-                node_names = [node.get_name() for node in node_names]
+                node_names = [node.name for node in node_names]
         else:
             node_names = []
 
@@ -1849,7 +1849,7 @@ class AliasDataValidator(object):
         if errors:
             node_names = self.__parse_errors(errors)
             if not self.__is_str_list(node_names):
-                node_names = [node.get_name() for node in node_names]
+                node_names = [node.name for node in node_names]
         else:
             node_names = []
 
@@ -2039,12 +2039,10 @@ class AliasDataValidator(object):
         # Get layers for all top dag nodes at once
         with self.alias_py.request_context_manager() as manager:
             for node in nodes:
-                node.layer()
+                manager.result.append(node.layer())
 
         layer_names = [
-            layer.get_name()
-            for layer in manager.result
-            if layer.get_name() not in skip_layers
+            layer.name for layer in manager.result if layer.name not in skip_layers
         ]
         unique_layer_names = set(layer_names)
 
@@ -2094,7 +2092,7 @@ class AliasDataValidator(object):
             )
 
         if not self.__is_str_list(layers):
-            layers = [layer.get_name() for layer in layers]
+            layers = [layer.name for layer in layers]
 
         # Get all top-level nodes
         top_level_nodes = self.alias_py.get_top_dag_nodes()
@@ -2102,13 +2100,13 @@ class AliasDataValidator(object):
         # Get all layers for the top-level nodes
         with self.alias_py.request_context_manager() as manager:
             for node in top_level_nodes:
-                node.layer()
+                manager.result.append(node.layer())
 
         # Create mapping of layer to all their top-level nodes and group nodes
         layer_top_level_nodes_mapping = {}
         layer_group_nodes_mapping = {}
         for i, layer in enumerate(manager.result):
-            layer_name = layer.get_name()
+            layer_name = layer.name
             if layer_name not in layers:
                 continue  # Skip it
 
@@ -2136,7 +2134,7 @@ class AliasDataValidator(object):
                 else:
                     # Try to get the one named after the layer, otherwise use the first one
                     for group in layer_group_nodes:
-                        if group.get_name() == layer_name:
+                        if group.name == layer_name:
                             group_node = group
                             break
                     if not group_node:
@@ -2147,7 +2145,9 @@ class AliasDataValidator(object):
         # Create new groups all at once
         with self.alias_py.request_context_manager() as manager:
             for layer_name in layers_to_create_group:
-                self.alias_py.create_group_for_layer(layer_name, layer_name)
+                manager.result.append(
+                    self.alias_py.create_group_for_layer(layer_name, layer_name)
+                )
         for i, group_node in enumerate(manager.result):
             layer_name = layers_to_create_group[i]
             layer_group_node_mapping[layer_name] = group_node
@@ -2164,11 +2164,11 @@ class AliasDataValidator(object):
                 children = [
                     node
                     for node in layer_top_level_nodes
-                    if node.get_name() != group_node.get_name()
+                    if node.name != group_node.name
                 ]
                 # NOTE: if there are many children to add, this will be slow
                 # because the Alias API is not optimized for this
-                group_node.add_children(children)
+                manager.result.append(group_node.add_children(children))
 
         for status in manager.result:
             if not self.alias_py.py_utils.is_success(status):

@@ -308,7 +308,7 @@ class AliasPyDagNode(AliasPyBase):
             return []
 
         if isinstance(nodes[0], self.alias_py.AlDagNode):
-            return [node.get_name() for node in nodes]
+            return [node.name for node in nodes]
 
         if isinstance(nodes[0], str):
             return nodes

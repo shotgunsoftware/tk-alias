@@ -80,7 +80,6 @@ class AliasPy:
         # does not have the attribute (e.g. some attributes available only in certain
         # api versions)
         self.__patch_attributes = {
-            "search_node_is_template": self.__get_patch_search_node_is_template,
             "adjust_window": self.__get_patch_adjust_window,
         }
 
@@ -178,25 +177,6 @@ class AliasPy:
 
     # Private methods
     # ----------------------------------------------------------------------------------------
-
-    def __get_patch_search_node_is_template(self):
-        """
-        Patch the api module function search_node_is_template.
-
-        The search_node_is_template function was added in Alias Python API v4.0.0, which is
-        compatibile with Alias >= 2024.0. This method should only be used for Alias < 2024.0.
-
-        The patched function will use the generic api traverse_dag function to check for nodes
-        that are templates. This patched function cannot be used with Alias >= 2024.0 due to
-        the need for the api function to execute a python callback during execution (starting
-        in Alias 2024.0, api communication is done through IPC between two processes which
-        this causes a deadlock in).
-        """
-
-        def __patch_search_node_is_template(*args, **kwargs):
-            return self.__api.traverse_dag(self.py_traverse_dag.node_is_template)
-
-        return __patch_search_node_is_template
 
     def __get_patch_adjust_window(self):
         """
