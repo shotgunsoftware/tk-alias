@@ -72,9 +72,9 @@ class AliasDataValidationHook(HookBaseClass):
                         try:
                             error_list.append(
                                 {
-                                    "id": item.get_name() or "",
-                                    "name": item.get_name() or "",
-                                    "type": item.get_type(),
+                                    "id": item.name or "",
+                                    "name": item.name or "",
+                                    "type": item.type(),
                                 }
                             )
                         except AttributeError:
