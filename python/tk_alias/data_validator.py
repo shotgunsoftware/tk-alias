@@ -918,7 +918,8 @@ class AliasDataValidator(object):
         """
         Check for unused shaders (shaders that are not assigned to any geometry) in Alias.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_shaders: The specified shaders (by name) will not be checked.
 
         :return: The shaders that are not being used.
@@ -999,7 +1000,8 @@ class AliasDataValidator(object):
         (e.g. if there is a non-VRED shader but is not used, it will not cause
         this check to fail).
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_shaders: The specified shaders (by name) will not be checked.
 
         :return: The list of shader objects that are incompatible with VRED.
@@ -1077,7 +1079,8 @@ class AliasDataValidator(object):
         """
         Check for nodes with construction history in the current stage.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_node_types: The specified node types will not be checked.
         :param force_return_errors: If True, the function will return the list
             of errors found, else the list of errors will only be returned if
@@ -1142,7 +1145,8 @@ class AliasDataValidator(object):
         """
         Check for instanced nodes in the current stage.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: True if the check passes (e.g. no instanced nodes), otherwise
             the list of instanced nodes if the number of instanced nodes is less
@@ -1205,7 +1209,8 @@ class AliasDataValidator(object):
         """
         Check for nodes that do not have their pivots set to the origin.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: The nodes that do not have their pivots set to the origin.
         """
@@ -1263,7 +1268,8 @@ class AliasDataValidator(object):
 
         Only top-level dag nodes will be returned.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_node_types: The specified node types will not be checked.
 
         :return: The nodes with non-zero transforms.
@@ -1390,7 +1396,8 @@ class AliasDataValidator(object):
         The whole DAG will be traversed to find nodes that are incorrectly
         placed in a layer that is not the specified layer.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param layer_name: The layer that the specified node types belong to.
             Default is "DefaultLayer".
         :param accept_node_types: The node types that must only be in the layer.
@@ -1563,7 +1570,8 @@ class AliasDataValidator(object):
         """
         Check for nodes that do not have the layer as their parent node.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param force_return_errors: If True, the function will return the list
             of errors found, else the list of errors will only be returned if
             the number of errors is less than or equal to the maximum number of
@@ -1654,7 +1662,8 @@ class AliasDataValidator(object):
         """
         Check for nodes that are set as templates.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param force_return_errors: If True, the function will return the list
             of errors found, else the list of errors will only be returned if
             the number of errors is less than or equal to the maximum number of
@@ -1711,7 +1720,8 @@ class AliasDataValidator(object):
         """
         Check for nodes that represent a curve (ie. AlCurveNode objects).
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: The errors found.
         """
@@ -1765,7 +1775,8 @@ class AliasDataValidator(object):
         This check wil return the nodes that contain the unused curves on
         surfaces, as the errors.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: The errors found.
         """
@@ -1814,7 +1825,8 @@ class AliasDataValidator(object):
         NOTE: in newer versions of Alias, this check may not be needed if
         validation rule 'node_has_construction_history' is enabled.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: The nodes that have unused curves on surface with construction
             history.
@@ -1868,7 +1880,8 @@ class AliasDataValidator(object):
         """
         Check for sets that empty.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: The empty sets.
         """
@@ -1911,7 +1924,8 @@ class AliasDataValidator(object):
         """
         Check for empty layers and layer folders in the current stage.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_layers: The specified layers (by name) will not be checked.
 
         :return: The empty layers.
@@ -1957,7 +1971,8 @@ class AliasDataValidator(object):
         """
         Check that all nodes in a layer use the same single shader.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: The layers that have more than one shader.
         """
@@ -1971,7 +1986,8 @@ class AliasDataValidator(object):
         """
         Check for layers with symmetry turned on in the current stage.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_layers: The specified layers (by name) will not be checked.
 
         :return: The layers with symmetry turned on.
@@ -2183,7 +2199,8 @@ class AliasDataValidator(object):
         """
         Check for groups with more than one level of hierarchy in the current stage.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: The group nodes that have more than one level of hierarchy.
         """
@@ -2226,7 +2243,8 @@ class AliasDataValidator(object):
         """
         Check for locators in the current stage.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
             else the list of Alias objects that that failed the check is returned.
@@ -2269,7 +2287,8 @@ class AliasDataValidator(object):
         """
         Check for referenced geometry in the current stage.
 
-        :param fail_fast: DEPRECATED. This parameter is ignored.
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: The referenced geometry.
         """
@@ -2504,129 +2523,3 @@ class AliasDataValidator(object):
         # Too many invalid nodes, return False and the number of errors to
         # indicate failure
         return (False, invalid_count)
-
-    # ------------------------------------------------------------------------------
-    # Deprecated Functions
-    # ------------------------------------------------------------------------------
-    # These functions are deprecated and will be removed in a future release.
-
-    @sgtk.LogManager.log_timing
-    def fix_all_node_has_construction_history(self, errors=None, skip_node_types=None):
-        """
-        ********** DEPRECATED **********
-        WARNING: This function is deprecated and will be removed in a future release.
-        Please use `fix_node_has_construction_history` instead.
-
-        Delete construction history for all nodes.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-        """
-
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        self.fix_node_has_construction_history(
-            errors=None, skip_node_types=skip_node_types
-        )
-
-    @sgtk.LogManager.log_timing
-    def fix_all_node_instances(self, errors=None):
-        """
-        ********** DEPRECATED **********
-        WARNING: This function is deprecated and will be removed in a future release.
-        Please use `fix_node_instances` instead.
-
-        Remove all instanced nodes.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-        """
-
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        self.fix_node_instances(errors=None)
-
-    @sgtk.LogManager.log_timing
-    def fix_all_node_pivots_at_origin(self, errors=None, skip_node_types=None):
-        """
-        ********** DEPRECATED **********
-        WARNING: This function is deprecated and will be removed in a future release.
-        Please use `fix_node_pivots_at_origin` instead.
-
-        Reset scale and rotate pivots to the origin for all nodes.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-        """
-
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        self.fix_node_pivots_at_origin(errors=None, skip_node_types=skip_node_types)
-
-    @sgtk.LogManager.log_timing
-    def fix_all_node_curves(self, errors=None):
-        """
-        ********** DEPRECATED **********
-        WARNING: This function is deprecated and will be removed in a future release.
-        Please use `fix_node_curves` instead.
-
-        Delete all nodes that represent a curve.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-        """
-
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        self.fix_node_curves(errors=None)
-
-    @sgtk.LogManager.log_timing
-    def fix_all_curve_on_surface_unused(
-        self,
-        errors: Optional[AlDagNodeErrors] = None,
-    ):
-        """
-        ********** DEPRECATED **********
-        WARNING: This function is deprecated and will be removed in a future release.
-        Please use `fix_curve_on_surface_unused` instead.
-
-        Delete unused curves on surface for all nodes.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        """
-
-        self.fix_curve_on_surface_unused(errors=None)
-
-    @sgtk.LogManager.log_timing
-    def fix_all_curve_on_surface_construction_history(self, errors=None):
-        """
-         ********** DEPRECATED **********
-        WARNING: This function is deprecated and will be removed in a future release.
-        Please use `fix_curve_on_surface_construction_history` instead.
-
-        Delete construction history of unnused curves on surface for all nodes.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-        """
-
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        return self.fix_curve_on_surface_construction_history(errors=None)

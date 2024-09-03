@@ -11,5 +11,4 @@
 from . import dag_node
 from . import layer
 from . import pick_list
-from . import traverse_dag
 from . import utils

@@ -11,7 +11,7 @@
 from typing import Optional
 from types import ModuleType
 
-from . import dag_node, layer, pick_list, traverse_dag, utils
+from . import dag_node, layer, pick_list, utils
 from ..framework_alias import ClientRequestContextManager, AliasClientModuleProxyWrapper
 
 
@@ -72,8 +72,6 @@ class AliasPy:
         self.__layer = layer.AliasPyLayer(self)
         self.__pick_list = pick_list.AliasPyPickList(self)
         self.__utils = utils.AliasPyUtils(self)
-        # NOTE this module is deprecated and will be removed in a future release
-        self.__traverse_dag = traverse_dag.AliasPyTraverseDag(self)
 
         # Define patch functions for Alias api attributes. The keys are the Alias api
         # attribute name, and the values are the functions to call when the Alias api
@@ -154,11 +152,6 @@ class AliasPy:
     def py_pick_list(self):
         """Get the helper module for handling the Alias pick list."""
         return self.__pick_list
-
-    @property
-    def py_traverse_dag(self):
-        """Get the helper module for handling the traversing the Alias DAG."""
-        return self.__traverse_dag
 
     @property
     def py_utils(self):

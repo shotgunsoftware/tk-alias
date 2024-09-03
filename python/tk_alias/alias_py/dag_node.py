@@ -40,6 +40,66 @@ class AliasPyDagNode(AliasPyBase):
 
         return bool(node.is_display_mode_set(self.alias_py.AlDisplayModeType.Template))
 
+    def is_instance(self, node: AlDagNode) -> bool:
+        """
+        :param node: The node to check.
+        :return: True if the given node is an instance, else False.
+        """
+
+        if not node:
+            return False
+
+        if not self.alias_py.py_utils.is_group_node(node):
+            return False
+
+        if node.is_instanced() and node.prev_instance():
+            return True
+
+        return False
+
+    def has_non_zero_transform(self, node: AlDagNode) -> bool:
+        """
+        Check if the given node has a zero transform.
+
+        :param node: The node to check.
+        :return: True if the node has a non-zero transform, else False.
+        """
+
+        if not node:
+            return False
+
+        status, transform_matrix = node.global_transformation_matrix()
+        if not self.alias_py.py_utils.is_success(status):
+            return False
+
+        return self.alias_py.py_utils.is_identity(transform_matrix)
+
+    def has_non_origin_pivot(self, node: AlDagNode) -> bool:
+        """
+        Check if the given node has its pivot set to the origin.
+
+        A node is considered to have its pivot set to the origin if both its
+        scale and rotate pivots are set to the origin.
+
+        :param node: The node to check.
+        :return: True if the node has its pivot set to the origin, else False.
+        """
+
+        if not node:
+            return False
+
+        status, scale_pivot = node.scale_pivot()
+        if not self.alias_py.py_utils.is_success(status):
+            return False
+
+        status, rotate_pivot = node.rotate_pivot()
+        if not self.alias_py.py_utils.is_success(status):
+            return False
+
+        return self.alias_py.py_utils.is_origin(
+            scale_pivot
+        ) and self.alias_py.py_utils.is_origin(rotate_pivot)
+
     def get_node_shader(self, node: AlDagNode) -> AlShader:
         """
         :param node: The node to get the shader from
@@ -53,7 +113,6 @@ class AliasPyDagNode(AliasPyBase):
     def get_instanced_nodes(
         self,
         nodes: Optional[Union[List[str], AlDagNodeList]] = None,
-        check_exists: Optional[bool] = False,
         return_nodes: Optional[bool] = True,
     ) -> Union[AlDagNodeList, TraverseDagOutputData]:
         """
@@ -68,7 +127,6 @@ class AliasPyDagNode(AliasPyBase):
 
         :param nodes: The nodes to process. If not provided, all nodes in the
             scene will be processed. Default is None.
-        :param check_exists: ***DEPRECATED** this param will be ignored.
         :param return_nodes: True will return the list of nodes found that are
             instanced. False will return the whole search result object. Default
             is True.
@@ -87,7 +145,6 @@ class AliasPyDagNode(AliasPyBase):
     def get_nodes_with_construction_history(
         self,
         nodes: Optional[Union[List[str], AlDagNodeList]] = None,
-        check_exists: Optional[bool] = False,
         skip_node_types: Optional[AlObjectTypeList] = None,
         return_nodes: Optional[bool] = True,
     ) -> Union[AlDagNodeList, TraverseDagOutputData]:
@@ -96,7 +153,6 @@ class AliasPyDagNode(AliasPyBase):
 
         :param nodes: The nodes to process. If not provided, all nodes in the
             scene will be processed. Default is None.
-        :param check_exists: DEPRECATED parameter will be ignored.
         :param skip_node_types: A list of AlObjectType objects to skip.
         :param return_nodes: True will return the list of nodes found that have
             construction history. False will return the whole search result object.
@@ -118,7 +174,6 @@ class AliasPyDagNode(AliasPyBase):
     def get_nodes_with_non_zero_transform(
         self,
         nodes: Optional[Union[List[str], AlDagNodeList]] = None,
-        check_exists: Optional[bool] = False,
         skip_node_types: Optional[AlObjectTypeList] = None,
         top_level_only: Optional[bool] = False,
         return_nodes: Optional[bool] = True,
@@ -131,7 +186,6 @@ class AliasPyDagNode(AliasPyBase):
 
         :param nodes: The nodes to process. If not provided, all nodes in the
             scene will be processed. Default is None.
-        :param check_exists: DEPRECATED parameter will be ignored.
         :param skip_node_types: A list of node types to skip.
         :param top_level_only: If True, only the top level nodes will be checked.
             Default is False.
@@ -157,7 +211,6 @@ class AliasPyDagNode(AliasPyBase):
     def get_nodes_with_non_origin_pivot(
         self,
         nodes: Optional[Union[List[str], AlDagNodeList]] = None,
-        check_exists: Optional[bool] = False,
         skip_node_types: Optional[AlObjectTypeList] = None,
         return_nodes: Optional[bool] = True,
     ) -> Union[AlDagNodeList, TraverseDagOutputData]:
@@ -177,7 +230,6 @@ class AliasPyDagNode(AliasPyBase):
 
         :param nodes: The list of nodes to process. If not provided, all nodes
             in the scene will be processed. Default is None.
-        :param check_exists: DEPRECATED. This parameter will be ignored.
         :param skip_node_types: The node types to skip.
         :param return_nodes: True will return the list of nodes found that do
             not have their pivots set to the origin. False will return the
@@ -200,7 +252,6 @@ class AliasPyDagNode(AliasPyBase):
     def get_nodes_with_unused_curves_on_surface(
         self,
         nodes: Optional[Union[List[str], AlDagNodeList]] = None,
-        check_exists: Optional[bool] = False,
         return_nodes: Optional[bool] = True,
         return_cos: Optional[bool] = False,
     ) -> Union[AlDagNodeList, AlCurveOnSurfaceList, TraverseDagOutputData]:
@@ -212,7 +263,6 @@ class AliasPyDagNode(AliasPyBase):
 
         :param nodes: The list of nodes to check. If not provides, all nodes
             with unused curves on surface will be returned. Default is None.
-        :param check_exists: DEPRECATED. This parameter will be ignored.
         :param return_nodes: True will return the list of nodes found that have
             unused curves on surface.
         :param return_cos: True will return the list of curves on surface found

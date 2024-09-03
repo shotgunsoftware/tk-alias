@@ -27,7 +27,6 @@ class AliasPyLayer(AliasPyBase):
     def get_symmetric_layers(
         self,
         layers: Optional[Union[List[str], AlLayerList]] = None,
-        check_exists: Optional[bool] = False,
         skip_layers: Optional[List[str]] = None,
     ) -> AlLayerList:
         """
@@ -35,7 +34,6 @@ class AliasPyLayer(AliasPyBase):
 
         :param layers: The layers to check. If not provided, all layers in the
             current scene will be checked.
-        :param check_exists: DEPRECATED. This parameter will be ignored.
         :param skip_layers: The layer names to skip in checking for symmetry
 
         :return: The layers with symmetry property turned on.

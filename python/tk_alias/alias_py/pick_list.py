@@ -89,7 +89,6 @@ class AliasPyPickList(AliasPyBase):
         shaders: Union[List[str], AlShaderList],
         clear_pick_list: Optional[bool] = True,
         redraw: Optional[bool] = True,
-        skip_shaders: Optional[List[str]] = None,
     ):
         """
         Pick the nodes assigned to the given shaders.
@@ -99,7 +98,6 @@ class AliasPyPickList(AliasPyBase):
             anything is picked.
         :param redraw: True will refresh the Alias scene to reflect the pick
             changes.
-        :param skip_shaders: DEPRECATED. This param will be ignored.
         """
 
         if not shaders:
