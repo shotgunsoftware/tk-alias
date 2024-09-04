@@ -102,11 +102,11 @@ class AliasLauncher(SoftwareLauncher):
             # Append executable folder to PATH environment variable
             server_python_exe = plugin_env.get("ALIAS_PLUGIN_SERVER_PYTHON")
             if server_python_exe:
-                sgtk.util.append_path_to_env_var(
+                sgtk.util.prepend_path_to_env_var(
                     "PATH", os.path.dirname(server_python_exe)
                 )
             else:
-                sgtk.util.append_path_to_env_var(
+                sgtk.util.prepend_path_to_env_var(
                     "PATH", os.path.dirname(sys.executable)
                 )
                 # We're going to append all of this Python process's sys.path to the
@@ -114,7 +114,7 @@ class AliasLauncher(SoftwareLauncher):
                 # to all libraries available in this process. We're appending instead of
                 # setting because we don't want to stomp on any PYTHONPATH that might already
                 # exist that we want to persist
-                sgtk.util.append_path_to_env_var(
+                sgtk.util.prepend_path_to_env_var(
                     "PYTHONPATH", os.pathsep.join(sys.path)
                 )
 
