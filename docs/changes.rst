@@ -4,6 +4,16 @@ What's Changed
 v4.0.0
 -------
 
+* New method :func:`AliasPy.request_context_manager`
+
+* New method :func:`AliasPyDagNode.is_template`
+
+* New method :func:`AliasPyDagNode.is_instance`
+
+* New method :func:`AliasPyDagNode.has_zero_transform`
+
+* New method :func:`AliasPyDagNode.has_origin_pivot`
+
 * Removed class :class:`AliasPyTraverseDag`. Applicable class functions have been moved to :class:`AliasPyDagNode`
 
    * Attribute will no longer be available from the engine: :class:`AliasEngine.alias_py.py_traverse_dag`
