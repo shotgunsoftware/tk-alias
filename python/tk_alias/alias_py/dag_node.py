@@ -32,7 +32,7 @@ class AliasPyDagNode(AliasPyBase):
     # AlDagNode functions
     # -------------------------------------------------------------------------------------------------------
 
-    def is_node_template(self, node: AlDagNode) -> bool:
+    def is_template(self, node: AlDagNode) -> bool:
         """
         :param node: The node to check.
         :return: True if the node is a template, else False
@@ -57,12 +57,12 @@ class AliasPyDagNode(AliasPyBase):
 
         return False
 
-    def has_non_zero_transform(self, node: AlDagNode) -> bool:
+    def has_zero_transform(self, node: AlDagNode) -> bool:
         """
         Check if the given node has a zero transform.
 
         :param node: The node to check.
-        :return: True if the node has a non-zero transform, else False.
+        :return: True if the node has a zero transform, else False.
         """
 
         if not node:
@@ -74,7 +74,7 @@ class AliasPyDagNode(AliasPyBase):
 
         return self.alias_py.py_utils.is_identity(transform_matrix)
 
-    def has_non_origin_pivot(self, node: AlDagNode) -> bool:
+    def has_origin_pivot(self, node: AlDagNode) -> bool:
         """
         Check if the given node has its pivot set to the origin.
 
