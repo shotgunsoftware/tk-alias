@@ -1,7 +1,7 @@
 Alias Python API
 ####################################################
 
-The Alias Engine is dependent on the Toolkit Framework ``tk-framework-alias`` to access the Alias Python API.
+The Alias Engine is dependent on the Toolkit Framework ``tk-framework-alias`` to access the Alias Python API. Go to the `framework documentation <https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html>`_ to see more details on the Alias Python API module.
 
 Since Alias 2024.0, the Alias Engine runs in its own separate process from Alias itself. The engine then uses Inter-process Communication (IPC) to interact with Alias. This adds a layer of communication when using the Alias API, which can slow down performance if the API is not used efficiently:
 
