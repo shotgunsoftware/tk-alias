@@ -71,6 +71,6 @@ If you need to get the result of the API calls made within the context manager, 
    for result in manager.result:
       print(result)
 
-the Alias Engine does not support the ability to chain API calls together in a batch request; for example, the result of an API call is used to make a subsequent API call.
+The Alias Engine does not support the ability to chain API calls together in a batch request; for example, the result of an API call is used to make a subsequent API call.
 
 Avoid retrieving large data sets from the Alias API, if possible. Sending large data sets over IPC is expensive because the server must encode the data, include it in the message to the client, then the client must decode the data. For example, the API `search_` functions return :class:`TraverseDagOutputData` objects that contain the nodes found during the search operation, as well as the number of nodes found. If the search operations finds a large number nodes, then accessing them by :class:`TraverseDagOutputData.nodes` will be expensive, but accessing the number of nodes found by :class:`TraverseDagOutputData.count` will be very inexpensive. In this case, only access the nodes if absolutely necessary.
