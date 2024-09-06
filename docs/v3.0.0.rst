@@ -1,0 +1,251 @@
+v3.0.0
+#######
+
+
+## Porting to tk-alias v3.x.x from v2.x.x
+
+Starting in tk-alias v3.0.0, the Toolkit Framework for Alias [tk-framework-alias](https://github.com/shotgunsoftware/tk-framework-alias) is required. The framework now manages the Alias Plugin and Alias Python API module files for all the supported Alias versions. Starting in Toolkit configs [v1.6.0](https://github.com/shotgunsoftware/tk-config-default2/blob/e9d2c282d06b6d658a36b3b897fe4aec19e6bc44/env/includes/frameworks.yml#L28-L32), the tk-framework-alias is included.
+
+### Accessing the API with the Alias engine in v2.x.x
+
+In tk-alias v2.x.x the Alias Python API can be accessed directly by importing the `alias_api` module:
+
+.. code-block:: python
+
+    import alias_api
+
+### Accessing the API with the Alias engine in v3.x.x
+
+In v3.x.x it is still possible to import the `alias_api` module:
+
+.. code-block:: python
+
+    import alias_api
+
+_**Note**: This requires the Alias Engine to be bootstrapped and started (e.g. launching Alias from Flow Production Track Desktop will do this). If you are manually bootstrapping the Alias Engine (without Flow Production Tracking Desktop), refer to how the framework bootstraps and starts the engine [here](https://github.com/shotgunsoftware/tk-framework-alias/blob/develop/python/tk_framework_alias_utils/plugin_bootstrap.py)._
+
+To maintain future compatibility, we strongly encouraged accessing the Alias Python API through the tk-alias engine property [alias_py](https://github.com/shotgunsoftware/tk-alias/blob/d6a699a03dfe9f3bf9e9c9a5eff91240471a8822/engine.py#L174-L182):
+
+.. code-block:: python
+
+    import sgtk
+
+    # Get the Alias engine instance.
+    tk_alias_engine = sgtk.platform.current_engine()
+
+    # Access the Alias Python API through the engine property `alias_py`
+    # Remember that engine must have been started for alias_py property to be available
+    alias_api = tk_alias_engine.alias_py
+
+### Accessing the API without the Alias engine
+
+The Alias Engine does not provide access to the Alias Python API when the engine is not running. Without the engine running, the additional AliasPy modules are not available. If it is absolutely necessary to use the Alias Python API without the tk-alias engine running, and without an active Alias session(e.g. headless mode, called OpenModel), you will need to:
+
+1. Add the alias_api_om.pyd file path to your `PYTHONPATH`
+
+    _This is necessary for import to find the Alias Python API module._
+
+2. Add the Alias install bin directory to your system environment PATH
+
+    _This is necessary to find the Alias DLL files that the Alias Python API requires._
+
+
+Starting in tk-alias v3.0.0, the Alias Python API files are no longer included in the engine itself, instead they are managed by tk-framework-alias, and can be found [here](https://github.com/shotgunsoftware/tk-framework-alias/tree/develop/dist/Alias).
+
+Here are steps to access the Alias Python API module for OpenModel (e.g. headless mode without an Alias session running):
+
+1. Open a Windows Command Prompt and ensure that the Alias DLL install path is in your system environment `PATH`. If you have multiple installs of Alias, the version of Alias you want to use must appear first (in this example, it would be Alias 2025.0). You can check the `PATH` value by seeing the output of running the Windows `set` command. You can prepend the Alias install path to your PATH with:
+
+    ```
+    set PATH=C:\Program Files\Autodesk\AliasAutoStudio2025.0\bin;%PATH%
+    ```
+
+    _**NOTE: This only works for Python <= 3.9. For Python 3.9 and newer, you will need to add the Alias DLL install path from the Python interpreter. Keep following for instructions for Python 3.9.**_
+
+2. Start a Python interpreter. We will use Python 3.7 for this example:
+
+    ```
+    "C:\Program Files\Python37\python.exe"
+    ```
+
+    **NOTE:  you may need to change the above path to the python.exe you want to use.**
+
+    **NOTE:  For Python 3.9, now add the Alias DLL install path for python to find it:**
+
+    ```
+    import os
+    os.add_dll_directory(alias_dll_directory)
+    ```
+
+
+3. Add the path to the Alias Python API module for OpenModel (alias_api_om.pyd) to your `PYTHONPATH`. We will use the API for Alias 2025.0, and Python 3.7 since we are running a Python 3.7 interpeter:
+
+    ```
+    import sys
+    sys.path.insert(0, "C:\\Users\\<insert_username>\\AppData\\Roaming\\Shotgun\\bundle_cache\\app_store\\tk-framework-    alias\\v1.4.0\\dist\\Alias\\python3.7\\2025.0")
+    ```
+
+    *NOTE:  you will need to replace <insert_username> with your username, and make sure this is the correct path to the alias_api_om.pyd file.*
+
+
+    Optionally, the path to the api could have also been set before starting the interpreter from the Windows Command Prompt:
+
+    ```
+    set PYTHONPATH=C:\Users\my_username\AppData\Roaming\Shotgun\bundle_cache\app_store\tk-framework-alias\v1.4.0\dist\Alias\python3.7\2025.0;%PYTHONPATH%
+    ```
+
+    If you do not want to hard code the Alias Python API path `C:\\Users\\my_username\\AppData\\Roaming\\Shotgun\\bundle_cache\\app_store\\tk-framework-alias\\v1.4.0\\dist\\Alias\\python3.7\\2025.0`, and you have access to the Toolkit `sgtk` module and have your Toolkit context, you can programmatically find the path to the api with this function:
+
+    .. code-block:: python
+
+        def setup_alias_env(
+                ctx,
+                alias_version="2024.0",
+                alias_dll_directory="C:\\Program Files\\Autodesk\\AliasAutoStudio2024.0\\bin",
+        ):
+            import os
+            import sys
+            import sgtk
+
+            env = sgtk.platform.engine.get_environment_from_context(ctx.sgtk, ctx)
+            desc = env.get_engine_descriptor('tk-alias')
+
+            # Get the framework version from the tk-alias engine descriptor
+            framework_and_version = None
+            for framework in desc.get_required_frameworks():
+                if framework.get("name") == "tk-framework-alias":
+                    name_parts = [framework["name"]]
+                    if "version" in framework:
+                        name_parts.append(framework["version"])
+                    framework_and_version = "_".join(name_parts)
+                    break
+        
+            if framework_and_version is None:
+                raise Exception("Failed to find location for tk-framework-alias")
+
+            # Get the path to the framework
+            framework_desc = env.get_framework_descriptor(framework_and_version)
+            framework_path = framework_desc.get_path()
+
+            # Get the API path within the framework, for the Python and Alias version
+            api_path = os.path.join(
+                framework_path,
+                "dist",
+                "Alias",
+                f"python{sys.version_info.major}.{sys.version_info.minor}",
+                alias_version,
+            )
+            if not os.path.exists(api_path):
+                raise Exception(f"Alias Python API module not found: {api_path}")
+
+            # Add the path to the api so that we can import the module
+            sys.path.insert(0, api_path)
+
+            # For Python > 3.7, we need to add the Alias bin dir to the dll directories to find the correct Alias DLLs to load the api module
+            # For Python <= 3.7 the Alias bin dir should have been added to the system environment PATH before executing this script
+            if hasattr(os, "add_dll_directory"):
+                os.add_dll_directory(alias_dll_directory)
+
+4. Now you are ready to import the Alias Python API:
+
+    From a command line, without Alias running, we are operating in OpenModel mode (e.g. no GUI), so we need to import the OpenModel API module:
+
+    .. code-block:: python
+
+        import alias_api_om
+
+        # Print help for the module
+        help(alias_api_om)
+
+        # Print the api module file location
+        print(alias_api_om.__file__)
+
+        # Execute a basic api command
+        status = alias_api_om.initialize_universe()
+
+        # If successful, you should see a return of `0`
+        print("Alias universe initialized", status)
+
+    **_NOTE: when running with Alias, we are operating in OpenAlias (e.g. with a GUI), in this case we could import the API as `import alias_api`_**
+
+**Troubleshooting**
+
+1. Alias Python API module not found:
+
+    ```
+    ModuleNotFoundError: No module named 'alias_api_om'
+    ```
+    
+    This indicates that the alias_api_om.pyd file could not be found. Check that you have set your `PYTHONPATH` environment variable or `sys.path` to include the path to the alias_api_om.pyd file.
+
+2. Alias DLL import error:
+
+    ```
+    ImportError: DLL load failed while importing alias_api_om: The specified module could not be found.
+    ```
+
+    This indicates that the necessary Alias DLLs could not be found. Check that you have set your `PATH` environment variable (for Python <= 3.7) such that the correct Alias install path appears first, or this path was added using `os.add_dll_directory` (for Python > 3.7)
+
+3. ModuleNotFoundError: No module named 'tk_framework_alias_utils' (or 'tk_framework_alias')
+
+    This means you are attempting to import the tk_framework_alias python module. To import the Alias Python API module without the Alias engine, we do not need to import tk_framework_alias module to get the Alias Python API. Instead, follow the steps above to add the direct path to the Alias Python API module instead of tk_framework_alias, in order to import the api. You may import tk_framework_alias to access the api, but it has additional Python package dependencies that you are on your own to ensure are installed.
+
+    Ensure that the path to the tk_framework_alias python module is not in your PYTHONPATH. The tk_framework_alias python module path may look something like: `C:\Users\username\AppData\Roaming\Shotgun\bundle_cache\app_store\tk-framework-alias\v1.4.0\python`. You can check your path with:
+
+    ```
+    set PYTHONPATH
+    ```
+
+    , and update it to remove the tk_framework_alias path, if it is present:
+
+    ```
+    set PYTHONPATH=<new_path_without_tk_framework_alias>
+    ```
+    
+
+### Accessing AliasPy utility modules
+
+_NOTE:  the AliasPy modules are only available with the Alias Engine and when it has been started._
+
+In v2.x.x the AliasPy utility modules can be accessed directly by importing from the `alias_py` module:
+
+.. code-block:: python
+
+    import alias_py.utils
+    import alias_py.dag_node
+    import alias_py.layer
+
+In v3.x.x this is no longer possible. The AliasPy utility modules must be accessed through the Alias engine property `alias_py`:
+
+.. code-block:: python
+
+    import sgtk
+    tk_alias_engine = sgtk.platform.current_engine()
+
+    alias_api = tk_alias_engine.alias_py
+
+    # Previous `alias_py` attributes arenow accessed using `engine.alias_py.py_<attr_name>`
+    utils_module = alias_api.py_utils
+    dag_node_module = alias_api.py_dag_node
+    layer_module = alias_api.py_layer
+
+
+### Update to AlStatusCode enum class
+
+In v2.x.x the Alias Python API status code numerical values can be retrieved by:
+
+.. code-block:: python
+
+    if int(alias_api.AlStatusCode.Success) == 0:
+        print("Success!")
+
+In v3.x.x this code must be updated to use the `value` attribute to retrieve the numerical value:
+
+    .. code-block:: python
+
+        if alias_api.AlStatusCode.Success.value == 0:
+            print("Success!")
+
+        # Or check the status by name now
+        if alias_api.AlStatusCode.Success.name == "Success":
+            print("Success!")
