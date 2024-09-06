@@ -1,11 +1,43 @@
 .. _api:
 
 API
-####################################################
+####
 
-The Alias Engine is dependent on the Toolkit Framework ``tk-framework-alias`` to access the Alias Python API. Go to the `framework documentation <https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html>`_ to see more details on the Alias Python API module.
+Alias Python API
+------------------
 
-Since Alias 2024.0, the Alias Engine runs in its own separate process from Alias itself. The engine then uses Inter-process Communication (IPC) to interact with Alias. This adds a layer of communication when using the Alias API, which can slow down performance if the API is not used efficiently:
+The Alias Python API is a Python module that provides a Pythoni interface to the Alias C++ API.
+
+The Alias Toolkit Framework ``tk-framework-alias`` contains the Alias Python API module itself; the Alias Engine uses the framework to get the api module. Go to the `framework documentation <https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html>`_ to see the Alias Python API reference documentation.
+
+
+AliasPy
+--------
+
+The Alias Python API can be accessed and used through the Alias Engine attribute ``alias_py``. This attribute is an :class:`AliasPy` intance, which is a wrapper around the Alias Python API module and provides addiional functionality to help interact with the Alias API. You can make Alias API calls using ``alias_py``; for example to call the API function create a shader:
+
+.. code-block:: python
+
+   # Create a shader using the Alias API
+   shader = engine.alias_py.create_shader("MyShader")
+   print(shader)
+
+The additional :class:`AliasPy` modules are:
+
+   * py_dag_node
+
+   * py_layer
+
+   * py_pick_list
+
+   * py_utils
+
+These modules provide added functionality to help make using the Alias API easier.
+
+How to use the API effectively
+--------------------------------
+
+Since Alias 2024.0, the Alias Engine runs in its own separate process from Alias itself. The engine then uses Inter-process Communication (IPC) to interact with Alias. This adds a layer of communication when using the Alias API, which can slow down performance if the API is not used carefully:
 
 **Key Understandings:**
 

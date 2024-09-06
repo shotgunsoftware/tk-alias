@@ -1,5 +1,5 @@
-What's New in v3.0.0
-#####################
+v3.0.0
+=====================
 
 This documentation explains the new features in the Alias Engine ``v3.0.0`` compared to ``v2.2.1``.
 
