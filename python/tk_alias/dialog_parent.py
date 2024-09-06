@@ -171,27 +171,6 @@ def find_windows(
     return found_hwnds
 
 
-def qwidget_winid_to_hwnd(id):
-    """
-    Convert the winid for a qtwidget to a HWND
-    :param id: qtwidget winid to convert
-    :returns: window handle
-    """
-    from sgtk.platform.qt import QtCore
-
-    if QtCore.__version__.startswith("5."):
-        hwnd = id
-    else:
-        # Setup arguments and return types
-        ctypes.pythonapi.PyCObject_AsVoidPtr.restype = ctypes.c_void_p
-        ctypes.pythonapi.PyCObject_AsVoidPtr.argtypes = [ctypes.py_object]
-
-        # Convert PyCObject to a void pointer
-        hwnd = ctypes.pythonapi.PyCObject_AsVoidPtr(id)
-
-    return hwnd
-
-
 class DialogParent(object):
     # Constants
     HWND_CLASSNAME = "StudioProxy"
@@ -229,9 +208,7 @@ class DialogParent(object):
 
             self._proxy_window = QtGui.QWidget()
             self._proxy_window.setWindowTitle(self.PROXY_WINDOW_TITLE)
-
-            proxy_window_id = self._proxy_window.winId()
-            proxy_window_hwnd = qwidget_winid_to_hwnd(proxy_window_id)
+            proxy_window_hwnd = self._proxy_window.winId()
 
             # set no parent notify
             proxy_window_style = GetWindowLong(proxy_window_hwnd, GWL_EXSTYLE)

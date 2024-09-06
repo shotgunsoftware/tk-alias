@@ -410,10 +410,10 @@ class AliasEngine(sgtk.platform.Engine):
 
         qt_app = QtGui.QApplication.instance() or self.__qt_app
         if qt_app:
-            qt_app.quit()
+            self.execute_in_main_thread(qt_app.quit)
         else:
             # Destroy the engine if there is no qt app
-            self.destroy()
+            self.execute_in_main_thread(self.destroy)
 
     def __init_qt_app(self):
         """
