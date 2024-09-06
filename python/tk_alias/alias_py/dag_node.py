@@ -8,12 +8,11 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from typing import List, Union, Set, Optional
+from typing import List, Union, Optional
 from .al_typing import (
     AlDagNode,
     AlDagNodeList,
     AlShader,
-    AlLayer,
     AlObjectTypeList,
     AlCurveOnSurfaceList,
     TraverseDagOutputData,
