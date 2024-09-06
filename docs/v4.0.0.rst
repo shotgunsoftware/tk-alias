@@ -1,7 +1,7 @@
 v4.0.0
-==================
+=====================
 
-This documentation explains the new features in the latest Alias Engine ``v4.0.0`` compared to ``v3.3.2``.
+This documentation explains the new features in the Alias Engine ``v4.0.0`` compared to ``v3.3.2``.
 
 Release highlights
 ------------------

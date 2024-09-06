@@ -1,12 +1,12 @@
 What's New
 ####################################################
 
-The latest version of the Alias Engine is ``v4.0.0``. Here's a summary of the changes in this version:
+The latest version of the Alias Engine is ``v4.0.0``.
 
 .. include:: v4.0.0.rst
 
 
-Older Versions:
+Older Versions
 ================
 
 .. toctree::
