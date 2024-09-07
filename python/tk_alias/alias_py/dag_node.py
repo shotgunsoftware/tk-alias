@@ -8,7 +8,6 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from tank_vendor import six
 from .base import AliasPyBase
 
 
@@ -67,7 +66,7 @@ class AliasPyDagNode(AliasPyBase):
 
         if nodes:
             for node in nodes:
-                if isinstance(node, six.string_types):
+                if isinstance(node, str):
                     node = self.alias_py.find_dag_node_by_name(node)
 
                 if self.alias_py.py_utils.is_success(
@@ -110,7 +109,7 @@ class AliasPyDagNode(AliasPyBase):
 
         if nodes:
             for node in nodes:
-                if isinstance(node, six.string_types):
+                if isinstance(node, str):
                     node = self.alias_py.find_dag_node_by_name(node)
 
                 if not node or node.type() in skip_node_types:
@@ -155,7 +154,7 @@ class AliasPyDagNode(AliasPyBase):
 
         if nodes:
             for node in nodes:
-                if isinstance(node, six.string_types):
+                if isinstance(node, str):
                     node = self.alias_py.find_dag_node_by_name(node)
 
                 if not node or node.type() in skip_node_types:
@@ -200,7 +199,7 @@ class AliasPyDagNode(AliasPyBase):
 
         if nodes:
             for node in nodes:
-                if isinstance(node, six.string_types):
+                if isinstance(node, str):
                     node = self.alias_py.find_dag_node_by_name(node)
 
                 if not node or node.type() in skip_node_types:
@@ -243,7 +242,7 @@ class AliasPyDagNode(AliasPyBase):
         if nodes:
             nodes_with_unused_curves_on_surface = []
             for node in nodes:
-                if isinstance(node, six.string_types):
+                if isinstance(node, str):
                     node = self.alias_py.find_dag_node_by_name(node)
 
                 status = self.alias_py.py_traverse_dag.node_has_unused_curve_on_surface(
@@ -280,7 +279,7 @@ class AliasPyDagNode(AliasPyBase):
 
         if nodes:
             for node in nodes:
-                if isinstance(node, six.string_types):
+                if isinstance(node, str):
                     node = self.alias_py.find_dag_node_by_name(node)
 
                 if (
@@ -332,11 +331,11 @@ class AliasPyDagNode(AliasPyBase):
         if not nodes:
             return
 
-        if isinstance(nodes, six.string_types):
+        if isinstance(nodes, str):
             nodes = [nodes]
 
         for node in nodes:
-            if isinstance(node, six.string_types):
+            if isinstance(node, str):
                 node = self.alias_py.find_dag_node_by_name(node)
 
             if node:
