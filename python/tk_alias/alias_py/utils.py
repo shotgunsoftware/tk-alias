@@ -8,7 +8,10 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
+from typing import Union, Optional
+
 from .base import AliasPyBase
+from .al_typing import AlLocatorList, AlObject, AlObjectType
 
 
 class AliasPyUtils(AliasPyBase):
@@ -81,7 +84,7 @@ class AliasPyUtils(AliasPyBase):
         if error_status is not None:
             error_msg += "\nError status {}".format(error_status)
 
-        raise self.alias_py.AliasPythonException(error_msg)
+        return self.alias_py.AliasPythonException(error_msg)
 
     def is_group_node(self, alias_object):
         """
@@ -124,32 +127,25 @@ class AliasPyUtils(AliasPyBase):
     # AlLocator functions
     # -------------------------------------------------------------------------------------------------------
 
-    def get_locators(self, check_exists=False):
+    def get_locators(
+        self,
+        check_exists: Optional[bool] = False,
+    ) -> Union[bool, AlLocatorList]:
         """
         Get all Alias locators in the current scene.
 
-        :param check_exists: Set to True to return immediately upon finding a locator.
-        :type check_exists: bool
-
-        :return: If `check_exists` is True, True is returned if there is at least one locator found, else False.
-                If `check_exists` is False, the list of locator objects is returned.
-        :rtype: bool | list<alias_api.AlLocator>
+        :param check_exists: Set to True to return when first locator found.
+        :return: If `check_exists` is True, True is returned if there is at
+            least one locator found, else False. If `check_exists` is False,
+            the list of locator objects is returned.
         """
 
-        locator = self.alias_py.first_locator()
         if check_exists:
+            locator = self.alias_py.first_locator()
             has_locator = bool(locator)
             del locator
             return has_locator
-
-        locators = []
-        while locator:
-            locators.append(locator)
-            next_locator = self.alias_py.next_locator(locator)
-            del locator
-            locator = next_locator
-
-        return locators
+        return self.alias_py.get_locators()
 
 
 # -------------------------------------------------------------------------------------------------------

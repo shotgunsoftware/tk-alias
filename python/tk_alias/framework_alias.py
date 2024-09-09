@@ -17,8 +17,11 @@ tk_framework_alias = sgtk.platform.import_framework(
 
 AliasSocketIoClient = tk_framework_alias.client.AliasSocketIoClient
 AliasClientNamespace = tk_framework_alias.client.AliasClientNamespace
+ClientRequestContextManager = tk_framework_alias.client.ClientRequestContextManager
 
 client_exceptions = tk_framework_alias.client.exceptions
 AliasClientNotConnected = client_exceptions.AliasClientNotConnected
+
+AliasClientModuleProxyWrapper = tk_framework_alias.client.AliasClientModuleProxyWrapper
 
 QtImportError = tk_framework_alias.server.utils.exceptions.QtImportError

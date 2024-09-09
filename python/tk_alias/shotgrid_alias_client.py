@@ -74,7 +74,7 @@ class ShotGridAliasSocketIoClient(AliasSocketIoClient):
 
         from sgtk.platform.qt import QtGui
 
-        if error.__class__.__name__ == QtImportError.__name__:
+        if not self.connected or error.__class__.__name__ == QtImportError.__name__:
             parent = None
         else:
             parent = self.engine._get_dialog_parent()
@@ -84,3 +84,5 @@ class ShotGridAliasSocketIoClient(AliasSocketIoClient):
             "Alias Server Error",
             f"{error.__class__.__name__}: {error}",
         )
+
+        raise error

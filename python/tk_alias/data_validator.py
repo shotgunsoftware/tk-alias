@@ -1,13 +1,38 @@
-# Copyright (c) 2021 Autodesk, Inc.
+# Copyright (c) 2024 Autodesk Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# This work is provided "AS IS" and subject to the ShotGrid Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Autodesk Inc.
+
+
+from typing import TypeVar, List, Union, Optional, Any, Tuple
+from .alias_py.al_typing import (
+    AlSetList,
+    AlDagNodeList,
+    AlObjectTypeList,
+    AlShaderList,
+    AlReferenceFileList,
+    AlLocatorList,
+    AlLayerList,
+    TraverseDagOutputData,
+)
 
 import sgtk
-
 from tank.util import sgre as re
+
+
+# Convenience types
+AlDagNodeErrors = TypeVar(
+    "AlDagNodeErrors", bool, Tuple[bool, int], List[str], List[dict], AlDagNodeList
+)
+AlShaderErrors = TypeVar("AlShaderErrors", List[str], List[dict], AlShaderList)
+AlLayerErrors = TypeVar("AlLayerErrors", List[str], List[dict], AlLayerList)
+AlSetErrors = TypeVar("AlSetErrors", List[str], List[dict], AlSetList)
+AlLocatorErrors = TypeVar("AlLocatorErrors", List[str], List[dict], AlLocatorList)
 
 
 class AliasDataValidator(object):
@@ -26,6 +51,9 @@ class AliasDataValidator(object):
     selecting the data that requires attention.
     """
 
+    class AliasDataValidatorError(Exception):
+        """Base class for AliasDataValidator exceptions."""
+
     #
     # Alias defaults
     #
@@ -41,6 +69,15 @@ class AliasDataValidator(object):
 
         self._camera_node_types = self.alias_py.py_utils.camera_node_types()
         self._light_node_types = self.alias_py.py_utils.light_node_types()
+
+        # The maximum number of errors to return for a validation check. If
+        # count exceeds this value, the validation check will only return True
+        # or False to indicate if errors were found. This is to help
+        # performance of the validation operations.
+        self._max_error_count = engine.get_setting(
+            "data_validation_max_error_count",
+            1000,
+        )
 
     # -------------------------------------------------------------------------------------------------------
     # Public methods
@@ -154,7 +191,7 @@ class AliasDataValidator(object):
                 "actions": [
                     {
                         "name": "Select all shader geometry",
-                        "callback": self.pick_nodes,
+                        "callback": self.pick_nodes_assigned_to_shaders,
                     },
                 ],
                 "item_actions": [
@@ -183,7 +220,7 @@ class AliasDataValidator(object):
                 "description": """Check: Construction history<br/>
                                 Action: Delete""",
                 "check_func": self.check_node_has_construction_history,
-                "fix_func": self.fix_all_node_has_construction_history,
+                "fix_func": self.fix_node_has_construction_history,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all construction history from all nodes.",
                 "error_msg": "Found node(s) with construction history.",
@@ -218,7 +255,7 @@ class AliasDataValidator(object):
                 "description": """Check: Instances<br/>
                                 Action: Convert to geometry.""",
                 "check_func": self.check_node_instances,
-                "fix_func": self.fix_all_node_instances,
+                "fix_func": self.fix_node_instances,
                 "fix_name": "Expand All",
                 "fix_tooltip": "Remove Instances by expanding them.",
                 "error_msg": "Instance found.",
@@ -249,7 +286,7 @@ class AliasDataValidator(object):
                 "description": """Check: Pivot point coordinates<br/>
                                 Fix: Set pivot points to global origin (0, 0, 0). Camera, light, and texture nodes are not affected.""",
                 "check_func": self.check_node_pivots_at_origin,
-                "fix_func": self.fix_all_node_pivots_at_origin,
+                "fix_func": self.fix_node_pivots_at_origin,
                 "fix_name": "Reset All",
                 "fix_tooltip": "All pivots will be moved to the origin. Camera, light, and texture nodes are not affected."
                 "",
@@ -421,7 +458,12 @@ class AliasDataValidator(object):
                     },
                 ],
                 "get_kwargs": lambda: {"skip_layers": [self.DEFAULT_LAYER_NAME]},
-                "dependency_ids": ["node_is_in_layer", "node_is_not_in_layer"],
+                "dependency_ids": [
+                    "node_is_in_layer",
+                    "node_is_not_in_layer",
+                    "layer_has_single_object",
+                    "node_layer_matches_parent",
+                ],
             },
             "node_layer_matches_parent": {
                 "name": "Node layer matches parent layer",
@@ -518,7 +560,7 @@ class AliasDataValidator(object):
                 "description": """Check: Unused curve-on-surfaces (COS)<br/>
                                 Fix: Delete""",
                 "check_func": self.check_curve_on_surface_unused,
-                "fix_func": self.fix_all_curve_on_surface_unused,
+                "fix_func": self.fix_curve_on_surface_unused,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete unused COS.",
                 "error_msg": "Found unused COS.",
@@ -542,7 +584,7 @@ class AliasDataValidator(object):
                         "callback": self.pick_curves_on_surface_from_nodes,
                     },
                     {
-                        "name": "Select Nodes",
+                        "name": "Select Node",
                         "callback": self.pick_nodes,
                     },
                 ],
@@ -558,7 +600,7 @@ class AliasDataValidator(object):
                 "description": """Check: Unused curve-on-surfaces (COS) with construction history<br/>
                                 Fix: Delete construction history for unused COS.""",
                 "check_func": self.check_curve_on_surface_construction_history,
-                "fix_func": self.fix_all_curve_on_surface_construction_history,
+                "fix_func": self.fix_curve_on_surface_construction_history,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete construction history for unused curve on surface",
                 "error_msg": "Found construction history for unused curve(s) on surface.",
@@ -593,7 +635,7 @@ class AliasDataValidator(object):
                 "description": """Check: Curves<br/>
                                 Fix: Delete""",
                 "check_func": self.check_node_curves,
-                "fix_func": self.fix_all_node_curves,
+                "fix_func": self.fix_node_curves,
                 "fix_name": "Delete All",
                 "fix_tooltip": "Delete all curves found.",
                 "error_msg": "Found curve(s).",
@@ -710,6 +752,10 @@ class AliasDataValidator(object):
                         "name": "Select All",
                         "callback": self.pick_layers,
                     },
+                    {
+                        "name": "Select Layer Geometry",
+                        "callback": self.pick_nodes_assigned_to_layers,
+                    },
                 ],
                 "item_actions": [
                     {
@@ -770,8 +816,16 @@ class AliasDataValidator(object):
                         "name": "Select All",
                         "callback": self.pick_layers,
                     },
+                    {
+                        "name": "Select Layer Geometry",
+                        "callback": self.pick_nodes_assigned_to_layers,
+                    },
                 ],
                 "item_actions": [
+                    {
+                        "name": "Collapse",
+                        "callback": self.fix_layer_has_single_object,
+                    },
                     {
                         "name": "Select Layer",
                         "callback": self.pick_layers,
@@ -843,7 +897,6 @@ class AliasDataValidator(object):
     #
     #   Guidelines to defining a check function:
     #       - Function name should be prefixed with `check_`
-    #       - Takes an optional single parameter `fail_fast` which returned immediately once the check fails
     #       - Returns a list of Alias objects
     #
     #   Guidelines to defining a fix function:
@@ -857,630 +910,600 @@ class AliasDataValidator(object):
     # -------------------------------------------------------------------------------------------------------
 
     @sgtk.LogManager.log_timing
-    def check_shader_unused(self, fail_fast=False, skip_shaders=None):
+    def check_shader_unused(
+        self,
+        fail_fast: Optional[bool] = False,
+        skip_shaders: Optional[List[str]] = None,
+    ) -> AlShaderList:
         """
         Check for unused shaders (shaders that are not assigned to any geometry) in Alias.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all data errors found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_shaders: The specified shaders (by name) will not be checked.
-        :type skip_shaders: list<str>
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The shaders that are not being used.
         """
 
         skip_shaders = skip_shaders or []
-        unused_shaders = []
+        shaders = [
+            shader
+            for shader in self.alias_py.get_shaders()
+            if shader.name not in skip_shaders
+        ]
 
-        for shader in self.alias_py.get_shaders():
-            if shader.name in skip_shaders:
-                continue
+        # Perform batch operation to check which shaders are used. This is
+        # faster than iterating one by one.
+        with self.alias_py.request_context_manager() as manager:
+            for shader in shaders:
+                manager.result.append(shader.is_used())
 
-            if not shader.is_used():
-                if fail_fast:
-                    return False
-                unused_shaders.append(shader)
-
-        return unused_shaders
+        # Return the unused shaders based on the manager result
+        return [shaders[i] for i, is_used in enumerate(manager.result) if not is_used]
 
     @sgtk.LogManager.log_timing
-    def fix_shader_unused(self, errors=None, skip_shaders=None):
+    def fix_shader_unused(
+        self,
+        errors: Optional[Union[str, dict, List[str], List[dict]]] = None,
+        skip_shaders: List[str] = None,
+    ):
         """
         Process all shaders in Alias, or the specified shaders, and delete all unused shaders.
+
+        When passing the `errors` parameter, the onus is on the caller to ensure
+        that the shaders are not in use. This is meant to be used when the
+        caller has performed the corresponding check function before calling this
+        function, which then it already has the up-to-date list of unused shaders.
 
         NOTE that the shaders list in Alias may not update automatically,
         alias_api.redraw_screen() may need to be invoked after this function, to see the
         updated shaders list.
 
-        :param errors: (optional) The shaders to process, if None, all shaders will be
-            processed. Default=None
-        :type errors: str | list<str> | list<AlShader> | list<dict>
+        :param errors: (optional) The shaders to process, if None, all shaders
+            will be processed. If not None, the shaders will not be validated
+            that they are unused, and will be deleted regardless. Default is
+            None.
         :param skip_shaders: The specified shaders (by name) will not be fixed.
-        :type skip_shaders: list<str>
+            This will be ignored if the `errors` parameter is not None.
         """
 
-        skip_shaders = skip_shaders or []
+        if errors:
+            # Delete the given list of shaders. The onus is on the caller to
+            # ensure that the shaders are not in use.
+            unused_shaders = self.__parse_errors(errors)
+            if self.__is_str_list(unused_shaders):
+                unused_shaders = self.alias_py.get_shaders_by_name(unused_shaders)
+        else:
+            # Find all unused shaders. This will take longer, but ensures that
+            # all currently unused shaders are deleted.
+            unused_shaders = self.check_shader_unused(skip_shaders=skip_shaders)
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        shaders = errors or self.alias_py.get_shaders()
-
-        for shader in shaders:
-            if isinstance(shader, str):
-                if shader in skip_shaders:
-                    continue
-                shader = self.alias_py.get_shader_by_name(shader)
-                if not shader:
-                    continue
-            elif shader.name in skip_shaders:
-                continue
-
-            if not shader.is_used():
-                shader.delete_object()
+        # Delete all the unsused shaders at once
+        status = self.alias_py.delete_all(unused_shaders)
+        if not self.alias_py.py_utils.is_success(status):
+            self.alias_py.py_utils.raise_exception(
+                "Failed delete all unused shaders.",
+                status,
+            )
 
     @sgtk.LogManager.log_timing
-    def check_shader_is_vred_compatible(self, fail_fast=False, skip_shaders=None):
+    def check_shader_is_vred_compatible(
+        self,
+        fail_fast: Optional[bool] = False,
+        skip_shaders: Optional[Union[List[str]]] = None,
+    ) -> AlShaderList:
         """
         Check for non-VRED shaders used in the current stage.
 
-        A non-VRED shader is a shader that is not from the Asset Library (compaitible with VRED). Only shaders
-        that are in use will be checked (e.g. if there is a non-VRED shader but is not used, it will not cause
+        A non-VRED shader is a shader that is not from the Asset Library
+        (compaitible with VRED). Only shaders that are in use will be checked
+        (e.g. if there is a non-VRED shader but is not used, it will not cause
         this check to fail).
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all errors found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_shaders: The specified shaders (by name) will not be checked.
-        :type skip_shaders: list<str>
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The list of shader objects that are incompatible with VRED.
         """
 
         skip_shaders = skip_shaders or []
-        non_vred_shaders = []
 
-        for shader in self.alias_py.get_shaders():
-            if shader.name in skip_shaders:
-                continue
-
-            if shader.is_used() and not self.alias_py.is_copy_of_vred_shader(shader):
-                if fail_fast:
-                    return False
-                non_vred_shaders.append(shader)
-
-        return non_vred_shaders
+        # First, get all the shaders in use
+        shaders = [
+            shader
+            for shader in self.alias_py.get_shaders()
+            if shader.name not in skip_shaders
+        ]
+        # Perform batch operation to check which shaders are used. This is
+        # faster than iterating one by one.
+        with self.alias_py.request_context_manager() as manager:
+            for shader in shaders:
+                manager.result.append(shader.is_used())
+        # Return the unused shaders based on the manager result
+        used_shaders = [
+            shaders[i] for i, is_used in enumerate(manager.result) if is_used
+        ]
+        # Perform batch operation to check which shaders are VRED compatible.
+        with self.alias_py.request_context_manager() as manager:
+            for shader in used_shaders:
+                manager.result.append(self.alias_py.is_copy_of_vred_shader(shader))
+        # Return the incompatible vred shaders based on the manager result
+        return [
+            used_shaders[i]
+            for i, is_compatible in enumerate(manager.result)
+            if not is_compatible
+        ]
 
     @sgtk.LogManager.log_timing
-    def fix_node_is_null(self, errors=None):
+    def fix_node_is_null(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+    ):
         """
-        Process all nodes in the current stage, or the specified nodes, and delete all null nodes.
+        Delete all null nodes.
 
-        :param errors: (optional) The of nodes to process, if None, all nodes in the current
-                              stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
+        When passing the `errors` parameter, the onus is on the caller to ensure
+        that the nodes are null. This is meant to be used when the caller has
+        performed the corresponding check function before calling this function,
+        which then it already has the up-to-date list of null nodes.
 
-        :raises alias_api.AliasPythonException: if the attempting to delete specific nodes
+        :param errors: The nodes to delete, if None, all nodes in the current
+            stage will be processed. If passed, the nodes will not be checked
+            and will assume to be null and deleted. Default is None.
         """
 
         if errors is None:
             self.alias_py.delete_null_nodes()
         else:
-            # NOTE we could just delete the list of given nodes, but we cannot determine if a given node is null.
-            self.alias_py.py_utils.raise_exception(
-                "Requires Alias C++ API function to determine if a node is null"
-            )
+            # Delete the given list of nodes. The onus is on the caller to
+            # ensure that the nodes are null.
+            null_nodes = self.__parse_errors(errors)
+            if self.__is_str_list(null_nodes):
+                status = self.alias_py.delete_dag_nodes_by_name(null_nodes)
+            else:
+                status = self.alias_py.delete_all(null_nodes)
+            if not self.alias_py.py_utils.is_success(status):
+                self.alias_py.py_utils.raise_exception(
+                    "Failed delete all null nodes.",
+                    status,
+                )
 
     @sgtk.LogManager.log_timing
     def check_node_has_construction_history(
-        self, fail_fast=False, skip_node_types=None
-    ):
+        self,
+        fail_fast: Optional[bool] = False,
+        skip_node_types: Optional[AlObjectTypeList] = None,
+        force_return_errors: Optional[bool] = False,
+    ) -> AlDagNodeList:
         """
         Check for nodes with construction history in the current stage.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_node_types: The specified node types will not be checked.
-        :type skip_node_types: list<alias_api.AlObjectType>
+        :param force_return_errors: If True, the function will return the list
+            of errors found, else the list of errors will only be returned if
+            the number of errors is less than or equal to the maximum number of
+            errors allowed to return. Default is False.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The list of nodes that have construction history.
         """
 
-        skip_node_types = skip_node_types or []
-
-        nodes_with_history = (
-            self.alias_py.py_dag_node.get_nodes_with_construction_history(
-                skip_node_types=set(skip_node_types),
-            )
+        skip_node_types_set = set(skip_node_types or [])
+        result = self.alias_py.py_dag_node.get_nodes_with_construction_history(
+            skip_node_types=skip_node_types_set,
+            return_nodes=False,
         )
-
-        return nodes_with_history
+        return self.__return_node_result(result, force_return_errors)
 
     @sgtk.LogManager.log_timing
-    def fix_all_node_has_construction_history(self, errors=None, skip_node_types=None):
-        """
-        Delete construction history for all nodes.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-
-        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
-        """
-
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        self.fix_node_has_construction_history(
-            errors=None, skip_node_types=skip_node_types
-        )
-
-    @sgtk.LogManager.log_timing
-    def fix_node_has_construction_history(self, errors=None, skip_node_types=None):
+    def fix_node_has_construction_history(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+        skip_node_types: Optional[Union[AlObjectTypeList]] = None,
+    ):
         """
         Delete construction history for the specified nodes.
+
+        When passing the `errors` parameter, the onus is on the caller to ensure
+        that the nodes have construction history. This is meant to be used when the
+        caller has performed the corresponding check function before calling this
+        function, which then it already has the up-to-date list of nodes with
+        construction history. Nodes given in the `errors` parameter will not be
+        checked and will assume to have construction history and be deleted.
 
         NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
         to be invoked after this function, to see the updated data.
 
         :param errors: (optional) The nodes to process, if None, all nodes in the current stage will
                        be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
+        :param skip_node_types: The specified node types will not be checked.
         """
 
-        skip_node_types = skip_node_types or []
+        skip_node_types_set = set(skip_node_types or [])
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
+        if errors:
+            # Assumes the nodes given has history. Onus is on the caller to
+            # ensure the nodes have construction history.
+            nodes = self.__parse_errors(errors)
+            if self.__is_str_list(nodes):
+                nodes = self.alias_py.get_dag_nodes_by_name(nodes)
+        else:
+            nodes = self.alias_py.py_dag_node.check_node_has_construction_history(
+                skip_node_types=skip_node_types_set,
+                force_return_errors=True,
+            )
 
-        # NOTE performance is slower when a list of nodes is passed. When applying to all
-        # nodes, pass None instead of a list of all nodes.
-        nodes = self.alias_py.py_dag_node.get_nodes_with_construction_history(
-            nodes=errors,
-            skip_node_types=set(skip_node_types),
-        )
-        for node in nodes:
-            self.alias_py.delete_history(node)
+        self.alias_py.delete_history(nodes)
 
     @sgtk.LogManager.log_timing
-    def check_node_instances(self, fail_fast=False):
+    def check_node_instances(
+        self,
+        fail_fast: Optional[bool] = False,
+    ) -> Union[bool, AlDagNodeList, Tuple[bool, int]]:
         """
         Check for instanced nodes in the current stage.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: True if the check passes (e.g. no instanced nodes), otherwise
+            the list of instanced nodes if the number of instanced nodes is less
+            then or equal to the maximum number of nodes allowed to return,
+            otherwise a tuple of False and the number of instanced nodes.
         """
 
-        return self.alias_py.py_dag_node.get_instanced_nodes()
+        result = self.alias_py.py_dag_node.get_instanced_nodes(return_nodes=False)
+        return self.__return_node_result(result)
 
     @sgtk.LogManager.log_timing
-    def fix_all_node_instances(self, errors=None):
+    def fix_node_instances(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+    ):
         """
-        Remove all instanced nodes.
+        Remove instanced nodes.
 
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
+        When passing the `errors` parameter, the onus is on the caller to ensure
+        that the nodes are instanced. This is meant to be used when the caller
+        has performed the corresponding check function before calling this
+        function, which then it already has the up-to-date list of nodes are
+        instanced. Nodes given in the `errors` parameter will not be checked and
+        will assume to be instanced and be deleted.
 
-        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        NOTE that the nodes in Alias may not update automatically,
+        alias_api.redraw_screen() may need to be invoked after this function, to
+        see the updated data.
+
+        :param errors: The list of nodes to process, if None, all nodes in the
+            current stage will be processed. Default is None.
         """
 
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        self.fix_node_instances(errors=None)
+        if errors:
+            # Assumes the nodes given are instanced. Onus is on the caller to
+            # ensure the nodes are instanced.
+            nodes = self.__parse_errors(errors)
+            if not self.__is_str_list(nodes):
+                nodes = [node.name for node in nodes]
+            input_data = self.alias_py.TraverseDagInputData(set(nodes), True)
+
+        else:
+            input_data = self.alias_py.TraverseDagInputData()
+
+        expand = True
+        result = self.alias_py.search_node_is_instance(input_data, expand)
+        status = result.status
+        if not self.alias_py.py_utils.is_success(status):
+            self.alias_py.py_utils.raise_exception(
+                "Failed to expand all node instances.",
+                status,
+            )
 
     @sgtk.LogManager.log_timing
-    def fix_node_instances(self, errors=None):
-        """
-        Remove instanced nodes from the specified nodes.
-
-        NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated data.
-
-        :param errors: (optional) The list of nodes to process, if None, all nodes in the current
-                              stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
-
-        :raises alias_api.AliasPythonException: if a node instance failed to expand
-        """
-
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        # NOTE performance is slower when a list of nodes is passed. When applying to all
-        # nodes, pass None instead of a list of all nodes.
-        nodes = self.alias_py.py_dag_node.get_instanced_nodes(errors)
-
-        for node in nodes:
-            status = self.alias_py.expand_instances(node)
-            if not self.alias_py.py_utils.is_success(status):
-                self.alias_py.py_utils.raise_exception(
-                    "Failed to expand instanced node '{}'".format(node.name), status
-                )
-
-    @sgtk.LogManager.log_timing
-    def check_node_pivots_at_origin(self, fail_fast=False, skip_node_types=None):
+    def check_node_pivots_at_origin(
+        self,
+        fail_fast: Optional[bool] = False,
+        skip_node_types: Optional[AlObjectTypeList] = None,
+    ) -> AlDagNodeList:
         """
         Check for nodes that do not have their pivots set to the origin.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The nodes that do not have their pivots set to the origin.
         """
 
-        skip_node_types = skip_node_types or []
-
-        return self.alias_py.py_dag_node.get_nodes_with_non_origin_pivot(
-            skip_node_types=set(skip_node_types),
+        skip_node_types_set = set(skip_node_types or [])
+        result = self.alias_py.py_dag_node.get_nodes_with_non_origin_pivot(
+            skip_node_types=skip_node_types_set, return_nodes=False
         )
+        return self.__return_node_result(result)
 
     @sgtk.LogManager.log_timing
-    def fix_all_node_pivots_at_origin(self, errors=None, skip_node_types=None):
-        """
-        Reset scale and rotate pivots to the origin for all nodes.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-
-        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
-        """
-
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        self.fix_node_pivots_at_origin(errors=None, skip_node_types=skip_node_types)
-
-    @sgtk.LogManager.log_timing
-    def fix_node_pivots_at_origin(self, errors=None, skip_node_types=None):
+    def fix_node_pivots_at_origin(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+        skip_node_types: Optional[AlObjectTypeList] = None,
+    ):
         """
         Reset scale and rotate pivots to the origin for the specified nodes.
 
-        NOTE that the pivots Alias may not update automatically, alias_api.redraw_screen() may need to be
-        invoked after this function, to see the updated pivots.
+        NOTE that the pivots Alias may not update automatically,
+        alias_api.redraw_screen() may need to be invoked after this function, to
+        see the updated pivots.
 
-        :param errors: (optional) The nodes to process, if None, all nodes in the current stage will
-                              be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
-
-        :raises alias_api.AliasPythonException: if a failed to set a node's pivot to the origin
+        :param errors: The nodes to process, if None, all nodes in the current
+            stage will be processed. Default is None.
         """
 
-        skip_node_types = skip_node_types or []
+        if errors:
+            nodes = self.__parse_errors(errors)
+            status = self.alias_py.reset_pivots(nodes)
+        else:
+            skip_node_types_set = set(skip_node_types or [])
+            input_data = self.alias_py.TraverseDagInputData(
+                skip_node_types_set,
+                False,
+            )
+            reset = True
+            result = self.alias_py.search_node_has_non_origin_pivot(input_data, reset)
+            status = result.status
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        # NOTE performance is slower when a list of nodes is passed. When applying to all
-        # nodes, pass None instead of a list of all nodes.
-        nodes = self.alias_py.py_dag_node.get_nodes_with_non_origin_pivot(
-            nodes=errors,
-            skip_node_types=set(skip_node_types),
-        )
-        center = self.alias_py.Vec3(0.0, 0.0, 0.0)
-
-        for node in nodes:
-            status = node.set_scale_pivot(center)
-            if not self.alias_py.py_utils.is_success(status):
-                self.alias_py.py_utils.raise_exception(
-                    "Failed to set scale pivot for node '{}'".format(node.name), status
-                )
-
-            status = node.set_rotate_pivot(center)
-            if not self.alias_py.py_utils.is_success(status):
-                self.alias_py.py_utils.raise_exception(
-                    "Failed to set rotate pivot for node '{}'".format(node.name), status
-                )
+        if not self.alias_py.py_utils.is_success(status):
+            self.alias_py.py_utils.raise_exception(
+                "Failed to reset all pivots to origin",
+                status,
+            )
 
     @sgtk.LogManager.log_timing
-    def check_node_has_zero_transform(self, fail_fast=False, skip_node_types=None):
+    def check_node_has_zero_transform(
+        self,
+        fail_fast: Optional[bool] = False,
+        skip_node_types: Optional[AlObjectTypeList] = None,
+    ) -> AlDagNodeList:
         """
-        Check for nodes with non-zero transforms in the current stage.
+        Check for nodes wtih non-zero transforms.
 
         Only top-level dag nodes will be returned.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_node_types: The specified node types will not be checked.
-        :type skip_node_types: list<alias_api.AlObjectType>
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The nodes with non-zero transforms.
         """
 
-        skip_node_types = skip_node_types or []
-
-        all_nodes = self.alias_py.py_dag_node.get_nodes_with_non_zero_transform(
-            skip_node_types=set(skip_node_types),
+        skip_node_types_set = set(skip_node_types or [])
+        result = self.alias_py.py_dag_node.get_nodes_with_non_zero_transform(
+            skip_node_types=skip_node_types_set, top_level_only=True, return_nodes=False
         )
-
-        top_node_names = [n.name for n in self.alias_py.get_top_dag_nodes()]
-        nodes = []
-        for node in all_nodes:
-            if node.name in top_node_names:
-                nodes.append(node)
-
-        return nodes
+        return self.__return_node_result(result)
 
     @sgtk.LogManager.log_timing
-    def fix_all_node_has_zero_transform(self, errors=None, skip_node_types=None):
+    def fix_all_node_has_zero_transform(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+        skip_node_types: Optional[AlObjectTypeList] = None,
+    ):
         """
         Reset transforms to zero for all nodes.
 
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-
-        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        :param errors: This param is ignored, though it is required to be
+            defiend for this function to be a data validation fix callback.
+        :param skip_node_types: This param is ignored, though it is required to
+            be defiend for this function to be a data validation fix callback.
         """
 
         # Call the main fix function but do not pass an errors list to indicate that all nodes
         # should be processed. This will improve performance.
-        self.fix_node_has_zero_transform(
-            errors=None, skip_node_types=skip_node_types, transform_top_level_first=True
-        )
+        self.fix_node_has_zero_transform(errors=None)
 
     @sgtk.LogManager.log_timing
     def fix_node_has_zero_transform(
-        self, errors=None, skip_node_types=None, transform_top_level_first=False
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+        skip_node_types: Optional[AlObjectTypeList] = None,
     ):
         """
-        Reset transforms to zero for the specified nodes, or all top nodes if not specified.
+        Reset node transforms to zero.
 
-        NOTE that the nodes Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated node transforms.
+        NOTE that the nodes Alias may not update automatically,
+        alias_api.redraw_screen() may need to be invoked after this function,
+        to see the updated node transforms.
 
-        :param errors: (optional) The nodes to process, if None, all nodes in the current
-                              stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-        :param transform_top_level_first: True will run a specific Alias API function to first
-            apply zero transform to all top-level nodes before applying zero transform to any
-            remaining nodes that do not have a zero transform. False will apply zero transform
-            to each node individually. This param will effectively be True when errors is None.
-            Settin to True will yield best performance, but it will reset all top-level node
-            transforms to zero.
-        :type transform_top_level_first: bool. Defaults to False.
-
-        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        :param errors: The nodes to process, if None, all nodes in the current
+            stage will be processed. Default is None.
+        :param skip_node_types: This param is ignored, though it is required to
+            be defiend for this function to be a data validation fix callback.
         """
 
-        @sgtk.LogManager.log_timing
-        def __apply_zero_transform_top_level():
-            self.alias_py.zero_transform_top_level()
-
-        @sgtk.LogManager.log_timing
-        def __apply_zero_transform(nodes):
-            return self.alias_py.zero_transform(nodes)
-
-        skip_node_types = skip_node_types or []
-
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
         if errors:
-            status = __apply_zero_transform(errors)
-            if not self.alias_py.py_utils.is_success(status):
-                self.alias_py.py_utils.raise_exception(
-                    "Failed to apply zero transform to nodes. Returned status:",
-                    status,
-                )
+            nodes = self.__parse_errors(errors)
+            if not self.__is_str_list(nodes):
+                nodes = [node.name for node in nodes]
+            input_data = self.alias_py.TraverseDagInputData(set(nodes), True)
+            result = self.alias_py.search_node_has_non_zero_transform(
+                input_data,
+                top_level_only=False,
+                reset=True,
+            )
+            status = result.status
         else:
-            __apply_zero_transform_top_level()
+            status = self.alias_py.zero_transform_top_level()
+
+        if not self.alias_py.py_utils.is_success(status):
+            self.alias_py.py_utils.raise_exception(
+                "Failed to apply zero transform to nodes. Returned status:",
+                status,
+            )
 
     @sgtk.LogManager.log_timing
     def check_node_is_not_in_layer(
-        self, fail_fast=False, layer_name=None, accept_node_types=None
-    ):
+        self,
+        fail_fast: Optional[bool] = False,
+        layer_name: Optional[str] = None,
+        accept_node_types: Optional[AlObjectTypeList] = None,
+    ) -> Union[bool, AlDagNodeList]:
         """
         Check that the layer contains only nodes of type in the accepted list.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all data errors found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
-        :type fail_fast: bool
-        :param layer_name: The layer to check node membership. Default is the default layer in Alias.
-        :type layer_name: str
-        :param accept_node_types: Only the specified node types are accepted in the layer.
-        :type accept_node_types: list<alias_api.AlObjectType>
+        :param fail_fast: Set to True to return immediately as soon as the
+            check fails. Set to False to check entire data and return all data
+            errors found, and arguments that can be passed to the corresponding
+            fix function. Note that when set to False, this function will be
+            slower to execute.
+        :param layer_name: The layer to check node membership. Default is
+            "DefaultLayer".
+        :param accept_node_types: Only the specified node types are accepted in
+            the layer.
 
         :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
             else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
         """
+
+        layer_name = layer_name or self.DEFAULT_LAYER_NAME
+        accept_node_types = accept_node_types or []
 
         layer = self.alias_py.get_layer_by_name(layer_name)
         if layer is None:
-            self.alias_py.py_utils.raise_exception(
-                "Layer not found '{}'".format(layer_name)
-            )
+            self.alias_py.py_utils.raise_exception(f"Layer '{layer_name}' not found.")
 
-        accept_node_types = accept_node_types or []
-        invalid_nodes = []
-
-        # NOTE get_assigned_nodes will not return the group nodes, only leaf nodes assigned to the layer
+        # NOTE get_assigned_nodes will not return the group nodes, only leaf
+        # nodes assigned to the layer
         nodes = layer.get_assigned_nodes()
 
+        invalid_nodes = []
         for node in nodes:
             if node.type() not in accept_node_types:
                 if fail_fast:
                     return False
                 invalid_nodes.append(node)
-
         return invalid_nodes
 
     @sgtk.LogManager.log_timing
     def check_node_is_in_layer(
-        self, fail_fast=False, layer_name=None, accept_node_types=None
-    ):
+        self,
+        fail_fast: Optional[bool] = False,
+        layer_name: Optional[str] = None,
+        accept_node_types: Optional[AlObjectTypeList] = None,
+        force_return_errors: Optional[bool] = False,
+    ) -> AlDagNodeErrors:
         """
         Check that the specified node types are in the layer.
 
-        The whole DAG will be traversed to find nodes that are incorrectly placed in a layer that is not the
-        specified layer.
+        The whole DAG will be traversed to find nodes that are incorrectly
+        placed in a layer that is not the specified layer.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
-        :param layer_name: The layer that the specified node types belong to. Default is the default layer in
-            Alias.
-        :type layer_name: str
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
+        :param layer_name: The layer that the specified node types belong to.
+            Default is "DefaultLayer".
         :param accept_node_types: The node types that must only be in the layer.
-        :type accept_node_types: list<alias_api.AlObjectType>
+        :param force_return_errors: If True, the function will return the list
+            of errors found, else the list of errors will only be returned if
+            the number of errors is less than or equal to the maximum number of
+            errors allowed to return. Default is False.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The list of Alias objects that that failed the check.
         """
 
+        layer_name = layer_name or self.DEFAULT_LAYER_NAME
         layer = self.alias_py.get_layer_by_name(layer_name)
-        if layer is None:
-            self.alias_py.py_utils.raise_exception(
-                "Layer not found '{}'".format(layer_name)
-            )
+        if not layer:
+            raise self.AliasDataValidatorError(f"Layer '{layer_name}' not found.")
+
+        accept_node_types = set(accept_node_types or [])
 
         # Traverse the DAG to look for nodes that should be in the default layer, but are not.
-        accept_node_types = set(accept_node_types or [])
         input_data = self.alias_py.TraverseDagInputData(
             layer, False, accept_node_types, True
         )
         result = self.alias_py.search_dag(input_data)
-
-        return result.nodes
+        return self.__return_node_result(result, force_return_errors)
 
     @sgtk.LogManager.log_timing
     def fix_node_is_in_layer(
-        self, errors=None, layer_name=None, accept_node_types=None
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+        layer_name: Optional[str] = None,
+        accept_node_types: Optional[AlObjectTypeList] = None,
     ):
         """
-        Process all nodes in the current stage, or the specified nodes, and move any nodes found that are of
-        the specified node type but not in the specified layer.
+        Move nodes of the specified node type to the specified layer.
 
-        :param errors: (optional) The of nodes to process, if None, all nodes in the current
-                              stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
-        :param layer_name: The layer that the specified node types belong to. Default is the default layer in Alias.
-        :type layer_name: str
-        :param accept_node_types: The node types only accepted in the default layer.
-        :type accept_node_types: list<alias_api.AlObjectType>
+        If the `errors` parameter is not None, the onus is on the caller to
+        ensure that the nodes given should be moved to the layer. This is meant
+        to be used when the caller has performed the corresponding check function
+        before calling this function, which then it already has the up-to-date
+        list of nodes that should be moved to the layer. Nodes given in the
+        `errors` parameter will not be checked and will assume to be moved to
+        the layer.
+
+        :param errors: The nodes to move to the layer, if None, all nodes in the
+            will be checked and moved to the layer, if necessary. Default is
+            None.
+        :param layer_name: The layer that the specified node types belong to.
+            Default is "DefaultLayer".
+        :param accept_node_types: The node types that must only be in the layer.
         """
 
-        layer = self.alias_py.get_layer_by_name(layer_name)
-        if layer is None:
-            self.alias_py.py_utils.raise_exception(
-                "Layer not found '{}'".format(layer_name)
-            )
-
-        accept_node_types = accept_node_types or []
-
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
+        layer_name = layer_name or self.DEFAULT_LAYER_NAME
 
         if errors:
-            for node in errors:
-                if isinstance(node, str):
-                    node = self.alias_py.find_dag_node_by_name(node)
-
-                if not node:
-                    continue
-
-                node_layer = node.layer()
-                if (not node_layer or node_layer.name != layer_name) and (
-                    not accept_node_types or node.type() in accept_node_types
-                ):
-                    node.set_layer(layer)
-
+            nodes = self.__parse_errors(errors)
         else:
-            # Find nodes that should be in the default layer, but are not.
-            input_data = self.alias_py.TraverseDagInputData(
-                layer, False, set(accept_node_types), True
+            nodes = self.check_node_is_in_layer(
+                layer_name=layer_name,
+                accept_node_types=accept_node_types,
+                force_return_errors=True,
             )
-            result = self.alias_py.search_dag(input_data)
 
-            # Place the nodes into their correct layer
-            for node in result.nodes:
-                node.set_layer(layer)
+        status = self.alias_py.assign_nodes_to_layer(nodes, layer_name)
+
+        if status == self.alias_py.AlStatusCode.Failure:
+            raise self.AliasDataValidatorError(
+                "Failed to move all nodes to layer.",
+                status,
+            )
+        elif status == self.alias_py.AlStatusCode.InvalidArgument:
+            raise self.AliasDataValidatorError(f"Layer '{layer_name}' not found ")
 
     @sgtk.LogManager.log_timing
-    def check_node_name_matches_layer(self, fail_fast=False, skip_layers=None):
+    def check_node_name_matches_layer(
+        self, fail_fast: Optional[bool] = False, skip_layers: Optional[List[str]] = None
+    ) -> AlDagNodeList:
         """
-        Check for naming mismatches between layer and its nodes, for all top-levle nodes in the current stage.
+        Check for naming mismatches between layer and its nodes, for all
+        top-level nodes.
 
-        Each layer should only contain one group (or one surface). This group is named after the layer.
-        If groups are found that don't match the name of the layer, an error is thrown.
+        Each layer should only contain one group (or one surface). This group is
+        named after the layer. If groups are found that don't match the name of
+        the layer, an error is thrown.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all data errors found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
-        :type fail_fast: bool
+        :param fail_fast: Set to True to return immediately as soon as the check
+            fails. Set to False to check entire data and return all data errors
+            found, and arguments that can be passed to the corresponding fix
+            function. Note that when set to False, this function will be slower
+            to execute.
         :param skip_layers: The specified layers (by name) will not be checked.
-        :type skip_layers: list<str>
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: If fail_fast is True, a bool indicating if the check succeeded
+            is returned, else the list of Alias objects that that failed the
+            check is returned.
         """
 
         invalid_nodes = []
         nodes = self.alias_py.get_top_dag_nodes()
 
-        for node in nodes:
-            layer = node.layer()
+        layers = self.alias_py.get_layers(nodes)
+        for i, layer in enumerate(layers):
             if not layer or (skip_layers and layer.name in skip_layers):
                 continue
+
+            # Get the node for the layer
+            node = nodes[i]
 
             # Check the layer and node names match, which means they are the same or the ndoe name is the
             # layer name plus the suffix "#n" where 'n' is a number.
@@ -1493,458 +1516,419 @@ class AliasDataValidator(object):
         return invalid_nodes
 
     @sgtk.LogManager.log_timing
-    def fix_node_name_matches_layer(self, errors=None, skip_layers=None):
+    def fix_node_name_matches_layer(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+        skip_layers: Optional[List[str]] = None,
+    ):
         """
-        Process all nodes in the current stage, or the specified nodes, and rename any nodes that do not
-        match its layer.
+        Rename nodes to match their layer.
 
-        :param errors: (optional) The of nodes to process, if None, all nodes in the current
-                              stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
+        If the `errors` parameter is not None, the onus is on the caller to
+        ensure that the nodes given should be renamed to match their layer. This
+        is meant to be used when the caller has performed the corresponding check
+        function before calling this function, which then it already has the
+        up-to-date list of nodes that should be renamed. Nodes given in the
+        `errors` parameter will not be checked and will assume to be renamed to
+        match their layer.
+
+        :param errors: The nodes to rename, if None, all nodes will be checked
+            and renamed to match their layer. Default is None.
         :param skip_layers: Nodes in the specified layers (by name) will not be fixed.
-        :type skip_layers: list<str>
         """
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
+        if errors:
+            nodes = self.__parse_errors(errors)
+            if self.__is_str_list(nodes):
+                nodes = self.alias_py.get_dag_nodes_by_name(nodes)
+        else:
+            nodes = self.check_node_name_matches_layer(
+                fail_fast=False, skip_layers=skip_layers
+            )
 
-        nodes = errors or self.alias_py.get_top_dag_nodes()
+        # Get all layers in at once
+        layers = self.alias_py.get_layers(nodes)
 
-        for node in nodes:
-            if isinstance(node, str):
-                node = self.alias_py.find_dag_node_by_name(node)
-
-            if not node:
-                continue
-
-            node_layer = node.layer()
-            if not node_layer:
-                continue
-
-            node_layer_name = node_layer.name
-            if skip_layers and node_layer_name in skip_layers:
-                continue
-
-            reg = r"^{}(#?\d)*$".format(node_layer_name)
-            if not re.match(reg, node.name):
-                node.name = node_layer_name
+        # Rename all nodes at once
+        with self.alias_py.request_context_manager():
+            for i, layer in enumerate(layers):
+                if not layer:
+                    continue
+                # Get the node for the layer
+                node = nodes[i]
+                node_layer_name = layer.name
+                reg = r"^{}(#?\d)*$".format(node_layer_name)
+                if not re.match(reg, node.name):
+                    node.name = node_layer_name
 
     @sgtk.LogManager.log_timing
-    def check_node_layer_matches_parent(self, fail_fast=False):
+    def check_node_layer_matches_parent(
+        self,
+        fail_fast: Optional[bool] = False,
+        force_return_errors: Optional[bool] = False,
+    ) -> AlDagNodeErrors:
         """
         Check for nodes that do not have the layer as their parent node.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
+        :param force_return_errors: If True, the function will return the list
+            of errors found, else the list of errors will only be returned if
+            the number of errors is less than or equal to the maximum number of
+            errors allowed to return. Default is False.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The errors found.
         """
 
         input_data = self.alias_py.TraverseDagInputData()
-        result = self.alias_py.search_node_layer_does_not_match_parent_layer(input_data)
-
-        return result.nodes
+        result = self.alias_py.search_node_layer_does_not_match_parent_layer(
+            input_data, return_parent=True
+        )
+        return self.__return_node_result(result, force_return_errors)
 
     @sgtk.LogManager.log_timing
-    def fix_node_layer_matches_parent(self, errors=None):
+    def fix_node_layer_matches_parent(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+    ):
         """
-        Process all nodes in the current stage, or the specified nodes, and ensure that a node's layer is the
-        same as its parent node's layer.
+        Move nodes to the layer of their parent node.
 
-        :param errors: (optional) The of nodes to process, if None, all nodes in the current
-                              stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
+        If the `errors` parameter is not None, the onus is on the caller to
+        ensure that the nodes given should be moved to the layer of their parent
+        node. This is meant to be used when the caller has performed the
+        corresponding check function before calling this function, which then it
+        already has the up-to-date list of nodes that should be moved to the
+        layer of their parent node. Nodes given in the `errors` parameter will
+        not be checked and will assume to be moved to the layer of their parent
+        node.
+
+        :param errors: The nodes to move to the layer of their parent node, if
+            None, all nodes will be checked and moved to the layer of their
+            parent node. Default is None.
         """
-
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
 
         if errors:
-            for node in errors:
-                if isinstance(node, str):
-                    node = self.alias_py.find_dag_node_by_name(node)
-
-                if not node:
-                    continue
-
-                parent_node = node.parent_node()
-                if not parent_node:
-                    continue
-
-                parent_node_layer = parent_node.layer()
-                if not parent_node_layer:
-                    continue
-
-                node_layer = node.layer()
-                if not node_layer or node_layer.number != parent_node_layer.number:
-                    node.set_layer(parent_node_layer)
-
+            parent_nodes = self.__parse_errors(errors)
         else:
-            input_data = self.alias_py.TraverseDagInputData()
-            result = self.alias_py.search_node_layer_does_not_match_parent_layer(
-                input_data
+            parent_nodes = self.check_node_layer_matches_parent(
+                force_return_errors=True
             )
-            for node in result.nodes:
-                node.set_layer(node.parent_node().layer())
+
+        status = self.alias_py.assign_children_to_parent_layer(parent_nodes)
+        if not self.alias_py.py_utils.is_success(status):
+            raise self.AliasDataValidatorError(
+                "Failed to move all nodes to their parent layer.",
+                status,
+            )
 
     @sgtk.LogManager.log_timing
-    def check_node_dag_top_level(self, fail_fast=False, accept_node_types=None):
+    def check_node_dag_top_level(
+        self,
+        fail_fast: Optional[bool] = False,
+        accept_node_types: Optional[AlObjectTypeList] = None,
+    ) -> Union[bool, AlDagNodeErrors]:
         """
         Check for invalid top-level nodes in the DAG of the current stage.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all data errors found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
-        :type fail_fast: bool
-        :param accept_node_types: Only the specified node types are accepted in the top level of the DAG.
-        :type accept_node_types: list<alias_api.AlObjectType>
+        :param fail_fast: Set to True to return immediately as soon as the
+            check fails. Set to False to check entire data and return all data
+            errors found, and arguments that can be passed to the corresponding
+            fix function. Note that when set to False, this function will be
+            slower to execute.
+        :param accept_node_types: Only the specified node types are accepted in
+            the top level of the DAG.
 
         :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
             else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
         """
 
         accept_node_types = accept_node_types or []
-        invalid_nodes = []
         nodes = self.alias_py.get_top_dag_nodes()
-
+        invalid_nodes = []
         for node in nodes:
             if node.type() not in accept_node_types:
                 if fail_fast:
                     return False
                 invalid_nodes.append(node)
-
         return invalid_nodes
 
     @sgtk.LogManager.log_timing
-    def check_node_templates(self, fail_fast=False):
+    def check_node_templates(
+        self,
+        fail_fast: Optional[bool] = False,
+        force_return_errors: Optional[bool] = False,
+    ) -> AlDagNodeErrors:
         """
         Check for nodes that are set as templates.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
+        :param force_return_errors: If True, the function will return the list
+            of errors found, else the list of errors will only be returned if
+            the number of errors is less than or equal to the maximum number of
+            errors allowed to return. Default is False.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The errors found.
         """
 
         input_data = self.alias_py.TraverseDagInputData()
         result = self.alias_py.search_node_is_template(input_data)
-        return result.nodes
+        return self.__return_node_result(result, force_return_errors)
 
     @sgtk.LogManager.log_timing
-    def fix_node_templates(self, errors=None):
+    def fix_node_templates(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+    ):
         """
-        Process all nodes in the current stage, or the list of nodes if provided, and delete nodes that are
-        set as a template.
+        Delete the specified nodes that are set as templates.
 
-        :param errors: The list of nodes to process, if None, all nodes in the current stage will be
-            processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
+        If `errors` is passed, the onus is on the caller to ensure that the
+        nodes are templates. This is meant to be used when the caller has
+        performed the corresponding check function before calling this function,
+        which then it already has the up-to-date list of nodes that are
+        templates. Nodes given in the `errors` parameter will not be checked and
+        will assume to be deleted.
+
+        :param errors: The template nodes to delete, if None, all template nodes
+            in the current stage will be deleted. Default is None.
         """
-
-        if isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
 
         if errors:
-            self.alias_py.py_dag_node.delete_nodes(errors)
-
+            nodes = self.__parse_errors(errors)
         else:
-            nodes = self.check_node_templates()
-            for node in nodes:
-                node.delete_object()
+            nodes = self.check_node_templates(force_return_errors=True)
+
+        if self.__is_str_list(nodes):
+            status = self.alias_py.delete_dag_nodes_by_name(nodes)
+        else:
+            status = self.alias_py.delete_all(nodes)
+
+        if not self.alias_py.py_utils.is_success(status):
+            self.alias_py.py_utils.raise_exception(
+                "Failed delete all template nodes.",
+                status,
+            )
 
     @sgtk.LogManager.log_timing
-    def check_node_curves(self, fail_fast=False):
+    def check_node_curves(
+        self,
+        fail_fast: Optional[bool] = False,
+        force_return_errors: Optional[bool] = False,
+    ) -> AlDagNodeErrors:
         """
         Check for nodes that represent a curve (ie. AlCurveNode objects).
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The errors found.
         """
 
-        # Find all (and only) AlCurveNode objects
-        return self.alias_py.py_dag_node.get_nodes_by_type(
-            [self.alias_py.AlObjectType.CurveNodeType]
+        result = self.alias_py.py_dag_node.get_nodes_by_type(
+            [self.alias_py.AlObjectType.CurveNodeType],
+            return_nodes=False,
         )
+        return self.__return_node_result(result, force_return_errors)
 
     @sgtk.LogManager.log_timing
-    def fix_all_node_curves(self, errors=None):
+    def fix_node_curves(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+    ):
         """
-        Delete all nodes that represent a curve.
+        Delete the curve nodes.
 
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
+        If a list of nodes are passed in, they are assumed to represent a curve
+        and will be deleted.
 
-        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
+        :param errors: The list of nodes to process, if None, all nodes in the
+            current stage will be processed. Default is None.
         """
-
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        self.fix_node_curves(errors=None)
-
-    @sgtk.LogManager.log_timing
-    def fix_node_curves(self, errors=None):
-        """
-        Delete the specified nodes that represent a curve.
-
-        If a list of nodes are passed in, they are assumed to represent a curve and will be deleted.
-
-        :param errors: The list of nodes to process, if None, all nodes in the current stage will be
-            processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
-        """
-
-        if isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
 
         if errors:
-            # NOTE this assumes all nodes passed in represent a curve.
-            self.alias_py.py_dag_node.delete_nodes(errors)
-
+            curve_nodes = self.__parse_errors(errors)
         else:
-            curve_nodes = self.alias_py.py_dag_node.get_nodes_by_type(
-                [self.alias_py.AlObjectType.CurveNodeType]
+            curve_nodes = self.check_node_curves(force_return_errors=True)
+
+        if self.__is_str_list(curve_nodes):
+            status = self.alias_py.delete_dag_nodes_by_name(curve_nodes)
+        else:
+            status = self.alias_py.delete_all(curve_nodes)
+
+        if not self.alias_py.py_utils.is_success(status):
+            self.alias_py.py_utils.raise_exception(
+                "Failed delete all curve nodes.",
+                status,
             )
 
-            for node in curve_nodes:
-                node.delete_object()
-
     @sgtk.LogManager.log_timing
-    def check_curve_on_surface_unused(self, fail_fast=False):
+    def check_curve_on_surface_unused(
+        self,
+        fail_fast: Optional[bool] = False,
+        force_return_errors: Optional[bool] = False,
+    ) -> AlDagNodeErrors:
         """
         Check for unused curves on surfaces in the current stage.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        This check wil return the nodes that contain the unused curves on
+        surfaces, as the errors.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
+
+        :return: The errors found.
         """
 
-        return self.alias_py.py_dag_node.get_nodes_with_unused_curves_on_surface()
+        result = self.alias_py.py_dag_node.get_nodes_with_unused_curves_on_surface(
+            return_nodes=False
+        )
+        return self.__return_node_result(result, force_return_errors)
 
     @sgtk.LogManager.log_timing
-    def fix_all_curve_on_surface_unused(self, errors=None):
-        """
-        Delete unused curves on surface for all nodes.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-
-        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
-        """
-
-        # NOTE must pass all error nodes specifcally. See note in fix_curve_on_surface_unused
-        self.fix_curve_on_surface_unused(errors=errors)
-        # # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # # should be processed. This will improve performance.
-        # self.fix_curve_on_surface_unused(errors=None)
-
-    @sgtk.LogManager.log_timing
-    def fix_curve_on_surface_unused(self, errors=None):
+    def fix_curve_on_surface_unused(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+    ):
         """
         Delete unused curves on surface for the specified nodes.
 
-        :param errors: The list of curves on surface to process, if None, all curves on surface
-                              current stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlCurveOnSurface> | list<dict>
+        :param errors: The nodes to delete unused curves on surface for. If
+            None, all unused curves on surface will be deleted.
         """
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
+        if errors:
+            node_names = self.__parse_errors(errors)
+            if not self.__is_str_list(node_names):
+                node_names = [node.name for node in node_names]
+        else:
+            node_names = []
 
-        # NOTE the curves must be found for each node and deleted in order, instead of finding
-        # all unused curves at once, since multiple nodes may point to the same curve (which
-        # results in a crash when attempting to delete the same object twice). If this is slow
-        # then we will need to revert to the old method below, but ensure we do not attempt to
-        # delete the same curve twice
-        for node in errors:
-            unused_curves = (
-                self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes(
-                    nodes=[node]
-                )
-            )
-            for curve in unused_curves:
-                curve.delete_object()
-
-        # # NOTE performance is slower when a list of nodes is passed. When applying to all
-        # # nodes, pass None instead of a list of all nodes.
-        # unused_curves = self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes(
-        #     nodes=errors
-        # )
-        # for curve in unused_curves:
-        #     curve.delete_object()
-
-    @sgtk.LogManager.log_timing
-    def check_curve_on_surface_construction_history(self, fail_fast=False):
-        """
-        Check for unused curves on surfaces that have construction history in the current stage.
-
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
-
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
-        """
-
-        unused_cos = self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes()
-
-        invalid_nodes = []
-        for cos in unused_cos:
-            if self.alias_py.has_construction_history(cos):
-                invalid_nodes.append(cos.surface().surface_node())
-
-        return invalid_nodes
-
-    @sgtk.LogManager.log_timing
-    def fix_all_curve_on_surface_construction_history(self, errors=None):
-        """
-        Delete construction history of unnused curves on surface for all nodes.
-
-        :param errors: This param is ignored, though it is required to be defiend for this
-            function to be a data validation fix callback.
-        :type errors: N/A
-        :param skip_node_types: The specified node types will not be fixed.
-        :type skip_node_types: list<alias_api.AlObjectType>
-
-        :raises alias_api.AliasPythonException: if a failed to set a node's transform to zero
-        """
-
-        # Call the main fix function but do not pass an errors list to indicate that all nodes
-        # should be processed. This will improve performance.
-        return self.fix_curve_on_surface_construction_history(errors=None)
-
-    @sgtk.LogManager.log_timing
-    def fix_curve_on_surface_construction_history(self, errors=None):
-        """
-        Delete construction history of unnused curves on surface for the specified nodes.
-
-        :param errors: The list of curves on surface to process, if None, all curves on surface
-                              current stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlCurveOnSurface> | list<dict>
-        """
-
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        # NOTE performance is slower when a list of nodes is passed. When applying to all
-        # nodes, pass None instead of a list of all nodes.
-        unused_cos = self.alias_py.py_dag_node.get_unused_curves_on_surface_for_nodes(
-            nodes=errors
+        input_data = self.alias_py.TraverseDagInputData(set(node_names), True)
+        result = self.alias_py.search_node_unused_curves_on_surface(
+            input_data, delete_unused=True
         )
-
-        for cos in unused_cos:
-            if self.alias_py.has_construction_history(cos):
-                self.alias_py.delete_construction_history(cos)
+        status = result.status
+        if not self.alias_py.py_utils.is_success(status):
+            raise self.AliasDataValidatorError(
+                "Failed to delete all unused curves on surface", status
+            )
 
     @sgtk.LogManager.log_timing
-    def check_set_empty(self, fail_fast=False):
+    def check_curve_on_surface_construction_history(
+        self, fail_fast: Optional[bool] = False
+    ) -> AlDagNodeList:
+        """
+        Check for unused curves on surfaces that have construction history.
+
+        NOTE: in newer versions of Alias, this check may not be needed if
+        validation rule 'node_has_construction_history' is enabled.
+
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
+
+        :return: The nodes that have unused curves on surface with construction
+            history.
+        """
+
+        input_data = self.alias_py.TraverseDagInputData()
+        result = self.alias_py.search_node_unused_curves_on_surface_with_history(
+            input_data
+        )
+        return self.__return_node_result(result)
+
+    @sgtk.LogManager.log_timing
+    def fix_curve_on_surface_construction_history(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+    ):
+        """
+        Delete construction history of unnused curves on surface.
+
+        If `errors` is provided, only the nodes in the list will have their
+        construction history deleted. The onus is on the caller to ensure that
+        the nodes are unused curves on surface with construction history. They
+        will not be checked, and will assume to be unused curves on surface with
+        construction history and be deleted.
+
+        :param errors: The nodes to delete construction history for unused curves
+            on surface. If None, all construction history for unused curves on
+            surface will be deleted.
+        """
+
+        if errors:
+            node_names = self.__parse_errors(errors)
+            if not self.__is_str_list(node_names):
+                node_names = [node.name for node in node_names]
+        else:
+            node_names = []
+
+        input_data = self.alias_py.TraverseDagInputData(set(node_names), True)
+        result = self.alias_py.search_node_unused_curves_on_surface_with_history(
+            input_data, delete_unused=True
+        )
+        status = result.status
+        if not self.alias_py.py_utils.is_success(status):
+            raise self.AliasDataValidatorError(
+                "Failed to delete all construction history for unused curves on surface",
+                status,
+            )
+
+    @sgtk.LogManager.log_timing
+    def check_set_empty(self, fail_fast: Optional[bool] = False) -> AlSetList:
         """
         Check for sets that empty.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The empty sets.
         """
 
-        empty_sets = []
-        alias_set = self.alias_py.first_set()
-
-        while alias_set:
-            if alias_set.is_empty():
-                empty_sets.append(alias_set)
-            alias_set = alias_set.next_set()
-
-        return empty_sets
+        return self.alias_py.get_empty_sets()
 
     @sgtk.LogManager.log_timing
-    def fix_set_empty(self, errors=None):
+    def fix_set_empty(
+        self,
+        errors: Optional[AlSetErrors] = None,
+    ):
         """
-        Process all sets in the current stage, or the list of sets if provided, and delete all sets that are
-        empty.
+        Delete all empty sets.
 
-        :param errors: The list of nodes to process, if None, all nodes in the current stage will be
-            processed. Default=None
-        :type errors: str | list<str> | list<AlDagNode> | list<dict>
+        If `errors` is provided, only the sets in the list will be deleted.
+        The onus is on the caller to ensure that the sets are empty. They
+        will not be checked, and will assume to be empty and be be deleted.
+
+        :param errors: If provided, these sets will be deleted. If None, all
+            empty sets found will be deleted. Default is None.
         """
-
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        # The list of specifi set names to delete. Leave empty to delete all sets.
-        set_names = []
-        if errors:
-            for item in errors:
-                if isinstance(item, str):
-                    set_names.append(item)
-                elif isinstance(item, self.alias_py.AlSet):
-                    set_names.append(item.name)
-
-        alias_set = self.alias_py.first_set()
-        while alias_set:
-            if alias_set.is_empty():
-                if not set_names or alias_set.name in set_names:
-                    alias_set.delete_object()
-            alias_set = alias_set.next_set()
 
         if errors:
-            self.alias_py.py_dag_node.delete_nodes(errors)
+            empty_sets = self.__parse_errors(errors)
+        else:
+            empty_sets = self.check_set_empty()
+
+        if self.__is_str_list(empty_sets):
+            status = self.alias_py.delete_sets_by_name(set(empty_sets))
+        else:
+            status = self.alias_py.delete_all(empty_sets)
+
+        if not self.alias_py.py_utils.is_success(status):
+            raise self.AliasDataValidatorError("Failed to delete all sets", status)
 
     @sgtk.LogManager.log_timing
-    def check_layer_is_empty(self, fail_fast=False, skip_layers=None):
+    def check_layer_is_empty(
+        self, fail_fast: Optional[bool] = False, skip_layers: Optional[List[str]] = None
+    ) -> AlLayerList:
         """
         Check for empty layers and layer folders in the current stage.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_layers: The specified layers (by name) will not be checked.
-        :type skip_layers: list<str>
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The empty layers.
         """
 
         skip_layers = set(skip_layers or [])
@@ -1952,235 +1936,218 @@ class AliasDataValidator(object):
         return self.alias_py.get_empty_layers(include_folders, skip_layers)
 
     @sgtk.LogManager.log_timing
-    def fix_layer_is_empty(self, errors=None, skip_layers=None):
+    def fix_layer_is_empty(
+        self,
+        errors: Optional[AlLayerErrors] = None,
+        skip_layers: Optional[List[str]] = None,
+    ):
         """
-        Process all layers in the current stage, or the list of layers if provided, and delete all the empty layers and layer
-        folders.
+        Process all layers in the current stage, or the list of layers if
+        provided, and delete all the empty layers and layer folders.
 
-        :param layers: (optiona) The layers to process, if None, all layers in the current stage will
-                       be processed. Default=None
-        :type layers: str | list<str> | list<AlLayer>
+        :param layers: The layers to process, if None, all layers in the current stage will
+            be processed. Default is None.
         :param skip_layers: The specified layers (by name) will not be fixed.
-        :type skip_layers: list<str>
         """
 
-        skip_layers = set(skip_layers or [])
-        include_folders = True
-        empty_layers = self.alias_py.get_empty_layers(include_folders, skip_layers)
-
-        # If a list of layers is specified, only delete those layers.
-        delete_only = []
         if errors:
-            if isinstance(errors, str):
-                errors = [errors]
-            elif isinstance(errors, list):
-                for i, error_item in enumerate(errors):
-                    if isinstance(error_item, dict):
-                        errors[i] = error_item["name"]
+            empty_layers = self.__parse_errors(errors)
+        else:
+            empty_layers = self.check_layer_is_empty(skip_layers=skip_layers)
 
-            for layer in errors:
-                if isinstance(layer, str):
-                    delete_only.append(layer)
-                else:
-                    delete_only.append(layer.name)
+        if self.__is_str_list(empty_layers):
+            status = empty_layers = self.alias_py.delete_layers_by_name(empty_layers)
+        else:
+            status = self.alias_py.delete_all(empty_layers)
 
-        for layer in empty_layers:
-            if not delete_only or layer.name in delete_only:
-                layer.delete_object()
+        if not self.alias_py.py_utils.is_success(status):
+            raise self.AliasDataValidatorError("Failed to delete all layers", status)
 
     @sgtk.LogManager.log_timing
-    def check_layer_has_single_shader(self, fail_fast=False):
+    def check_layer_has_single_shader(
+        self,
+        fail_fast: Optional[bool] = False,
+    ) -> AlLayerList:
         """
         Check that all nodes in a layer use the same single shader.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The layers that have more than one shader.
         """
 
         return self.alias_py.get_layers_using_multiple_shaders()
 
     @sgtk.LogManager.log_timing
-    def check_layer_symmetry(self, fail_fast=False, skip_layers=None):
+    def check_layer_symmetry(
+        self, fail_fast: Optional[bool] = False, skip_layers: Optional[List[str]] = None
+    ) -> AlLayerList:
         """
         Check for layers with symmetry turned on in the current stage.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all data errors found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
         :param skip_layers: The specified layers (by name) will not be checked.
-        :type skip_layers: list<str>
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The layers with symmetry turned on.
         """
-
-        if fail_fast:
-            has_symmetric_layers = self.alias_py.py_layer.get_symmetric_layers(
-                check_exists=True, skip_layers=skip_layers
-            )
-            return not has_symmetric_layers
 
         return self.alias_py.py_layer.get_symmetric_layers(skip_layers=skip_layers)
 
     @sgtk.LogManager.log_timing
-    def fix_layer_symmetry(self, errors=None, skip_layers=None):
+    def fix_layer_symmetry(
+        self,
+        errors: Optional[AlLayerErrors] = None,
+        skip_layers: Optional[List[str]] = None,
+    ):
         """
-        Process all layers in the current stage, or the specified layers, and turn off symmetry on layers.
+        Process all layers in the current stage, or the specified layers, and
+        turn off symmetry on layers.
 
-        NOTE that the layers in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated layers.
+        NOTE that the layers in Alias may not update automatically,
+        alias_api.redraw_screen() may need to be invoked after this function,
+        to see the updated layers.
 
-        :param errors: (optional) The layers to process, if None, all layers in the current
-                              stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlLayer> | list<dict>
+        :param errors: The layers to process, if None, all layers in the current
+            stage will be processed. Default=None
         :param skip_layers: The specified layers (by name) will not be fixed.
-        :type skip_layers: list<str>
         """
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
+        if errors:
+            layers = self.__parse_errors(errors)
+        else:
+            layers = self.check_layer_symmetry(skip_layers=skip_layers)
 
-        layers = self.alias_py.py_layer.get_symmetric_layers(
-            layers=errors, skip_layers=skip_layers
-        )
-
-        for layer in layers:
-            layer.symmetric = False
+        status = self.alias_py.set_layer_symmetry(layers, False)
+        if not self.alias_py.py_utils.is_success(status):
+            self.alias_py.py_utils.raise_exception(
+                "Failed turn off all layer symmetry.",
+                status,
+            )
 
     @sgtk.LogManager.log_timing
-    def check_layer_has_single_object(self, fail_fast=False, skip_layers=None):
+    def check_layer_has_single_object(
+        self,
+        fail_fast: Optional[bool] = False,
+        skip_layers: Optional[List[str]] = None,
+    ) -> Union[AlLayerList, bool]:
         """
-        Check for layers that contain more than one top-level node (e.g. layers can only have a single node,
-        for multiple nodes, they can have a group node that contains child nodes).
+        Check for layers that contain more than one top-level node.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all data errors found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
-        :type fail_fast: bool
+        Layers can only have a single node, for multiple nodes, they can have a
+        group node that contains child nodes).
+
+        :param fail_fast: Return immediately as soon as the check fails.
         :param skip_layers: The specified layers (by name) will not be checked.
-        :type skip_layers: list<str>
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: If `fail_fast` is True, True is returned if the check is
+            successful, else False. If `fail_fast` is False, the layers that
+            have more than one top-level node are returned.
         """
 
         invalid_layers = []
-        processed_layers = set()
-        marked_invalid_layers = set()
 
+        # Get all top dag nodes
         nodes = self.alias_py.get_top_dag_nodes()
 
-        for node in nodes:
-            node_layer = node.layer()
-            if not node_layer:
-                continue
+        # Get layers for all top dag nodes at once
+        with self.alias_py.request_context_manager() as manager:
+            for node in nodes:
+                manager.result.append(node.layer())
 
-            node_layer_name = node_layer.name
-            if (
-                skip_layers and node_layer_name in skip_layers
-            ) or node_layer_name in marked_invalid_layers:
-                continue
+        layer_names = [
+            layer.name for layer in manager.result if layer.name not in skip_layers
+        ]
+        unique_layer_names = set(layer_names)
 
-            if node_layer_name in processed_layers:
-                if fail_fast:
-                    return False
-                invalid_layers.append(node_layer)
-                marked_invalid_layers.add(node_layer_name)
-            else:
-                processed_layers.add(node_layer_name)
+        # A layer is invalid if it appears more than once in the list of
+        # layers, meaning that it has more than one top dag node
+        is_valid = len(layer_names) == len(unique_layer_names)
+        if fail_fast:
+            return is_valid
 
+        if is_valid:
+            return []
+
+        for layer_name in unique_layer_names:
+            if layer_names.count(layer_name) > 1:
+                invalid_layers.append(layer_name)
         return invalid_layers
 
     @sgtk.LogManager.log_timing
-    def fix_layer_has_single_object(self, errors=None, skip_layers=None):
+    def fix_layer_has_single_object(
+        self,
+        errors: Optional[AlLayerErrors] = None,
+        skip_layers: Optional[List[str]] = None,
+    ):
         """
-        Process all layers in the current stage, or the list of layers if provided, and place all
-        layer's contents into a single group.
+        Ensure all layers have only a single top-level node.
 
-        A new group will be created if the layer does not have any group nodes currently.
+        The layer contents will be grouped into a single group node if the layer
+        has multiple top-level nodes. A new group will be created if the layer
+        does not have any group nodes currently.
 
-        NOTE that the layers in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated data.
+        NOTE that the layers in Alias may not update automatically,
+        alias_api.redraw_screen() may need to be invoked after this function,
+        to see the updated data.
 
-        :param errors: (optional) The list of layers to process, if None, all layers in the current
-                              stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlLayer> | list<dict>
+        :param errors: The layers to ensure have only a single top-level node,
+            if None, all layers in the current stage will be processed. Default
+            is None.
         :param skip_layers: The specified layers (by name) will not be fixed.
-        :type skip_layers: list<str>
+            Ignored if `errors` is provided.
         """
 
-        # TODO this algorithm to fix the layer could probably be cleaned up and optimized.
+        if errors:
+            layers = self.__parse_errors(errors)
+        else:
+            layers = self.check_layer_has_single_object(
+                fail_fast=False, skip_layers=skip_layers
+            )
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
+        if not self.__is_str_list(layers):
+            layers = [layer.name for layer in layers]
 
-        layers = errors or self.alias_py.get_layers()
+        # Get all top-level nodes
+        top_level_nodes = self.alias_py.get_top_dag_nodes()
 
-        for layer in layers:
-            if isinstance(layer, str):
-                layer = self.alias_py.get_layer_by_name(layer)
+        # Get all layers for the top-level nodes
+        with self.alias_py.request_context_manager() as manager:
+            for node in top_level_nodes:
+                manager.result.append(node.layer())
 
-            if not layer:
-                continue
-
+        # Create mapping of layer to all their top-level nodes and group nodes
+        layer_top_level_nodes_mapping = {}
+        layer_group_nodes_mapping = {}
+        for i, layer in enumerate(manager.result):
             layer_name = layer.name
-            if skip_layers and layer_name in skip_layers:
-                continue
+            if layer_name not in layers:
+                continue  # Skip it
 
+            node = top_level_nodes[i]
+            layer_top_level_nodes_mapping.setdefault(layer_name, []).append(node)
+            if self.alias_py.py_utils.is_group_node(node):
+                layer_group_nodes_mapping.setdefault(layer_name, []).append(node)
+
+        # Create mapping of layer to its single group node which all other nodes
+        # will be moved to
+        layers_to_create_group = []
+        layer_group_node_mapping = {}
+        for layer_name in layers:
             group_node = None
-
-            layer_top_level_nodes = []
-            layer_group_nodes = []
-            for node in self.alias_py.get_top_dag_nodes():
-                if node.layer().name != layer_name:
-                    continue
-
-                layer_top_level_nodes.append(node)
-
-                if self.alias_py.py_utils.is_group_node(node):
-                    layer_group_nodes.append(node)
-
-            if not layer_top_level_nodes:
-                # Skip empty layers
-                continue
-
-            # first case: no existing group node
+            layer_group_nodes = layer_group_nodes_mapping.get(layer_name, [])
             if not layer_group_nodes:
-                group_node = self.alias_py.AlGroupNode()
-                status = group_node.create()
-                if not self.alias_py.py_utils.is_success(status):
-                    self.alias_py.py_utils.raise_exception(
-                        "Failed to create group node for layer", status
-                    )
-
-                group_node.name = layer_name
-                group_node.set_layer(layer)
-
+                # First case: no existing group node - create one
+                layers_to_create_group.append(layer_name)
             else:
-                # second case: only one group node exist
+                # Second case: only one group node exist
                 if len(layer_group_nodes) == 1:
                     group_node = layer_group_nodes[0]
 
-                # third case: many group nodes exist
+                # Third case: more than one group node exists
                 else:
-                    # try to get the one named after the layer, otherwise use the first one
+                    # Try to get the one named after the layer, otherwise use the first one
                     for group in layer_group_nodes:
                         if group.name == layer_name:
                             group_node = group
@@ -2188,187 +2155,175 @@ class AliasDataValidator(object):
                     if not group_node:
                         group_node = layer_group_nodes[0]
 
-            if not group_node:
-                raise ValueError("Failed to find group node for layer")
+            layer_group_node_mapping[layer_name] = group_node
 
-            for node in layer_top_level_nodes:
-                if node.name != group_node.name:
-                    group_node.add_child_node(node)
+        # Create new groups all at once
+        with self.alias_py.request_context_manager() as manager:
+            for layer_name in layers_to_create_group:
+                manager.result.append(
+                    self.alias_py.create_group_for_layer(layer_name, layer_name)
+                )
+        for i, group_node in enumerate(manager.result):
+            layer_name = layers_to_create_group[i]
+            layer_group_node_mapping[layer_name] = group_node
+
+        # Finally, move all top-level nodes to the layer's single group node
+        with self.alias_py.request_context_manager() as manager:
+            for layer_name in layers:
+                layer_top_level_nodes = layer_top_level_nodes_mapping[layer_name]
+                group_node = layer_group_node_mapping[layer_name]
+                if not group_node:
+                    raise self.AliasDataValidatorError(
+                        "Failed to find group node for layer"
+                    )
+                children = [
+                    node
+                    for node in layer_top_level_nodes
+                    if node.name != group_node.name
+                ]
+                # NOTE: if there are many children to add, this will be slow
+                # because the Alias API is not optimized for this
+                manager.result.append(group_node.add_children(children))
+
+        for status in manager.result:
+            if not self.alias_py.py_utils.is_success(status):
+                raise self.AliasDataValidatorError(
+                    "Failed to ensure all layers have only a single top-level node",
+                    status,
+                )
 
     @sgtk.LogManager.log_timing
-    def check_group_has_single_level_hierarchy(self, fail_fast=False):
+    def check_group_has_single_level_hierarchy(
+        self, fail_fast: Optional[bool] = False
+    ) -> AlDagNodeList:
         """
         Check for groups with more than one level of hierarchy in the current stage.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
-        :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
-            else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
+        :return: The group nodes that have more than one level of hierarchy.
         """
 
         return self.alias_py.get_nesting_groups()
 
     @sgtk.LogManager.log_timing
-    def fix_group_has_single_level_hierarchy(self, errors=None):
+    def fix_group_has_single_level_hierarchy(
+        self,
+        errors: Optional[AlDagNodeErrors] = None,
+    ):
         """
-        Process all nodes in the current stage, or the specified group nodes, and flatten each node such that
-        it only has a single levele of hierarchy (e.g. parent->child but not parent->child->grandchild)
+        Flatten each node such that it only has a single levele of hierarchy.
 
-        NOTE that the groups in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated data.
+        A node can have a child but not a grandchild.
 
-        :param errors: (optional) The list of group nodes to process, if None, all nodes in the
-                              current stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlLayer> | list<dict>
+        NOTE that the groups in Alias may not update automatically,
+        alias_api.redraw_screen() may need to be invoked after this function, to
+        see the updated data.
 
-        :raises alias_api.AliasPythonException: if failed to flatten all groups
+        :param errors: The group nodes to flatten, if None, all group nodes will
+            be checked and flattened. Default is None.
         """
-
-        status = self.alias_py.py_utils.success_status()
 
         if errors:
-            if isinstance(errors, str):
-                errors = [errors]
-            elif isinstance(errors, list):
-                for i, error_item in enumerate(errors):
-                    if isinstance(error_item, dict):
-                        errors[i] = error_item["name"]
-
-            groups_to_flatten = []
-            for group_node in errors:
-                if isinstance(group_node, str):
-                    group_node = self.alias_py.find_dag_node_by_name(group_node)
-
-                if not group_node:
-                    continue
-
-                groups_to_flatten.append(group_node)
-                flatten_status = self.alias_py.flatten_group_nodes(groups_to_flatten)
-                if flatten_status != self.alias_py.py_utils.success_status():
-                    status = flatten_status
-
+            group_nodes = self.__parse_errors(errors)
+            if self.__is_str_list(group_nodes):
+                group_nodes = self.alias_py.get_dag_nodes_by_name(group_nodes)
+            status = self.alias_py.flatten_group_nodes(group_nodes)
         else:
             status = self.alias_py.flatten_group_nodes()
 
         if not self.alias_py.py_utils.is_success(status):
-            self.alias_py.py_utils.raise_exception(
-                "Failed to flatten group nodes", status
-            )
+            raise self.AliasDataValidatorError("Failed to flatten group nodes", status)
 
     @sgtk.LogManager.log_timing
-    def check_locators(self, fail_fast=False):
+    def check_locators(
+        self, fail_fast: Optional[bool] = False
+    ) -> Union[bool, AlLocatorList]:
         """
         Check for locators in the current stage.
 
-        :param fail_fast: Set to True to return immediately as soon as the check fails. Set to False to check
-                          entire data and return all data errors found, and arguments that can be passed to
-                          the corresponding fix function. Note that when set to False, this function will be
-                          slower to execute.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
         :return: If fail_fast is True, a bool indicating if the check succeeded is returned,
             else the list of Alias objects that that failed the check is returned.
-        :rtype: list | bool
         """
 
         if fail_fast:
             has_locators = self.alias_py.py_utils.get_locators(check_exists=True)
             return not has_locators
-
-        return self.alias_py.py_utils.get_locators()
+        return self.alias_py.get_locators()
 
     @sgtk.LogManager.log_timing
-    def fix_locators(self, errors=None):
+    def fix_locators(
+        self,
+        errors: Optional[AlLocatorList] = None,
+    ):
         """
-        Process all locators in the current stage, or the specified locators, and delete them.
+        Process all locators in the current stage, or the specified locators,
+        and delete them.
 
-        :param errors: The list of locators to process, if None, all locators in current stage will
-                              be processed. Default=None
-        :type errors: str | list<str> | list<AlCurveOnSurface> | list<dict>
-
-        :raises alias_api.AliasPythonException: if failed to delete locator object
+        :param errors: The list of locators to process, if None, all locators in
+            current stage will be processed. Default is None.
         """
-
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
 
         if errors:
-            for locator in errors:
-                if isinstance(locator, str):
-                    locator = self.alias_py.get_locator_by_name(locator)
-
-                if locator:
-                    status = locator.delete_object()
-                    if not self.alias_py.py_utils.is_success(status):
-                        self.alias_py.py_utils.raise_exception(
-                            "Failed to delete locator", status
-                        )
+            locators = self.__parse_errors(errors)
+            if self.__is_str_list(locators):
+                locators = self.alias_py.get_locators()
+            self.alias_py.delete_all(locators)
         else:
             status = self.alias_py.delete_all_locators()
             if not self.alias_py.py_utils.is_success(status):
-                self.alias_py.py_utils.raise_exception(
+                raise self.AliasDataValidatorError(
                     "Failed to delete all locators", status
                 )
 
     @sgtk.LogManager.log_timing
-    def check_refererences_exist(self, fail_fast=False):
+    def check_refererences_exist(
+        self, fail_fast: Optional[bool] = False
+    ) -> AlReferenceFileList:
         """
         Check for referenced geometry in the current stage.
 
-        :param fail_fast: Not applicable, but keep this param to follow guidelines for check functions.
-        :type fail_fast: bool
+        :param fail_fast: This check function does not implement a fail fast
+            strategry. This parameter is ignored.
 
-        :return: A tuple containing:
-                    (1) True if the check passed, else False
-                    (2) A list pertaining to the data errors found dict with required keys: id, name This will be an empty list if fail_fast=False
-                    (3) A list of args to pass to the corresponding fix function This will be an empty list if fail_fast=False
-                    (4) A dict of kwargs to pass to the corresponding fix function This will be an empty dict if fail_fast=False
-        :rtype: tuple<bool,list,list,dict>
+        :return: The referenced geometry.
         """
 
         return self.alias_py.get_references()
 
     @sgtk.LogManager.log_timing
-    def fix_references_exist(self, errors=None):
+    def fix_references_exist(
+        self,
+        errors: Optional[AlReferenceFileList] = None,
+    ):
         """
-        Process all references, or the specificed references, and remove all referneces from the current
-        stage.
+        Process all references, or the specificed references, and remove all
+        referneces from the current stage.
 
-        NOTE that the nodes in Alias may not update automatically, alias_api.redraw_screen() may need
-        to be invoked after this function, to see the updated data.
+        NOTE that the nodes in Alias may not update automatically,
+        alias_api.redraw_screen() may need to be invoked after this function, to
+        see the updated data.
 
-        :param errors: (optional) The list of references to process, if None, all references in the
-                              current stage will be processed. Default=None
-        :type errors: str | list<str> | list<AlReferenceFile> | list<dict>
-
-        :raises alias_api.AliasPythonException: if failed to remove a reference
+        :param errors: The list of references to process, if None, all
+            references in the current stage will be processed. Default is None.
         """
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
+        if errors:
+            references = self.__parse_errors(errors)
+            if self.__is_str_list(references):
+                references = self.alias_py.get_references_by_name(references)
+        else:
+            references = self.alias_py.get_references()
 
-        references = errors or self.alias_py.get_references()
-
-        for reference in references:
-            if isinstance(reference, str):
-                reference = self.alias_py.get_reference_by_name(reference)
-
-            if reference:
-                status = self.alias_py.remove_reference(reference)
-                if not self.alias_py.py_utils.is_success(status):
-                    self.alias_py.py_utils.raise_exception(
-                        "Failed to remove reference", status
-                    )
+        status = self.alias_py.remove_references(references)
+        if not self.alias_py.py_utils.is_success(status):
+            self.alias_py.py_utils.raise_exception(
+                "Failed to remove all references", status
+            )
 
     # -------------------------------------------------------------------------------------------------------
     # Pick Functions
@@ -2384,125 +2339,187 @@ class AliasDataValidator(object):
     # -------------------------------------------------------------------------------------------------------
 
     @sgtk.LogManager.log_timing
-    def pick_nodes(self, errors=None):
+    def pick_nodes(self, errors: AlDagNodeErrors = None):
         """
         Pick the nodes.
 
+        If `errors` are not given, nothing is picked.
+
         :param errors: The node(s) to pick.
-        :type errors: str | AlDagNode | list<str> | list<AlDagNode> | list<dict>
         """
 
         if not errors:
             return
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        self.alias_py.py_pick_list.pick_nodes(errors)
+        nodes = self.__parse_errors(errors)
+        self.alias_py.py_pick_list.pick_nodes(nodes)
 
     @sgtk.LogManager.log_timing
-    def pick_curves_on_surface_from_nodes(self, errors=None):
+    def pick_curves_on_surface_from_nodes(self, errors: AlDagNodeErrors = None):
         """
         Pick the curves on surface.
 
-        :param errors: The node(s) to pick curves on surface from.
-        :type errors: str | AlDagNode | list<str> | list<AlDagNode> | list<dict>
+        If `errors` are not given, nothing is picked.
+
+        :param errors: The nodes to pick curves on surface from.
         """
 
         if not errors:
             return
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        self.alias_py.py_pick_list.pick_curves_on_surface_from_nodes(errors)
+        nodes = self.__parse_errors(errors)
+        self.alias_py.py_pick_list.pick_curves_on_surface_from_nodes(nodes)
 
     @sgtk.LogManager.log_timing
-    def pick_nodes_assigned_to_shaders(self, errors=None):
+    def pick_nodes_assigned_to_shaders(
+        self,
+        errors: AlShaderErrors = None,
+    ):
         """
         Pick the nodes assigned to the shaders.
 
+        If `errors` are not given, nothing is picked.
+
         :param errors: The shaders to get assigned nodes to pick.
-        :type errors: str | list<str> | list<AlShader> | list<dict>
         """
 
-        errors = errors or self.alias_py.get_shaders()
+        if not errors:
+            return
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        self.alias_py.py_pick_list.pick_nodes_assigned_to_shaders(errors)
+        shaders = self.__parse_errors(errors)
+        self.alias_py.py_pick_list.pick_nodes_assigned_to_shaders(shaders)
 
     @sgtk.LogManager.log_timing
-    def pick_nodes_assigned_to_layers(self, errors=None):
+    def pick_nodes_assigned_to_layers(
+        self,
+        errors: AlLayerErrors = None,
+    ):
         """
         Pick the nodes assigned to the layers.
 
+        If `errors` are not given, nothing is picked.
+
         :param errors: The layers to get assigned ndoes to pick.
-        :type errors: str | list<str> | list<AlLayer> | list<dict>
         """
 
-        errors = errors or self.alias_py.get_layers()
+        if not errors:
+            return
 
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        self.alias_py.py_pick_list.pick_nodes_assigned_to_layers(errors)
+        layers = self.__parse_errors(errors)
+        self.alias_py.py_pick_list.pick_nodes_assigned_to_layers(layers)
 
     @sgtk.LogManager.log_timing
-    def pick_layers(self, errors=None):
+    def pick_layers(self, errors: Optional[AlLayerErrors] = None):
         """
         Pick the layers.
 
         :param errors: The layers to pick.
-        :type errors: str | list<str> | list<AlLayer> | list<dict>
         """
 
-        errors = errors or self.alias_py.get_layers()
-
-        if isinstance(errors, str):
-            errors = [errors]
-        elif isinstance(errors, list):
-            for i, error_item in enumerate(errors):
-                if isinstance(error_item, dict):
-                    errors[i] = error_item["name"]
-
-        self.alias_py.py_pick_list.pick_layers(errors)
+        if errors:
+            layers = self.__parse_errors(errors)
+            self.alias_py.py_pick_list.pick_layers(layers=layers)
+        else:
+            self.alias_py.py_pick_list.pick_layers(pick_all=True)
 
     @sgtk.LogManager.log_timing
-    def pick_locators(self, errors=None):
+    def pick_locators(self, errors: Optional[AlLocatorErrors] = None):
         """
         Pick the locators.
 
         :param errors: The locators to pick. If None, all locators will be picked.
-        :type errors: str | list<str> | list<AlLocator> | list<dict>
+        """
+
+        if errors:
+            errors = self.__parse_errors(errors)
+            self.alias_py.py_pick_list.pick_locators(locators=errors)
+        else:
+            self.alias_py.py_pick_list.pick_locators(pick_all=True)
+
+    # ------------------------------------------------------------------------------
+    # Private helper methods
+
+    def __parse_errors(
+        self,
+        errors: Any,
+    ) -> List[str]:
+        """
+        Parse the given errors list.
+
+        The errors list is passed to 'fix' functions and are generally a list of
+        the objects that have not passed the corresponding 'validate' function.
+
+        This method parses the error list and returns a list of object names
+        to work with.
+
+        :return: The parsed errors.
         """
 
         if not errors:
-            self.alias_py.py_pick_list.pick_locators(None, pick_all=True)
+            return []
 
-        else:
-            if isinstance(errors, str):
-                errors = [errors]
-            elif isinstance(errors, list):
-                for i, error_item in enumerate(errors):
-                    if isinstance(error_item, dict):
-                        errors[i] = error_item["name"]
+        if isinstance(errors, str):
+            return [errors]
 
-            self.alias_py.py_pick_list.pick_locators(errors)
+        if isinstance(errors, dict):
+            return [errors.get("name")]
+
+        if isinstance(errors, list):
+            object_names = []
+            for error in errors:
+                if isinstance(error, dict):
+                    object_names.append(error.get("name"))
+                elif isinstance(error, str):
+                    object_names.append(error)
+            return object_names
+
+        raise ValueError("Invalid error object list")
+
+    def __is_str_list(
+        self,
+        values_list: Any,
+    ) -> bool:
+        """
+        Convenience functions to check if the given value is a list of strings.
+
+        Assumes list values are of the same type.
+        """
+
+        if not values_list:
+            return False
+        if not isinstance(values_list, list):
+            return False
+        return isinstance(values_list[0], str)
+
+    def __return_node_result(
+        self,
+        result: TraverseDagOutputData,
+        force_return_nodes: Optional[bool] = False,
+    ) -> Union[bool, AlDagNodeList, Tuple[bool, int]]:
+        """
+        Return the node result.
+
+        For performance, we will only get the list of error nodes to return
+        if the count is less than the threshold, otherwise it will be very
+        slow to get and return a large list of nodes.
+
+        :param result: The result to return.
+        :param force_return_nodes: If True, the nodes will be returned
+            regardless of the count. Default is False.
+
+        :return: The result.
+        """
+
+        if force_return_nodes:
+            return result.nodes
+
+        invalid_count = result.count
+        if invalid_count == 0:
+            # No invalid nodes found, return True to indicate success
+            return True
+        if invalid_count <= self._max_error_count:
+            # Safe to get the nodes to return
+            return result.nodes
+        # Too many invalid nodes, return False and the number of errors to
+        # indicate failure
+        return (False, invalid_count)

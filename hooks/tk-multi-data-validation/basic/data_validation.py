@@ -8,6 +8,8 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
+from typing import Optional, List
+
 import sgtk
 import alias_api
 
@@ -23,15 +25,23 @@ class AliasDataValidationHook(HookBaseClass):
     class SanitizedResult:
         """Class to represent a sanitized check result object."""
 
-        def __init__(self, is_valid=None, errors=None):
+        def __init__(
+            self,
+            is_valid: Optional[bool] = None,
+            errors: Optional[List] = None,
+            error_count: int = 0,
+        ):
             """
             Initialize the object with the given data.
 
-            :param is_valid: The success status that the check function reported. If not provided, the validity will be determined based on if there are any errors.
-            :type is_valid: bool
-            :param errors: The data errors the check function found. This should be a list of Alias objects, but
-                can be a list of object as long as they follow the expected format.
-            :type errors: list
+            :param is_valid: The success status that the check function
+                reported. If not provided, the validity will be determined
+                based on if there are any errors.
+            :param errors: The data errors the check function found. This
+                should be a list of Alias objects, but can be a list ofobject
+                as long as they follow the expected format.
+            :param error_count: The number of errors found by the check
+                function. This is useful when the errors list is not provided.
             """
 
             if is_valid is None:
@@ -40,16 +50,42 @@ class AliasDataValidationHook(HookBaseClass):
                 self.is_valid = is_valid
 
             if errors:
-                self.errors = [
-                    {
-                        "id": item.id if hasattr(item, "id") and item.id else item.name,
-                        "name": item.name,
-                        "type": item.type(),
-                    }
-                    for item in errors
-                ]
+                error_list = []
+                for item in errors:
+                    if not item:
+                        continue
+                    if isinstance(item, str):
+                        error_list.append(
+                            {
+                                "id": item,
+                                "name": item,
+                                "type": "",
+                            }
+                        )
+                    elif isinstance(item, dict):
+                        if "name" not in item:
+                            raise self.AliasDataValidationError(
+                                "Error dict missing 'name' key"
+                            )
+                        error_list.append(item)
+                    else:
+                        try:
+                            error_list.append(
+                                {
+                                    "id": item.name or "",
+                                    "name": item.name or "",
+                                    "type": item.type(),
+                                }
+                            )
+                        except AttributeError:
+                            raise self.AliasDataValidationError(
+                                f"Cannot sanitize error object {item}"
+                            )
+                self.errors = sorted(error_list, key=lambda x: x["name"].lower())
             else:
                 self.errors = []
+
+            self.error_count = len(errors) if errors else error_count
 
     def get_validation_data(self):
         """
@@ -228,6 +264,14 @@ class AliasDataValidationHook(HookBaseClass):
 
         if isinstance(result, bool):
             return self.SanitizedResult(is_valid=result)
+
+        if (
+            isinstance(result, tuple)
+            and len(result) == 2
+            and isinstance(result[0], bool)
+            and isinstance(result[1], int)
+        ):
+            return self.SanitizedResult(is_valid=result[0], error_count=result[1])
 
         if isinstance(result, list):
             return self.SanitizedResult(errors=result)

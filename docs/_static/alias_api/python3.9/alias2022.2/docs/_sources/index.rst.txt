@@ -1,9 +1,0 @@
-Alias Python API Documentation
-============================================
-
-The Alias Python API provides Python bindings to the Alias C++ API.
-
-.. toctree::
-   :maxdepth: 2
-
-   alias_api

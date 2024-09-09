@@ -930,6 +930,9 @@ class AliasEngine(sgtk.platform.Engine):
             # Already initialized.
             return
 
+        api_module = None
+        api_proxy_module = None
+
         if self.__in_alias_process:
             # Flow Production Tracking is running in the same process as Alias. This is the old way that the
             # engine was set up for, and will not work with Alias versions that use Qt for its
@@ -974,13 +977,14 @@ class AliasEngine(sgtk.platform.Engine):
                     raise Exception("Failed to connect to Alias api server")
 
                 # Get the server info and api module through the socket connection
-                api_module = self.__sio.get_alias_api()
+                api_proxy_module = self.__sio.get_alias_api_module_proxy()
+                api_module = api_proxy_module.get_or_create_module(self.__sio)
                 if not api_module:
-                    raise Exception("Failed to get Alias Python API for OpenAlias.")
+                    raise Exception("Failed to get Alias Python API from proxy module.")
 
         # Create the AliasPy object to wrap the api module. All Alias api requests can be made
         # directly with the AliasPy object, it will route the request to the actual api module
-        self.__alias_py = self._tk_alias.AliasPy(api_module)
+        self.__alias_py = self._tk_alias.AliasPy(api_module, api_proxy_module)
 
         # Allow the AliasPy object to be imported. This is for backward compatibility with
         # previous engine versions aceessing the alias_api.pyd module directly through import

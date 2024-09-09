@@ -8,7 +8,11 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from . import dag_node, layer, pick_list, traverse_dag, utils
+from typing import Optional
+from types import ModuleType
+
+from . import dag_node, layer, pick_list, utils
+from ..framework_alias import ClientRequestContextManager, AliasClientModuleProxyWrapper
 
 
 class AliasPy:
@@ -35,17 +39,38 @@ class AliasPy:
     class ApiAttributeNotSupported(AttributeError):
         """Thrown when an Alias Python API accessing an attribute that is not supported."""
 
-    def __init__(self, api_module):
-        """Initialize wrapper class."""
+    def __init__(
+        self,
+        api_module: ModuleType,
+        api_proxy_module: Optional[AliasClientModuleProxyWrapper] = None,  # type: ignore
+    ):
+        """
+        Initialize.
 
-        # The main Alias api module
+        One of `api_module` or `api_proxy_module` is required. The `api_module`
+        should be provided when running in the same process as Alias, and the
+        Alias Python API module is directly accessible. The `api_proxy_module`
+        should be provided when running in a separate process than Alias, and
+        the Alias Python API module is not directly accessible, and we need to
+        communicate with Alias through IPC.
+
+        :param api_module: The Alias Python API module.
+        :param api_proxy_module: The Alias Python API proxy module.
+        """
+
+        # The main Alias api module. This module is used to make requests to Alias.
         self.__api = api_module
+        # The Alias api proxy module. When runnig in a separate process than
+        # Alias, a proxy module is created to mimic the actual Alias api
+        # module, which lives on the Alias (server) side. This proxy module
+        # handles the IPC communication between the us (client) and
+        # Alias (server).
+        self.__api_proxy = api_proxy_module
 
         # Helper modules that use the main Alias api module.
         self.__dag_node = dag_node.AliasPyDagNode(self)
         self.__layer = layer.AliasPyLayer(self)
         self.__pick_list = pick_list.AliasPyPickList(self)
-        self.__traverse_dag = traverse_dag.AliasPyTraverseDag(self)
         self.__utils = utils.AliasPyUtils(self)
 
         # Define patch functions for Alias api attributes. The keys are the Alias api
@@ -53,7 +78,6 @@ class AliasPy:
         # does not have the attribute (e.g. some attributes available only in certain
         # api versions)
         self.__patch_attributes = {
-            "search_node_is_template": self.__get_patch_search_node_is_template,
             "adjust_window": self.__get_patch_adjust_window,
         }
 
@@ -110,8 +134,9 @@ class AliasPy:
             return patched_attr
 
     # Properties
-    # ----------------------------------------------------------------------------------------
-    # Prefix with 'py_' to help avoid name collisions with the main api module
+    # -------------------------------------------------------------------------
+    # Alias API helper modules. Prefix with 'py_' to help avoid name collisions
+    # with the main api module
 
     @property
     def py_dag_node(self):
@@ -129,36 +154,22 @@ class AliasPy:
         return self.__pick_list
 
     @property
-    def py_traverse_dag(self):
-        """Get the helper module for handling the traversing the Alias DAG."""
-        return self.__traverse_dag
-
-    @property
     def py_utils(self):
         """Get the helper module for performing general functionality in Alias."""
         return self.__utils
 
-    # Private methods
+    # Public methods
     # ----------------------------------------------------------------------------------------
 
-    def __get_patch_search_node_is_template(self):
+    def request_context_manager(self, is_async: Optional[bool] = False):
         """
-        Patch the api module function search_node_is_template.
-
-        The search_node_is_template function was added in Alias Python API v4.0.0, which is
-        compatibile with Alias >= 2024.0. This method should only be used for Alias < 2024.0.
-
-        The patched function will use the generic api traverse_dag function to check for nodes
-        that are templates. This patched function cannot be used with Alias >= 2024.0 due to
-        the need for the api function to execute a python callback during execution (starting
-        in Alias 2024.0, api communication is done through IPC between two processes which
-        this causes a deadlock in).
+        Return a context manager to handle executing multiple requests at once.
         """
 
-        def __patch_search_node_is_template(*args, **kwargs):
-            return self.__api.traverse_dag(self.py_traverse_dag.node_is_template)
+        return ClientRequestContextManager(self.__api_proxy, is_async)
 
-        return __patch_search_node_is_template
+    # Private methods
+    # ----------------------------------------------------------------------------------------
 
     def __get_patch_adjust_window(self):
         """

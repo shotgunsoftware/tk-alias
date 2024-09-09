@@ -1,0 +1,112 @@
+v4.0.0
+=====================
+
+This documentation explains the new features in the Alias Engine ``v4.0.0`` compared to ``v3.3.2``.
+
+Release highlights
+------------------
+
+* Improved performance overall for Alias 2024.0 and later
+* Improved Data Validation validation and fix operations
+* Improved communication and error handling with Alias
+
+Dependencies
+---------------
+
+* Data Validation App: ``tk-multi-data-validation v0.3.1``
+
+   * Required for full performance improvements
+
+   * Recommneded to use the new option to turn off the app auto-refresh feature for best performance. Particularly when auto-refresh is on while switching between files (e.g. opening or importing a new file) will degrade performance.
+
+* Alias Framework: ``tk-framework-alias v2.0.0``
+
+   * Required for full performance improvements
+
+   * Required for Alias Plugin and Python API updates
+
+
+
+New Features
+-------------
+
+New Alias APIs are `listed separately <https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html>`_.
+
+**AliasPy**
+
+   * Added :func:`request_context_manager` context manager to improve performance of API calls:
+
+      Use the context manager to execute multiple API calls at once and retrieve the result:
+
+      .. code-block:: python
+
+         # Wrap the API calls to create layers using the request context manager
+         with engine.alias_py.request_context_manager() as manager:
+            for i in range (100):
+               layer_name = f"Layer{i}"
+               # This API call will be deferred until the context manager exits
+               engine.alias_py.create_layer(layer_name)
+
+         # The context manager now on exiting the above code scope will send all
+         # API calls in a single event, instead of 100 individual events
+
+         # The result will be stored in the manager object `result` property, and it
+         # will be a list of values returned from the API calls, in the order that the
+         # API calls were made.
+         for result in manager.result:
+            print(result)
+      
+      See more details on how to use the context manager in the :ref:`Alias Python API <api>` documentation.
+
+**AliasPyDagNode**
+
+   * Added :func:`is_template` function to check if a node is a template node. Replaces :class:`AliasPyTraverseDag.is_node_template` method.
+
+   * Added :func:`is_instance` function to check if a node is instanced. Replaces :class:`AliasPyTraverseDag.is_instance` method.
+
+   * Added :func:`has_zero_transform` function to check if a node has a zero transform. Replaces :class:`AliasPyTraverseDag.node_has_non_zero_transform` method.
+
+   * Added :func:`has_non_origin_pivot` function to check if a node has pivots at the origin. Replaces :class:`AliasPyTraverseDag.has_non_origin_pivot` method.
+
+**Configuration**
+
+   * Added configuration setting ``data_validation_max_error_count`` to set the maximum number of errors to display in the data validation dialog. If the number of errors exceeds this number, then individual error items will not be retrieved and displayed, and only the number of errors will be shown. Lowering this number can improve Data Validation App performance. The default value is 500. This configuration setting can be found in the Alias Engine ``info.yml`` file, and can be modified in the ``tk-alias.yml`` configuration file.
+
+
+Removed
+----------
+
+* Removed class :class:`AliasPyTraverseDag`
+
+   * Attribute will no longer be available from the engine :class:`AliasEngine.alias_py.py_traverse_dag`
+
+* Removed parameter ``check_exists`` from the following :class:`AliasPyDAgNode` methods:
+
+   * :func:`get_instanced_node`
+
+   * :func:`get_nodes_with_construction_history`
+
+   * :func:`get_nodes_with_non_zero_transform`
+
+   * :func:`get_nodes_with_non_origin_pivot`
+
+   * :func:`get_nodes_with_unused_curves_on_surface`
+
+This affects the :class:`AliasEngine.alias_py.py_dag_node` attribute; for example:
+
+   .. code-block:: python
+
+      # This method no longer takes the key-word parameter `check_exists`
+      nodes = engine.alias_py.get_nodes_with_non_zero_transform(check_exists=True)
+
+      # Should now be called without the `check_exists` parameter
+      nodes = engine.alias_py.get_nodes_with_non_zero_transform()
+
+* Removed parameter ``check_exists`` from function :func:`AliasPyLayer.get_symmetric_layers`
+
+   * This affects the :class:`AliasEngine.alias_py.py_layer` attribute.
+
+* Removed parameter ``skip_shaders`` from function :class:`AliasPyPickList.pick_nodes_assigned_to_shaders`
+
+   * This affects the :class:`AliasEngine.alias_py.py_pick_list` attribute.
+
