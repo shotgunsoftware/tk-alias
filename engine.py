@@ -375,7 +375,6 @@ class AliasEngine(sgtk.platform.Engine):
         # Apply Alias specific styling
         app = QtGui.QApplication.instance()
         app_palette = app.palette()
-
         # The default placeholder text for Alias is black, let's set it back to
         # the text color (as it was in Qt5), but with the current placeholder
         # text alpha value.
@@ -383,7 +382,7 @@ class AliasEngine(sgtk.platform.Engine):
         placeholder_text_color = app_palette.placeholderText().color()
         new_placeholder_text_color.setAlpha(placeholder_text_color.alpha())
         app_palette.setColor(QtGui.QPalette.PlaceholderText, new_placeholder_text_color)
-
+        # Set the palette back with the Alias specific styling
         app.setPalette(app_palette)
 
     # -------------------------------------------------------------------------------------------------------
