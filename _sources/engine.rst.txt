@@ -1,6 +1,6 @@
 .. _engine:
 
-The Alias Engine Code
+Engine
 ######################################
 
 The :class:`AliasEngine` is the main class which constructs and initializes the Toolkit engine.

@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API &mdash; tk-alias v4.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="What’s New" href="changes.html" />
+    <link rel="prev" title="Hooks" href="hooks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tk-alias
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="engine.html">Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hooks.html">Hooks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#alias-python-api">Alias Python API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aliaspy">AliasPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-use-the-api-effectively">How to use the API effectively</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">What’s New</a></li>
+</ul>
+
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px;
+                color: #b3b3b3;
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>
+    <style>
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-alias</b> v4.0.0.<br>
+    
+        This documentation is part of the Flow Production Tracking.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
+    The code associated with this documentation can be found
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
+
+    </div>
+    <style>
+        p.privacy_links { margin: 4px 0px;}
+    </style>
+    <p class="privacy_links"><a data-opt-in-preferences href="javascript:;">Privacy settings</a></p>
+    <p class="privacy_links"><a data-wat-linkname="manage-ccpa-settings-footer-link" href="javascript:;">Do not sell my personal information</a></p>
+    <p class="privacy_links"><a href="https://www.autodesk.com/company/legal-notices-trademarks/privacy-statement">Privacy/Cookies</a></p>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tk-alias</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api">
+<span id="id1"></span><h1>API<a class="headerlink" href="#api" title="Permalink to this heading"></a></h1>
+<section id="alias-python-api">
+<h2>Alias Python API<a class="headerlink" href="#alias-python-api" title="Permalink to this heading"></a></h2>
+<p>The Alias Python API is a Python module that provides a Pythoni interface to the Alias C++ API.</p>
+<p>The Alias Toolkit Framework <code class="docutils literal notranslate"><span class="pre">tk-framework-alias</span></code> contains the Alias Python API module itself; the Alias Engine uses the framework to get the api module. Go to the <a class="reference external" href="https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html">framework documentation</a> to see the Alias Python API reference documentation.</p>
+</section>
+<section id="aliaspy">
+<h2>AliasPy<a class="headerlink" href="#aliaspy" title="Permalink to this heading"></a></h2>
+<p>The Alias Python API can be accessed and used through the Alias Engine attribute <code class="docutils literal notranslate"><span class="pre">alias_py</span></code>. This attribute is an <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPy</span></code> intance, which is a wrapper around the Alias Python API module and provides addiional functionality to help interact with the Alias API. You can make Alias API calls using <code class="docutils literal notranslate"><span class="pre">alias_py</span></code>; for example to call the API function create a shader:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a shader using the Alias API</span>
+<span class="n">shader</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">create_shader</span><span class="p">(</span><span class="s2">&quot;MyShader&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">shader</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The additional <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPy</span></code> modules are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>py_dag_node</p></li>
+<li><p>py_layer</p></li>
+<li><p>py_pick_list</p></li>
+<li><p>py_utils</p></li>
+</ul>
+</div></blockquote>
+<p>These modules provide added functionality to help make using the Alias API easier.</p>
+</section>
+<section id="how-to-use-the-api-effectively">
+<h2>How to use the API effectively<a class="headerlink" href="#how-to-use-the-api-effectively" title="Permalink to this heading"></a></h2>
+<p>Since Alias 2024.0, the Alias Engine runs in its own separate process from Alias itself. The engine then uses Inter-process Communication (IPC) to interact with Alias. This adds a layer of communication when using the Alias API, which can slow down performance if the API is not used carefully:</p>
+<p><strong>Key Understandings:</strong></p>
+<ul class="simple">
+<li><p>Each Alias API call made will incur the overhead of sending an IPC message</p></li>
+<li><p>Limit the number of API calls to improve performance</p></li>
+<li><p>Making an API call that returns a large data set will incur a larger overhead to send the data over IPC</p></li>
+</ul>
+<p>Limiting the number of API calls will reduce the number of IPC messages sent between the Engine and Alias; this is really what affects the performance. So to limit the number of IPC messages, Alias API calls can be batched together and sent all in a single IPC message. This way you can still make the necessary API calls, while reducing the number of IPC messages sent. You can achieve this by using the <code class="docutils literal notranslate"><span class="pre">AliasPy.request_context_manager</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize a context manager to group the API calls into a single IPC message</span>
+<span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">request_context_manager</span><span class="p">():</span>
+
+   <span class="c1"># First API call to clear the pick list</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">clear_pick_list</span><span class="p">()</span>
+
+   <span class="c1"># Second API call to pick a list of given nodes</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">pick_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+   <span class="c1"># Third API call to redraw the screen</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">redraw_screen</span><span class="p">()</span>
+
+<span class="c1"># The context manager on exiting the above code scope will send all the API</span>
+<span class="c1"># calls in a single IPC message</span>
+</pre></div>
+</div>
+<p>You may execute the API calls asynchronously, which means the Alias Engine will not block and wait for the API operation to complete:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize a context manager to group the API calls into a single IPC message</span>
+<span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">request_context_manager</span><span class="p">(</span><span class="n">is_async</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+   <span class="c1"># First API call to clear the pick list</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">clear_pick_list</span><span class="p">()</span>
+
+   <span class="c1"># Second API call to pick a list of given nodes</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">pick_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+   <span class="c1"># Third API call to redraw the screen</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">redraw_screen</span><span class="p">()</span>
+
+<span class="c1"># The context manager on exiting the above code scope will send all the API</span>
+<span class="c1"># calls in a single IPC message, and the Alias Engine will not wait for the result</span>
+</pre></div>
+</div>
+<p>If you need to get the result of the API calls made within the context manager, you can access the result from the manager object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Wrap the API calls to create layers using the request context manager</span>
+ <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">request_context_manager</span><span class="p">()</span> <span class="k">as</span> <span class="n">manager</span><span class="p">:</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+      <span class="n">layer_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Layer</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">create_layer</span><span class="p">(</span><span class="n">layer_name</span><span class="p">)</span>
+
+<span class="c1"># The context manager now on exiting the above code scope will send all</span>
+<span class="c1"># API calls in a single event, instead of 100 individual events</span>
+
+<span class="c1"># The result will be stored in the manager object `result` property, and it</span>
+<span class="c1"># will be a list of values returned from the API calls, in the order that the</span>
+<span class="c1"># API calls were made.</span>
+<span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+   <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Alias Engine does not support the ability to chain API calls together in a batch request; for example, the result of an API call is used to make a subsequent API call.</p>
+<p>Avoid retrieving large data sets from the Alias API, if possible. Sending large data sets over IPC is expensive because the server must encode the data, include it in the message to the client, then the client must decode the data. For example, the API <cite>search_</cite> functions return <code class="xref py py-class docutils literal notranslate"><span class="pre">TraverseDagOutputData</span></code> objects that contain the nodes found during the search operation, as well as the number of nodes found. If the search operations finds a large number nodes, then accessing them by <code class="xref py py-class docutils literal notranslate"><span class="pre">TraverseDagOutputData.nodes</span></code> will be expensive, but accessing the number of nodes found by <code class="xref py py-class docutils literal notranslate"><span class="pre">TraverseDagOutputData.count</span></code> will be very inexpensive. In this case, only access the nodes if absolutely necessary.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Alias Object <code class="docutils literal notranslate"><span class="pre">name</span></code> property getter and <code class="xref py py-func docutils literal notranslate"><span class="pre">type()</span></code> do not require API calls, this data is stored on the client side. What this means is that you do not need to worry about access the Alias Object name or type.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hooks.html" class="btn btn-neutral float-left" title="Hooks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="changes.html" class="btn btn-neutral float-right" title="What’s New" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Autodesk.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ 
+
+  <script type="text/javascript">
+    window.wafCCPAForceShow = true;
+    (function(a,b,c,d){
+      a='https://tags.tiqcdn.com/utag/autodesk/micro-basic/prod/utag.js';
+      b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+      a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+    })();
+  </script>
+
+
+</body>
+</html>

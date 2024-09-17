@@ -21,3 +21,5 @@ Contents
 
    engine
    hooks
+   api
+   changes

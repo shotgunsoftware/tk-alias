@@ -1,0 +1,564 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What’s New &mdash; tk-alias v4.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="API" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tk-alias
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="engine.html">Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hooks.html">Hooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What’s New</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v4-0-0">v4.0.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#release-highlights">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#new-features">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removed">Removed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-0-0">v3.0.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#porting-to-tk-alias-v3-x-x-from-v2-x-x">Porting to tk-alias v3.x.x from v2.x.x</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#accessing-the-api-with-the-alias-engine-in-v2-x-x">Accessing the API with the Alias engine in v2.x.x</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#accessing-the-api-with-the-alias-engine-in-v3-x-x">Accessing the API with the Alias engine in v3.x.x</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#accessing-the-api-without-the-alias-engine">Accessing the API without the Alias engine</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-changes">Module Changes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aliaspy">AliasPy</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#api-changes">API Changes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alstatuscode-enum">AlStatusCode Enum</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px;
+                color: #b3b3b3;
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>
+    <style>
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-alias</b> v4.0.0.<br>
+    
+        This documentation is part of the Flow Production Tracking.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
+    The code associated with this documentation can be found
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
+
+    </div>
+    <style>
+        p.privacy_links { margin: 4px 0px;}
+    </style>
+    <p class="privacy_links"><a data-opt-in-preferences href="javascript:;">Privacy settings</a></p>
+    <p class="privacy_links"><a data-wat-linkname="manage-ccpa-settings-footer-link" href="javascript:;">Do not sell my personal information</a></p>
+    <p class="privacy_links"><a href="https://www.autodesk.com/company/legal-notices-trademarks/privacy-statement">Privacy/Cookies</a></p>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tk-alias</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">What’s New</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="what-s-new">
+<h1>What’s New<a class="headerlink" href="#what-s-new" title="Permalink to this heading"></a></h1>
+<p>The latest version of the Alias Engine is <code class="docutils literal notranslate"><span class="pre">v4.0.0</span></code>.</p>
+<section id="v4-0-0">
+<h2>v4.0.0<a class="headerlink" href="#v4-0-0" title="Permalink to this heading"></a></h2>
+<p>This documentation explains the new features in the Alias Engine <code class="docutils literal notranslate"><span class="pre">v4.0.0</span></code> compared to <code class="docutils literal notranslate"><span class="pre">v3.3.2</span></code>.</p>
+<section id="release-highlights">
+<h3>Release highlights<a class="headerlink" href="#release-highlights" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Improved performance overall for Alias 2024.0 and later</p></li>
+<li><p>Improved Data Validation validation and fix operations</p></li>
+<li><p>Improved communication and error handling with Alias</p></li>
+</ul>
+</section>
+<section id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading"></a></h3>
+<ul>
+<li><p>Data Validation App: <code class="docutils literal notranslate"><span class="pre">tk-multi-data-validation</span> <span class="pre">v0.3.1</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Required for full performance improvements</p></li>
+<li><p>Recommneded to use the new option to turn off the app auto-refresh feature for best performance. Particularly when auto-refresh is on while switching between files (e.g. opening or importing a new file) will degrade performance.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Alias Framework: <code class="docutils literal notranslate"><span class="pre">tk-framework-alias</span> <span class="pre">v2.0.0</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Required for full performance improvements</p></li>
+<li><p>Required for Alias Plugin and Python API updates</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="new-features">
+<h3>New Features<a class="headerlink" href="#new-features" title="Permalink to this heading"></a></h3>
+<p>New Alias APIs are <a class="reference external" href="https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html">listed separately</a>.</p>
+<p><strong>AliasPy</strong></p>
+<blockquote>
+<div><ul>
+<li><p>Added <code class="xref py py-func docutils literal notranslate"><span class="pre">request_context_manager()</span></code> context manager to improve performance of API calls:</p>
+<blockquote>
+<div><p>Use the context manager to execute multiple API calls at once and retrieve the result:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Wrap the API calls to create layers using the request context manager</span>
+<span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">request_context_manager</span><span class="p">()</span> <span class="k">as</span> <span class="n">manager</span><span class="p">:</span>
+   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+      <span class="n">layer_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Layer</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="c1"># This API call will be deferred until the context manager exits</span>
+      <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">create_layer</span><span class="p">(</span><span class="n">layer_name</span><span class="p">)</span>
+
+<span class="c1"># The context manager now on exiting the above code scope will send all</span>
+<span class="c1"># API calls in a single event, instead of 100 individual events</span>
+
+<span class="c1"># The result will be stored in the manager object `result` property, and it</span>
+<span class="c1"># will be a list of values returned from the API calls, in the order that the</span>
+<span class="c1"># API calls were made.</span>
+<span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+   <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See more details on how to use the context manager in the <a class="reference internal" href="api.html#api"><span class="std std-ref">Alias Python API</span></a> documentation.</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>AliasPyDagNode</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Added <code class="xref py py-func docutils literal notranslate"><span class="pre">is_template()</span></code> function to check if a node is a template node. Replaces <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPyTraverseDag.is_node_template</span></code> method.</p></li>
+<li><p>Added <code class="xref py py-func docutils literal notranslate"><span class="pre">is_instance()</span></code> function to check if a node is instanced. Replaces <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPyTraverseDag.is_instance</span></code> method.</p></li>
+<li><p>Added <code class="xref py py-func docutils literal notranslate"><span class="pre">has_zero_transform()</span></code> function to check if a node has a zero transform. Replaces <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPyTraverseDag.node_has_non_zero_transform</span></code> method.</p></li>
+<li><p>Added <code class="xref py py-func docutils literal notranslate"><span class="pre">has_non_origin_pivot()</span></code> function to check if a node has pivots at the origin. Replaces <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPyTraverseDag.has_non_origin_pivot</span></code> method.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Configuration</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Added configuration setting <code class="docutils literal notranslate"><span class="pre">data_validation_max_error_count</span></code> to set the maximum number of errors to display in the data validation dialog. If the number of errors exceeds this number, then individual error items will not be retrieved and displayed, and only the number of errors will be shown. Lowering this number can improve Data Validation App performance. The default value is 500. This configuration setting can be found in the Alias Engine <code class="docutils literal notranslate"><span class="pre">info.yml</span></code> file, and can be modified in the <code class="docutils literal notranslate"><span class="pre">tk-alias.yml</span></code> configuration file.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="removed">
+<h3>Removed<a class="headerlink" href="#removed" title="Permalink to this heading"></a></h3>
+<ul>
+<li><p>Removed class <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPyTraverseDag</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Attribute will no longer be available from the engine <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasEngine.alias_py.py_traverse_dag</span></code></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Removed parameter <code class="docutils literal notranslate"><span class="pre">check_exists</span></code> from the following <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPyDAgNode</span></code> methods:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">get_instanced_node()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">get_nodes_with_construction_history()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">get_nodes_with_non_zero_transform()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">get_nodes_with_non_origin_pivot()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">get_nodes_with_unused_curves_on_surface()</span></code></p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>This affects the <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasEngine.alias_py.py_dag_node</span></code> attribute; for example:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This method no longer takes the key-word parameter `check_exists`</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">get_nodes_with_non_zero_transform</span><span class="p">(</span><span class="n">check_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Should now be called without the `check_exists` parameter</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">get_nodes_with_non_zero_transform</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul>
+<li><p>Removed parameter <code class="docutils literal notranslate"><span class="pre">check_exists</span></code> from function <code class="xref py py-func docutils literal notranslate"><span class="pre">AliasPyLayer.get_symmetric_layers()</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>This affects the <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasEngine.alias_py.py_layer</span></code> attribute.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Removed parameter <code class="docutils literal notranslate"><span class="pre">skip_shaders</span></code> from function <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPyPickList.pick_nodes_assigned_to_shaders</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>This affects the <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasEngine.alias_py.py_pick_list</span></code> attribute.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+</section>
+<section id="v3-0-0">
+<h2>v3.0.0<a class="headerlink" href="#v3-0-0" title="Permalink to this heading"></a></h2>
+<p>This documentation explains the new features in the Alias Engine <code class="docutils literal notranslate"><span class="pre">v3.0.0</span></code> compared to <code class="docutils literal notranslate"><span class="pre">v2.2.1</span></code>.</p>
+<section id="porting-to-tk-alias-v3-x-x-from-v2-x-x">
+<h3>Porting to tk-alias v3.x.x from v2.x.x<a class="headerlink" href="#porting-to-tk-alias-v3-x-x-from-v2-x-x" title="Permalink to this heading"></a></h3>
+<p>Starting in tk-alias v3.0.0, the Toolkit Framework for Alias <a class="reference external" href="https://github.com/shotgunsoftware/tk-framework-alias">tk-framework-alias</a> is required. The framework now manages the Alias Plugin and Alias Python API module files for all the supported Alias versions. Starting in Toolkit configs <a class="reference external" href="https://github.com/shotgunsoftware/tk-config-default2/blob/e9d2c282d06b6d658a36b3b897fe4aec19e6bc44/env/includes/frameworks.yml#L28-L32">v1.6.0</a>, the tk-framework-alias is included.</p>
+<section id="accessing-the-api-with-the-alias-engine-in-v2-x-x">
+<h4>Accessing the API with the Alias engine in v2.x.x<a class="headerlink" href="#accessing-the-api-with-the-alias-engine-in-v2-x-x" title="Permalink to this heading"></a></h4>
+<p>In tk-alias v2.x.x the Alias Python API can be accessed directly by importing the <code class="docutils literal notranslate"><span class="pre">alias_api</span></code> module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">alias_api</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-the-api-with-the-alias-engine-in-v3-x-x">
+<h4>Accessing the API with the Alias engine in v3.x.x<a class="headerlink" href="#accessing-the-api-with-the-alias-engine-in-v3-x-x" title="Permalink to this heading"></a></h4>
+<p>In v3.x.x it is still possible to import the <code class="docutils literal notranslate"><span class="pre">alias_api</span></code> module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">alias_api</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> This requires the Alias Engine to be bootstrapped and started (e.g. launching Alias from Flow Production Track Desktop will do this). If you are manually bootstrapping the Alias Engine (without Flow Production Tracking Desktop), refer to how the framework <a class="reference external" href="https://github.com/shotgunsoftware/tk-framework-alias/blob/develop/python/tk_framework_alias_utils/plugin_bootstrap.py">bootsraps</a>. and starts the engine.</p>
+<p>To maintain future compatibility, we strongly encouraged accessing the Alias Python API through the tk-alias engine property <a class="reference external" href="https://github.com/shotgunsoftware/tk-alias/blob/d6a699a03dfe9f3bf9e9c9a5eff91240471a8822/engine.py#L174-L182">alias_py</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sgtk</span>
+
+<span class="c1"># Get the Alias engine instance.</span>
+<span class="n">tk_alias_engine</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span>
+
+<span class="c1"># Access the Alias Python API through the engine property `alias_py`</span>
+<span class="c1"># Remember that engine must have been started for alias_py property to be available</span>
+<span class="n">alias_api</span> <span class="o">=</span> <span class="n">tk_alias_engine</span><span class="o">.</span><span class="n">alias_py</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-the-api-without-the-alias-engine">
+<h4>Accessing the API without the Alias engine<a class="headerlink" href="#accessing-the-api-without-the-alias-engine" title="Permalink to this heading"></a></h4>
+<p>The Alias Engine does not provide access to the Alias Python API when the engine is not running. Without the engine running, the additional AliasPy modules are not available. If it is absolutely necessary to use the Alias Python API without the tk-alias engine running, and without an active Alias session(e.g. headless mode, called OpenModel), you will need to:</p>
+<ol class="arabic">
+<li><p>Add the alias_api_om.pyd file path to your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code></p>
+<blockquote>
+<div><p>_This is necessary for import to find the Alias Python API module._</p>
+</div></blockquote>
+</li>
+<li><p>Add the Alias install bin directory to your system environment PATH</p>
+<blockquote>
+<div><p>_This is necessary to find the Alias DLL files that the Alias Python API requires._</p>
+</div></blockquote>
+</li>
+</ol>
+<p>Starting in tk-alias v3.0.0, the Alias Python API files are no longer included in the engine itself, instead they are managed by tk-framework-alias, and can be found <a class="reference external" href="https://github.com/shotgunsoftware/tk-framework-alias/tree/develop/dist/Alias">here</a>.</p>
+<p>Here are steps to access the Alias Python API module for OpenModel (e.g. headless mode without an Alias session running):</p>
+<ol class="arabic">
+<li><p>Open a Windows Command Prompt and ensure that the Alias DLL install path is in your system environment <code class="docutils literal notranslate"><span class="pre">PATH</span></code>. If you have multiple installs of Alias, the version of Alias you want to use must appear first (in this example, it would be Alias 2025.0). You can check the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> value by seeing the output of running the Windows <code class="docutils literal notranslate"><span class="pre">set</span></code> command. You can prepend the Alias install path to your PATH with:</p>
+<blockquote>
+<div><div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="nv">PATH</span><span class="p">=</span>C:\Program Files\Autodesk\AliasAutoStudio2025.0\bin;<span class="nv">%PATH%</span>
+</pre></div>
+</div>
+<p><strong>NOTE:</strong> This only works for Python &lt;= 3.9. For Python 3.9 and newer, you will need to add the Alias DLL install path from the Python interpreter. Keep following for instructions for Python 3.9.</p>
+</div></blockquote>
+</li>
+<li><p>Start a Python interpreter. We will use Python 3.7 for this example:</p>
+<blockquote>
+<div><div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;C:\Program Files\Python37\python.exe&quot;</span>
+</pre></div>
+</div>
+<p><strong>NOTE:</strong>  you may need to change the above path to the python.exe you want to use.</p>
+<p><strong>NOTE:</strong>  For Python 3.9, now add the Alias DLL install path for python to find it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">add_dll_directory</span><span class="p">(</span><span class="n">alias_dll_directory</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Add the path to the Alias Python API module for OpenModel (alias_api_om.pyd) to your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>. We will use the API for Alias 2025.0, and Python 3.7 since we are running a Python 3.7 interpeter:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Users</span><span class="se">\\</span><span class="s2">&lt;insert_username&gt;</span><span class="se">\\</span><span class="s2">AppData</span><span class="se">\\</span><span class="s2">Roaming</span><span class="se">\\</span><span class="s2">Shotgun</span><span class="se">\\</span><span class="s2">bundle_cache</span><span class="se">\\</span><span class="s2">app_store</span><span class="se">\\</span><span class="s2">tk-framework-    alias</span><span class="se">\\</span><span class="s2">v1.4.0</span><span class="se">\\</span><span class="s2">dist</span><span class="se">\\</span><span class="s2">Alias</span><span class="se">\\</span><span class="s2">python3.7</span><span class="se">\\</span><span class="s2">2025.0&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>NOTE:</strong>  you will need to replace &lt;insert_username&gt; with your username, and make sure this is the correct path to the alias_api_om.pyd file.</p>
+<p>Optionally, the path to the api could have also been set before starting the interpreter from the Windows Command Prompt:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="p">=</span>C:\Users\my_username\AppData\Roaming\Shotgun\bundle_cache\app_store\tk-framework-alias\v1.4.0\dist\Alias\python3.7\2025.0;<span class="nv">%PYTHONPATH%</span>
+</pre></div>
+</div>
+<p>If you do not want to hard code the Alias Python API path <code class="docutils literal notranslate"><span class="pre">C:\\Users\\my_username\\AppData\\Roaming\\Shotgun\\bundle_cache\\app_store\\tk-framework-alias\\v1.4.0\\dist\\Alias\\python3.7\\2025.0</span></code>, and you have access to the Toolkit <code class="docutils literal notranslate"><span class="pre">sgtk</span></code> module and have your Toolkit context, you can programmatically find the path to the api with this function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setup_alias_env</span><span class="p">(</span>
+        <span class="n">ctx</span><span class="p">,</span>
+        <span class="n">alias_version</span><span class="o">=</span><span class="s2">&quot;2024.0&quot;</span><span class="p">,</span>
+        <span class="n">alias_dll_directory</span><span class="o">=</span><span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">AliasAutoStudio2024.0</span><span class="se">\\</span><span class="s2">bin&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">sgtk</span>
+
+    <span class="n">env</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_environment_from_context</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+    <span class="n">desc</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get_engine_descriptor</span><span class="p">(</span><span class="s1">&#39;tk-alias&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Get the framework version from the tk-alias engine descriptor</span>
+    <span class="n">framework_and_version</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">framework</span> <span class="ow">in</span> <span class="n">desc</span><span class="o">.</span><span class="n">get_required_frameworks</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">framework</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;tk-framework-alias&quot;</span><span class="p">:</span>
+            <span class="n">name_parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">framework</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="s2">&quot;version&quot;</span> <span class="ow">in</span> <span class="n">framework</span><span class="p">:</span>
+                <span class="n">name_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">framework</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">])</span>
+            <span class="n">framework_and_version</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name_parts</span><span class="p">)</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">framework_and_version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to find location for tk-framework-alias&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get the path to the framework</span>
+    <span class="n">framework_desc</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get_framework_descriptor</span><span class="p">(</span><span class="n">framework_and_version</span><span class="p">)</span>
+    <span class="n">framework_path</span> <span class="o">=</span> <span class="n">framework_desc</span><span class="o">.</span><span class="n">get_path</span><span class="p">()</span>
+
+    <span class="c1"># Get the API path within the framework, for the Python and Alias version</span>
+    <span class="n">api_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">framework_path</span><span class="p">,</span>
+        <span class="s2">&quot;dist&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Alias&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;python</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">alias_version</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">api_path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Alias Python API module not found: </span><span class="si">{</span><span class="n">api_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Add the path to the api so that we can import the module</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">api_path</span><span class="p">)</span>
+
+    <span class="c1"># For Python &gt; 3.7, we need to add the Alias bin dir to the dll directories to find the correct Alias DLLs to load the api module</span>
+    <span class="c1"># For Python &lt;= 3.7 the Alias bin dir should have been added to the system environment PATH before executing this script</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">os</span><span class="p">,</span> <span class="s2">&quot;add_dll_directory&quot;</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">add_dll_directory</span><span class="p">(</span><span class="n">alias_dll_directory</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Now you are ready to import the Alias Python API:</p>
+<blockquote>
+<div><p>From a command line, without Alias running, we are operating in OpenModel mode (e.g. no GUI), so we need to import the OpenModel API module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">alias_api_om</span>
+
+<span class="c1"># Print help for the module</span>
+<span class="n">help</span><span class="p">(</span><span class="n">alias_api_om</span><span class="p">)</span>
+
+<span class="c1"># Print the api module file location</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">alias_api_om</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+
+<span class="c1"># Execute a basic api command</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">alias_api_om</span><span class="o">.</span><span class="n">initialize_universe</span><span class="p">()</span>
+
+<span class="c1"># If successful, you should see a return of `0`</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Alias universe initialized&quot;</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>NOTE:</strong> when running with Alias, we are operating in OpenAlias (e.g. with a GUI), in this case we could import the API as <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">alias_api</span></code></p>
+</div></blockquote>
+</li>
+</ol>
+<p><strong>Troubleshooting</strong></p>
+<ol class="arabic">
+<li><p>Alias Python API module not found:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ModuleNotFoundError</span><span class="p">:</span> <span class="n">No</span> <span class="n">module</span> <span class="n">named</span> <span class="s1">&#39;alias_api_om&#39;</span>
+</pre></div>
+</div>
+<p>This indicates that the alias_api_om.pyd file could not be found. Check that you have set your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variable or <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> to include the path to the alias_api_om.pyd file.</p>
+</div></blockquote>
+</li>
+<li><p>Alias DLL import error:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ImportError</span><span class="p">:</span> <span class="n">DLL</span> <span class="n">load</span> <span class="n">failed</span> <span class="k">while</span> <span class="n">importing</span> <span class="n">alias_api_om</span><span class="p">:</span> <span class="n">The</span> <span class="n">specified</span> <span class="n">module</span> <span class="n">could</span> <span class="ow">not</span> <span class="n">be</span> <span class="n">found</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This indicates that the necessary Alias DLLs could not be found. Check that you have set your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable (for Python &lt;= 3.7) such that the correct Alias install path appears first, or this path was added using <code class="docutils literal notranslate"><span class="pre">os.add_dll_directory</span></code> (for Python &gt; 3.7)</p>
+</div></blockquote>
+</li>
+<li><p>ModuleNotFoundError: No module named ‘tk_framework_alias_utils’ (or ‘tk_framework_alias’)</p>
+<blockquote>
+<div><p>This means you are attempting to import the tk_framework_alias python module. To import the Alias Python API module without the Alias engine, we do not need to import tk_framework_alias module to get the Alias Python API. Instead, follow the steps above to add the direct path to the Alias Python API module instead of tk_framework_alias, in order to import the api. You may import tk_framework_alias to access the api, but it has additional Python package dependencies that you are on your own to ensure are installed.</p>
+<p>Ensure that the path to the tk_framework_alias python module is not in your PYTHONPATH. The tk_framework_alias python module path may look something like: <code class="docutils literal notranslate"><span class="pre">C:\Users\username\AppData\Roaming\Shotgun\bundle_cache\app_store\tk-framework-alias\v1.4.0\python</span></code>. You can check your path with:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="nv">PYTHONPATH</span>
+</pre></div>
+</div>
+<p>, and update it to remove the tk_framework_alias path, if it is present:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="p">=&lt;</span>new_path_without_tk_framework_alias&gt;
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</section>
+</section>
+<section id="module-changes">
+<h3>Module Changes<a class="headerlink" href="#module-changes" title="Permalink to this heading"></a></h3>
+<section id="aliaspy">
+<h4>AliasPy<a class="headerlink" href="#aliaspy" title="Permalink to this heading"></a></h4>
+<p><strong>NOTE:</strong>  the AliasPy modules are only available with the Alias Engine and when it has been started.</p>
+<p>In v2.x.x the AliasPy utility modules can be accessed directly by importing from the <code class="docutils literal notranslate"><span class="pre">alias_py</span></code> module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">alias_py.utils</span>
+<span class="kn">import</span> <span class="nn">alias_py.dag_node</span>
+<span class="kn">import</span> <span class="nn">alias_py.layer</span>
+</pre></div>
+</div>
+<p>In v3.x.x this is no longer possible. The AliasPy utility modules must be accessed through the Alias engine property <code class="docutils literal notranslate"><span class="pre">alias_py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sgtk</span>
+<span class="n">tk_alias_engine</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span>
+
+<span class="n">alias_api</span> <span class="o">=</span> <span class="n">tk_alias_engine</span><span class="o">.</span><span class="n">alias_py</span>
+
+<span class="c1"># Previous `alias_py` attributes arenow accessed using `engine.alias_py.py_&lt;attr_name&gt;`</span>
+<span class="n">utils_module</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">py_utils</span>
+<span class="n">dag_node_module</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">py_dag_node</span>
+<span class="n">layer_module</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">py_layer</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="api-changes">
+<h3>API Changes<a class="headerlink" href="#api-changes" title="Permalink to this heading"></a></h3>
+<section id="alstatuscode-enum">
+<h4>AlStatusCode Enum<a class="headerlink" href="#alstatuscode-enum" title="Permalink to this heading"></a></h4>
+<p>In v2.x.x the Alias Python API status code numerical values can be retrieved by:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">alias_api</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In v3.x.x this code must be updated to use the <code class="docutils literal notranslate"><span class="pre">value</span></code> attribute to retrieve the numerical value:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success!&quot;</span><span class="p">)</span>
+
+<span class="c1"># Or check the status by name now</span>
+<span class="k">if</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Success&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.html" class="btn btn-neutral float-left" title="API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Autodesk.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ 
+
+  <script type="text/javascript">
+    window.wafCCPAForceShow = true;
+    (function(a,b,c,d){
+      a='https://tags.tiqcdn.com/utag/autodesk/micro-basic/prod/utag.js';
+      b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+      a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+    })();
+  </script>
+
+
+</body>
+</html>

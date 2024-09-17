@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alias Engine Hooks &mdash; tk-alias v3.3.1 documentation</title>
+  <title>Hooks &mdash; tk-alias v4.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -22,7 +22,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="The Alias Engine Code" href="engine.html" /> 
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Engine" href="engine.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -58,8 +59,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="engine.html">The Alias Engine Code</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Alias Engine Hooks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="engine.html">Engine</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hooks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tk-multi-data-validation">tk-multi-data-validation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#aliasdatavalidationhook">AliasDataValidationHook</a></li>
 </ul>
@@ -87,6 +88,8 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">What’s New</a></li>
 </ul>
 
 
@@ -108,7 +111,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.3.1.<br>
+    <b>tk-alias</b> v4.0.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -141,7 +144,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Alias Engine Hooks</li>
+      <li class="breadcrumb-item active">Hooks</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -150,8 +153,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="alias-engine-hooks">
-<span id="hooks"></span><h1>Alias Engine Hooks<a class="headerlink" href="#alias-engine-hooks" title="Permalink to this heading"></a></h1>
+  <section id="hooks">
+<span id="id1"></span><h1>Hooks<a class="headerlink" href="#hooks" title="Permalink to this heading"></a></h1>
 <p>The Alias Engine defines hooks to customize the Toolkit Apps that it uses. See below for App specific hook details.</p>
 <section id="tk-multi-data-validation">
 <span id="hooks-tk-multi-data-validation"></span><h2>tk-multi-data-validation<a class="headerlink" href="#tk-multi-data-validation" title="Permalink to this heading"></a></h2>
@@ -168,6 +171,8 @@
 <span class="c1"># agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights</span>
 <span class="c1"># not expressly granted therein are reserved by Autodesk, Inc.</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
 <span class="kn">import</span> <span class="nn">sgtk</span>
 <span class="kn">import</span> <span class="nn">alias_api</span>
 
@@ -183,15 +188,23 @@
     <span class="k">class</span> <span class="nc">SanitizedResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Class to represent a sanitized check result object.&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_valid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">is_valid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">errors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">error_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Initialize the object with the given data.</span>
 
-<span class="sd">            :param is_valid: The success status that the check function reported. If not provided, the validity will be determined based on if there are any errors.</span>
-<span class="sd">            :type is_valid: bool</span>
-<span class="sd">            :param errors: The data errors the check function found. This should be a list of Alias objects, but</span>
-<span class="sd">                can be a list of object as long as they follow the expected format.</span>
-<span class="sd">            :type errors: list</span>
+<span class="sd">            :param is_valid: The success status that the check function</span>
+<span class="sd">                reported. If not provided, the validity will be determined</span>
+<span class="sd">                based on if there are any errors.</span>
+<span class="sd">            :param errors: The data errors the check function found. This</span>
+<span class="sd">                should be a list of Alias objects, but can be a list ofobject</span>
+<span class="sd">                as long as they follow the expected format.</span>
+<span class="sd">            :param error_count: The number of errors found by the check</span>
+<span class="sd">                function. This is useful when the errors list is not provided.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
             <span class="k">if</span> <span class="n">is_valid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -200,16 +213,42 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_valid</span> <span class="o">=</span> <span class="n">is_valid</span>
 
             <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="p">{</span>
-                        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">type</span><span class="p">(),</span>
-                    <span class="p">}</span>
-                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">errors</span>
-                <span class="p">]</span>
+                <span class="n">error_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="n">error_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="p">{</span>
+                                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
+                                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
+                                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                            <span class="p">}</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">AliasDataValidationError</span><span class="p">(</span>
+                                <span class="s2">&quot;Error dict missing &#39;name&#39; key&quot;</span>
+                            <span class="p">)</span>
+                        <span class="n">error_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">error_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="p">{</span>
+                                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">type</span><span class="p">(),</span>
+                                <span class="p">}</span>
+                            <span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">AliasDataValidationError</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Cannot sanitize error object </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">error_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">error_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span> <span class="k">if</span> <span class="n">errors</span> <span class="k">else</span> <span class="n">error_count</span>
 
     <span class="k">def</span> <span class="nf">get_validation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -388,6 +427,14 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">SanitizedResult</span><span class="p">(</span><span class="n">is_valid</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">SanitizedResult</span><span class="p">(</span><span class="n">is_valid</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">error_count</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">SanitizedResult</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
@@ -2957,7 +3004,7 @@
 <section id="tk-multi-shotgunpanel">
 <h2>tk-multi-shotgunpanel<a class="headerlink" href="#tk-multi-shotgunpanel" title="Permalink to this heading"></a></h2>
 <section id="hooks-tk-multi-shotgunpanel-scene-actions">
-<span id="id1"></span><h3>AliasActions<a class="headerlink" href="#hooks-tk-multi-shotgunpanel-scene-actions" title="Permalink to this heading"></a></h3>
+<span id="id2"></span><h3>AliasActions<a class="headerlink" href="#hooks-tk-multi-shotgunpanel-scene-actions" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2015 Shotgun Software Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
@@ -3445,7 +3492,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="engine.html" class="btn btn-neutral float-left" title="The Alias Engine Code" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="engine.html" class="btn btn-neutral float-left" title="Engine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

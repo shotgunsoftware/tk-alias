@@ -1,6 +1,6 @@
 .. _hooks:
 
-Alias Engine Hooks
+Hooks
 ======================
 
 The Alias Engine defines hooks to customize the Toolkit Apps that it uses. See below for App specific hook details.

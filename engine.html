@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Alias Engine Code &mdash; tk-alias v3.3.1 documentation</title>
+  <title>Engine &mdash; tk-alias v4.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -22,7 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Alias Engine Hooks" href="hooks.html" />
+    <link rel="next" title="Hooks" href="hooks.html" />
     <link rel="prev" title="The Alias Engine" href="index.html" /> 
 </head>
 
@@ -59,8 +59,10 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">The Alias Engine Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hooks.html">Alias Engine Hooks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hooks.html">Hooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">What’s New</a></li>
 </ul>
 
 
@@ -82,7 +84,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v3.3.1.<br>
+    <b>tk-alias</b> v4.0.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -115,7 +117,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">The Alias Engine Code</li>
+      <li class="breadcrumb-item active">Engine</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -124,8 +126,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="the-alias-engine-code">
-<span id="engine"></span><h1>The Alias Engine Code<a class="headerlink" href="#the-alias-engine-code" title="Permalink to this heading"></a></h1>
+  <section id="engine">
+<span id="id1"></span><h1>Engine<a class="headerlink" href="#engine" title="Permalink to this heading"></a></h1>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasEngine</span></code> is the main class which constructs and initializes the Toolkit engine.</p>
 <div class="highlight-python notranslate" id="engine-members"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2023 Autodesk Inc.</span>
 <span class="c1">#</span>
@@ -489,6 +491,31 @@
         <span class="c1"># TODO: improve Alias API to redirect the logs to the Alias Promptline</span>
         <span class="k">pass</span>
 
+    <span class="k">def</span> <span class="nf">_initialize_dark_look_and_feel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override the base engine method.</span>
+
+<span class="sd">        Apply specific styling for Alias.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
+        <span class="c1"># Initialize the SG Toolkit style to the application.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_initialize_dark_look_and_feel</span><span class="p">()</span>
+
+        <span class="c1"># Apply Alias specific styling</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+        <span class="n">app_palette</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">palette</span><span class="p">()</span>
+        <span class="c1"># The default placeholder text for Alias is black, let&#39;s set it back to</span>
+        <span class="c1"># the text color (as it was in Qt5), but with the current placeholder</span>
+        <span class="c1"># text alpha value.</span>
+        <span class="n">new_placeholder_text_color</span> <span class="o">=</span> <span class="n">app_palette</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">color</span><span class="p">()</span>
+        <span class="n">placeholder_text_color</span> <span class="o">=</span> <span class="n">app_palette</span><span class="o">.</span><span class="n">placeholderText</span><span class="p">()</span><span class="o">.</span><span class="n">color</span><span class="p">()</span>
+        <span class="n">new_placeholder_text_color</span><span class="o">.</span><span class="n">setAlpha</span><span class="p">(</span><span class="n">placeholder_text_color</span><span class="o">.</span><span class="n">alpha</span><span class="p">())</span>
+        <span class="n">app_palette</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">PlaceholderText</span><span class="p">,</span> <span class="n">new_placeholder_text_color</span><span class="p">)</span>
+        <span class="c1"># Set the palette back with the Alias specific styling</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">setPalette</span><span class="p">(</span><span class="n">app_palette</span><span class="p">)</span>
+
     <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Public methods</span>
     <span class="c1"># -------------------------------------------------------------------------------------------------------</span>
@@ -539,10 +566,10 @@
 
         <span class="n">qt_app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__qt_app</span>
         <span class="k">if</span> <span class="n">qt_app</span><span class="p">:</span>
-            <span class="n">qt_app</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_in_main_thread</span><span class="p">(</span><span class="n">qt_app</span><span class="o">.</span><span class="n">quit</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Destroy the engine if there is no qt app</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_in_main_thread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init_qt_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1059,6 +1086,9 @@
             <span class="c1"># Already initialized.</span>
             <span class="k">return</span>
 
+        <span class="n">api_module</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">api_proxy_module</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_alias_process</span><span class="p">:</span>
             <span class="c1"># Flow Production Tracking is running in the same process as Alias. This is the old way that the</span>
             <span class="c1"># engine was set up for, and will not work with Alias versions that use Qt for its</span>
@@ -1103,13 +1133,14 @@
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to connect to Alias api server&quot;</span><span class="p">)</span>
 
                 <span class="c1"># Get the server info and api module through the socket connection</span>
-                <span class="n">api_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="o">.</span><span class="n">get_alias_api</span><span class="p">()</span>
+                <span class="n">api_proxy_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="o">.</span><span class="n">get_alias_api_module_proxy</span><span class="p">()</span>
+                <span class="n">api_module</span> <span class="o">=</span> <span class="n">api_proxy_module</span><span class="o">.</span><span class="n">get_or_create_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">api_module</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to get Alias Python API for OpenAlias.&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to get Alias Python API from proxy module.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Create the AliasPy object to wrap the api module. All Alias api requests can be made</span>
         <span class="c1"># directly with the AliasPy object, it will route the request to the actual api module</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__alias_py</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span><span class="o">.</span><span class="n">AliasPy</span><span class="p">(</span><span class="n">api_module</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__alias_py</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tk_alias</span><span class="o">.</span><span class="n">AliasPy</span><span class="p">(</span><span class="n">api_module</span><span class="p">,</span> <span class="n">api_proxy_module</span><span class="p">)</span>
 
         <span class="c1"># Allow the AliasPy object to be imported. This is for backward compatibility with</span>
         <span class="c1"># previous engine versions aceessing the alias_api.pyd module directly through import</span>
@@ -1464,7 +1495,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="The Alias Engine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="hooks.html" class="btn btn-neutral float-right" title="Alias Engine Hooks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="hooks.html" class="btn btn-neutral float-right" title="Hooks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
