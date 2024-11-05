@@ -49,6 +49,8 @@ class ShotGridAliasSocketIoClient(AliasSocketIoClient):
         """Clean up the client on disconnect."""
 
         super(ShotGridAliasSocketIoClient, self).cleanup()
+        if self.__qt_app:
+            self.engine.execute_in_main_thread(self.__qt_app.quit)
         self.__qt_app = None
 
     def _process_events(self):
