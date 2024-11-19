@@ -27,7 +27,15 @@ class AliasSessionPublishPlugin(HookBaseClass):
 
     """
 
-    # NOTE: The plugin icon and name are defined by the base file plugin.
+    # Publish mode string constants
+    PUBLISH_MODE_DEFAULT = "Default"
+    PUBLISH_MODE_EXPORT_SELECTION = "Export Selection"
+
+    # Publish mode options
+    PUBLISH_MODE_OPTIONS = [
+        PUBLISH_MODE_DEFAULT,
+        PUBLISH_MODE_EXPORT_SELECTION,
+    ]
 
     @property
     def description(self):
@@ -119,7 +127,12 @@ class AliasSessionPublishPlugin(HookBaseClass):
                 "description": "Template path for published work files. Should"
                 "correspond to a template defined in "
                 "templates.yml.",
-            }
+            },
+            "Publish Mode": {
+                "type": "str",
+                "default": self.PUBLISH_MODE_DEFAULT,
+                "description": "The mode to use when publishing the session. User can choose between 'Default' and 'Export Selection'.",
+            },
         }
 
         # update the base settings
@@ -200,6 +213,12 @@ class AliasSessionPublishPlugin(HookBaseClass):
 
         publisher = self.parent
         path = _session_path()
+
+        # ---- ensure the valid publish mode
+        publish_mode = settings.get("Publish Mode").value
+        if publish_mode not in self.PUBLISH_MODE_OPTIONS:
+            self.logger.error(f"Unsupported Publish Mode {publish_mode}")
+            return False
 
         # ---- ensure the session has been saved
 
@@ -322,7 +341,9 @@ class AliasSessionPublishPlugin(HookBaseClass):
         # ensure the session is saved
         # we need to do this action locally to be sure the background process could access the work file
         if not bg_processing or (bg_processing and not in_bg_process):
+            # Save the working file before publishing
             self.parent.engine.save_file()
+
             # store the current session path in the root item properties
             # it will be used later in the background process to open the file before running the publishing actions
             if bg_processing and "session_path" not in item.parent.properties:
@@ -373,6 +394,191 @@ class AliasSessionPublishPlugin(HookBaseClass):
             self._save_to_next_version(
                 item.properties["path"], item, self.parent.engine.save_file_as
             )
+
+    ############################################################################
+    # Methods for creating/displaying custom plugin interface
+
+    def create_settings_widget(self, parent, items=None):
+        """
+        Creates a Qt widget, for the supplied parent widget (a container widget
+        on the right side of the publish UI).
+
+        :param parent: The parent to use for the widget being created.
+        :param items: A list of PublishItems the selected publish tasks are parented to.
+        :return: A QtGui.QWidget or subclass that displays information about
+            the plugin and/or editable widgets for modifying the plugin's
+            settings.
+        """
+
+        # defer Qt-related imports
+        from sgtk.platform.qt import QtGui
+
+        # The main widget
+        widget = QtGui.QWidget(parent)
+        widget_layout = QtGui.QVBoxLayout()
+
+        # The main widget
+        description_groupbox = super().create_settings_widget(parent, items)
+
+        # Add a combobox to edit the publish mode
+        publish_mode_label = QtGui.QLabel("Publish Mode:")
+        publish_mode_combobox = QtGui.QComboBox(widget)
+        publish_mode_combobox.setAccessibleName("Publish mode selection dropdown")
+        publish_mode_combobox.addItems(self.PUBLISH_MODE_OPTIONS)
+        publish_mode_widget = QtGui.QWidget(widget)
+        publish_mode_widget.setSizePolicy(
+            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred
+        )
+        publish_mode_layout = QtGui.QHBoxLayout()
+        publish_mode_layout.setContentsMargins(0, 0, 0, 0)
+        publish_mode_layout.addWidget(publish_mode_label)
+        publish_mode_layout.addWidget(publish_mode_combobox)
+        publish_mode_layout.addStretch()
+        publish_mode_widget.setLayout(publish_mode_layout)
+
+        # Add all the minor widgets to the main widget
+        widget_layout.addWidget(publish_mode_widget)
+        widget_layout.addWidget(description_groupbox)
+        widget.setLayout(widget_layout)
+
+        # Set the widget property to store the combobox to access in get_ui_settings and set_ui_settings
+        widget.setProperty("publish_mode_combobox", publish_mode_combobox)
+
+        return widget
+
+    def get_ui_settings(self, widget, items=None):
+        """
+        This method is required to be defined in order for the custom UI to show up in the app.
+
+        Invoked by the Publisher when the selection changes. This method gathers the settings
+        on the previously selected task, so that they can be later used to repopulate the
+        custom UI if the task gets selected again. They will also be passed to the accept, validate,
+        publish and finalize methods, so that the settings can be used to drive the publish process.
+
+        The widget argument is the widget that was previously created by
+        `create_settings_widget`.
+
+        The method returns a dictionary, where the key is the name of a
+        setting that should be updated and the value is the new value of that
+        setting. Note that it is up to you how you want to store the UI's state as
+        settings and you don't have to necessarily to return all the values from
+        the UI. This is to allow the publisher to update a subset of settings
+        when multiple tasks have been selected.
+
+        Example::
+
+            {
+                 "setting_a": "/path/to/a/file"
+            }
+
+        :param widget: The widget that was created by `create_settings_widget`
+        """
+
+        ui_settings = {}
+
+        # Get the Publish Mode settings value from the UI combobox
+        publish_mode_combobox = widget.property("publish_mode_combobox")
+        if publish_mode_combobox:
+            mode_index = publish_mode_combobox.currentIndex()
+            if 0 <= mode_index < len(self.PUBLISH_MODE_OPTIONS):
+                self.PUBLISH_MODE_OPTIONS[mode_index]
+                ui_settings["Publish Mode"] = self.PUBLISH_MODE_OPTIONS[mode_index]
+            else:
+                self.logger.debug(f"Invalid Publish Mode index {mode_index}")
+
+        return ui_settings
+
+    def set_ui_settings(self, widget, settings, items=None):
+        """
+        This method is required to be defined in order for the custom UI to show up in the app.
+
+        Allows the custom UI to populate its fields with the settings from the
+        currently selected tasks.
+
+        The widget is the widget created and returned by
+        `create_settings_widget`.
+
+        A list of settings dictionaries are supplied representing the current
+        values of the settings for selected tasks. The settings dictionaries
+        correspond to the dictionaries returned by the settings property of the
+        hook.
+
+        Example::
+
+            settings = [
+            {
+                 "seeting_a": "/path/to/a/file"
+                 "setting_b": False
+            },
+            {
+                 "setting_a": "/path/to/a/file"
+                 "setting_b": False
+            }]
+
+        The default values for the settings will be the ones specified in the
+        environment file. Each task has its own copy of the settings.
+
+        When invoked with multiple settings dictionaries, it is the
+        responsibility of the custom UI to decide how to display the
+        information. If you do not wish to implement the editing of multiple
+        tasks at the same time, you can raise a ``NotImplementedError`` when
+        there is more than one item in the list and the publisher will inform
+        the user than only one task of that type can be edited at a time.
+
+        :param widget: The widget that was created by `create_settings_widget`.
+        :param settings: a list of dictionaries of settings for each selected
+            task.
+        :param items: A list of PublishItems the selected publish tasks are parented to.
+        """
+
+        if not settings:
+            return
+
+        if len(settings) > 1:
+            raise NotImplementedError
+
+        publish_mode_combobox = widget.property("publish_mode_combobox")
+        if not publish_mode_combobox:
+            self.logger.debug(
+                "Failed to retrieve Publish Mode combobox to set custom UI"
+            )
+            return
+
+        # Get the default setting for publish mode
+        default_value = (
+            self.settings.get("Publish Mode", {}).get("default")
+            or self.PUBLISH_MODE_DEFAULT
+        )
+
+        # Get the publish mode value from the settings, and set the combobox accordingly
+        publish_mode = settings[0].get("Publish Mode", default_value)
+        try:
+            publish_mode_index = max(self.PUBLISH_MODE_OPTIONS.index(publish_mode), 0)
+        except ValueError:
+            publish_mode_index = 0
+
+        # Set the publish mode combobox
+        current_version_index = publish_mode_combobox.currentIndex()
+        if current_version_index != publish_mode_index:
+            publish_mode_combobox.setCurrentIndex(publish_mode_index)
+
+    ############################################################################
+    # protected methods
+
+    def _copy_to_publish(self, settings, item):
+        """
+        Copy the item file to the publish location.
+
+        :param settings: This plugin instance's configured settings.
+        :param item: The item containing the file to copy.
+        """
+
+        publish_mode = settings.get("Publish Mode").value
+        if publish_mode == self.PUBLISH_MODE_EXPORT_SELECTION:
+            publish_path = self.get_publish_path(settings, item)
+            self.parent.engine.alias_py.store_active(publish_path)
+        else:
+            super()._copy_to_publish(settings, item)
 
 
 def _alias_find_additional_session_dependencies():
