@@ -417,7 +417,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
         widget = QtGui.QWidget(parent)
         widget_layout = QtGui.QVBoxLayout()
 
-        # The main widget
+        # The description widget
         description_groupbox = super().create_settings_widget(parent, items)
 
         # Add a combobox to edit the publish mode
