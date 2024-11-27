@@ -488,7 +488,6 @@ class AliasSessionPublishPlugin(HookBaseClass):
         if publish_mode_combobox:
             mode_index = publish_mode_combobox.currentIndex()
             if 0 <= mode_index < len(self.PUBLISH_MODE_OPTIONS):
-                self.PUBLISH_MODE_OPTIONS[mode_index]
                 ui_settings["Publish Mode"] = self.PUBLISH_MODE_OPTIONS[mode_index]
             else:
                 self.logger.debug(f"Invalid Publish Mode index {mode_index}")
