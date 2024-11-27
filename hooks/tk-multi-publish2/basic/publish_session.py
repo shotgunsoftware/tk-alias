@@ -220,6 +220,13 @@ class AliasSessionPublishPlugin(HookBaseClass):
             self.logger.error(f"Unsupported Publish Mode {publish_mode}")
             return False
 
+        if publish_mode == self.PUBLISH_MODE_EXPORT_SELECTION:
+            bg_processing = item.parent.get_property("bg_processing", False)
+            if bg_processing:
+                error_msg = "Export Selection mode is not supported with Background Publishing. Please change the Publish Mode or turn off Background Publishing."
+                self.logger.error(error_msg)
+                return False
+
         # ---- ensure the session has been saved
 
         if not path:
