@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hooks &mdash; tk-alias v4.0.1 documentation</title>
+  <title>Hooks &mdash; tk-alias v4.1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -111,7 +111,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.0.1.<br>
+    <b>tk-alias</b> v4.1.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -956,7 +956,15 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># NOTE: The plugin icon and name are defined by the base file plugin.</span>
+    <span class="c1"># Publish mode string constants</span>
+    <span class="n">PUBLISH_MODE_DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;Default&quot;</span>
+    <span class="n">PUBLISH_MODE_EXPORT_SELECTION</span> <span class="o">=</span> <span class="s2">&quot;Export Selection&quot;</span>
+
+    <span class="c1"># Publish mode options</span>
+    <span class="n">PUBLISH_MODE_OPTIONS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">PUBLISH_MODE_DEFAULT</span><span class="p">,</span>
+        <span class="n">PUBLISH_MODE_EXPORT_SELECTION</span><span class="p">,</span>
+    <span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1048,7 +1056,12 @@
                 <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Template path for published work files. Should&quot;</span>
                 <span class="s2">&quot;correspond to a template defined in &quot;</span>
                 <span class="s2">&quot;templates.yml.&quot;</span><span class="p">,</span>
-            <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;Publish Mode&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">PUBLISH_MODE_DEFAULT</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The mode to use when publishing the session. User can choose between &#39;Default&#39; and &#39;Export Selection&#39;.&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">}</span>
 
         <span class="c1"># update the base settings</span>
@@ -1129,6 +1142,19 @@
 
         <span class="n">publisher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">_session_path</span><span class="p">()</span>
+
+        <span class="c1"># ---- ensure the valid publish mode</span>
+        <span class="n">publish_mode</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Publish Mode&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="n">publish_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">PUBLISH_MODE_OPTIONS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported Publish Mode </span><span class="si">{</span><span class="n">publish_mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">publish_mode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">PUBLISH_MODE_EXPORT_SELECTION</span><span class="p">:</span>
+            <span class="n">bg_processing</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s2">&quot;bg_processing&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">bg_processing</span><span class="p">:</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Export Selection mode is not supported with Background Publishing. Please change the Publish Mode or turn off Background Publishing.&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># ---- ensure the session has been saved</span>
 
@@ -1251,7 +1277,9 @@
         <span class="c1"># ensure the session is saved</span>
         <span class="c1"># we need to do this action locally to be sure the background process could access the work file</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">bg_processing</span> <span class="ow">or</span> <span class="p">(</span><span class="n">bg_processing</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">in_bg_process</span><span class="p">):</span>
+            <span class="c1"># Save the working file before publishing</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">save_file</span><span class="p">()</span>
+
             <span class="c1"># store the current session path in the root item properties</span>
             <span class="c1"># it will be used later in the background process to open the file before running the publishing actions</span>
             <span class="k">if</span> <span class="n">bg_processing</span> <span class="ow">and</span> <span class="s2">&quot;session_path&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
@@ -1302,6 +1330,189 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_next_version</span><span class="p">(</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">save_file_as</span>
             <span class="p">)</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># Methods for creating/displaying custom plugin interface</span>
+
+    <span class="k">def</span> <span class="nf">create_settings_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Qt widget, for the supplied parent widget (a container widget</span>
+<span class="sd">        on the right side of the publish UI).</span>
+
+<span class="sd">        :param parent: The parent to use for the widget being created.</span>
+<span class="sd">        :param items: A list of PublishItems the selected publish tasks are parented to.</span>
+<span class="sd">        :return: A QtGui.QWidget or subclass that displays information about</span>
+<span class="sd">            the plugin and/or editable widgets for modifying the plugin&#39;s</span>
+<span class="sd">            settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># defer Qt-related imports</span>
+        <span class="kn">from</span> <span class="nn">sgtk.platform.qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
+        <span class="c1"># The main widget</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">widget_layout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+
+        <span class="c1"># The description widget</span>
+        <span class="n">description_groupbox</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create_settings_widget</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span>
+
+        <span class="c1"># Add a combobox to edit the publish mode</span>
+        <span class="n">publish_mode_label</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Publish Mode:&quot;</span><span class="p">)</span>
+        <span class="n">publish_mode_combobox</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QComboBox</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="n">publish_mode_combobox</span><span class="o">.</span><span class="n">setAccessibleName</span><span class="p">(</span><span class="s2">&quot;Publish mode selection dropdown&quot;</span><span class="p">)</span>
+        <span class="n">publish_mode_combobox</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PUBLISH_MODE_OPTIONS</span><span class="p">)</span>
+        <span class="n">publish_mode_widget</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="n">publish_mode_widget</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Preferred</span>
+        <span class="p">)</span>
+        <span class="n">publish_mode_layout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">publish_mode_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">publish_mode_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">publish_mode_label</span><span class="p">)</span>
+        <span class="n">publish_mode_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">publish_mode_combobox</span><span class="p">)</span>
+        <span class="n">publish_mode_layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">publish_mode_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">publish_mode_layout</span><span class="p">)</span>
+
+        <span class="c1"># Add all the minor widgets to the main widget</span>
+        <span class="n">widget_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">publish_mode_widget</span><span class="p">)</span>
+        <span class="n">widget_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">description_groupbox</span><span class="p">)</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">widget_layout</span><span class="p">)</span>
+
+        <span class="c1"># Set the widget property to store the combobox to access in get_ui_settings and set_ui_settings</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setProperty</span><span class="p">(</span><span class="s2">&quot;publish_mode_combobox&quot;</span><span class="p">,</span> <span class="n">publish_mode_combobox</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">widget</span>
+
+    <span class="k">def</span> <span class="nf">get_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is required to be defined in order for the custom UI to show up in the app.</span>
+
+<span class="sd">        Invoked by the Publisher when the selection changes. This method gathers the settings</span>
+<span class="sd">        on the previously selected task, so that they can be later used to repopulate the</span>
+<span class="sd">        custom UI if the task gets selected again. They will also be passed to the accept, validate,</span>
+<span class="sd">        publish and finalize methods, so that the settings can be used to drive the publish process.</span>
+
+<span class="sd">        The widget argument is the widget that was previously created by</span>
+<span class="sd">        `create_settings_widget`.</span>
+
+<span class="sd">        The method returns a dictionary, where the key is the name of a</span>
+<span class="sd">        setting that should be updated and the value is the new value of that</span>
+<span class="sd">        setting. Note that it is up to you how you want to store the UI&#39;s state as</span>
+<span class="sd">        settings and you don&#39;t have to necessarily to return all the values from</span>
+<span class="sd">        the UI. This is to allow the publisher to update a subset of settings</span>
+<span class="sd">        when multiple tasks have been selected.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            {</span>
+<span class="sd">                 &quot;setting_a&quot;: &quot;/path/to/a/file&quot;</span>
+<span class="sd">            }</span>
+
+<span class="sd">        :param widget: The widget that was created by `create_settings_widget`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ui_settings</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Get the Publish Mode settings value from the UI combobox</span>
+        <span class="n">publish_mode_combobox</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="s2">&quot;publish_mode_combobox&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">publish_mode_combobox</span><span class="p">:</span>
+            <span class="n">mode_index</span> <span class="o">=</span> <span class="n">publish_mode_combobox</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">mode_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PUBLISH_MODE_OPTIONS</span><span class="p">):</span>
+                <span class="n">ui_settings</span><span class="p">[</span><span class="s2">&quot;Publish Mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PUBLISH_MODE_OPTIONS</span><span class="p">[</span><span class="n">mode_index</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Publish Mode index </span><span class="si">{</span><span class="n">mode_index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ui_settings</span>
+
+    <span class="k">def</span> <span class="nf">set_ui_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is required to be defined in order for the custom UI to show up in the app.</span>
+
+<span class="sd">        Allows the custom UI to populate its fields with the settings from the</span>
+<span class="sd">        currently selected tasks.</span>
+
+<span class="sd">        The widget is the widget created and returned by</span>
+<span class="sd">        `create_settings_widget`.</span>
+
+<span class="sd">        A list of settings dictionaries are supplied representing the current</span>
+<span class="sd">        values of the settings for selected tasks. The settings dictionaries</span>
+<span class="sd">        correspond to the dictionaries returned by the settings property of the</span>
+<span class="sd">        hook.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            settings = [</span>
+<span class="sd">            {</span>
+<span class="sd">                 &quot;seeting_a&quot;: &quot;/path/to/a/file&quot;</span>
+<span class="sd">                 &quot;setting_b&quot;: False</span>
+<span class="sd">            },</span>
+<span class="sd">            {</span>
+<span class="sd">                 &quot;setting_a&quot;: &quot;/path/to/a/file&quot;</span>
+<span class="sd">                 &quot;setting_b&quot;: False</span>
+<span class="sd">            }]</span>
+
+<span class="sd">        The default values for the settings will be the ones specified in the</span>
+<span class="sd">        environment file. Each task has its own copy of the settings.</span>
+
+<span class="sd">        When invoked with multiple settings dictionaries, it is the</span>
+<span class="sd">        responsibility of the custom UI to decide how to display the</span>
+<span class="sd">        information. If you do not wish to implement the editing of multiple</span>
+<span class="sd">        tasks at the same time, you can raise a ``NotImplementedError`` when</span>
+<span class="sd">        there is more than one item in the list and the publisher will inform</span>
+<span class="sd">        the user than only one task of that type can be edited at a time.</span>
+
+<span class="sd">        :param widget: The widget that was created by `create_settings_widget`.</span>
+<span class="sd">        :param settings: a list of dictionaries of settings for each selected</span>
+<span class="sd">            task.</span>
+<span class="sd">        :param items: A list of PublishItems the selected publish tasks are parented to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+        <span class="n">publish_mode_combobox</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="s2">&quot;publish_mode_combobox&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">publish_mode_combobox</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to retrieve Publish Mode combobox to set custom UI&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Get the default setting for publish mode</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Publish Mode&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get the publish mode value from the settings, and set the combobox accordingly</span>
+        <span class="n">publish_mode</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Publish Mode&quot;</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">publish_mode_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PUBLISH_MODE_OPTIONS</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">publish_mode</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">publish_mode_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Set the publish mode combobox</span>
+        <span class="n">current_version_index</span> <span class="o">=</span> <span class="n">publish_mode_combobox</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_version_index</span> <span class="o">==</span> <span class="n">publish_mode_index</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="c1"># Nothing to do</span>
+
+        <span class="n">publish_mode_combobox</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">publish_mode_index</span><span class="p">)</span>
+
+    <span class="c1">############################################################################</span>
+    <span class="c1"># protected methods</span>
+
+    <span class="k">def</span> <span class="nf">_copy_to_publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy the item file to the publish location.</span>
+
+<span class="sd">        :param settings: This plugin instance&#39;s configured settings.</span>
+<span class="sd">        :param item: The item containing the file to copy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">publish_mode</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Publish Mode&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="n">publish_mode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">PUBLISH_MODE_EXPORT_SELECTION</span><span class="p">:</span>
+            <span class="n">publish_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_publish_path</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">store_active</span><span class="p">(</span><span class="n">publish_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_copy_to_publish</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_alias_find_additional_session_dependencies</span><span class="p">():</span>

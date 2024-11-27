@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>What’s New &mdash; tk-alias v4.0.1 documentation</title>
+  <title>What’s New &mdash; tk-alias v4.1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -62,10 +62,19 @@
 <li class="toctree-l1"><a class="reference internal" href="hooks.html">Hooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">What’s New</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#v4-0-0">v4.0.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v4-1-1">v4.1.1</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#release-highlights">Release highlights</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#new-features">New Features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v4-0-1">v4.0.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Release highlights</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v4-0-0">v4.0.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">New Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#removed">Removed</a></li>
 </ul>
 </li>
@@ -109,7 +118,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.0.1.<br>
+    <b>tk-alias</b> v4.1.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -153,12 +162,57 @@
              
   <section id="what-s-new">
 <h1>What’s New<a class="headerlink" href="#what-s-new" title="Permalink to this heading"></a></h1>
-<p>The latest version of the Alias Engine is <code class="docutils literal notranslate"><span class="pre">v4.0.0</span></code>.</p>
+<p>The latest version of the Alias Engine is <code class="docutils literal notranslate"><span class="pre">v4.1.1</span></code>.</p>
+<section id="v4-1-1">
+<h2>v4.1.1<a class="headerlink" href="#v4-1-1" title="Permalink to this heading"></a></h2>
+<section id="release-highlights">
+<h3>Release highlights<a class="headerlink" href="#release-highlights" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>New publish mode “Export Selection”</p></li>
+<li><p>New publish option to choose publish mode</p></li>
+</ul>
+</section>
+<section id="new-features">
+<h3>New Features<a class="headerlink" href="#new-features" title="Permalink to this heading"></a></h3>
+<p>The Alias publish plugin “Publish to Flow Production Tracking” has a new Publish Mode option:</p>
+<a class="reference internal image-reference" href="_images/publish-export-selection.png"><img alt="Publish Export Selection" class="align-center" src="_images/publish-export-selection.png" style="width: 800px;" /></a>
+<p></p>
+<p>The “Default” publish mode will publish the working file as is, as it did before introducing the Publish Mode option, there is no change in behavior.</p>
+<p>The “Export Selection” publish mode will publish only the selected objects in the Alias scene.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The working file will not be changed. This means that the published file will differ from the corresponding working file version.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The “Export Selection” publish mode is not supported with Background Publishing. You must turn off the <code class="docutils literal notranslate"><span class="pre">Background</span> <span class="pre">Processing</span></code> setting in your configuration to use this publish mode. Refer to this <a class="reference external" href="https://developers.shotgridsoftware.com/tk-multi-bg-publish/add_to_config.html#adding-this-app-to-your-config">documentation</a> on how to turn off this setting.</p>
+</div>
+<p>By default, the “Default” publish mode is selected. To change the default publish mode, you can modify your configuration file <code class="docutils literal notranslate"><span class="pre">tk-multi-publish2.yml</span></code>, for example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">settings.tk-multi-publish2.alias.asset_step</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">publish_plugins</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Publish to Flow Production Tracking</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">hook</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;{self}/publish_file.py:{engine}/tk-multi-publish2/basic/publish_session.py&quot;</span>
+<span class="w">        </span><span class="nt">settings</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">Publish Template</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alias_asset_publish</span>
+<span class="w">        </span><span class="nt">Publish Mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Export Selection</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="v4-0-1">
+<h2>v4.0.1<a class="headerlink" href="#v4-0-1" title="Permalink to this heading"></a></h2>
+<section id="id1">
+<h3>Release highlights<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix Alias Engine restart after Alias application exits unexpectedly</p></li>
+</ul>
+</section>
+</section>
 <section id="v4-0-0">
 <h2>v4.0.0<a class="headerlink" href="#v4-0-0" title="Permalink to this heading"></a></h2>
 <p>This documentation explains the new features in the Alias Engine <code class="docutils literal notranslate"><span class="pre">v4.0.0</span></code> compared to <code class="docutils literal notranslate"><span class="pre">v3.3.2</span></code>.</p>
-<section id="release-highlights">
-<h3>Release highlights<a class="headerlink" href="#release-highlights" title="Permalink to this heading"></a></h3>
+<section id="id2">
+<h3>Release highlights<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Improved performance overall for Alias 2024.0 and later</p></li>
 <li><p>Improved Data Validation validation and fix operations</p></li>
@@ -186,8 +240,8 @@
 </li>
 </ul>
 </section>
-<section id="new-features">
-<h3>New Features<a class="headerlink" href="#new-features" title="Permalink to this heading"></a></h3>
+<section id="id3">
+<h3>New Features<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
 <p>New Alias APIs are <a class="reference external" href="https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html">listed separately</a>.</p>
 <p><strong>AliasPy</strong></p>
 <blockquote>
