@@ -551,10 +551,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
             return
 
         # Get the default setting for publish mode
-        default_value = (
-            self.settings.get("Publish Mode", {}).get("default")
-            or self.PUBLISH_MODE_DEFAULT
-        )
+        default_value = self.settings.get("Publish Mode", {}).get("default")
 
         # Get the publish mode value from the settings, and set the combobox accordingly
         publish_mode = settings[0].get("Publish Mode", default_value)
