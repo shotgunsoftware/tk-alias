@@ -565,8 +565,10 @@ class AliasSessionPublishPlugin(HookBaseClass):
 
         # Set the publish mode combobox
         current_version_index = publish_mode_combobox.currentIndex()
-        if current_version_index != publish_mode_index:
-            publish_mode_combobox.setCurrentIndex(publish_mode_index)
+        if current_version_index == publish_mode_index:
+            return  # Nothing to do
+
+        publish_mode_combobox.setCurrentIndex(publish_mode_index)
 
     ############################################################################
     # protected methods
