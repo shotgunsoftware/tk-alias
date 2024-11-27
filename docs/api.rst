@@ -6,7 +6,7 @@ API
 Alias Python API
 ------------------
 
-The Alias Python API is a Python module that provides a Pythoni interface to the Alias C++ API.
+The Alias Python API is a Python module that provides a pythonic interface to the Alias C++ API.
 
 The Alias Toolkit Framework ``tk-framework-alias`` contains the Alias Python API module itself; the Alias Engine uses the framework to get the api module. Go to the `framework documentation <https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html>`_ to see the Alias Python API reference documentation.
 
