@@ -915,7 +915,9 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         # Create and connect to the server to communicate with Alias
-        self.__sio = self._tk_alias.ShotGridAliasSocketIoClient(self, namespace)
+        self.__sio = self._tk_alias.ShotGridAliasSocketIoClient(
+            self, namespace, timeout=60 * 3
+        )
 
         if not self.__sio:
             raise Exception("Failed to create socketio client")
