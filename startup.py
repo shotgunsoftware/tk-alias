@@ -49,7 +49,9 @@ class AliasLauncher(SoftwareLauncher):
 
     # Example: C:\Program Files\Autodesk\AliasAutoStudio2019\bin\Alias.exe
     # <drive> will be replaced later with the available drive letters
-    BASE_TEMPLATE = r"<drive>:\Program Files\Autodesk\Alias{code_name}{version}\bin\Alias.exe"
+    BASE_TEMPLATE = (
+        r"<drive>:\Program Files\Autodesk\Alias{code_name}{version}\bin\Alias.exe"
+    )
 
     @property
     def minimum_supported_version(self):
@@ -201,7 +203,7 @@ class AliasLauncher(SoftwareLauncher):
                 for d in self._get_used_drive_letters()
             ],
         }
-        
+
         # all the executable templates for the current OS
         executable_templates = self.EXECUTABLE_TEMPLATES.get(sys.platform, [])
 
@@ -296,7 +298,7 @@ class AliasLauncher(SoftwareLauncher):
         except:
             # Fallback
             return ["C"]
-    
+
     ##########################################################################################
     # private methods
 
