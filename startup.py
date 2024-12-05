@@ -197,7 +197,7 @@ class AliasLauncher(SoftwareLauncher):
         # of the supported operating systems. The templates are used for both
         # globbing and regex matches by replacing the named format placeholders
         # with an appropriate glob or regex string.
-        self.EXECUTABLE_TEMPLATES = {
+        templates = {
             "win32": [
                 self.BASE_TEMPLATE.replace("<drive>", d)
                 for d in self._get_used_drive_letters()
@@ -205,7 +205,7 @@ class AliasLauncher(SoftwareLauncher):
         }
 
         # all the executable templates for the current OS
-        executable_templates = self.EXECUTABLE_TEMPLATES.get(sys.platform, [])
+        executable_templates = templates.get(sys.platform, [])
 
         # all the discovered executables
         sw_versions = []
@@ -218,7 +218,7 @@ class AliasLauncher(SoftwareLauncher):
             )
 
             # Extract all products from that executable.
-            for (executable_path, key_dict) in executable_matches:
+            for executable_path, key_dict in executable_matches:
                 # extract the matched keys form the key_dict (default to None if
                 # not included)
                 version = key_dict.get("version")
@@ -287,8 +287,7 @@ class AliasLauncher(SoftwareLauncher):
 
         return release_version
 
-    @staticmethod
-    def _get_used_drive_letters():
+    def _get_used_drive_letters(self):
         try:
             import win32api
 
@@ -297,6 +296,9 @@ class AliasLauncher(SoftwareLauncher):
             return [d[0] for d in drives]
         except:
             # Fallback
+            self.logger.debug(
+                f"win32api not available. Falling back to default drive letter C:"
+            )
             return ["C"]
 
     ##########################################################################################
