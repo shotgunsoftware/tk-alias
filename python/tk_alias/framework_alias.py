@@ -25,3 +25,5 @@ AliasClientNotConnected = client_exceptions.AliasClientNotConnected
 AliasClientModuleProxyWrapper = tk_framework_alias.client.AliasClientModuleProxyWrapper
 
 QtImportError = tk_framework_alias.server.utils.exceptions.QtImportError
+QtModuleNotFound = tk_framework_alias.server.utils.exceptions.QtModuleNotFound
+QtAppInstanceNotFound = tk_framework_alias.server.utils.exceptions.QtAppInstanceNotFound
