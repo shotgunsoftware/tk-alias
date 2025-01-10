@@ -8,7 +8,12 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from .framework_alias import AliasSocketIoClient, QtImportError
+from .framework_alias import (
+    AliasSocketIoClient,
+    QtImportError,
+    QtModuleNotFound,
+    QtAppInstanceNotFound,
+)
 from .shotgrid_alias_client_namespace import ShotGridAliasClientNamespace
 
 
@@ -76,7 +81,11 @@ class ShotGridAliasSocketIoClient(AliasSocketIoClient):
 
         from sgtk.platform.qt import QtGui
 
-        if not self.connected or error.__class__.__name__ == QtImportError.__name__:
+        if not self.connected or error.__class__.__name__ in (
+            QtImportError.__name__,
+            QtModuleNotFound.__name__,
+            QtAppInstanceNotFound.__name__,
+        ):
             parent = None
         else:
             parent = self.engine._get_dialog_parent()
