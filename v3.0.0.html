@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v3.0.0 &mdash; tk-alias v4.1.2 documentation</title>
+  <title>v3.0.0 &mdash; tk-alias v4.1.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -82,7 +82,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.1.2.<br>
+    <b>tk-alias</b> v4.1.3.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -133,19 +133,19 @@
 <section id="accessing-the-api-with-the-alias-engine-in-v2-x-x">
 <h3>Accessing the API with the Alias engine in v2.x.x<a class="headerlink" href="#accessing-the-api-with-the-alias-engine-in-v2-x-x" title="Permalink to this heading"></a></h3>
 <p>In tk-alias v2.x.x the Alias Python API can be accessed directly by importing the <code class="docutils literal notranslate"><span class="pre">alias_api</span></code> module:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">alias_api</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">alias_api</span>
 </pre></div>
 </div>
 </section>
 <section id="accessing-the-api-with-the-alias-engine-in-v3-x-x">
 <h3>Accessing the API with the Alias engine in v3.x.x<a class="headerlink" href="#accessing-the-api-with-the-alias-engine-in-v3-x-x" title="Permalink to this heading"></a></h3>
 <p>In v3.x.x it is still possible to import the <code class="docutils literal notranslate"><span class="pre">alias_api</span></code> module:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">alias_api</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">alias_api</span>
 </pre></div>
 </div>
 <p><strong>Note:</strong> This requires the Alias Engine to be bootstrapped and started (e.g. launching Alias from Flow Production Track Desktop will do this). If you are manually bootstrapping the Alias Engine (without Flow Production Tracking Desktop), refer to how the framework <a class="reference external" href="https://github.com/shotgunsoftware/tk-framework-alias/blob/develop/python/tk_framework_alias_utils/plugin_bootstrap.py">bootsraps</a>. and starts the engine.</p>
 <p>To maintain future compatibility, we strongly encouraged accessing the Alias Python API through the tk-alias engine property <a class="reference external" href="https://github.com/shotgunsoftware/tk-alias/blob/d6a699a03dfe9f3bf9e9c9a5eff91240471a8822/engine.py#L174-L182">alias_py</a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sgtk</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
 
 <span class="c1"># Get the Alias engine instance.</span>
 <span class="n">tk_alias_engine</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span>
@@ -189,7 +189,7 @@
 </div>
 <p><strong>NOTE:</strong>  you may need to change the above path to the python.exe you want to use.</p>
 <p><strong>NOTE:</strong>  For Python 3.9, now add the Alias DLL install path for python to find it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="n">os</span><span class="o">.</span><span class="n">add_dll_directory</span><span class="p">(</span><span class="n">alias_dll_directory</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -197,7 +197,7 @@
 </li>
 <li><p>Add the path to the Alias Python API module for OpenModel (alias_api_om.pyd) to your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>. We will use the API for Alias 2025.0, and Python 3.7 since we are running a Python 3.7 interpeter:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Users</span><span class="se">\\</span><span class="s2">&lt;insert_username&gt;</span><span class="se">\\</span><span class="s2">AppData</span><span class="se">\\</span><span class="s2">Roaming</span><span class="se">\\</span><span class="s2">Shotgun</span><span class="se">\\</span><span class="s2">bundle_cache</span><span class="se">\\</span><span class="s2">app_store</span><span class="se">\\</span><span class="s2">tk-framework-    alias</span><span class="se">\\</span><span class="s2">v1.4.0</span><span class="se">\\</span><span class="s2">dist</span><span class="se">\\</span><span class="s2">Alias</span><span class="se">\\</span><span class="s2">python3.7</span><span class="se">\\</span><span class="s2">2025.0&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -207,14 +207,14 @@
 </pre></div>
 </div>
 <p>If you do not want to hard code the Alias Python API path <code class="docutils literal notranslate"><span class="pre">C:\\Users\\my_username\\AppData\\Roaming\\Shotgun\\bundle_cache\\app_store\\tk-framework-alias\\v1.4.0\\dist\\Alias\\python3.7\\2025.0</span></code>, and you have access to the Toolkit <code class="docutils literal notranslate"><span class="pre">sgtk</span></code> module and have your Toolkit context, you can programmatically find the path to the api with this function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setup_alias_env</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">setup_alias_env</span><span class="p">(</span>
         <span class="n">ctx</span><span class="p">,</span>
         <span class="n">alias_version</span><span class="o">=</span><span class="s2">&quot;2024.0&quot;</span><span class="p">,</span>
         <span class="n">alias_dll_directory</span><span class="o">=</span><span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Program Files</span><span class="se">\\</span><span class="s2">Autodesk</span><span class="se">\\</span><span class="s2">AliasAutoStudio2024.0</span><span class="se">\\</span><span class="s2">bin&quot;</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">os</span>
-    <span class="kn">import</span> <span class="nn">sys</span>
-    <span class="kn">import</span> <span class="nn">sgtk</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
 
     <span class="n">env</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_environment_from_context</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
     <span class="n">desc</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get_engine_descriptor</span><span class="p">(</span><span class="s1">&#39;tk-alias&#39;</span><span class="p">)</span>
@@ -261,7 +261,7 @@
 <li><p>Now you are ready to import the Alias Python API:</p>
 <blockquote>
 <div><p>From a command line, without Alias running, we are operating in OpenModel mode (e.g. no GUI), so we need to import the OpenModel API module:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">alias_api_om</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">alias_api_om</span>
 
 <span class="c1"># Print help for the module</span>
 <span class="n">help</span><span class="p">(</span><span class="n">alias_api_om</span><span class="p">)</span>
@@ -320,13 +320,13 @@
 <h3>AliasPy<a class="headerlink" href="#aliaspy" title="Permalink to this heading"></a></h3>
 <p><strong>NOTE:</strong>  the AliasPy modules are only available with the Alias Engine and when it has been started.</p>
 <p>In v2.x.x the AliasPy utility modules can be accessed directly by importing from the <code class="docutils literal notranslate"><span class="pre">alias_py</span></code> module:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">alias_py.utils</span>
-<span class="kn">import</span> <span class="nn">alias_py.dag_node</span>
-<span class="kn">import</span> <span class="nn">alias_py.layer</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">alias_py.utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">alias_py.dag_node</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">alias_py.layer</span>
 </pre></div>
 </div>
 <p>In v3.x.x this is no longer possible. The AliasPy utility modules must be accessed through the Alias engine property <code class="docutils literal notranslate"><span class="pre">alias_py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sgtk</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
 <span class="n">tk_alias_engine</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span>
 
 <span class="n">alias_api</span> <span class="o">=</span> <span class="n">tk_alias_engine</span><span class="o">.</span><span class="n">alias_py</span>
@@ -371,7 +371,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Autodesk.</p>
+    <p>&#169; Copyright 2025, Autodesk.</p>
   </div>
 
    
