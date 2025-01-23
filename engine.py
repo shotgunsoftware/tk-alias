@@ -884,7 +884,7 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Ensure the python c extension packages are installed in order to
         # import the framework server module.
-        if not startup_utils.ensure_python_c_extension_packages_installed(
+        if not startup_utils.ensure_python_packages_installed(
             python_version=(sys.version_info.major, sys.version_info.minor),
             logger=self.logger,
         ):
