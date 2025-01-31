@@ -914,9 +914,32 @@ class AliasEngine(sgtk.platform.Engine):
         :rtype: bool
         """
 
+        #
+        # TEMP: testing proxy access
+        #
+        # Get the http proxy. TODO find a better way to retrieve the proxy
+        context_serialized = self.context.serialize(use_json=True)
+        import json
+
+        context_json = json.loads(context_serialized)
+        current_user_json = json.loads(context_json.get("_current_user", {}))
+        http_proxy = current_user_json.get("data", {}).get("http_proxy")
+        import requests
+
+        session = requests.session()
+        http_proxy = os.environ.get("ALIAS_PLUGIN_CLIENT_PROXY")
+        if http_proxy:
+            if http_proxy.startswith("https"):
+                session.proxies = {"https": http_proxy}
+            elif http_proxy.startswith("http"):
+                session.proxies = {"http": http_proxy}
+            else:
+                # Default to http
+                session.proxies = {"http": f"http://{http_proxy}"}
+
         # Create and connect to the server to communicate with Alias
         self.__sio = self._tk_alias.ShotGridAliasSocketIoClient(
-            self, namespace, timeout=60 * 3
+            self, namespace, timeout=60 * 3, http_session=session
         )
 
         if not self.__sio:

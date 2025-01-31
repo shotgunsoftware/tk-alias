@@ -89,11 +89,22 @@ class AliasLauncher(SoftwareLauncher):
             code_name = self._get_code_name(exec_path)
             release_version = self._get_release_version(exec_path, code_name)
 
+            #
+            # TEMP: testing proxy access
+            #
+            # Get the http proxy. TODO find a better way to retrieve the proxy
+            context_serialized = self.context.serialize(use_json=True)
+            import json
+
+            context_json = json.loads(context_serialized)
+            current_user_json = json.loads(context_json.get("_current_user", {}))
+            http_proxy = current_user_json.get("data", {}).get("http_proxy")
+
             # Ensure the plugin is ready to be launched with Alias. This will install the
             # Toolkit plugin com.sg.basic.alias that will bootstrap the engine once the Alias
             # plugin is loaded. It will also ensure the necessary Python version is available.
             plugin_file_path, plugin_env = self.__ensure_plugin_ready(
-                framework_location, release_version, exec_path
+                framework_location, release_version, exec_path, http_proxy=http_proxy
             )
 
             # Set up the environment variables required for Alias Plugin to load and launch the
@@ -373,7 +384,9 @@ class AliasLauncher(SoftwareLauncher):
         self.logger.debug(f"Found framework descriptor {framework_desc}")
         return framework_desc.get_path()
 
-    def __ensure_plugin_ready(self, framework_location, alias_version, alias_exec_path):
+    def __ensure_plugin_ready(
+        self, framework_location, alias_version, alias_exec_path, http_proxy=None
+    ):
         """
         Ensure that the plugin is installed and ready to be launched.
 
@@ -422,6 +435,7 @@ class AliasLauncher(SoftwareLauncher):
             pipeline_config_id,
             entity_type,
             entity_id,
+            http_proxy,
             os.environ.get("TK_DEBUG", "0"),
             self.logger,
         )
