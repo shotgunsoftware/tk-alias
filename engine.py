@@ -10,6 +10,7 @@
 
 
 import os
+import requests
 import sys
 import pprint
 
@@ -914,9 +915,13 @@ class AliasEngine(sgtk.platform.Engine):
         :rtype: bool
         """
 
+        # Proxy handling
+        session = requests.Session()
+        session.trust_env = False
+
         # Create and connect to the server to communicate with Alias
         self.__sio = self._tk_alias.ShotGridAliasSocketIoClient(
-            self, namespace, timeout=60 * 3
+            self, namespace, timeout=60 * 3, http_session=session
         )
 
         if not self.__sio:
