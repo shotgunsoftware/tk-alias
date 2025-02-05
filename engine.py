@@ -915,13 +915,22 @@ class AliasEngine(sgtk.platform.Engine):
         :rtype: bool
         """
 
-        # Proxy handling
-        session = requests.Session()
-        session.trust_env = False
+        # Set up kwargs to pass to socketio Client
+        client_kwargs = {}
+        if os.environ.get("SGTK_ENFORCE_PROXY_LOCALHOST", "0").strip().lower() not in [
+            "1",
+            "true",
+            "y",
+            "yes",
+        ]:
+            # Set up a session object to disable proxy
+            session = requests.Session()
+            session.trust_env = False
+            client_kwargs["http_session"] = session
 
         # Create and connect to the server to communicate with Alias
         self.__sio = self._tk_alias.ShotGridAliasSocketIoClient(
-            self, namespace, timeout=60 * 3, http_session=session
+            self, namespace, timeout=60 * 3, **client_kwargs
         )
 
         if not self.__sio:
