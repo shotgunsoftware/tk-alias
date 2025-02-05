@@ -47,18 +47,11 @@ class AliasLauncher(SoftwareLauncher):
     # Fallback code name to use when none is given
     FALLBACK_CODE_NAME = "AutoStudio"
 
-    # This dictionary defines a list of executable template strings for each
-    # of the supported operating systems. The templates are used for both
-    # globbing and regex matches by replacing the named format placeholders
-    # with an appropriate glob or regex string. As Side FX adds modifies the
-    # install path on a given OS for a new release, a new template will need
-    # to be added here.
-    EXECUTABLE_TEMPLATES = {
-        "win32": [
-            # Example: C:\Program Files\Autodesk\AliasAutoStudio2019\bin\Alias.exe
-            r"C:\Program Files\Autodesk\Alias{code_name}{version}\bin\Alias.exe",
-        ],
-    }
+    # Example: C:\Program Files\Autodesk\AliasAutoStudio2019\bin\Alias.exe
+    # <drive> will be replaced later with the available drive letters
+    BASE_TEMPLATE = (
+        r"<drive>:\Program Files\Autodesk\Alias{code_name}{version}\bin\Alias.exe"
+    )
 
     @property
     def minimum_supported_version(self):
@@ -200,8 +193,19 @@ class AliasLauncher(SoftwareLauncher):
     def _find_software(self):
         """Find executables in the default install locations."""
 
+        # This dictionary defines a list of executable template strings for each
+        # of the supported operating systems. The templates are used for both
+        # globbing and regex matches by replacing the named format placeholders
+        # with an appropriate glob or regex string.
+        templates = {
+            "win32": [
+                self.BASE_TEMPLATE.replace("<drive>", d)
+                for d in self._get_used_drive_letters()
+            ],
+        }
+
         # all the executable templates for the current OS
-        executable_templates = self.EXECUTABLE_TEMPLATES.get(sys.platform, [])
+        executable_templates = templates.get(sys.platform, [])
 
         # all the discovered executables
         sw_versions = []
@@ -214,7 +218,7 @@ class AliasLauncher(SoftwareLauncher):
             )
 
             # Extract all products from that executable.
-            for (executable_path, key_dict) in executable_matches:
+            for executable_path, key_dict in executable_matches:
                 # extract the matched keys form the key_dict (default to None if
                 # not included)
                 version = key_dict.get("version")
@@ -282,6 +286,20 @@ class AliasLauncher(SoftwareLauncher):
         release_version = release_version.split(" ")[0]
 
         return release_version
+
+    def _get_used_drive_letters(self):
+        try:
+            import win32api
+
+            drives = win32api.GetLogicalDriveStrings()
+            drives = drives.split("\000")[:-1]
+            return [d[0] for d in drives]
+        except:
+            # Fallback
+            self.logger.debug(
+                f"win32api not available. Falling back to default drive letter C:"
+            )
+            return ["C"]
 
     ##########################################################################################
     # private methods
