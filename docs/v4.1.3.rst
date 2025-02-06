@@ -1,0 +1,8 @@
+v4.1.3
+=====================
+
+Release highlights
+------------------
+
+* Bug fix for running Background Publishing in Alia
+
