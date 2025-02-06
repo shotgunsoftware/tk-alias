@@ -1,9 +1,6 @@
 v4.1.2
 =====================
 
-Release highlights
-------------------
-
 * Improve error handling on Alias start up
 * Improve Alias API timeout handling
 
