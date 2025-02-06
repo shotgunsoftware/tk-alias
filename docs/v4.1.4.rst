@@ -1,9 +1,6 @@
 v4.1.4
 =====================
 
-Release highlights
-------------------
-
 * Bug fix to load Flow Production Tracking with Alias >= 2024.0 when using a proxy server
 
 * Added environment variable :ref:`env_var_sgtk_enforce_proxy_localhost` to use or ignore environment variables for proxy settings.
