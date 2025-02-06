@@ -413,6 +413,10 @@ class AliasLauncher(SoftwareLauncher):
         entity_dict = self.context.task or self.context.entity or self.context.project
         entity_type = entity_dict["type"]
         entity_id = entity_dict["id"]
+        # Check if we should trust env vars for proxy settings or ignore
+        proxy_trust_env = os.environ.get(
+            "SGTK_ENFORCE_PROXY_LOCALHOST", "0"
+        ).strip().lower() in ["1", "true", "y", "yes"]
 
         # Ensure the basic.alias plugin is installed and up to date
         return startup_utils.ensure_plugin_ready(
@@ -422,6 +426,7 @@ class AliasLauncher(SoftwareLauncher):
             pipeline_config_id,
             entity_type,
             entity_id,
+            proxy_trust_env,
             os.environ.get("TK_DEBUG", "0"),
             self.logger,
         )
