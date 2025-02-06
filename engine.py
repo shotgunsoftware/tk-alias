@@ -916,7 +916,7 @@ class AliasEngine(sgtk.platform.Engine):
         """
 
         # Set up kwargs to pass to socketio Client
-        client_kwargs = {}
+        client_kwargs = {"timeout": 60 * 3}
         if os.environ.get("SGTK_ENFORCE_PROXY_LOCALHOST", "0").strip().lower() not in [
             "1",
             "true",
@@ -930,7 +930,7 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Create and connect to the server to communicate with Alias
         self.__sio = self._tk_alias.ShotGridAliasSocketIoClient(
-            self, namespace, timeout=60 * 3, **client_kwargs
+            self, namespace, **client_kwargs
         )
 
         if not self.__sio:
