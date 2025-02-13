@@ -26,7 +26,7 @@ class AliasSessionCollector(HookBaseClass):
 
     @property
     def settings(self):
-        collector_settings = super(AliasSessionCollector, self).settings or {}
+        collector_settings = super().settings or {}
         alias_session_settings = {
             "Work Template": {
                 "type": "template",

@@ -29,7 +29,7 @@ class AliasBreakdown2Actions(HookBaseClass):
     def __init__(self, *args, **kwargs):
         """Initialize the hook."""
 
-        super(AliasBreakdown2Actions, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.alias_py = self.parent.engine.alias_py
 
     def generate_actions(self, sg_publish_data, actions, ui_area):

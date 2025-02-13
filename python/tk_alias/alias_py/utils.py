@@ -18,7 +18,7 @@ class AliasPyUtils(AliasPyBase):
     """Alias Python API utility class."""
 
     def __init__(self, alpy):
-        super(AliasPyUtils, self).__init__(alpy)
+        super().__init__(alpy)
 
     def success_status(self, int_value=False):
         """

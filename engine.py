@@ -101,7 +101,7 @@ class AliasEngine(sgtk.platform.Engine):
             self.__has_ui = self.__in_alias_process
 
         # Call the base engine init method
-        super(AliasEngine, self).__init__(tk, context, engine_instance_name, env)
+        super().__init__(tk, context, engine_instance_name, env)
 
     # -------------------------------------------------------------------------------------------------------
     # Plugin version < 4.0.0 methods
@@ -344,7 +344,7 @@ class AliasEngine(sgtk.platform.Engine):
         if window:
             return window
 
-        return super(AliasEngine, self)._get_dialog_parent()
+        return super()._get_dialog_parent()
 
     def _emit_log_message(self, handler, record):
         """
