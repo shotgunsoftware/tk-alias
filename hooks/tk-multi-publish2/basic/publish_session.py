@@ -117,7 +117,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
         """
 
         # inherit the settings from the base publish plugin
-        base_settings = super(AliasSessionPublishPlugin, self).settings or {}
+        base_settings = super().settings or {}
 
         # settings specific to this class
         alias_publish_settings = {
@@ -325,7 +325,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
         item.properties["path"] = path
 
         # run the base class validation
-        return super(AliasSessionPublishPlugin, self).validate(settings, item)
+        return super().validate(settings, item)
 
     def publish(self, settings, item):
         """
@@ -355,13 +355,13 @@ class AliasSessionPublishPlugin(HookBaseClass):
             # it will be used later in the background process to open the file before running the publishing actions
             if bg_processing and "session_path" not in item.parent.properties:
                 item.parent.properties["session_path"] = path
-                item.parent.properties[
-                    "session_name"
-                ] = "Alias Session - {task_name}, {entity_type} {entity_name} - {file_name}".format(
-                    task_name=item.context.task["name"],
-                    entity_type=item.context.entity["type"],
-                    entity_name=item.context.entity["name"],
-                    file_name=os.path.basename(path),
+                item.parent.properties["session_name"] = (
+                    "Alias Session - {task_name}, {entity_type} {entity_name} - {file_name}".format(
+                        task_name=item.context.task["name"],
+                        entity_type=item.context.entity["type"],
+                        entity_name=item.context.entity["name"],
+                        file_name=os.path.basename(path),
+                    )
                 )
 
         # update the item with the saved session path
@@ -370,12 +370,12 @@ class AliasSessionPublishPlugin(HookBaseClass):
         if not bg_processing or (bg_processing and in_bg_process):
 
             # add dependencies for the base class to register when publishing
-            item.properties[
-                "publish_dependencies"
-            ] = _alias_find_additional_session_dependencies()
+            item.properties["publish_dependencies"] = (
+                _alias_find_additional_session_dependencies()
+            )
 
             # let the base class register the publish
-            super(AliasSessionPublishPlugin, self).publish(settings, item)
+            super().publish(settings, item)
 
     def finalize(self, settings, item):
         """
@@ -394,7 +394,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
 
         if not bg_processing or (bg_processing and in_bg_process):
             # do the base class finalization
-            super(AliasSessionPublishPlugin, self).finalize(settings, item)
+            super().finalize(settings, item)
 
         # bump the session file to the next version
         if not bg_processing or (bg_processing and not in_bg_process):

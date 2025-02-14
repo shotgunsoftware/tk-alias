@@ -46,11 +46,13 @@ class MenuCustomization(HookBaseClass):
         return sorted(
             commands.items(),
             key=lambda command: (
-                command[1]["properties"]["app"].display_name
-                if command[1].get("properties", {}).get("app")
-                and command[1].get("properties", {}).get("type", "default")
-                != "context_menu"
-                else "Other Items",
+                (
+                    command[1]["properties"]["app"].display_name
+                    if command[1].get("properties", {}).get("app")
+                    and command[1].get("properties", {}).get("type", "default")
+                    != "context_menu"
+                    else "Other Items"
+                ),
                 command[0],
             ),
         )

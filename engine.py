@@ -101,7 +101,7 @@ class AliasEngine(sgtk.platform.Engine):
             self.__has_ui = self.__in_alias_process
 
         # Call the base engine init method
-        super(AliasEngine, self).__init__(tk, context, engine_instance_name, env)
+        super().__init__(tk, context, engine_instance_name, env)
 
     # -------------------------------------------------------------------------------------------------------
     # Plugin version < 4.0.0 methods
@@ -344,7 +344,7 @@ class AliasEngine(sgtk.platform.Engine):
         if window:
             return window
 
-        return super(AliasEngine, self)._get_dialog_parent()
+        return super()._get_dialog_parent()
 
     def _emit_log_message(self, handler, record):
         """
@@ -1156,7 +1156,7 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Build a dictionary mapping app instance names to dictionaries of commands they registered with the engine.
         app_instance_commands = {}
-        for (command_name, value) in self.commands.items():
+        for command_name, value in self.commands.items():
             app_instance = value["properties"].get("app")
             if app_instance:
                 # Add entry 'command name: command function' to the command dictionary of this app instance.
@@ -1185,7 +1185,7 @@ class AliasEngine(sgtk.platform.Engine):
             else:
                 if not setting_command_name:
                     # Run all commands of the given app instance.
-                    for (command_name, command_function) in command_dict.items():
+                    for command_name, command_function in command_dict.items():
                         self.logger.debug(
                             "%s startup running app '%s' command '%s'.",
                             self.name,

@@ -66,7 +66,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         """
 
         # inherit the settings from the base publish plugin
-        base_settings = super(AliasCreateVREDFilePlugin, self).settings or {}
+        base_settings = super().settings or {}
 
         # settings specific to this class
         plugin_settings = {
@@ -337,7 +337,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         # if the "Publish to Shotgrid" option is selected, ensure we can build the publish path
         ui_settings = settings["UI Settings"].value
         if ui_settings.get("publish_to_sg", True):
-            return super(AliasCreateVREDFilePlugin, self).validate(settings, item)
+            return super().validate(settings, item)
 
         return True
 
@@ -410,7 +410,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
             # now, we can publish the file is the option has been selected
             ui_settings = settings["UI Settings"].value
             if ui_settings.get("publish_to_sg", True):
-                super(AliasCreateVREDFilePlugin, self).publish(settings, item)
+                super().publish(settings, item)
 
     def finalize(self, settings, item):
         """

@@ -21,11 +21,7 @@ class TestAliasMenuGenerator:
     TODO add more test cases for checking the menu items.
     """
 
-    # An ugly workaround untili python 2 unit tests are removed from Azure Pipeline CI
-    if sys.version_info.major < 3:
-        __test__ = False
-    else:
-        __test__ = True
+    __test__ = True
 
     @pytest.fixture(scope="module")
     def menu_generator_class(request):

@@ -18,7 +18,7 @@ class AliasPyLayer(AliasPyBase):
     """Alias Python API utility class."""
 
     def __init__(self, alpy):
-        super(AliasPyLayer, self).__init__(alpy)
+        super().__init__(alpy)
 
     # -------------------------------------------------------------------------------------------------------
     # AlLayer functions
