@@ -20,7 +20,7 @@ class TestAliasSceneDataValidator(object):
 
     TODO add more unit tests to check the SDV check and fix functions.
     """
-    
+
     __test__ = True
 
     @pytest.fixture
