@@ -21,8 +21,6 @@ class TestAliasMenuGenerator:
     TODO add more test cases for checking the menu items.
     """
 
-    __test__ = True
-
     @pytest.fixture(scope="module")
     def menu_generator_class(request):
         """
