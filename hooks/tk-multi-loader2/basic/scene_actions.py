@@ -23,6 +23,12 @@ HookBaseClass = sgtk.get_hook_baseclass()
 
 
 class AliasActions(HookBaseClass):
+    def __init__(self, *args, **kwargs):
+        """Initialize the hook."""
+
+        super().__init__(*args, **kwargs)
+        self.alias_py = self.parent.engine.alias_py
+
     def generate_actions(self, sg_publish_data, actions, ui_area):
         """
         Returns a list of action instances for a particular publish.
@@ -145,11 +151,13 @@ class AliasActions(HookBaseClass):
 
         :param list actions: Action dictionaries.
         """
-        for single_action in actions:
-            name = single_action["name"]
-            sg_publish_data = single_action["sg_publish_data"]
-            params = single_action["params"]
-            self.execute_action(name, params, sg_publish_data)
+
+        with self.alias_py.request_context_manager(is_async=True):
+            for single_action in actions:
+                name = single_action["name"]
+                sg_publish_data = single_action["sg_publish_data"]
+                params = single_action["params"]
+                self.execute_action(name, params, sg_publish_data)
 
     def execute_action(self, name, params, sg_publish_data):
         """
