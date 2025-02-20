@@ -98,7 +98,7 @@ class AliasMenuGenerator(object):
 
         # Convert command dictionaries to list of AppCommand objects
         menu_items = []
-        for (cmd_name, cmd_details) in menu_commands:
+        for cmd_name, cmd_details in menu_commands:
             menu_items.append(AppCommand(cmd_name, cmd_details))
 
         # Add favourites in the order that they are defined in the config settings.
@@ -316,7 +316,7 @@ class AppCommand(object):
         app_instance = self.properties["app"]
         engine = app_instance.engine
 
-        for (app_instance_name, app_instance_obj) in engine.apps.items():
+        for app_instance_name, app_instance_obj in engine.apps.items():
             if app_instance_obj == app_instance:
                 return app_instance_name
 
