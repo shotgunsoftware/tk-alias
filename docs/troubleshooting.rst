@@ -91,14 +91,17 @@ If you are running Flow Production Tracking with a proxy server, you may encount
 
 \
 
-**Possible solution:**
+**Possible solutions:**
 
-Before launching Flow Production Tracking Desktop, set the environment variable :ref:`env_var_sgtk_enforce_proxy_localhost` to ``1``. This will force Flow Production Tracking Desktop to use the proxy settings from the environment variables:
+1. Before launching Flow Production Tracking Desktop, set the environment variable :ref:`env_var_sgtk_enforce_proxy_localhost` to ``1``. This will force Flow Production Tracking Desktop to use the proxy settings from the environment variables:
 
 .. code-block:: console
 
     set SGTK_ENFORCE_PROXY_LOCALHOST=1
     "C:\Program Files\Shotgun\Shotgun.exe"
+
+
+2. If you can allow the Alias/FPT communication on localhost ``127.0.0.1`` to bypass your proxy server (e.g. communication over localhost will not run through your proxy server), add ``127.0.0.1`` to your proxy server exception settings.
 
 
 **If you are experiencing any of these issues, please contact support.**
