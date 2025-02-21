@@ -1,7 +1,4 @@
 v4.0.1
 =====================
 
-Release highlights
-------------------
-
 * Fix Alias Engine restart after Alias application exits unexpectedly

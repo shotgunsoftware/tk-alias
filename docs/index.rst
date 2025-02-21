@@ -19,7 +19,9 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   changes
    engine
    hooks
    api
-   changes
+   environment_vars
+   troubleshooting
