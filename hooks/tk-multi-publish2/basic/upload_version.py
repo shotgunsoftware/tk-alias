@@ -70,7 +70,7 @@ class UploadVersionPlugin(HookBaseClass):
         part of its environment configuration.
         """
         # inherit the settings from the base publish plugin
-        base_settings = super(UploadVersionPlugin, self).settings or {}
+        base_settings = super().settings or {}
 
         # settings specific to this class
         upload_version_settings = {
@@ -217,7 +217,7 @@ class UploadVersionPlugin(HookBaseClass):
             item.properties["publish_name"] = publish_name
 
             # Create the Version in Flow Production Tracking
-            super(UploadVersionPlugin, self).publish(settings, item)
+            super().publish(settings, item)
 
             # Generate media content and upload to Flow Production Tracking
             version_type = item.properties["sg_version_data"]["type"]
@@ -286,7 +286,7 @@ class UploadVersionPlugin(HookBaseClass):
         in_bg_process = item.parent.properties.get("in_bg_process", False)
 
         if not bg_processing or (bg_processing and in_bg_process):
-            super(UploadVersionPlugin, self).finalize(settings, item)
+            super().finalize(settings, item)
 
     ############################################################################
     # Methods for creating/displaying custom plugin interface
