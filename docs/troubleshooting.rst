@@ -71,6 +71,8 @@ c. Then open a python interpreter and run:
 
 Note that if the port is different, you will need to replace ``8000`` with the port that is in the log message
 
+.. _proxy_server_troubleshooting:
+
 Proxy Server Troubleshooting
 ------------------------------
 
