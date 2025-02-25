@@ -18,7 +18,7 @@ class AliasSceneOperationsHook(HookBaseClass):
     """Hook class to set up Alias scene events to update the Data Validation App."""
 
     def __init__(self, *args, **kwargs):
-        super(AliasSceneOperationsHook, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.__alias_event_callbacks = []
 
     def register_scene_events(self, reset_callback, change_callback):
