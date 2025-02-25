@@ -1,0 +1,5 @@
+v4.1.4
+=====================
+
+* Bug fix for showing Alias icon in Flow Production Tracking Desktop
+
