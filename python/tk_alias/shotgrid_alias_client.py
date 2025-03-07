@@ -23,7 +23,7 @@ class ShotGridAliasSocketIoClient(AliasSocketIoClient):
     def __init__(self, engine, namespace, *args, **kwargs):
         """Initialize the Flow Production Tracking Alias socketio client."""
 
-        super(ShotGridAliasSocketIoClient, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.__engine = engine
         self.__qt_app = None
@@ -53,7 +53,7 @@ class ShotGridAliasSocketIoClient(AliasSocketIoClient):
     def cleanup(self):
         """Clean up the client on disconnect."""
 
-        super(ShotGridAliasSocketIoClient, self).cleanup()
+        super().cleanup()
         if self.__qt_app:
             self.engine.execute_in_main_thread(self.__qt_app.quit)
         self.__qt_app = None

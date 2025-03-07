@@ -21,7 +21,7 @@ class ShotGridAliasClientNamespace(AliasClientNamespace):
         Destroy the engine.
         """
 
-        super(ShotGridAliasClientNamespace, self).on_shutdown()
+        super().on_shutdown()
 
         self.client.engine.shutdown()
 
