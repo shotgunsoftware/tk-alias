@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting &mdash; tk-alias v4.1.5 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Environment Variables" href="environment_vars.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tk-alias
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="changes.html">What’s New</a></li>
+<li class="toctree-l1"><a class="reference internal" href="engine.html">Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hooks.html">Hooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment_vars.html">Environment Variables</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#alias-does-not-launch-from-fpt-desktop">Alias does not launch from FPT Desktop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flow-production-menu-does-not-appear-in-alias">Flow Production Menu does not appear in Alias</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#proxy-server-troubleshooting">Proxy Server Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px;
+                color: #b3b3b3;
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>
+    <style>
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-alias</b> v4.1.5.<br>
+    
+        This documentation is part of the Flow Production Tracking.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
+    The code associated with this documentation can be found
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
+
+    </div>
+    <style>
+        p.privacy_links { margin: 4px 0px;}
+    </style>
+    <p class="privacy_links"><a data-opt-in-preferences href="javascript:;">Privacy settings</a></p>
+    <p class="privacy_links"><a data-wat-linkname="manage-ccpa-settings-footer-link" href="javascript:;">Do not sell my personal information</a></p>
+    <p class="privacy_links"><a href="https://www.autodesk.com/company/legal-notices-trademarks/privacy-statement">Privacy/Cookies</a></p>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tk-alias</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading"></a></h1>
+<section id="alias-does-not-launch-from-fpt-desktop">
+<h2>Alias does not launch from FPT Desktop<a class="headerlink" href="#alias-does-not-launch-from-fpt-desktop" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Check the FPT Desktop Engine log for error messages. The log file should be found at <code class="docutils literal notranslate"><span class="pre">%APPDATA%\Shotgun\Logs\tk-desktop.log</span></code></p></li>
+<li><p>Check that this folder exists <code class="docutils literal notranslate"><span class="pre">%APPDATA%\Autodesk\Alias\ShotGrid</span></code>.</p></li>
+</ol>
+</section>
+<section id="flow-production-menu-does-not-appear-in-alias">
+<h2>Flow Production Menu does not appear in Alias<a class="headerlink" href="#flow-production-menu-does-not-appear-in-alias" title="Permalink to this heading"></a></h2>
+<p>In this case, Alias has launched successfully from FPT Desktop but the Flow Production Menu does not appear.</p>
+<ol class="arabic simple">
+<li><p>Check the Alias Promptline History for error messages. If successful, you will see the following messages:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Embedded Python Interpreter: C:\Users\qa\AppData\Roaming\Autodesk\Alias\ShotGrid\Python\Python37\install\python.exe</span>
+<span class="go">Python Version: 3.7.11 (default, Dec 18 2022, 00:12:45) [MSC v.1900 64 bit (AMD64)]</span>
+<span class="go">Python Path: C:\Users\qa\AppData\Roaming\Autodesk\Alias\ShotGrid\Python\Python37\install\python37.zip;C:\Users\qa\AppData\Roaming\Autodesk\Alias\ShotGrid\Python\Python37\install;&lt;path_to_tk-framework-alias&gt;\python</span>
+<span class="go">Running Alias Python API server</span>
+<span class="go">Starting client &#39;flow-production-tracking&#39;...</span>
+<span class="go">Flow Production Tracking initialized</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Check the FPT Alias Engine log for error messages. The log file should be found at <code class="docutils literal notranslate"><span class="pre">%APPDATA%\Shotgun\Logs\tk-alias.log</span></code>. If there is no tk-alias.log file, that means the FPT Alias Plugin may have loaded, but it then failed to start the FPT Alias Engine.</p></li>
+</ol>
+<p>3. Check the FPT Alias plugin logs for error message. These logs are found in the folder <code class="docutils literal notranslate"><span class="pre">%APPDATA%\Autodesk\Alias\ShotGrid\plugin\logs</span></code>. There are three logs:
+* wsgi.log
+* sio_server.log
+* sio_client.log</p>
+<p>If the FPT Alias communication has started up successfully, you should see in the <code class="docutils literal notranslate"><span class="pre">wsgi.log</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp gp-VirtualEnv">(9328)</span> <span class="go">wsgi starting up on http://127.0.0.1:8000</span>
+<span class="gp gp-VirtualEnv">(9328)</span> <span class="go">accepted (&#39;127.0.0.1&#39;, 63313)</span>
+<span class="go">127.0.0.1 - - [11/Dec/2024 09:26:47] &quot;GET /socket.io/?transport=polling&amp;EIO=4&amp;t=1733927207.5092578 HTTP/1.1&quot; 200 279 0.000000</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Line 1: This indicates the WSGI web server has started up and listening on host 127.0.0.1 on port 8000. The ID of the process running the server is 9328.</p></li>
+<li><p>Line 2: The server has received and accepted a new client connection. The client sent the connection from PID 63313.</p></li>
+<li><p>Line 3: The client made a GET request to the server, and the server reported a successful 200 response.</p></li>
+</ul>
+<p>If only Line 1 is logged, then the server has started but has not received any connections. Check that your firewall settings allow incoming connections and traffic to the host and port number.</p>
+<ol class="arabic simple" start="4">
+<li><p>Test if a simple HTTP client can connect to the server:</p></li>
+</ol>
+<ol class="loweralpha simple">
+<li><p>Launch Alias</p></li>
+<li><p>Check the AppData/Roaming/Autodesk/Alias/ShotGrid/plugin/logs/wsgi.log file to see this gets logs:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp gp-VirtualEnv">(3692)</span> <span class="go">wsgi starting up on http://127.0.0.1:8000/</span>
+</pre></div>
+</div>
+<ol class="loweralpha simple" start="3">
+<li><p>Then open a python interpreter and run:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># May need to run python -m pip install requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="c1"># Manually send a request to check if the server is running and can receive a new connection</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://127.0.0.1:8000/socket.io/?transport=polling&amp;EIO=4&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+<span class="c1"># Should see output &lt;Response [200]&gt; if server is started successfully and receiving connections</span>
+</pre></div>
+</div>
+<p>Note that if the port is different, you will need to replace <code class="docutils literal notranslate"><span class="pre">8000</span></code> with the port that is in the log message</p>
+<section id="proxy-server-troubleshooting">
+<span id="id1"></span><h3>Proxy Server Troubleshooting<a class="headerlink" href="#proxy-server-troubleshooting" title="Permalink to this heading"></a></h3>
+<p>If you are running Flow Production Tracking with a proxy server, you may encounter issues with Alias. To troubleshoot:</p>
+<ol class="arabic simple">
+<li><p>Turn on “Advanced &gt; Toggle Debug Logging” from Flow Production Tracking Desktop</p></li>
+<li><p>Launch Alias from Flow Production Tracking Desktop</p></li>
+<li><p>If you do not see a Python console window pop up after launching Alias, your proxy server may be causing Flow Production Tracking to fail.</p></li>
+<li><p>Check the Alias prompt line for error messages, if you see this error, your proxy server may be causing Flow Production Tracking to fail.</p></li>
+</ol>
+<a class="reference internal image-reference" href="_images/alias-prompt-comm-failed.png"><img alt="Publish Export Selection" class="align-center" src="_images/alias-prompt-comm-failed.png" style="width: 800px;" /></a>
+<p></p>
+<p><strong>Possible solutions:</strong></p>
+<ol class="arabic simple">
+<li><p>Before launching Flow Production Tracking Desktop, set the environment variable <a class="reference internal" href="environment_vars.html#env-var-sgtk-enforce-proxy-localhost"><span class="std std-ref">SGTK_ENFORCE_PROXY_LOCALHOST</span></a> to <code class="docutils literal notranslate"><span class="pre">1</span></code>. This will force Flow Production Tracking Desktop to use the proxy settings from the environment variables:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">set SGTK_ENFORCE_PROXY_LOCALHOST=1</span>
+<span class="go">&quot;C:\Program Files\Shotgun\Shotgun.exe&quot;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>If you can allow the Alias/FPT communication on localhost <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> to bypass your proxy server (e.g. communication over localhost will not run through your proxy server), add <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> to your proxy server exception settings.</p></li>
+</ol>
+<p><strong>If you are experiencing any of these issues, please contact support.</strong></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="environment_vars.html" class="btn btn-neutral float-left" title="Environment Variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Autodesk.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ 
+
+  <script type="text/javascript">
+    window.wafCCPAForceShow = true;
+    (function(a,b,c,d){
+      a='https://tags.tiqcdn.com/utag/autodesk/micro-basic/prod/utag.js';
+      b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+      a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+    })();
+  </script>
+
+
+</body>
+</html>

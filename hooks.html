@@ -6,10 +6,11 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hooks &mdash; tk-alias v4.1.4 documentation</title>
+  <title>Hooks &mdash; tk-alias v4.1.5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -59,6 +60,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="changes.html">What’s New</a></li>
 <li class="toctree-l1"><a class="reference internal" href="engine.html">Engine</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Hooks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tk-multi-data-validation">tk-multi-data-validation</a><ul>
@@ -89,7 +91,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">What’s New</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment_vars.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
 
 
@@ -111,7 +114,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.1.4.<br>
+    <b>tk-alias</b> v4.1.5.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -490,6 +493,12 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">AliasActions</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the hook.&quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">ui_area</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of action instances for a particular publish.</span>
@@ -612,11 +621,13 @@
 
 <span class="sd">        :param list actions: Action dictionaries.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">single_action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-            <span class="n">sg_publish_data</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;sg_publish_data&quot;</span><span class="p">]</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">execute_action</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">request_context_manager</span><span class="p">(</span><span class="n">is_async</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">single_action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="n">sg_publish_data</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;sg_publish_data&quot;</span><span class="p">]</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execute_action</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1284,13 +1295,13 @@
             <span class="c1"># it will be used later in the background process to open the file before running the publishing actions</span>
             <span class="k">if</span> <span class="n">bg_processing</span> <span class="ow">and</span> <span class="s2">&quot;session_path&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;session_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
-                <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span>
-                    <span class="s2">&quot;session_name&quot;</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Alias Session - </span><span class="si">{task_name}</span><span class="s2">, </span><span class="si">{entity_type}</span><span class="s2"> </span><span class="si">{entity_name}</span><span class="s2"> - </span><span class="si">{file_name}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">task_name</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-                    <span class="n">entity_type</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">entity</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
-                    <span class="n">entity_name</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">entity</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-                    <span class="n">file_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;session_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Alias Session - </span><span class="si">{task_name}</span><span class="s2">, </span><span class="si">{entity_type}</span><span class="s2"> </span><span class="si">{entity_name}</span><span class="s2"> - </span><span class="si">{file_name}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">task_name</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                        <span class="n">entity_type</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">entity</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
+                        <span class="n">entity_name</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">entity</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                        <span class="n">file_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
 
         <span class="c1"># update the item with the saved session path</span>
@@ -1299,9 +1310,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">bg_processing</span> <span class="ow">or</span> <span class="p">(</span><span class="n">bg_processing</span> <span class="ow">and</span> <span class="n">in_bg_process</span><span class="p">):</span>
 
             <span class="c1"># add dependencies for the base class to register when publishing</span>
-            <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span>
-                <span class="s2">&quot;publish_dependencies&quot;</span>
-            <span class="p">]</span> <span class="o">=</span> <span class="n">_alias_find_additional_session_dependencies</span><span class="p">()</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;publish_dependencies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_alias_find_additional_session_dependencies</span><span class="p">()</span>
+            <span class="p">)</span>
 
             <span class="c1"># let the base class register the publish</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">AliasSessionPublishPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
