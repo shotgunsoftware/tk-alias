@@ -76,7 +76,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
         part of its environment configuration.
         """
         # inherit the settings from the base publish plugin
-        base_settings = super(AliasTranslationPublishPlugin, self).settings or {}
+        base_settings = super().settings or {}
 
         # settings specific to this class
         alias_publish_settings = {
@@ -296,7 +296,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             "product_license_path": alias_info.get("product_license_path"),
         }
 
-        return super(AliasTranslationPublishPlugin, self).validate(settings, item)
+        return super().validate(settings, item)
 
     def publish(self, settings, item):
         """
@@ -356,7 +356,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
             if parent_sg_publish_data and not item.description:
                 item.description = parent_sg_publish_data["description"]
 
-            super(AliasTranslationPublishPlugin, self).publish(settings, item)
+            super().publish(settings, item)
 
             # If we have some parent publish data, share the thumbnail between the parent publish and it child
             if parent_sg_publish_data:
