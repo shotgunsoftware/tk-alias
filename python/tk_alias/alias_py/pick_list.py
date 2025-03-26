@@ -23,7 +23,7 @@ class AliasPyPickList(AliasPyBase):
     """Alias Python API pick list class."""
 
     def __init__(self, alpy):
-        super(AliasPyPickList, self).__init__(alpy)
+        super().__init__(alpy)
 
     # -------------------------------------------------------------------------------------------------------
     # Pick functions

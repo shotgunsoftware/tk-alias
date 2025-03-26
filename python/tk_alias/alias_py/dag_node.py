@@ -25,7 +25,7 @@ class AliasPyDagNode(AliasPyBase):
     """Alias Python API utility class."""
 
     def __init__(self, alpy):
-        super(AliasPyDagNode, self).__init__(alpy)
+        super().__init__(alpy)
 
     # -------------------------------------------------------------------------------------------------------
     # AlDagNode functions
