@@ -1,4 +1,6 @@
-[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/)
+![Supported Alias versions: 2023 - 2026](https://img.shields.io/badge/Alias-2026_|_2025_|_2024_|_2023-blue?logo=alias&logoColor=f5f5f5 "Support Alias versions")
+[![Supported VFX Platform: 2022 - 2025](https://img.shields.io/badge/VFX_Platform-2025_|_2024_|_2023_|_2022-blue)](http://www.vfxplatform.com/ "Supported VFX Platform")
+[![Supported Python versions: 3.7 - 3.11](https://img.shields.io/badge/Python-3.11_|_3.10_|_3.9_|_3.7-blue?logo=python&logoColor=f5f5f5)](https://www.python.org/ "Supported Python versions")
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Build Status](https://dev.azure.com/shotgun-ecosystem/Toolkit/_apis/build/status/Engines/tk-alias?branchName=master)](https://dev.azure.com/shotgun-ecosystem/Toolkit/_build/latest?definitionId=53&branchName=master)
 [![codecov](https://codecov.io/gh/shotgunsoftware/tk-alias/branch/master/graph/badge.svg?token=iPdjbKbIPa)](https://codecov.io/gh/shotgunsoftware/tk-alias)
