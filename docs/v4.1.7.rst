@@ -1,0 +1,16 @@
+v4.1.7
+=====================
+
+Release highlights
+------------------
+
+* Offically support Alias 2026
+
+Dependencies
+---------------
+
+* Alias Framework: ``tk-framework-alias v2.2.0``
+
+    * Required for Alias 2026 support
+
+    * Increased server-side max http buffer size to 5MB to handle larger Alias Python API requests
