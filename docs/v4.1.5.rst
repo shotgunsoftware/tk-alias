@@ -20,7 +20,7 @@ Dependencies
 
     * Configuration must be updated to use Publish2 App ``v2.10.3`` or later
 
-* Alias Framework: ``tk-framework-alias v2.2.0``
+* Alias Framework: ``tk-framework-alias v2.1.3``
 
     * Required to fix proxy server handling
 
