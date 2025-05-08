@@ -1222,7 +1222,7 @@ For information regarding support engine versions, please visit this page:
                 "Flow Production Tracking has not yet been fully tested with "
                 "{product} version {version}.".format(
                     product="Alias",
-                    version=self.max_version_year,
+                    version=self.alias_version,
                 )
             )
 
