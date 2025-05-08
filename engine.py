@@ -1084,6 +1084,9 @@ class AliasEngine(sgtk.platform.Engine):
             self.logger.debug("Couldn't get Alias version. Skip version comparison")
             return False
 
+
+        ## TODO
+
         if int(self.alias_version[0:4]) > self.get_setting(
             "compatibility_dialog_min_version", 2020
         ):
@@ -1093,7 +1096,7 @@ class AliasEngine(sgtk.platform.Engine):
                 "experience bugs or instability.  Please report any issues you see "
                 "to %s" % (self.alias_version, sgtk.support_url)
             )
-            self.logger.warning(msg)
+            self.logger.warning(msg)l
             if self.has_ui:
                 QtGui.QMessageBox.warning(
                     self._get_dialog_parent(),
