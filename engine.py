@@ -18,7 +18,7 @@ import sgtk
 from sgtk.util import LocalFileStorageManager
 
 # VRED versions compatibility constants
-VERSION_OLDEST_COMPATIBLE = 2020
+VERSION_OLDEST_COMPATIBLE = 2023
 VERSION_OLDEST_SUPPORTED = 2023
 VERSION_NEWEST_SUPPORTED = 2026
 # Caution: make sure compatibility_dialog_min_version default value in info.yml
@@ -1110,12 +1110,12 @@ For information regarding support engine versions, please visit this page:
                             "<br>",
                         ).format(
                             product="Alias",
-                            url_doc_supported_versions='<a href="{u}">{u}</a>'.format(
+                            url_doc_supported_versions='<a style="color: #5fd2df" href="{u}">{u}</a>'.format(
                                 u=url_doc_supported_versions,
                             ),
                         ),
                     )
-                except:  # Ignore B110
+                except:  # nosec B110
                     # It is unlikely that the above message will go through
                     # on old versions of Alias (Python2, Qt4, ...).
                     # But there is nothing more we can do here.
@@ -1154,13 +1154,13 @@ For information regarding support engine versions, please visit this page:
                             "<br>",
                         ).format(
                             product="Alias",
-                            url_doc_supported_versions='<a href="{u}">{u}</a>'.format(
+                            url_doc_supported_versions='<a style="color: #5fd2df" href="{u}">{u}</a>'.format(
                                 u=url_doc_supported_versions,
                             ),
                             version=VERSION_OLDEST_COMPATIBLE,
                         ),
                     )
-                except:  # Ignore B110
+                except:  # nosec B110
                     # It is unlikely that the above message will go through
                     # on old versions of VRED (Python2, Qt4, ...).
                     # But there is nothing more we can do here.
@@ -1205,7 +1205,7 @@ For information regarding support engine versions, please visit this page:
                     )
                     .format(
                         product="Alias",
-                        url_doc_supported_versions='<a href="{u}">{u}</a>'.format(
+                        url_doc_supported_versions='<a style="color: #5fd2df" href="{u}">{u}</a>'.format(
                             u=url_doc_supported_versions,
                         ),
                         version=VERSION_OLDEST_SUPPORTED,
@@ -1249,7 +1249,7 @@ Please report any issues to:
                     )
                     .format(
                         product="Alias",
-                        support_url='<a href="{u}">{u}</a>'.format(
+                        support_url='<a style="color: #5fd2df" href="{u}">{u}</a>'.format(
                             u=sgtk.support_url,
                         ),
                         version=self.alias_version,
