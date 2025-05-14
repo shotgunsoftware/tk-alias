@@ -1110,8 +1110,12 @@ For information regarding support engine versions, please visit this page:
                             "<br>",
                         ).format(
                             product="Alias",
-                            url_doc_supported_versions='<a style="color: #5fd2df" href="{u}">{u}</a>'.format(
+                            url_doc_supported_versions='<a style="color: {color}" href="{u}">{u}</a>'.format(
                                 u=url_doc_supported_versions,
+                                color=sgtk.platform.constants.SG_STYLESHEET_CONSTANTS.get(
+                                    "SG_HIGHLIGHT_COLOR",
+                                    "#18A7E3",
+                                ),
                             ),
                         ),
                     )
@@ -1156,6 +1160,10 @@ For information regarding support engine versions, please visit this page:
                             product="Alias",
                             url_doc_supported_versions='<a style="color: #5fd2df" href="{u}">{u}</a>'.format(
                                 u=url_doc_supported_versions,
+                                color=sgtk.platform.constants.SG_STYLESHEET_CONSTANTS.get(
+                                    "SG_HIGHLIGHT_COLOR",
+                                    "#18A7E3",
+                                ),
                             ),
                             version=VERSION_OLDEST_COMPATIBLE,
                         ),
@@ -1205,8 +1213,12 @@ For information regarding support engine versions, please visit this page:
                     )
                     .format(
                         product="Alias",
-                        url_doc_supported_versions='<a style="color: #5fd2df" href="{u}">{u}</a>'.format(
+                        url_doc_supported_versions='<a style="color: {color}" href="{u}">{u}</a>'.format(
                             u=url_doc_supported_versions,
+                            color=sgtk.platform.constants.SG_STYLESHEET_CONSTANTS.get(
+                                "SG_HIGHLIGHT_COLOR",
+                                "#18A7E3",
+                            ),
                         ),
                         version=VERSION_OLDEST_SUPPORTED,
                     ),
@@ -1249,8 +1261,12 @@ Please report any issues to:
                     )
                     .format(
                         product="Alias",
-                        support_url='<a style="color: #5fd2df" href="{u}">{u}</a>'.format(
+                        support_url='<a style="color: {color}" href="{u}">{u}</a>'.format(
                             u=sgtk.support_url,
+                            color=sgtk.platform.constants.SG_STYLESHEET_CONSTANTS.get(
+                                "SG_HIGHLIGHT_COLOR",
+                                "#18A7E3",
+                            ),
                         ),
                         version=self.alias_version,
                     ),
