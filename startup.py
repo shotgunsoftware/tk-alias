@@ -286,8 +286,8 @@ class AliasLauncher(SoftwareLauncher):
             item.strip() for item in releases if item.strip().startswith(release_prefix)
         ]
         if not release_info:
-            raise Exception(
-                f"Failed to find release version for {release_prefix} in {about_box_file}"
+            raise ValueError(
+                f"Failed to find release version for {release_prefix} (code_name: {code_name}) in {about_box_file}"
             )
         release_item_info = release_info[0]
         release_version = release_item_info[len(release_prefix) :].strip()
