@@ -17,6 +17,13 @@ import pprint
 import sgtk
 from sgtk.util import LocalFileStorageManager
 
+# VRED versions compatibility constants
+VERSION_OLDEST_COMPATIBLE = 2023
+VERSION_OLDEST_SUPPORTED = 2023
+VERSION_NEWEST_SUPPORTED = 2026
+# Caution: make sure compatibility_dialog_min_version default value in info.yml
+# is equal to VERSION_NEWEST_SUPPORTED
+
 
 class AliasEngine(sgtk.platform.Engine):
     """Alias engine for Flow Production Tracking Toolkit."""
@@ -1080,48 +1087,190 @@ class AliasEngine(sgtk.platform.Engine):
 
         from sgtk.platform.qt import QtGui
 
+        url_doc_supported_versions = "https://help.autodesk.com/view/SGDEV/ENU/?guid=SGD_si_integrations_engine_supported_versions_html"
+
         if not self.alias_version:
             self.logger.debug("Couldn't get Alias version. Skip version comparison")
-            return False
 
-        if int(self.alias_version[0:4]) > self.get_setting(
-            "compatibility_dialog_min_version", 2020
-        ):
-            msg = (
-                "The Flow Production Tracking Toolkit has not yet been fully tested "
-                "with Alias %s. You can continue to use the Toolkit but you may "
-                "experience bugs or instability.  Please report any issues you see "
-                "to %s" % (self.alias_version, sgtk.support_url)
-            )
-            self.logger.warning(msg)
+            message = """
+Flow Production Tracking is not compatible with this version of {product}.
+For information regarding support engine versions, please visit this page:
+{url_doc_supported_versions}.
+            """.strip()
+
             if self.has_ui:
-                QtGui.QMessageBox.warning(
-                    self._get_dialog_parent(),
-                    "Warning - Flow Production Tracking Toolkit!",
-                    msg,
-                )
-                return False
+                try:
+                    QtGui.QMessageBox.critical(
+                        self._get_dialog_parent(),  # parent
+                        # Padding to try to prevent the dialog being insanely narrow
+                        title="Error - Flow Production Tracking Compatibility!".ljust(
+                            70
+                        ),
+                        message=message.replace(
+                            # Presence of \n breaks the Rich Text Format
+                            "\n",
+                            "<br>",
+                        ).format(
+                            product="Alias",
+                            url_doc_supported_versions='<a style="color: {color}" href="{u}">{u}</a>'.format(
+                                u=url_doc_supported_versions,
+                                color=sgtk.platform.constants.SG_STYLESHEET_CONSTANTS.get(
+                                    "SG_HIGHLIGHT_COLOR",
+                                    "#18A7E3",
+                                ),
+                            ),
+                        ),
+                    )
+                except:  # nosec B110
+                    # It is unlikely that the above message will go through
+                    # on old versions of Alias (Python2, Qt4, ...).
+                    # But there is nothing more we can do here.
+                    pass
 
-        elif int(self.alias_version[0:4]) < 2021 and self.get_setting(
-            "compatibility_dialog_old_version"
-        ):
-            msg = (
-                "The Flow Production Tracking Toolkit is not fully capable with "
-                "Alias %s. You should consider upgrading to a more recent version "
-                "of Alias. Please report any issues you see to %s"
-                % (self.alias_version, sgtk.support_url)
+            raise sgtk.TankError(
+                message.format(
+                    product="Alias",
+                    url_doc_supported_versions=url_doc_supported_versions,
+                )
             )
-            self.logger.warning(msg)
-            if self.has_ui:
-                QtGui.QMessageBox.warning(
-                    self._get_dialog_parent(),
-                    "Warning - Flow Production Tracking Toolkit!",
-                    msg,
-                )
-                return False
 
-        # Version successfully checked and is supported
-        return True
+        alias_major_year = int(self.alias_version[0:4])
+
+        if alias_major_year < VERSION_OLDEST_COMPATIBLE:
+            # Old incompatible version
+            message = """
+Flow Production Tracking is no longer compatible with {product} versions older
+than {version}.
+For information regarding support engine versions, please visit this page:
+{url_doc_supported_versions}
+            """.strip()
+
+            if self.has_ui:
+                try:
+                    QtGui.QMessageBox.critical(
+                        self._get_dialog_parent(),  # parent
+                        "Error - Flow Production Tracking Compatibility!".ljust(
+                            # Padding to try to prevent the dialog being insanely narrow
+                            70
+                        ),
+                        message.replace(
+                            # Presence of \n breaks the Rich Text Format
+                            "\n",
+                            "<br>",
+                        ).format(
+                            product="Alias",
+                            url_doc_supported_versions='<a style="color: #5fd2df" href="{u}">{u}</a>'.format(
+                                u=url_doc_supported_versions,
+                                color=sgtk.platform.constants.SG_STYLESHEET_CONSTANTS.get(
+                                    "SG_HIGHLIGHT_COLOR",
+                                    "#18A7E3",
+                                ),
+                            ),
+                            version=VERSION_OLDEST_COMPATIBLE,
+                        ),
+                    )
+                except:  # nosec B110
+                    # It is unlikely that the above message will go through
+                    # on old versions of VRED (Python2, Qt4, ...).
+                    # But there is nothing more we can do here.
+                    pass
+
+            raise sgtk.TankError(
+                message.format(
+                    product="Alias",
+                    url_doc_supported_versions=url_doc_supported_versions,
+                    version=VERSION_OLDEST_COMPATIBLE,
+                )
+            )
+
+        elif alias_major_year < VERSION_OLDEST_SUPPORTED:
+            # Older than the oldest supported version
+            self.logger.warning(
+                "Flow Production Tracking no longer supports {product} "
+                "versions older than {version}".format(
+                    product="Alias",
+                    version=VERSION_OLDEST_SUPPORTED,
+                )
+            )
+
+            if self.has_ui and self.get_setting("compatibility_dialog_old_version"):
+                QtGui.QMessageBox.warning(
+                    self._get_dialog_parent(),  # parent
+                    "Warning - Flow Production Tracking Compatibility!".ljust(
+                        # Padding to try to prevent the dialog being insanely narrow
+                        70
+                    ),
+                    """
+Flow Production Tracking no longer supports {product} versions older than
+{version}.
+You can continue to use Toolkit but you may experience bugs or instabilities.
+For information regarding support engine versions, please visit this page:
+{url_doc_supported_versions}
+                    """.strip()
+                    .replace(
+                        # Presence of \n breaks the Rich Text Format
+                        "\n",
+                        "<br>",
+                    )
+                    .format(
+                        product="Alias",
+                        url_doc_supported_versions='<a style="color: {color}" href="{u}">{u}</a>'.format(
+                            u=url_doc_supported_versions,
+                            color=sgtk.platform.constants.SG_STYLESHEET_CONSTANTS.get(
+                                "SG_HIGHLIGHT_COLOR",
+                                "#18A7E3",
+                            ),
+                        ),
+                        version=VERSION_OLDEST_SUPPORTED,
+                    ),
+                )
+
+        elif alias_major_year <= VERSION_NEWEST_SUPPORTED:
+            # Within the range of supported versions
+            self.logger.debug(f"Running Alias version {self.alias_version}")
+
+        else:  # Newer than the newest supported version (untested)
+            self.logger.warning(
+                "Flow Production Tracking has not yet been fully tested with "
+                "{product} version {version}.".format(
+                    product="Alias",
+                    version=self.alias_version,
+                )
+            )
+
+            if self.has_ui and alias_major_year >= self.get_setting(
+                "compatibility_dialog_min_version"
+            ):
+                QtGui.QMessageBox.warning(
+                    self._get_dialog_parent(),  # parent
+                    "Warning - Flow Production Tracking Compatibility!".ljust(
+                        # Padding to try to prevent the dialog being insanely narrow
+                        70
+                    ),
+                    """
+Flow Production Tracking has not yet been fully tested with {product} version
+{version}.
+You can continue to use Toolkit but you may experience bugs or instabilities.
+Please report any issues to:
+{support_url}
+                    """.strip()
+                    .replace(
+                        # Presence of \n breaks the Rich Text Format
+                        "\n",
+                        "<br>",
+                    )
+                    .format(
+                        product="Alias",
+                        support_url='<a style="color: {color}" href="{u}">{u}</a>'.format(
+                            u=sgtk.support_url,
+                            color=sgtk.platform.constants.SG_STYLESHEET_CONSTANTS.get(
+                                "SG_HIGHLIGHT_COLOR",
+                                "#18A7E3",
+                            ),
+                        ),
+                        version=self.alias_version,
+                    ),
+                )
 
     def __get_or_create_proxy_window(self):
         """
