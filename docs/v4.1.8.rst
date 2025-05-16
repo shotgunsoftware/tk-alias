@@ -1,0 +1,18 @@
+v4.1.8
+=====================
+
+Release highlights
+------------------
+
+* Alias Learning Edition is now supported
+* Require selection when publishing mode `Export Selection` is enabled
+
+New Features
+-----------------
+
+* Flow Production Desktop will now provide the launcher for Alias Learning Edition software, if installed
+
+Improvements
+-----------------
+
+On publish, if the `Export Selection` mode is enabled, the publish will require a selection to be made in Alias. The publish will not validate successfully, until at least one object is selected in the Alias scene. This is to prevent trying to publish an empty file, which will result in not creating a new published file on disk.
