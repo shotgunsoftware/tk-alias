@@ -230,7 +230,8 @@ class AliasSessionPublishPlugin(HookBaseClass):
             # init the first pick item, and check that there is at least one
             # item selected.
             alias_api.first_pick_item()
-            if not alias_api.get_current_pick_item():
+            current_pick_item = alias_api.get_current_pick_item()
+            if not current_pick_item:
                 error_msg = "Nothing selected, please select the items you would like to include in the publish or switch the Publish Mode to 'Default'"
                 self.logger.error(error_msg)
                 return False
