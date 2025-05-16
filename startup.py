@@ -226,14 +226,12 @@ class AliasLauncher(SoftwareLauncher):
                 # not included)
                 version = key_dict.get("version")
                 code_name = key_dict.get("code_name")
-                release_name = self.CODE_NAMES.get(code_name, {}).get(
-                    "release_name", code_name
-                )
+                alias_release_name = self._get_release_name(code_name)
 
                 sw_versions.append(
                     SoftwareVersion(
                         version,
-                        f"Alias {release_name}",
+                        alias_release_name,
                         executable_path,
                         self._icon_from_executable(code_name),
                     )
@@ -256,6 +254,21 @@ class AliasLauncher(SoftwareLauncher):
             if code_name in exec_path:
                 return code_name
         return self.FALLBACK_CODE_NAME
+
+    def _get_release_name(self, code_name):
+        """
+        Return the Alias release name for the given code name.
+
+        :return: The Alias release name.
+        :rtype: str
+        """
+
+        code_name_data = self.CODE_NAMES.get(code_name)
+        if not code_name_data:
+            raise ValueError(f"Invalid code name: {code_name}")
+
+        release_name = code_name_data.get("release_name", code_name)
+        return f"Alias {release_name}"
 
     def _get_release_version(self, exec_path, code_name):
         """
@@ -281,9 +294,7 @@ class AliasLauncher(SoftwareLauncher):
             with open(about_box_file, "r", encoding="latin-1") as f:
                 about_box_file_first_line = f.readline().split("\r")[0].strip()
 
-        code_name_data = self.CODE_NAMES[code_name]
-        release_name = code_name_data.get("release_name", code_name)
-        release_prefix = "Alias " + release_name
+        release_prefix = self._get_release_name(code_name)
         releases = about_box_file_first_line.strip().split(",")
         release_info = [
             item.strip() for item in releases if item.strip().startswith(release_prefix)
