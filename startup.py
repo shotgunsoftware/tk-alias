@@ -34,7 +34,7 @@ class AliasLauncher(SoftwareLauncher):
         "Design": dict(flags="-a ds", icon="icon_cs_256.png"),
         "Concept": dict(flags="-a cs", icon="icon_cs_256.png"),
         "LearningEdition": dict(
-            flags="", icon="icon_as_256.png", release_name="Learning Edition"
+            flags="-a le", icon="icon_as_256.png", release_name="Learning Edition"
         ),
     }
 
