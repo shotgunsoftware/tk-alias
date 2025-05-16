@@ -227,7 +227,7 @@ class AliasSessionPublishPlugin(HookBaseClass):
                 self.logger.error(error_msg)
                 return False
             # Ensure the user has selected something to export. Use Alias API to
-            # init the first pick item, and check that there is at least one
+            # initialize the first pick item, and check that there is at least one
             # item selected.
             alias_api.first_pick_item()
             current_pick_item = alias_api.get_current_pick_item()
