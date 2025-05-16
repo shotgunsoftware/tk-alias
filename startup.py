@@ -33,7 +33,9 @@ class AliasLauncher(SoftwareLauncher):
         "Surface": dict(flags="-a ss", icon="icon_ss_256.png"),
         "Design": dict(flags="-a ds", icon="icon_cs_256.png"),
         "Concept": dict(flags="-a cs", icon="icon_cs_256.png"),
-        "LearningEdition": dict(flags="-a as", icon="icon_as_256.png"),
+        "LearningEdition": dict(
+            flags="", icon="icon_as_256.png", release_name="Learning Edition"
+        ),
     }
 
     # Named regex strings to insert into the executable template paths when
@@ -276,12 +278,19 @@ class AliasLauncher(SoftwareLauncher):
             with open(about_box_file, "r", encoding="latin-1") as f:
                 about_box_file_first_line = f.readline().split("\r")[0].strip()
 
-        release_prefix = "Alias " + code_name
+        code_name_data = self.CODE_NAMES[code_name]
+        release_name = code_name_data.get("release_name", code_name)
+        release_prefix = "Alias " + release_name
         releases = about_box_file_first_line.strip().split(",")
         release_info = [
             item.strip() for item in releases if item.strip().startswith(release_prefix)
-        ][0]
-        release_version = release_info[len(release_prefix) :].strip()
+        ]
+        if not release_info:
+            raise Exception(
+                f"Failed to find release version for {release_prefix} in {about_box_file}"
+            )
+        release_item_info = release_info[0]
+        release_version = release_item_info[len(release_prefix) :].strip()
 
         # Strip out any text that comes after the version number string (e.g. Preview)
         release_version = release_version.split(" ")[0]
