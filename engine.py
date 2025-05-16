@@ -1087,6 +1087,8 @@ class AliasEngine(sgtk.platform.Engine):
 
         from sgtk.platform.qt import QtGui
 
+        url_doc_supported_versions = "https://help.autodesk.com/view/SGDEV/ENU/?guid=SGD_si_integrations_engine_supported_versions_html"
+
         if not self.alias_version:
             self.logger.debug("Couldn't get Alias version. Skip version comparison")
 
@@ -1105,7 +1107,7 @@ For information regarding support engine versions, please visit this page:
                             70
                         ),
                         message=message.replace(
-                            # Precense of \n breaks the Rich Text Format
+                            # Presence of \n breaks the Rich Text Format
                             "\n",
                             "<br>",
                         ).format(
@@ -1132,7 +1134,6 @@ For information regarding support engine versions, please visit this page:
                 )
             )
 
-        url_doc_supported_versions = "https://help.autodesk.com/view/SGDEV/ENU/?guid=SGD_si_integrations_engine_supported_versions_html"
         alias_major_year = int(self.alias_version[0:4])
 
         if alias_major_year < VERSION_OLDEST_COMPATIBLE:
@@ -1153,7 +1154,7 @@ For information regarding support engine versions, please visit this page:
                             70
                         ),
                         message.replace(
-                            # Precense of \n breaks the Rich Text Format
+                            # Presence of \n breaks the Rich Text Format
                             "\n",
                             "<br>",
                         ).format(
@@ -1207,7 +1208,7 @@ For information regarding support engine versions, please visit this page:
 {url_doc_supported_versions}
                     """.strip()
                     .replace(
-                        # Precense of \n breaks the Rich Text Format
+                        # Presence of \n breaks the Rich Text Format
                         "\n",
                         "<br>",
                     )
@@ -1224,12 +1225,11 @@ For information regarding support engine versions, please visit this page:
                     ),
                 )
 
-        elif alias_major_year < VERSION_NEWEST_SUPPORTED:
+        elif alias_major_year <= VERSION_NEWEST_SUPPORTED:
             # Within the range of supported versions
             self.logger.debug(f"Running Alias version {self.alias_version}")
 
-        else:
-            # Newer than the newest supported version: untested
+        else:  # Newer than the newest supported version (untested)
             self.logger.warning(
                 "Flow Production Tracking has not yet been fully tested with "
                 "{product} version {version}.".format(
@@ -1255,7 +1255,7 @@ Please report any issues to:
 {support_url}
                     """.strip()
                     .replace(
-                        # Precense of \n breaks the Rich Text Format
+                        # Presence of \n breaks the Rich Text Format
                         "\n",
                         "<br>",
                     )
