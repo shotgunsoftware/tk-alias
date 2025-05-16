@@ -226,11 +226,14 @@ class AliasLauncher(SoftwareLauncher):
                 # not included)
                 version = key_dict.get("version")
                 code_name = key_dict.get("code_name")
+                release_name = self.CODE_NAMES.get(code_name, {}).get(
+                    "release_name", code_name
+                )
 
                 sw_versions.append(
                     SoftwareVersion(
                         version,
-                        "Alias {code_name}".format(code_name=code_name),
+                        f"Alias {release_name}",
                         executable_path,
                         self._icon_from_executable(code_name),
                     )
