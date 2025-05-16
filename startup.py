@@ -296,15 +296,15 @@ class AliasLauncher(SoftwareLauncher):
 
         release_prefix = self._get_release_name(code_name)
         releases = about_box_file_first_line.strip().split(",")
-        release_info = [
+        release_entries = [
             item.strip() for item in releases if item.strip().startswith(release_prefix)
         ]
-        if not release_info:
+        if not release_entries:
             raise ValueError(
                 f"Failed to find release version for {release_prefix} in {about_box_file}"
             )
-        release_item_info = release_info[0]
-        release_version = release_item_info[len(release_prefix) :].strip()
+        release_info = release_entries[0]
+        release_version = release_info[len(release_prefix) :].strip()
 
         # Strip out any text that comes after the version number string (e.g. Preview)
         release_version = release_version.split(" ")[0]
