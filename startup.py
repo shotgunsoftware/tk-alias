@@ -33,6 +33,9 @@ class AliasLauncher(SoftwareLauncher):
         "Surface": dict(flags="-a ss", icon="icon_ss_256.png"),
         "Design": dict(flags="-a ds", icon="icon_cs_256.png"),
         "Concept": dict(flags="-a cs", icon="icon_cs_256.png"),
+        "LearningEdition": dict(
+            flags="-a le", icon="icon_le_256.png", release_name="Learning Edition"
+        ),
     }
 
     # Named regex strings to insert into the executable template paths when
@@ -223,11 +226,12 @@ class AliasLauncher(SoftwareLauncher):
                 # not included)
                 version = key_dict.get("version")
                 code_name = key_dict.get("code_name")
+                alias_release_name = self._get_release_name(code_name)
 
                 sw_versions.append(
                     SoftwareVersion(
                         version,
-                        "Alias {code_name}".format(code_name=code_name),
+                        alias_release_name,
                         executable_path,
                         self._icon_from_executable(code_name),
                     )
@@ -250,6 +254,21 @@ class AliasLauncher(SoftwareLauncher):
             if code_name in exec_path:
                 return code_name
         return self.FALLBACK_CODE_NAME
+
+    def _get_release_name(self, code_name):
+        """
+        Return the Alias release name for the given code name.
+
+        :return: The Alias release name.
+        :rtype: str
+        """
+
+        code_name_data = self.CODE_NAMES.get(code_name)
+        if not code_name_data:
+            raise ValueError(f"Invalid code name: {code_name}")
+
+        release_name = code_name_data.get("release_name", code_name)
+        return f"Alias {release_name}"
 
     def _get_release_version(self, exec_path, code_name):
         """
@@ -275,11 +294,16 @@ class AliasLauncher(SoftwareLauncher):
             with open(about_box_file, "r", encoding="latin-1") as f:
                 about_box_file_first_line = f.readline().split("\r")[0].strip()
 
-        release_prefix = "Alias " + code_name
+        release_prefix = self._get_release_name(code_name)
         releases = about_box_file_first_line.strip().split(",")
-        release_info = [
+        release_entries = [
             item.strip() for item in releases if item.strip().startswith(release_prefix)
-        ][0]
+        ]
+        if not release_entries:
+            raise ValueError(
+                f"Failed to find release version for {release_prefix} in {about_box_file}"
+            )
+        release_info = release_entries[0]
         release_version = release_info[len(release_prefix) :].strip()
 
         # Strip out any text that comes after the version number string (e.g. Preview)
