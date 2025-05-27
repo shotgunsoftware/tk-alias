@@ -152,12 +152,11 @@ class AliasActions(HookBaseClass):
         :param list actions: Action dictionaries.
         """
 
-        with self.alias_py.request_context_manager(is_async=True):
-            for single_action in actions:
-                name = single_action["name"]
-                sg_publish_data = single_action["sg_publish_data"]
-                params = single_action["params"]
-                self.execute_action(name, params, sg_publish_data)
+        for single_action in actions:
+            name = single_action["name"]
+            sg_publish_data = single_action["sg_publish_data"]
+            params = single_action["params"]
+            self.execute_action(name, params, sg_publish_data)
 
     def execute_action(self, name, params, sg_publish_data):
         """
