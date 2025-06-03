@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hooks &mdash; tk-alias v4.1.7 documentation</title>
+  <title>Hooks &mdash; tk-alias v4.1.8 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -114,7 +114,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.1.7.<br>
+    <b>tk-alias</b> v4.1.8.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -622,12 +622,11 @@
 <span class="sd">        :param list actions: Action dictionaries.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">request_context_manager</span><span class="p">(</span><span class="n">is_async</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">single_action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
-                <span class="n">name</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-                <span class="n">sg_publish_data</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;sg_publish_data&quot;</span><span class="p">]</span>
-                <span class="n">params</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">execute_action</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">single_action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">sg_publish_data</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;sg_publish_data&quot;</span><span class="p">]</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">single_action</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_action</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sg_publish_data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1164,6 +1163,15 @@
             <span class="n">bg_processing</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s2">&quot;bg_processing&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">bg_processing</span><span class="p">:</span>
                 <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Export Selection mode is not supported with Background Publishing. Please change the Publish Mode or turn off Background Publishing.&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Ensure the user has selected something to export. Use Alias API to</span>
+            <span class="c1"># initialize the first pick item, and check that there is at least one</span>
+            <span class="c1"># item selected.</span>
+            <span class="n">alias_api</span><span class="o">.</span><span class="n">first_pick_item</span><span class="p">()</span>
+            <span class="n">current_pick_item</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_current_pick_item</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">current_pick_item</span><span class="p">:</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Nothing selected, please select the items you would like to include in the publish or switch the Publish Mode to &#39;Default&#39;&quot;</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
