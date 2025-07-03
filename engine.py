@@ -1017,8 +1017,17 @@ class AliasEngine(sgtk.platform.Engine):
                 if not connected:
                     raise Exception("Failed to connect to Alias api server")
 
+                alias_api_extensions_path = self.execute_hook_method(
+                    "hook_alias_api_extensions", "get_alias_api_extensions_path"
+                )
+                self.logger.debug(
+                    f"Using Alias Python API extensions functions from path: {alias_api_extensions_path}"
+                )
+
                 # Get the server info and api module through the socket connection
-                api_proxy_module = self.__sio.get_alias_api_module_proxy()
+                api_proxy_module = self.__sio.get_alias_api_module_proxy(
+                    api_extensions_path=alias_api_extensions_path
+                )
                 api_module = api_proxy_module.get_or_create_module(self.__sio)
                 if not api_module:
                     raise Exception("Failed to get Alias Python API from proxy module.")
