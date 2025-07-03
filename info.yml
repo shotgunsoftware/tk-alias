@@ -17,6 +17,11 @@ configuration:
         description: "A hook that customizes the Flow Production Tracking menu in Alias."
         default_value: "{self}/menu_customization.py"
 
+    hook_alias_api_extensions:
+        type: hook
+        description: "A hook that allows defining functions to extend the Alias Python API."
+        default_value: "{self}/alias_api_extensions.py"
+
     debug_logging:
         type: bool
         description: Controls whether debug messages should be emitted to the logger
