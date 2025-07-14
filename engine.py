@@ -1045,6 +1045,9 @@ class AliasEngine(sgtk.platform.Engine):
                     raise Exception("Failed to connect to Alias api server")
 
                 # Get the server info and api module through the socket connection
+                # Pass the alias_api_extensions_path to the server to load any
+                # custom extensions; the custom functions must be loaded by the
+                # server so that they can be executed on the server side.
                 api_proxy_module = self.__sio.get_alias_api_module_proxy(
                     api_extensions_path=alias_api_extensions_path
                 )
