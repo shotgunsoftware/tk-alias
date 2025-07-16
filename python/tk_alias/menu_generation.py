@@ -13,11 +13,6 @@ import os
 
 from sgtk.util import is_windows, is_macos, is_linux
 
-try:
-    from tank_vendor import sgutils
-except ImportError:
-    from tank_vendor import six as sgutils
-
 
 class AliasMenuGenerator(object):
     """Menu handling for Alias."""
@@ -166,7 +161,7 @@ class AliasMenuGenerator(object):
         """
 
         ctx = self.engine.context
-        ctx_name = sgutils.ensure_str(str(self.engine.context))
+        ctx_name = str(self.engine.context)
 
         # Create the submenu
         ctx_menu = self.alias_menu.add_menu(ctx_name)
