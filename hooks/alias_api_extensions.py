@@ -8,7 +8,6 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import os
 import sgtk
 
 HookBaseClass = sgtk.get_hook_baseclass()
@@ -36,10 +35,9 @@ class AliasApiExtensionsHook(HookBaseClass):
         server side, the global functions will have access to the `alias_api`
         module.
 
-        TEMPORARY:
-            The file path returned is an example of how these global functions
-            can be defined. Override this hook method to return the location of
-            your custom Alias API functions file.
+        Default implementation returns None, which means no custom Alias API
+        functions will be loaded. Override this hook method to return the location
+        of your custom Alias API functions file.
         """
 
-        return os.path.join(os.path.dirname(__file__), "custom_alias_api_functions.py")
+        return
