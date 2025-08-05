@@ -1,0 +1,179 @@
+v4.2.0
+=====================
+
+Release highlights
+------------------
+
+* New engine hook to allow defining Alias Python API extension functions
+* Fix start up issue for Alias < 2024.0
+* Fix Alias crash when Alias Python API exception thrown (>=2026.0)
+
+Dependencies
+---------------
+
+* Alias Framework: ``tk-framework-alias v2.3.0``
+
+    * Required for defining Alias Python API extensions
+
+New Features
+-----------------
+
+Alias Python API Extension Functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A new engine hook `hook_alias_api_extensions` has been added to allow defining Alias Python API extension functions.
+
+**What is an Alias Python API extension function?**
+
+Here is some context first, to understand what an Alias Python API extension function is:
+
+The Alias Python API functions can be used directly through the Alias Engine (nothing has changed here); for example:
+
+.. code-block:: python
+
+    alias_engine = sgtk.platform.current_engine()
+    alias_engine.alias_py.create_layer("MyLayer")
+
+When running the Alias Engine with Alias 2026.0 or later (e.g. not headless), the Alias Engine is running in a separate process to Alias, which means that Alias Python API functions are sent from the Alias Engine to Alias over Inter Process Communication (IPC). This adds overhead to each Alias Python API function call, which can cause performance issues (compared to Alias 2023 or earlier, which does not use IPC).
+
+To address this performance issue, Alias Python API extension functions have been introduced. Users can define their own Alias Python extension functions, which will be loaded as extensions to the Alias Python API module. These extension functions will be available from the Alias Python API module in the ``AliasApiExtensions`` class, and can be called like any other Alias Python API function; for example:
+
+.. code-block:: python
+
+    alias_engine = sgtk.platform.current_engine()
+    api_extensions = alias_engine.alias_py.AliasApiExtensions()
+    api_extensions.my_extension_function()
+
+**Why use Alias Python API extension functions?**
+
+It is not required to use Alias Python API extension functions, but they can help to improve performance when making Alias Python API calls. The extension functions are executed as one IPC call, instead of one IPC call per Alias Python API function call, which can significantly improve performance.
+
+**When should I use Alias Python API extension functions?**
+
+It is recommended to use Alias Python API extension functions when:
+
+* You have a function or block of code that makes many Alias Python API function calls
+* You need to perform a complex operation that is not supported by a single Alias Python API function
+
+**How do I define and use Alias Python API extension functions?**
+
+There are two ways to define Alias Python API extension functions:
+
+1. Create a single python file with the extension functions
+2. Create a directory with multiple python files with the extension functions (directory can have sub-directories)
+
+For this example, we will create a single python file with the extension functions. The high-level steps:
+
+1. Write the extension functions in a python file
+2. Create a new hook file to override the default hook method ``get_alias_api_extensions_path``
+3. Update the Toolkit configuration to use the custom hook
+4. Use your extension function
+
+**Step 1: Write the extension functions**
+
+Create a new python file, let's call it ``my_alias_api_extensions_functions.py``. Write a simple extension function that logs a message to the Alias prompt line:
+
+.. code-block:: python
+
+    def my_first_extension_function():
+        """Say hello in the Alias prompt line."""
+
+        alias_api.log_to_prompt("Hello, this is my first extension function!")
+
+.. important::
+    Do not import the ``alias_api`` module in the python file. The ``alias_api`` module is automatically imported when the Alias Python API extension functions are executed.
+
+An example of a more realistic use case:
+
+.. code-block:: python
+
+    def swap_surface_shaders(shader_from_name: str, shader_to_name: str):
+        """Swap the shaders of the given surfaces."""
+
+        shader_from = alias_api.get_shader_by_name(shader_from_name)
+        shader_to = alias_api.get_shader_by_name(shader_to_name)
+
+        surfaces = [
+            n.surface()
+            for n in shader_from.get_assigned_nodes()
+            if n.type() == alias_api.AlObjectType.SurfaceNodeType
+        ]
+
+        for surface in surfaces:
+            surface.assign_shader(shader_to)
+
+.. important::
+    Alias Python API extension functions must be defined as global functions and their names must be unique. The functions must also be JSON-serializable.
+
+**Step 2: Create a new hook file to override the default hook method**
+
+Override the base hook by creating your own hook file, let's call it ``my_alias_api_extensions_hook.py``. The hook file should contain the following:
+
+.. code-block:: python
+
+    import sgtk
+    HookBaseClass = sgtk.get_hook_baseclass()
+
+    class MyAliasApiExtensionsHook(HookBaseClass):
+        """
+        Hook to define Alias Python API extension functions.
+        """
+
+        def get_alias_api_extensions_path(self):
+            """
+            We will create a python file called my_alias_api_extensions.py in the directory
+            containing this hook file
+            """
+
+            return os.path.join(os.path.dirname(__file__), "my_alias_api_extensions_functions.py")
+
+
+For reference, the base hook file is located in the ``tk-alias/hooks/alias_api_extensions.py`` file:
+
+.. literalinclude:: ../hooks/alias_api_extensions.py
+    :language: python
+
+**Step 3: Update the Toolkit configuration to use the custom hook**
+
+Update your Toolkit configuration ``tk-alias.yml`` file to use the custom hook you have defined. We'll place the custom hook file ``my_alias_api_extensions_hook.py`` in the configuration hooks directory, and update the config accordingly:
+
+.. code-block:: yaml
+
+    settings.tk-alias.project:
+        hook_alias_api_extensions: "{config}/my_alias_api_extensions_hook.py"
+
+.. note::
+    The hook method ``get_alias_api_extensions_path`` returns the path to the directory containing the hook file; this means that the ``my_alias_api_extensions_functions.py`` file must be placedin the same directory as the hook file.
+
+**Step 4: Use your extension function**
+
+All extension functions are added as methods to the ``alias_api.AliasApiExtensions`` class. For example, to use the ``swap_surface_shaders`` function, you can call it like this:
+
+.. code-block:: python
+
+    import alias_api
+
+    api_extensions = alias_api.AliasApiExtensions()
+    api_extensions.swap_surface_shaders("ShaderA", "ShaderB")
+
+The above example is shown for simplicity, but it is recommended to access the ``alias_api`` module through the ``AliasEngine.alias_py`` attribute. The extension functions can then be used like:
+
+.. code-block:: python
+
+    alias_engine = sgtk.platform.current_engine()
+    alias_api = alias_engine.alias_py
+
+    api_extensions = alias_api.AliasApiExtensions()
+    api_extensions.swap_surface_shaders("ShaderA", "ShaderB")
+
+.. tip::
+    You can test out your extension functions by running Alias and opening the PTR Python Console.
+
+.. tip::
+    To organize your extension functions, instead of using a single python file, you can create a directory with multiple python files, which define extension functions. You may also create sub-directories of python files containing extension functions. Remember that each extension function must be unique, even if defined in different files. To use the extension functions from multiple files, you must modify the hook method ``get_alias_api_extensions_path`` to return the path to the directory containing the extension functions.
+
+Bug Fixes
+-----------------
+
+* Fixed issue with Alias < 2024.0 failing to start Alias due to using the incorrect Toolkit configuration
+* Fixed crash with Alias >=2026.0 when Alias Python API exception thrown; an error message will now be displayed with the Python exception information

@@ -107,3 +107,11 @@ SceneOperation
 
 .. literalinclude:: ../hooks/tk-multi-workfiles2/basic/scene_operation.py
     :language: python
+
+.. _hooks-alias_api_extensions:
+
+AliasApiExtensionsHook
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ../hooks/alias_api_extensions.py
+    :language: python

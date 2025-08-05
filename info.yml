@@ -17,6 +17,11 @@ configuration:
         description: "A hook that customizes the Flow Production Tracking menu in Alias."
         default_value: "{self}/menu_customization.py"
 
+    hook_alias_api_extensions:
+        type: hook
+        description: "A hook that allows defining functions to extend the Alias Python API."
+        default_value: "{self}/alias_api_extensions.py"
+
     debug_logging:
         type: bool
         description: Controls whether debug messages should be emitted to the logger
@@ -91,5 +96,5 @@ requires_core_version: "v0.19.18"
 
 frameworks:
   - {"name": "tk-framework-aliastranslations", "version": "v0.x.x", "minimum_version": "v0.2.3"}
-  - {"name": "tk-framework-alias", "version": "v2.x.x", "minimum_version": "v2.1.3"}
+  - {"name": "tk-framework-alias", "version": "v2.x.x", "minimum_version": "v2.3.0"}
   - {"name": "tk-framework-lmv", "version": "v1.x.x"}

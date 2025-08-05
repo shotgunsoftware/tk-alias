@@ -974,12 +974,30 @@ class AliasEngine(sgtk.platform.Engine):
         :type force: bool
         """
 
+        # NOTE:
+        # For OpenAlias, startup.py __ensure_plugin_ready must be called before
+        # this import, to ensure tk-framework-alias can be imported.
+        # For OpenModel, __ensure_framework() must be called before this import,
+        # to ensure tk-framework-alias can be imported.
+        from tk_framework_alias.server.api.extensions import (
+            add_alias_api_extensions_to_module,
+        )
+
         if self.__alias_py and not force:
             # Already initialized.
             return
 
         api_module = None
         api_proxy_module = None
+
+        # Check if there are any custom alias api extensions to load.
+        alias_api_extensions_path = self.execute_hook_method(
+            "hook_alias_api_extensions", "get_alias_api_extensions_path"
+        )
+        if alias_api_extensions_path:
+            self.logger.debug(
+                f"Using Alias Python API extensions functions from path: {alias_api_extensions_path}"
+            )
 
         if self.__in_alias_process:
             # Flow Production Tracking is running in the same process as Alias. This is the old way that the
@@ -992,6 +1010,12 @@ class AliasEngine(sgtk.platform.Engine):
                     f"Failed to import Alias Python API in same process as Alias.\n{api_import_error}"
                 )
             api_module = alias_api
+
+            # If defined, add the alias api extensions to the module.
+            if alias_api_extensions_path:
+                add_alias_api_extensions_to_module(
+                    alias_api_extensions_path, api_module
+                )
 
             if self.__has_ui:
                 # When running Flow Production Tracking in the same process as Alias, the qt app needs to be
@@ -1014,6 +1038,11 @@ class AliasEngine(sgtk.platform.Engine):
                     )
 
                 api_module = alias_api_om
+                # If defined, add the alias api extensions to the module.
+                if alias_api_extensions_path:
+                    add_alias_api_extensions_to_module(
+                        alias_api_extensions_path, api_module
+                    )
                 # Initialize the universe to make the api ready for requests.
                 api_module.initialize_universe()
             else:
@@ -1025,7 +1054,12 @@ class AliasEngine(sgtk.platform.Engine):
                     raise Exception("Failed to connect to Alias api server")
 
                 # Get the server info and api module through the socket connection
-                api_proxy_module = self.__sio.get_alias_api_module_proxy()
+                # Pass the alias_api_extensions_path to the server to load any
+                # custom extensions; the custom functions must be loaded by the
+                # server so that they can be executed on the server side.
+                api_proxy_module = self.__sio.get_alias_api_module_proxy(
+                    api_extensions_path=alias_api_extensions_path
+                )
                 api_module = api_proxy_module.get_or_create_module(self.__sio)
                 if not api_module:
                     raise Exception("Failed to get Alias Python API from proxy module.")
