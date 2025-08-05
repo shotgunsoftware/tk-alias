@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>v4.2.0 &mdash; tk-alias v4.2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='_static/logo@2x.png'/>
+    
+    </a>
+    
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tk-alias
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">What’s New</a></li>
+<li class="toctree-l1"><a class="reference internal" href="engine.html">Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hooks.html">Hooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment_vars.html">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px;
+                color: #b3b3b3;
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>
+    <style>
+        a.custom_post_menu { display: inline;
+                             padding: 0px;
+                             text-decoration: underline; }
+    </style>
+
+    <b>tk-alias</b> v4.2.0.<br>
+    
+        This documentation is part of the Flow Production Tracking.
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
+    The code associated with this documentation can be found
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/tk-alias'>here</a>.
+
+    </div>
+    <style>
+        p.privacy_links { margin: 4px 0px;}
+    </style>
+    <p class="privacy_links"><a data-opt-in-preferences href="javascript:;">Privacy settings</a></p>
+    <p class="privacy_links"><a data-wat-linkname="manage-ccpa-settings-footer-link" href="javascript:;">Do not sell my personal information</a></p>
+    <p class="privacy_links"><a href="https://www.autodesk.com/company/legal-notices-trademarks/privacy-statement">Privacy/Cookies</a></p>
+
+
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tk-alias</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">v4.2.0</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="v4-2-0">
+<h1>v4.2.0<a class="headerlink" href="#v4-2-0" title="Permalink to this heading"></a></h1>
+<section id="release-highlights">
+<h2>Release highlights<a class="headerlink" href="#release-highlights" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>New engine hook to allow defining Alias Python API extension functions</p></li>
+<li><p>Fix start up issue for Alias &lt; 2024.0</p></li>
+<li><p>Fix Alias crash when Alias Python API exception thrown (&gt;=2026.0)</p></li>
+</ul>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading"></a></h2>
+<ul>
+<li><p>Alias Framework: <code class="docutils literal notranslate"><span class="pre">tk-framework-alias</span> <span class="pre">v2.3.0</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Required for defining Alias Python API extensions</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="new-features">
+<h2>New Features<a class="headerlink" href="#new-features" title="Permalink to this heading"></a></h2>
+<section id="alias-python-api-extension-functions">
+<h3>Alias Python API Extension Functions<a class="headerlink" href="#alias-python-api-extension-functions" title="Permalink to this heading"></a></h3>
+<p>A new engine hook <cite>hook_alias_api_extensions</cite> has been added to allow defining Alias Python API extension functions.</p>
+<p><strong>What is an Alias Python API extension function?</strong></p>
+<p>Here is some context first, to understand what an Alias Python API extension function is:</p>
+<p>The Alias Python API functions can be used directly through the Alias Engine (nothing has changed here); for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">alias_engine</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span>
+<span class="n">alias_engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">create_layer</span><span class="p">(</span><span class="s2">&quot;MyLayer&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When running the Alias Engine with Alias 2026.0 or later (e.g. not headless), the Alias Engine is running in a separate process to Alias, which means that Alias Python API functions are sent from the Alias Engine to Alias over Inter Process Communication (IPC). This adds overhead to each Alias Python API function call, which can cause performance issues (compared to Alias 2023 or earlier, which does not use IPC).</p>
+<p>To address this performance issue, Alias Python API extension functions have been introduced. Users can define their own Alias Python extension functions, which will be loaded as extensions to the Alias Python API module. These extension functions will be available from the Alias Python API module in the <code class="docutils literal notranslate"><span class="pre">AliasApiExtensions</span></code> class, and can be called like any other Alias Python API function; for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">alias_engine</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span>
+<span class="n">api_extensions</span> <span class="o">=</span> <span class="n">alias_engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">AliasApiExtensions</span><span class="p">()</span>
+<span class="n">api_extensions</span><span class="o">.</span><span class="n">my_extension_function</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Why use Alias Python API extension functions?</strong></p>
+<p>It is not required to use Alias Python API extension functions, but they can help to improve performance when making Alias Python API calls. The extension functions are executed as one IPC call, instead of one IPC call per Alias Python API function call, which can significantly improve performance.</p>
+<p><strong>When should I use Alias Python API extension functions?</strong></p>
+<p>It is recommended to use Alias Python API extension functions when:</p>
+<ul class="simple">
+<li><p>You have a function or block of code that makes many Alias Python API function calls</p></li>
+<li><p>You need to perform a complex operation that is not supported by a single Alias Python API function</p></li>
+</ul>
+<p><strong>How do I define and use Alias Python API extension functions?</strong></p>
+<p>There are two ways to define Alias Python API extension functions:</p>
+<ol class="arabic simple">
+<li><p>Create a single python file with the extension functions</p></li>
+<li><p>Create a directory with multiple python files with the extension functions (directory can have sub-directories)</p></li>
+</ol>
+<p>For this example, we will create a single python file with the extension functions. The high-level steps:</p>
+<ol class="arabic simple">
+<li><p>Write the extension functions in a python file</p></li>
+<li><p>Create a new hook file to override the default hook method <code class="docutils literal notranslate"><span class="pre">get_alias_api_extensions_path</span></code></p></li>
+<li><p>Update the Toolkit configuration to use the custom hook</p></li>
+<li><p>Use your extension function</p></li>
+</ol>
+<p><strong>Step 1: Write the extension functions</strong></p>
+<p>Create a new python file, let’s call it <code class="docutils literal notranslate"><span class="pre">my_alias_api_extensions_functions.py</span></code>. Write a simple extension function that logs a message to the Alias prompt line:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_first_extension_function</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Say hello in the Alias prompt line.&quot;&quot;&quot;</span>
+
+    <span class="n">alias_api</span><span class="o">.</span><span class="n">log_to_prompt</span><span class="p">(</span><span class="s2">&quot;Hello, this is my first extension function!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Do not import the <code class="docutils literal notranslate"><span class="pre">alias_api</span></code> module in the python file. The <code class="docutils literal notranslate"><span class="pre">alias_api</span></code> module is automatically imported when the Alias Python API extension functions are executed.</p>
+</div>
+<p>An example of a more realistic use case:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">swap_surface_shaders</span><span class="p">(</span><span class="n">shader_from_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">shader_to_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Swap the shaders of the given surfaces.&quot;&quot;&quot;</span>
+
+    <span class="n">shader_from</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_shader_by_name</span><span class="p">(</span><span class="n">shader_from_name</span><span class="p">)</span>
+    <span class="n">shader_to</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">get_shader_by_name</span><span class="p">(</span><span class="n">shader_to_name</span><span class="p">)</span>
+
+    <span class="n">surfaces</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">shader_from</span><span class="o">.</span><span class="n">get_assigned_nodes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AlObjectType</span><span class="o">.</span><span class="n">SurfaceNodeType</span>
+    <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">surface</span> <span class="ow">in</span> <span class="n">surfaces</span><span class="p">:</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">assign_shader</span><span class="p">(</span><span class="n">shader_to</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Alias Python API extension functions must be defined as global functions and their names must be unique. The functions must also be JSON-serializable.</p>
+</div>
+<p><strong>Step 2: Create a new hook file to override the default hook method</strong></p>
+<p>Override the base hook by creating your own hook file, let’s call it <code class="docutils literal notranslate"><span class="pre">my_alias_api_extensions_hook.py</span></code>. The hook file should contain the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
+<span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyAliasApiExtensionsHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hook to define Alias Python API extension functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_alias_api_extensions_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We will create a python file called my_alias_api_extensions.py in the directory</span>
+<span class="sd">        containing this hook file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;my_alias_api_extensions_functions.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For reference, the base hook file is located in the <code class="docutils literal notranslate"><span class="pre">tk-alias/hooks/alias_api_extensions.py</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2025 Shotgun Software Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
+
+<span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AliasApiExtensionsHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hook to allow defining additional Alias Python API functions that can</span>
+<span class="sd">    be executed on the server side.</span>
+
+<span class="sd">    This hook class should only contain a single method:</span>
+
+<span class="sd">        get_alias_api_extensions_path</span>
+
+<span class="sd">    This hook class itself should not:</span>
+<span class="sd">        - Import the `alias_api` module</span>
+<span class="sd">        - Define any methods for extending the Alias Python API</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_alias_api_extensions_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a file path to Alias Python API extension functions.</span>
+
+<span class="sd">        The file path returned can be one of the following:</span>
+<span class="sd">            - A file path to a python file containing the extension functions</span>
+<span class="sd">            - A directory path to containing python files that contain the extension</span>
+<span class="sd">            functions</span>
+
+<span class="sd">        The python file(s) containing the extension functions should only contain:</span>
+<span class="sd">            - Global functions that are standalone (e.g. any non built-in python</span>
+<span class="sd">              modules must be imported for each function)</span>
+<span class="sd">            - Each function must be JSON-serializable</span>
+
+<span class="sd">        The extension functions will have access to the `alias_api` module at</span>
+<span class="sd">        run time (e.g. do not import the `alias_api` module).</span>
+
+<span class="sd">        The extension functions will be made available through the `alias_api`</span>
+<span class="sd">        module in the `AliasApiExtensions` class.</span>
+
+<span class="sd">        Default implementation returns None, which does not add any extension</span>
+<span class="sd">        functions to the Alias Python API. Override this hook method to return</span>
+<span class="sd">        the location of your custom extension functions.</span>
+
+<span class="sd">        Directory Example:</span>
+<span class="sd">            # Return a directory path containing python files with extension functions</span>
+<span class="sd">            # that is located in the tk-alias/hooks/alias_custom_api directory</span>
+<span class="sd">            return os.path.join(os.path.dirname(__file__), &quot;alias_custom_api&quot;)</span>
+
+<span class="sd">        Single File Example:</span>
+<span class="sd">            # Return a file path to a python file with extension functions</span>
+<span class="sd">            # that is located in the tk-alias/hooks/alias_custom_api directory</span>
+<span class="sd">            return os.path.join(os.path.dirname(__file__), &quot;alias_custom_api.py&quot;)</span>
+
+<span class="sd">        :return: A directory or file path to Alias Python API extension functions,</span>
+<span class="sd">            or None if no extension functions are to be added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p><strong>Step 3: Update the Toolkit configuration to use the custom hook</strong></p>
+<p>Update your Toolkit configuration <code class="docutils literal notranslate"><span class="pre">tk-alias.yml</span></code> file to use the custom hook you have defined. We’ll place the custom hook file <code class="docutils literal notranslate"><span class="pre">my_alias_api_extensions_hook.py</span></code> in the configuration hooks directory, and update the config accordingly:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">settings.tk-alias.project</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hook_alias_api_extensions</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{config}/my_alias_api_extensions_hook.py&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The hook method <code class="docutils literal notranslate"><span class="pre">get_alias_api_extensions_path</span></code> returns the path to the directory containing the hook file; this means that the <code class="docutils literal notranslate"><span class="pre">my_alias_api_extensions_functions.py</span></code> file must be placedin the same directory as the hook file.</p>
+</div>
+<p><strong>Step 4: Use your extension function</strong></p>
+<p>All extension functions are added as methods to the <code class="docutils literal notranslate"><span class="pre">alias_api.AliasApiExtensions</span></code> class. For example, to use the <code class="docutils literal notranslate"><span class="pre">swap_surface_shaders</span></code> function, you can call it like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">alias_api</span>
+
+<span class="n">api_extensions</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AliasApiExtensions</span><span class="p">()</span>
+<span class="n">api_extensions</span><span class="o">.</span><span class="n">swap_surface_shaders</span><span class="p">(</span><span class="s2">&quot;ShaderA&quot;</span><span class="p">,</span> <span class="s2">&quot;ShaderB&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above example is shown for simplicity, but it is recommended to access the <code class="docutils literal notranslate"><span class="pre">alias_api</span></code> module through the <code class="docutils literal notranslate"><span class="pre">AliasEngine.alias_py</span></code> attribute. The extension functions can then be used like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">alias_engine</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">current_engine</span><span class="p">()</span>
+<span class="n">alias_api</span> <span class="o">=</span> <span class="n">alias_engine</span><span class="o">.</span><span class="n">alias_py</span>
+
+<span class="n">api_extensions</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AliasApiExtensions</span><span class="p">()</span>
+<span class="n">api_extensions</span><span class="o">.</span><span class="n">swap_surface_shaders</span><span class="p">(</span><span class="s2">&quot;ShaderA&quot;</span><span class="p">,</span> <span class="s2">&quot;ShaderB&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can test out your extension functions by running Alias and opening the PTR Python Console.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To organize your extension functions, instead of using a single python file, you can create a directory with multiple python files, which define extension functions. You may also create sub-directories of python files containing extension functions. Remember that each extension function must be unique, even if defined in different files. To use the extension functions from multiple files, you must modify the hook method <code class="docutils literal notranslate"><span class="pre">get_alias_api_extensions_path</span></code> to return the path to the directory containing the extension functions.</p>
+</div>
+</section>
+</section>
+<section id="bug-fixes">
+<h2>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixed issue with Alias &lt; 2024.0 failing to start Alias due to using the incorrect Toolkit configuration</p></li>
+<li><p>Fixed crash with Alias &gt;=2026.0 when Alias Python API exception thrown; an error message will now be displayed with the Python exception information</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Autodesk.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ 
+
+  <script type="text/javascript">
+    window.wafCCPAForceShow = true;
+    (function(a,b,c,d){
+      a='https://tags.tiqcdn.com/utag/autodesk/micro-basic/prod/utag.js';
+      b=document;c='script';d=b.createElement(c);d.src=a;d.type='text/java'+c;d.async=true;
+      a=b.getElementsByTagName(c)[0];a.parentNode.insertBefore(d,a);
+    })();
+  </script>
+
+
+</body>
+</html>

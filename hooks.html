@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hooks &mdash; tk-alias v4.1.8 documentation</title>
+  <title>Hooks &mdash; tk-alias v4.2.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -86,6 +86,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#tk-multi-workfiles2">tk-multi-workfiles2</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#sceneoperation">SceneOperation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aliasapiextensionshook">AliasApiExtensionsHook</a></li>
 </ul>
 </li>
 </ul>
@@ -114,7 +115,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.1.8.<br>
+    <b>tk-alias</b> v4.2.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -3712,6 +3713,79 @@
                     <span class="c1"># this Alias stage, before any event callbacks are triggered (whcih may</span>
                     <span class="c1"># require the contexts to be updated).</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">save_context_for_stage</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="aliasapiextensionshook">
+<span id="hooks-alias-api-extensions"></span><h3>AliasApiExtensionsHook<a class="headerlink" href="#aliasapiextensionshook" title="Permalink to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2025 Shotgun Software Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># CONFIDENTIAL AND PROPRIETARY</span>
+<span class="c1">#</span>
+<span class="c1"># This work is provided &quot;AS IS&quot; and subject to the Shotgun Pipeline Toolkit</span>
+<span class="c1"># Source Code License included in this distribution package. See LICENSE.</span>
+<span class="c1"># By accessing, using, copying or modifying this work you indicate your</span>
+<span class="c1"># agreement to the Shotgun Pipeline Toolkit Source Code License. All rights</span>
+<span class="c1"># not expressly granted therein are reserved by Shotgun Software Inc.</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
+
+<span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AliasApiExtensionsHook</span><span class="p">(</span><span class="n">HookBaseClass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hook to allow defining additional Alias Python API functions that can</span>
+<span class="sd">    be executed on the server side.</span>
+
+<span class="sd">    This hook class should only contain a single method:</span>
+
+<span class="sd">        get_alias_api_extensions_path</span>
+
+<span class="sd">    This hook class itself should not:</span>
+<span class="sd">        - Import the `alias_api` module</span>
+<span class="sd">        - Define any methods for extending the Alias Python API</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_alias_api_extensions_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a file path to Alias Python API extension functions.</span>
+
+<span class="sd">        The file path returned can be one of the following:</span>
+<span class="sd">            - A file path to a python file containing the extension functions</span>
+<span class="sd">            - A directory path to containing python files that contain the extension</span>
+<span class="sd">            functions</span>
+
+<span class="sd">        The python file(s) containing the extension functions should only contain:</span>
+<span class="sd">            - Global functions that are standalone (e.g. any non built-in python</span>
+<span class="sd">              modules must be imported for each function)</span>
+<span class="sd">            - Each function must be JSON-serializable</span>
+
+<span class="sd">        The extension functions will have access to the `alias_api` module at</span>
+<span class="sd">        run time (e.g. do not import the `alias_api` module).</span>
+
+<span class="sd">        The extension functions will be made available through the `alias_api`</span>
+<span class="sd">        module in the `AliasApiExtensions` class.</span>
+
+<span class="sd">        Default implementation returns None, which does not add any extension</span>
+<span class="sd">        functions to the Alias Python API. Override this hook method to return</span>
+<span class="sd">        the location of your custom extension functions.</span>
+
+<span class="sd">        Directory Example:</span>
+<span class="sd">            # Return a directory path containing python files with extension functions</span>
+<span class="sd">            # that is located in the tk-alias/hooks/alias_custom_api directory</span>
+<span class="sd">            return os.path.join(os.path.dirname(__file__), &quot;alias_custom_api&quot;)</span>
+
+<span class="sd">        Single File Example:</span>
+<span class="sd">            # Return a file path to a python file with extension functions</span>
+<span class="sd">            # that is located in the tk-alias/hooks/alias_custom_api directory</span>
+<span class="sd">            return os.path.join(os.path.dirname(__file__), &quot;alias_custom_api.py&quot;)</span>
+
+<span class="sd">        :return: A directory or file path to Alias Python API extension functions,</span>
+<span class="sd">            or None if no extension functions are to be added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
 </div>
 </section>

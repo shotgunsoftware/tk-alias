@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Engine &mdash; tk-alias v4.1.8 documentation</title>
+  <title>Engine &mdash; tk-alias v4.2.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -87,7 +87,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.1.8.<br>
+    <b>tk-alias</b> v4.2.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -150,6 +150,13 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sgtk.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalFileStorageManager</span>
+
+<span class="c1"># VRED versions compatibility constants</span>
+<span class="n">VERSION_OLDEST_COMPATIBLE</span> <span class="o">=</span> <span class="mi">2023</span>
+<span class="n">VERSION_OLDEST_SUPPORTED</span> <span class="o">=</span> <span class="mi">2023</span>
+<span class="n">VERSION_NEWEST_SUPPORTED</span> <span class="o">=</span> <span class="mi">2026</span>
+<span class="c1"># Caution: make sure compatibility_dialog_min_version default value in info.yml</span>
+<span class="c1"># is equal to VERSION_NEWEST_SUPPORTED</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">AliasEngine</span><span class="p">(</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">Engine</span><span class="p">):</span>
@@ -1101,12 +1108,30 @@
 <span class="sd">        :type force: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># NOTE:</span>
+        <span class="c1"># For OpenAlias, startup.py __ensure_plugin_ready must be called before</span>
+        <span class="c1"># this import, to ensure tk-framework-alias can be imported.</span>
+        <span class="c1"># For OpenModel, __ensure_framework() must be called before this import,</span>
+        <span class="c1"># to ensure tk-framework-alias can be imported.</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">tk_framework_alias.server.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">add_alias_api_extensions_to_module</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__alias_py</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
             <span class="c1"># Already initialized.</span>
             <span class="k">return</span>
 
         <span class="n">api_module</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">api_proxy_module</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Check if there are any custom alias api extensions to load.</span>
+        <span class="n">alias_api_extensions_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_hook_method</span><span class="p">(</span>
+            <span class="s2">&quot;hook_alias_api_extensions&quot;</span><span class="p">,</span> <span class="s2">&quot;get_alias_api_extensions_path&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">alias_api_extensions_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Using Alias Python API extensions functions from path: </span><span class="si">{</span><span class="n">alias_api_extensions_path</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__in_alias_process</span><span class="p">:</span>
             <span class="c1"># Flow Production Tracking is running in the same process as Alias. This is the old way that the</span>
@@ -1119,6 +1144,12 @@
                     <span class="sa">f</span><span class="s2">&quot;Failed to import Alias Python API in same process as Alias.</span><span class="se">\n</span><span class="si">{</span><span class="n">api_import_error</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
             <span class="n">api_module</span> <span class="o">=</span> <span class="n">alias_api</span>
+
+            <span class="c1"># If defined, add the alias api extensions to the module.</span>
+            <span class="k">if</span> <span class="n">alias_api_extensions_path</span><span class="p">:</span>
+                <span class="n">add_alias_api_extensions_to_module</span><span class="p">(</span>
+                    <span class="n">alias_api_extensions_path</span><span class="p">,</span> <span class="n">api_module</span>
+                <span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__has_ui</span><span class="p">:</span>
                 <span class="c1"># When running Flow Production Tracking in the same process as Alias, the qt app needs to be</span>
@@ -1141,6 +1172,11 @@
                     <span class="p">)</span>
 
                 <span class="n">api_module</span> <span class="o">=</span> <span class="n">alias_api_om</span>
+                <span class="c1"># If defined, add the alias api extensions to the module.</span>
+                <span class="k">if</span> <span class="n">alias_api_extensions_path</span><span class="p">:</span>
+                    <span class="n">add_alias_api_extensions_to_module</span><span class="p">(</span>
+                        <span class="n">alias_api_extensions_path</span><span class="p">,</span> <span class="n">api_module</span>
+                    <span class="p">)</span>
                 <span class="c1"># Initialize the universe to make the api ready for requests.</span>
                 <span class="n">api_module</span><span class="o">.</span><span class="n">initialize_universe</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1152,7 +1188,12 @@
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to connect to Alias api server&quot;</span><span class="p">)</span>
 
                 <span class="c1"># Get the server info and api module through the socket connection</span>
-                <span class="n">api_proxy_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="o">.</span><span class="n">get_alias_api_module_proxy</span><span class="p">()</span>
+                <span class="c1"># Pass the alias_api_extensions_path to the server to load any</span>
+                <span class="c1"># custom extensions; the custom functions must be loaded by the</span>
+                <span class="c1"># server so that they can be executed on the server side.</span>
+                <span class="n">api_proxy_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="o">.</span><span class="n">get_alias_api_module_proxy</span><span class="p">(</span>
+                    <span class="n">api_extensions_path</span><span class="o">=</span><span class="n">alias_api_extensions_path</span>
+                <span class="p">)</span>
                 <span class="n">api_module</span> <span class="o">=</span> <span class="n">api_proxy_module</span><span class="o">.</span><span class="n">get_or_create_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__sio</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">api_module</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to get Alias Python API from proxy module.&quot;</span><span class="p">)</span>
@@ -1214,48 +1255,190 @@
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">sgtk.platform.qt</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtGui</span>
 
+        <span class="n">url_doc_supported_versions</span> <span class="o">=</span> <span class="s2">&quot;https://help.autodesk.com/view/SGDEV/ENU/?guid=SGD_si_integrations_engine_supported_versions_html&quot;</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t get Alias version. Skip version comparison&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
-            <span class="s2">&quot;compatibility_dialog_min_version&quot;</span><span class="p">,</span> <span class="mi">2020</span>
-        <span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;The Flow Production Tracking Toolkit has not yet been fully tested &quot;</span>
-                <span class="s2">&quot;with Alias </span><span class="si">%s</span><span class="s2">. You can continue to use the Toolkit but you may &quot;</span>
-                <span class="s2">&quot;experience bugs or instability.  Please report any issues you see &quot;</span>
-                <span class="s2">&quot;to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">support_url</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Flow Production Tracking is not compatible with this version of </span><span class="si">{product}</span><span class="s2">.</span>
+<span class="s2">For information regarding support engine versions, please visit this page:</span>
+<span class="si">{url_doc_supported_versions}</span><span class="s2">.</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
-                <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialog_parent</span><span class="p">(),</span>
-                    <span class="s2">&quot;Warning - Flow Production Tracking Toolkit!&quot;</span><span class="p">,</span>
-                    <span class="n">msg</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialog_parent</span><span class="p">(),</span>  <span class="c1"># parent</span>
+                        <span class="c1"># Padding to try to prevent the dialog being insanely narrow</span>
+                        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Error - Flow Production Tracking Compatibility!&quot;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span>
+                            <span class="mi">70</span>
+                        <span class="p">),</span>
+                        <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                            <span class="c1"># Presence of \n breaks the Rich Text Format</span>
+                            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">,</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">product</span><span class="o">=</span><span class="s2">&quot;Alias&quot;</span><span class="p">,</span>
+                            <span class="n">url_doc_supported_versions</span><span class="o">=</span><span class="s1">&#39;&lt;a style=&quot;color: </span><span class="si">{color}</span><span class="s1">&quot; href=&quot;</span><span class="si">{u}</span><span class="s1">&quot;&gt;</span><span class="si">{u}</span><span class="s1">&lt;/a&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">u</span><span class="o">=</span><span class="n">url_doc_supported_versions</span><span class="p">,</span>
+                                <span class="n">color</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">SG_STYLESHEET_CONSTANTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                    <span class="s2">&quot;SG_HIGHLIGHT_COLOR&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;#18A7E3&quot;</span><span class="p">,</span>
+                                <span class="p">),</span>
+                            <span class="p">),</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>  <span class="c1"># nosec B110</span>
+                    <span class="c1"># It is unlikely that the above message will go through</span>
+                    <span class="c1"># on old versions of Alias (Python2, Qt4, ...).</span>
+                    <span class="c1"># But there is nothing more we can do here.</span>
+                    <span class="k">pass</span>
 
-        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2021</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
-            <span class="s2">&quot;compatibility_dialog_old_version&quot;</span>
-        <span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;The Flow Production Tracking Toolkit is not fully capable with &quot;</span>
-                <span class="s2">&quot;Alias </span><span class="si">%s</span><span class="s2">. You should consider upgrading to a more recent version &quot;</span>
-                <span class="s2">&quot;of Alias. Please report any issues you see to </span><span class="si">%s</span><span class="s2">&quot;</span>
-                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">support_url</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">product</span><span class="o">=</span><span class="s2">&quot;Alias&quot;</span><span class="p">,</span>
+                    <span class="n">url_doc_supported_versions</span><span class="o">=</span><span class="n">url_doc_supported_versions</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
-                <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialog_parent</span><span class="p">(),</span>
-                    <span class="s2">&quot;Warning - Flow Production Tracking Toolkit!&quot;</span><span class="p">,</span>
-                    <span class="n">msg</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="c1"># Version successfully checked and is supported</span>
-        <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">alias_major_year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">alias_major_year</span> <span class="o">&lt;</span> <span class="n">VERSION_OLDEST_COMPATIBLE</span><span class="p">:</span>
+            <span class="c1"># Old incompatible version</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Flow Production Tracking is no longer compatible with </span><span class="si">{product}</span><span class="s2"> versions older</span>
+<span class="s2">than </span><span class="si">{version}</span><span class="s2">.</span>
+<span class="s2">For information regarding support engine versions, please visit this page:</span>
+<span class="si">{url_doc_supported_versions}</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialog_parent</span><span class="p">(),</span>  <span class="c1"># parent</span>
+                        <span class="s2">&quot;Error - Flow Production Tracking Compatibility!&quot;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span>
+                            <span class="c1"># Padding to try to prevent the dialog being insanely narrow</span>
+                            <span class="mi">70</span>
+                        <span class="p">),</span>
+                        <span class="n">message</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                            <span class="c1"># Presence of \n breaks the Rich Text Format</span>
+                            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">,</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">product</span><span class="o">=</span><span class="s2">&quot;Alias&quot;</span><span class="p">,</span>
+                            <span class="n">url_doc_supported_versions</span><span class="o">=</span><span class="s1">&#39;&lt;a style=&quot;color: #5fd2df&quot; href=&quot;</span><span class="si">{u}</span><span class="s1">&quot;&gt;</span><span class="si">{u}</span><span class="s1">&lt;/a&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">u</span><span class="o">=</span><span class="n">url_doc_supported_versions</span><span class="p">,</span>
+                                <span class="n">color</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">SG_STYLESHEET_CONSTANTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                    <span class="s2">&quot;SG_HIGHLIGHT_COLOR&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;#18A7E3&quot;</span><span class="p">,</span>
+                                <span class="p">),</span>
+                            <span class="p">),</span>
+                            <span class="n">version</span><span class="o">=</span><span class="n">VERSION_OLDEST_COMPATIBLE</span><span class="p">,</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>  <span class="c1"># nosec B110</span>
+                    <span class="c1"># It is unlikely that the above message will go through</span>
+                    <span class="c1"># on old versions of VRED (Python2, Qt4, ...).</span>
+                    <span class="c1"># But there is nothing more we can do here.</span>
+                    <span class="k">pass</span>
+
+            <span class="k">raise</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">TankError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">product</span><span class="o">=</span><span class="s2">&quot;Alias&quot;</span><span class="p">,</span>
+                    <span class="n">url_doc_supported_versions</span><span class="o">=</span><span class="n">url_doc_supported_versions</span><span class="p">,</span>
+                    <span class="n">version</span><span class="o">=</span><span class="n">VERSION_OLDEST_COMPATIBLE</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">alias_major_year</span> <span class="o">&lt;</span> <span class="n">VERSION_OLDEST_SUPPORTED</span><span class="p">:</span>
+            <span class="c1"># Older than the oldest supported version</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Flow Production Tracking no longer supports </span><span class="si">{product}</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;versions older than </span><span class="si">{version}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">product</span><span class="o">=</span><span class="s2">&quot;Alias&quot;</span><span class="p">,</span>
+                    <span class="n">version</span><span class="o">=</span><span class="n">VERSION_OLDEST_SUPPORTED</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="s2">&quot;compatibility_dialog_old_version&quot;</span><span class="p">):</span>
+                <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialog_parent</span><span class="p">(),</span>  <span class="c1"># parent</span>
+                    <span class="s2">&quot;Warning - Flow Production Tracking Compatibility!&quot;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span>
+                        <span class="c1"># Padding to try to prevent the dialog being insanely narrow</span>
+                        <span class="mi">70</span>
+                    <span class="p">),</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Flow Production Tracking no longer supports {product} versions older than</span>
+<span class="sd">{version}.</span>
+<span class="sd">You can continue to use Toolkit but you may experience bugs or instabilities.</span>
+<span class="sd">For information regarding support engine versions, please visit this page:</span>
+<span class="sd">{url_doc_supported_versions}</span>
+<span class="sd">                    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                        <span class="c1"># Presence of \n breaks the Rich Text Format</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">product</span><span class="o">=</span><span class="s2">&quot;Alias&quot;</span><span class="p">,</span>
+                        <span class="n">url_doc_supported_versions</span><span class="o">=</span><span class="s1">&#39;&lt;a style=&quot;color: </span><span class="si">{color}</span><span class="s1">&quot; href=&quot;</span><span class="si">{u}</span><span class="s1">&quot;&gt;</span><span class="si">{u}</span><span class="s1">&lt;/a&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">u</span><span class="o">=</span><span class="n">url_doc_supported_versions</span><span class="p">,</span>
+                            <span class="n">color</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">SG_STYLESHEET_CONSTANTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="s2">&quot;SG_HIGHLIGHT_COLOR&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;#18A7E3&quot;</span><span class="p">,</span>
+                            <span class="p">),</span>
+                        <span class="p">),</span>
+                        <span class="n">version</span><span class="o">=</span><span class="n">VERSION_OLDEST_SUPPORTED</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">alias_major_year</span> <span class="o">&lt;=</span> <span class="n">VERSION_NEWEST_SUPPORTED</span><span class="p">:</span>
+            <span class="c1"># Within the range of supported versions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running Alias version </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Newer than the newest supported version (untested)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Flow Production Tracking has not yet been fully tested with &quot;</span>
+                <span class="s2">&quot;</span><span class="si">{product}</span><span class="s2"> version </span><span class="si">{version}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">product</span><span class="o">=</span><span class="s2">&quot;Alias&quot;</span><span class="p">,</span>
+                    <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ui</span> <span class="ow">and</span> <span class="n">alias_major_year</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span>
+                <span class="s2">&quot;compatibility_dialog_min_version&quot;</span>
+            <span class="p">):</span>
+                <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_dialog_parent</span><span class="p">(),</span>  <span class="c1"># parent</span>
+                    <span class="s2">&quot;Warning - Flow Production Tracking Compatibility!&quot;</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span>
+                        <span class="c1"># Padding to try to prevent the dialog being insanely narrow</span>
+                        <span class="mi">70</span>
+                    <span class="p">),</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Flow Production Tracking has not yet been fully tested with {product} version</span>
+<span class="sd">{version}.</span>
+<span class="sd">You can continue to use Toolkit but you may experience bugs or instabilities.</span>
+<span class="sd">Please report any issues to:</span>
+<span class="sd">{support_url}</span>
+<span class="sd">                    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                        <span class="c1"># Presence of \n breaks the Rich Text Format</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">product</span><span class="o">=</span><span class="s2">&quot;Alias&quot;</span><span class="p">,</span>
+                        <span class="n">support_url</span><span class="o">=</span><span class="s1">&#39;&lt;a style=&quot;color: </span><span class="si">{color}</span><span class="s1">&quot; href=&quot;</span><span class="si">{u}</span><span class="s1">&quot;&gt;</span><span class="si">{u}</span><span class="s1">&lt;/a&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">u</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">support_url</span><span class="p">,</span>
+                            <span class="n">color</span><span class="o">=</span><span class="n">sgtk</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">SG_STYLESHEET_CONSTANTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="s2">&quot;SG_HIGHLIGHT_COLOR&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;#18A7E3&quot;</span><span class="p">,</span>
+                            <span class="p">),</span>
+                        <span class="p">),</span>
+                        <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alias_version</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__get_or_create_proxy_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
