@@ -18,28 +18,50 @@ class AliasApiExtensionsHook(HookBaseClass):
     Hook to allow defining additional Alias Python API functions that can
     be executed on the server side.
 
-    This hook class should only contain a single method that returns the
-    file path to python file that only contains the additional Alias API
-    functions. This hook class itself should not define any Alias API
-    functions.
+    This hook class should only contain a single method:
 
-    FIXME: doc update
+        get_alias_api_extensions_path
+
+    This hook class itself should not define any methods for extending the Alias
+    Python API.
     """
 
     def get_alias_api_extensions_path(self) -> str:
         """
-        Returns the file path to the custom Alias API functions.
+        Returns a file path to Alias Python API extension functions.
 
-        The contents of the file, whose file path is returned here, should only
-        contain global functions. The global functions will be loaded by the
-        tk-framework-alias server and will be made available through the
-        `alias_api` module class object `AliasApiExtensions`. At runtime on the
-        server side, the global functions will have access to the `alias_api`
-        module.
+        The file path returned can be one of the following:
+            - A file path to a python file containing the extension functions
+            - A directory path to containing python files that contain the extension
+            functions
 
-        Default implementation returns None, which means no custom Alias API
-        functions will be loaded. Override this hook method to return the location
-        of your custom Alias API functions file.
+        The python file(s) containing the extension functions should only contain:
+            - Global functions that are standalone (e.g. any non built-in python
+              modules must be imported for each function)
+            - Each function must be JSON-serializable
+
+        The extension functions will have access to the `alias_api` module at
+        run time (e.g. do not import the `alias_api` module).
+
+        The extension functions will be made available through the `alias_api`
+        module in the `AliasApiExtensions` class.
+
+        Default implementation returns None, which does not add any extension
+        functions to the Alias Python API. Override this hook method to return
+        the location of your custom extension functions.
+
+        Directory Example:
+            # Return a directory path containing python files with extension functions
+            # that is located in the tk-alias/hooks/alias_custom_api directory
+            return os.path.join(os.path.dirname(__file__), "alias_custom_api")
+
+        Single File Example:
+            # Return a file path to a python file with extension functions
+            # that is located in the tk-alias/hooks/alias_custom_api directory
+            return os.path.join(os.path.dirname(__file__), "alias_custom_api.py")
+
+        :return: A directory or file path to Alias Python API extension functions,
+            or None if no extension functions are to be added.
         """
 
         return None
