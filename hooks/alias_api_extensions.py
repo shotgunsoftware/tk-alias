@@ -40,4 +40,4 @@ class AliasApiExtensionsHook(HookBaseClass):
         of your custom Alias API functions file.
         """
 
-        return
+        return None
