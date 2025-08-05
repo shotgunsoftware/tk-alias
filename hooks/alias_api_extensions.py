@@ -22,6 +22,8 @@ class AliasApiExtensionsHook(HookBaseClass):
     file path to python file that only contains the additional Alias API
     functions. This hook class itself should not define any Alias API
     functions.
+
+    FIXME: doc update
     """
 
     def get_alias_api_extensions_path(self) -> str:

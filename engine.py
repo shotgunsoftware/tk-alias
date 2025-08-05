@@ -1006,7 +1006,9 @@ class AliasEngine(sgtk.platform.Engine):
 
             # If defined, add the alias api extensions to the module.
             if alias_api_extensions_path:
-                add_alias_api_extensions_to_module(alias_api_extensions_path, alias_api)
+                add_alias_api_extensions_to_module(
+                    alias_api_extensions_path, api_module
+                )
 
             if self.__has_ui:
                 # When running Flow Production Tracking in the same process as Alias, the qt app needs to be
@@ -1032,7 +1034,7 @@ class AliasEngine(sgtk.platform.Engine):
                 # If defined, add the alias api extensions to the module.
                 if alias_api_extensions_path:
                     add_alias_api_extensions_to_module(
-                        alias_api_extensions_path, alias_api
+                        alias_api_extensions_path, api_module
                     )
                 # Initialize the universe to make the api ready for requests.
                 api_module.initialize_universe()
