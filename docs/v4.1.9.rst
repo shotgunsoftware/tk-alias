@@ -1,0 +1,8 @@
+v4.1.9
+=====================
+
+Release highlights
+------------------
+
+* Improve dialog for minimum supported version of Alias
+* Minimum supported version of Alias is now 2023

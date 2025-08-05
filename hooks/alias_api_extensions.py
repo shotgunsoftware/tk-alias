@@ -22,8 +22,9 @@ class AliasApiExtensionsHook(HookBaseClass):
 
         get_alias_api_extensions_path
 
-    This hook class itself should not define any methods for extending the Alias
-    Python API.
+    This hook class itself should not:
+        - Import the `alias_api` module
+        - Define any methods for extending the Alias Python API
     """
 
     def get_alias_api_extensions_path(self) -> str:
