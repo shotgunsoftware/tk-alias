@@ -221,6 +221,11 @@ class AliasEngine(sgtk.platform.Engine):
         # import the framework.
         self.__ensure_framework()
 
+        self.logger.debug("=============== PYTHON VERSION =================")
+        self.logger.debug(sys.version)
+        self.logger.debug(sys.executable)
+        self.logger.debug(sys.path)
+
         # Import python/tk_alias module
         self._tk_alias = self.import_module("tk_alias")
 
