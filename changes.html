@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>What’s New &mdash; tk-alias v4.2.0 documentation</title>
+  <title>What’s New &mdash; tk-alias v4.3.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -61,9 +61,22 @@
     
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">What’s New</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#v4-2-0">v4.2.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v4-3-0">v4.3.0</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#release-highlights">Release highlights</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updates">Updates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alias-python-api-for-openmodel-alias-api-om-pyd">Alias Python API for OpenModel (alias_api_om.pyd)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v4-2-1">v4.2.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Release highlights</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v4-2-0">v4.2.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Dependencies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#new-features">New Features</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#alias-python-api-extension-functions">Alias Python API Extension Functions</a></li>
 </ul>
@@ -72,45 +85,45 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-1-9">v4.1.9</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Release highlights</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-1-8">v4.1.8</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Release highlights</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">New Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#improvements">Improvements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Bug Fixes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-1-7">v4.1.7</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Release highlights</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id6">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Dependencies</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-1-6">v4.1.6</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id7">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Release highlights</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-1-5">v4.1.5</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id8">Release highlights</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id9">Dependencies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id10">New Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id11">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Bug Fixes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-1-4">v4.1.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-1-3">v4.1.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-1-2">v4.1.2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-1-1">v4.1.1</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id12">Release highlights</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id13">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">New Features</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-0-1">v4.0.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v4-0-0">v4.0.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id14">Release highlights</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id15">Dependencies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id16">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">Release highlights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">New Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#removed">Removed</a></li>
 </ul>
 </li>
@@ -159,7 +172,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.2.0.<br>
+    <b>tk-alias</b> v4.3.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -203,19 +216,57 @@
              
   <section id="what-s-new">
 <h1>What’s New<a class="headerlink" href="#what-s-new" title="Permalink to this heading"></a></h1>
-<p>The latest version of the Alias Engine is <code class="docutils literal notranslate"><span class="pre">v4.2.0</span></code>.</p>
-<section id="v4-2-0">
-<h2>v4.2.0<a class="headerlink" href="#v4-2-0" title="Permalink to this heading"></a></h2>
+<p>The latest version of the Alias Engine is <code class="docutils literal notranslate"><span class="pre">v4.3.0</span></code>.</p>
+<section id="v4-3-0">
+<h2>v4.3.0<a class="headerlink" href="#v4-3-0" title="Permalink to this heading"></a></h2>
 <section id="release-highlights">
 <h3>Release highlights<a class="headerlink" href="#release-highlights" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Alias 2026.1 support</p></li>
+<li><p>Update Support URL</p></li>
+</ul>
+</section>
+<section id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading"></a></h3>
+<ul>
+<li><p>Alias Framework: <code class="docutils literal notranslate"><span class="pre">tk-framework-alias</span> <span class="pre">v2.4.0</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Required for Alias 2026.1 support</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="updates">
+<h3>Updates<a class="headerlink" href="#updates" title="Permalink to this heading"></a></h3>
+<section id="alias-python-api-for-openmodel-alias-api-om-pyd">
+<h4>Alias Python API for OpenModel (alias_api_om.pyd)<a class="headerlink" href="#alias-python-api-for-openmodel-alias-api-om-pyd" title="Permalink to this heading"></a></h4>
+<p>The Alias Python API for OpenModel python module (alias_api_om.pyd) is compatible with PySide6 &gt;= 6.8.x. This means when running python and importing both PySide6 and <code class="docutils literal notranslate"><span class="pre">alias_api_om</span></code>, the PySide6 version must be compatible (&gt;= 6.8.x) with the Alias Python API for OpenModel; otherwise a DLL import error will occur when attempting to import <code class="docutils literal notranslate"><span class="pre">alias_api_om</span></code>.</p>
+</section>
+</section>
+</section>
+<section id="v4-2-1">
+<h2>v4.2.1<a class="headerlink" href="#v4-2-1" title="Permalink to this heading"></a></h2>
+<section id="id1">
+<h3>Release highlights<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Removed try/except sgutil blocks and ensure methods</p></li>
+</ul>
+</section>
+</section>
+<section id="v4-2-0">
+<h2>v4.2.0<a class="headerlink" href="#v4-2-0" title="Permalink to this heading"></a></h2>
+<section id="id2">
+<h3>Release highlights<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>New engine hook to allow defining Alias Python API extension functions</p></li>
 <li><p>Fix start up issue for Alias &lt; 2024.0</p></li>
 <li><p>Fix Alias crash when Alias Python API exception thrown (&gt;=2026.0)</p></li>
 </ul>
 </section>
-<section id="dependencies">
-<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading"></a></h3>
+<section id="id3">
+<h3>Dependencies<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
 <ul>
 <li><p>Alias Framework: <code class="docutils literal notranslate"><span class="pre">tk-framework-alias</span> <span class="pre">v2.3.0</span></code></p>
 <blockquote>
@@ -435,8 +486,8 @@
 </section>
 <section id="v4-1-9">
 <h2>v4.1.9<a class="headerlink" href="#v4-1-9" title="Permalink to this heading"></a></h2>
-<section id="id1">
-<h3>Release highlights<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<section id="id4">
+<h3>Release highlights<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Improve dialog for minimum supported version of Alias</p></li>
 <li><p>Minimum supported version of Alias is now 2023</p></li>
@@ -445,16 +496,16 @@
 </section>
 <section id="v4-1-8">
 <h2>v4.1.8<a class="headerlink" href="#v4-1-8" title="Permalink to this heading"></a></h2>
-<section id="id2">
-<h3>Release highlights<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<section id="id5">
+<h3>Release highlights<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Alias Learning Edition is now supported</p></li>
 <li><p>Require selection when publishing mode <cite>Export Selection</cite> is enabled</p></li>
 <li><p>Bug fix for Loader2 App actions</p></li>
 </ul>
 </section>
-<section id="id3">
-<h3>New Features<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<section id="id6">
+<h3>New Features<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Flow Production Desktop will now provide the launcher for Alias Learning Edition software, if installed</p></li>
 </ul>
@@ -463,8 +514,8 @@
 <h3>Improvements<a class="headerlink" href="#improvements" title="Permalink to this heading"></a></h3>
 <p>On publish, if the <cite>Export Selection</cite> mode is enabled, the publish will require a selection to be made in Alias. The publish will not validate successfully, until at least one object is selected in the Alias scene. This is to prevent trying to publish an empty file, which will result in not creating a new published file on disk.</p>
 </section>
-<section id="id4">
-<h3>Bug Fixes<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<section id="id7">
+<h3>Bug Fixes<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Fixed issue with executing Loader2 App actions (bug introduced in v4.1.5)</p></li>
 <li><p>Reported issue for “Import as Reference” action has been fixed</p></li>
@@ -473,14 +524,14 @@
 </section>
 <section id="v4-1-7">
 <h2>v4.1.7<a class="headerlink" href="#v4-1-7" title="Permalink to this heading"></a></h2>
-<section id="id5">
-<h3>Release highlights<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<section id="id8">
+<h3>Release highlights<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Offically support Alias 2026</p></li>
 </ul>
 </section>
-<section id="id6">
-<h3>Dependencies<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<section id="id9">
+<h3>Dependencies<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <ul>
 <li><p>Alias Framework: <code class="docutils literal notranslate"><span class="pre">tk-framework-alias</span> <span class="pre">v2.2.0</span></code></p>
 <blockquote>
@@ -495,8 +546,8 @@
 </section>
 <section id="v4-1-6">
 <h2>v4.1.6<a class="headerlink" href="#v4-1-6" title="Permalink to this heading"></a></h2>
-<section id="id7">
-<h3>Release highlights<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<section id="id10">
+<h3>Release highlights<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Remove Python 2 support</p></li>
 </ul>
@@ -504,16 +555,16 @@
 </section>
 <section id="v4-1-5">
 <h2>v4.1.5<a class="headerlink" href="#v4-1-5" title="Permalink to this heading"></a></h2>
-<section id="id8">
-<h3>Release highlights<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<section id="id11">
+<h3>Release highlights<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Background Publishing can be toggled on/off from Publish2 App UI</p></li>
 <li><p>Improve performance when performing multiple actions at once from Loader2 App</p></li>
 <li><p>Bug fix to correctly handle proxy servers</p></li>
 </ul>
 </section>
-<section id="id9">
-<h3>Dependencies<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<section id="id12">
+<h3>Dependencies<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
 <ul>
 <li><p>Publish2 App: <code class="docutils literal notranslate"><span class="pre">tk-multi-publish2</span> <span class="pre">v2.10.3</span></code></p>
 <blockquote>
@@ -534,8 +585,8 @@
 </li>
 </ul>
 </section>
-<section id="id10">
-<h3>New Features<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<section id="id13">
+<h3>New Features<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
 <p><strong>Background Publishing Setting</strong></p>
 <p>A new publish setting option has been added to the Publish2 App to turn on/off publishing in the background. This requires tk-multi-publish2 <code class="docutils literal notranslate"><span class="pre">v2.10.3</span></code> or later.</p>
 <p>To use the new publish setting:</p>
@@ -553,8 +604,8 @@
 <p></p>
 </div>
 </section>
-<section id="id11">
-<h3>Bug Fixes<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<section id="id14">
+<h3>Bug Fixes<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>FPTR integration can be run with Alias using a proxy server. If you are using a proxy server and are still experiencing issues, see <a class="reference internal" href="troubleshooting.html#proxy-server-troubleshooting"><span class="std std-ref">Proxy Server Troubleshooting</span></a> for more information.</p></li>
 </ul>
@@ -581,15 +632,15 @@
 </section>
 <section id="v4-1-1">
 <h2>v4.1.1<a class="headerlink" href="#v4-1-1" title="Permalink to this heading"></a></h2>
-<section id="id12">
-<h3>Release highlights<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<section id="id15">
+<h3>Release highlights<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>New publish mode “Export Selection”</p></li>
 <li><p>New publish option to choose publish mode</p></li>
 </ul>
 </section>
-<section id="id13">
-<h3>New Features<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<section id="id16">
+<h3>New Features<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
 <p>The Alias publish plugin “Publish to Flow Production Tracking” has a new Publish Mode option:</p>
 <a class="reference internal image-reference" href="_images/publish-export-selection.png"><img alt="Publish Export Selection" class="align-center" src="_images/publish-export-selection.png" style="width: 800px;" /></a>
 <p></p>
@@ -624,16 +675,16 @@
 <section id="v4-0-0">
 <h2>v4.0.0<a class="headerlink" href="#v4-0-0" title="Permalink to this heading"></a></h2>
 <p>This documentation explains the new features in the Alias Engine <code class="docutils literal notranslate"><span class="pre">v4.0.0</span></code> compared to <code class="docutils literal notranslate"><span class="pre">v3.3.2</span></code>.</p>
-<section id="id14">
-<h3>Release highlights<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<section id="id17">
+<h3>Release highlights<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Improved performance overall for Alias 2024.0 and later</p></li>
 <li><p>Improved Data Validation validation and fix operations</p></li>
 <li><p>Improved communication and error handling with Alias</p></li>
 </ul>
 </section>
-<section id="id15">
-<h3>Dependencies<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<section id="id18">
+<h3>Dependencies<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
 <ul>
 <li><p>Data Validation App: <code class="docutils literal notranslate"><span class="pre">tk-multi-data-validation</span> <span class="pre">v0.3.1</span></code></p>
 <blockquote>
@@ -653,8 +704,8 @@
 </li>
 </ul>
 </section>
-<section id="id16">
-<h3>New Features<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
+<section id="id19">
+<h3>New Features<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h3>
 <p>New Alias APIs are <a class="reference external" href="https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html">listed separately</a>.</p>
 <p><strong>AliasPy</strong></p>
 <blockquote>

@@ -1,7 +1,11 @@
 What's New
 ####################################################
 
-The latest version of the Alias Engine is ``v4.2.0``.
+The latest version of the Alias Engine is ``v4.3.0``.
+
+.. include:: v4.3.0.rst
+
+.. include:: v4.2.1.rst
 
 .. include:: v4.2.0.rst
 

@@ -1,0 +1,24 @@
+v4.3.0
+=====================
+
+Release highlights
+------------------
+
+* Alias 2026.1 support
+* Update Support URL
+
+Dependencies
+---------------
+
+* Alias Framework: ``tk-framework-alias v2.4.0``
+
+    * Required for Alias 2026.1 support
+
+
+Updates
+---------------
+
+Alias Python API for OpenModel (alias_api_om.pyd)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Alias Python API for OpenModel python module (alias_api_om.pyd) is compatible with PySide6 >= 6.8.x. This means when running python and importing both PySide6 and ``alias_api_om``, the PySide6 version must be compatible (>= 6.8.x) with the Alias Python API for OpenModel; otherwise a DLL import error will occur when attempting to import ``alias_api_om``.
