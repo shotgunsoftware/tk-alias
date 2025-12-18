@@ -513,9 +513,8 @@ class AliasEngine(sgtk.platform.Engine):
         # Initialie the SG Toolkit style to the application.
         self._initialize_dark_look_and_feel()
 
-        # unicode characters returned by the shotgun api need to be converted
-        # to display correctly in all of the app windows
-        # tell QT to interpret C strings as utf-8
+        # On PySide2/PySide6 we patch QTextCodec with a do-nothing stub
+        # for setCodecForCStrings(), so this will have no effect.
         utf8 = QtCore.QTextCodec.codecForName("utf-8")
         QtCore.QTextCodec.setCodecForCStrings(utf8)
         self.logger.debug("set utf-8 codec for widget text")
