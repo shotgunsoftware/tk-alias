@@ -513,12 +513,6 @@ class AliasEngine(sgtk.platform.Engine):
         # Initialie the SG Toolkit style to the application.
         self._initialize_dark_look_and_feel()
 
-        # On PySide2/PySide6 we patch QTextCodec with a do-nothing stub
-        # for setCodecForCStrings(), so this will have no effect.
-        utf8 = QtCore.QTextCodec.codecForName("utf-8")
-        QtCore.QTextCodec.setCodecForCStrings(utf8)
-        self.logger.debug("set utf-8 codec for widget text")
-
         # Create the parent dialog for Flow Production Tracking widgets
         self.__get_or_create_proxy_window()
 
