@@ -1,0 +1,7 @@
+v4.3.1
+=====================
+
+Release highlights
+------------------
+
+* Fix changeing the context when a file is opened through Alias

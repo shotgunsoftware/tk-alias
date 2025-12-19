@@ -671,8 +671,13 @@ class AliasEngine(sgtk.platform.Engine):
             # Found the context form the stage name
             context = self._contexts_by_stage_name[current_stage.name]
         else:
-            # Context not found, reset to the project context
-            context = self.sgtk.context_from_entity_dictionary(self.context.project)
+            # Context not found
+            if current_stage.path:
+                # First try to find the context from the stage file path
+                context = self.sgtk.context_from_path(current_stage.path)
+            if not context:
+                # Fallback to the project context
+                context = self.sgtk.context_from_entity_dictionary(self.context.project)
 
         # Only change the context if we found one and it is not the current context
         if context and context != self.context:
