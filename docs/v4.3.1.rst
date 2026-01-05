@@ -4,4 +4,11 @@ v4.3.1
 Release highlights
 ------------------
 
-* Fix changeing the context when a file is opened through Alias
+* Fix changing the context when a file is opened through Alias
+* Fix translation error trying to retrieve Alias product license information
+
+---------------
+
+* Alias translations framework: ``tk-framework-aliastranslations v0.3.1``
+
+    * Required for fixing translation bug trying to retrieve Alias product license information
