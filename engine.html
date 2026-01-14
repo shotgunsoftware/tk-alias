@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Engine &mdash; tk-alias v4.3.0 documentation</title>
+  <title>Engine &mdash; tk-alias v4.3.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -87,7 +87,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.3.0.<br>
+    <b>tk-alias</b> v4.3.1.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -805,8 +805,13 @@
             <span class="c1"># Found the context form the stage name</span>
             <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span><span class="p">[</span><span class="n">current_stage</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Context not found, reset to the project context</span>
-            <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">context_from_entity_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+            <span class="c1"># Context not found</span>
+            <span class="k">if</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+                <span class="c1"># First try to find the context from the stage file path</span>
+                <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">context_from_path</span><span class="p">(</span><span class="n">current_stage</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
+                <span class="c1"># Fallback to the project context</span>
+                <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">context_from_entity_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
 
         <span class="c1"># Only change the context if we found one and it is not the current context</span>
         <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="n">context</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
@@ -1703,7 +1708,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Autodesk.</p>
+    <p>&#169; Copyright 2026, Autodesk.</p>
   </div>
 
    
