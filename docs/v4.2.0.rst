@@ -143,7 +143,7 @@ Update your Toolkit configuration ``tk-alias.yml`` file to use the custom hook y
         hook_alias_api_extensions: "{config}/my_alias_api_extensions_hook.py"
 
 .. note::
-    The hook method ``get_alias_api_extensions_path`` returns the path to the directory containing the hook file; this means that the ``my_alias_api_extensions_functions.py`` file must be placedin the same directory as the hook file.
+    The hook method ``get_alias_api_extensions_path`` returns the path to the directory containing the hook file; this means that the ``my_alias_api_extensions_functions.py`` file must be placed in the same directory as the hook file.
 
 **Step 4: Use your extension function**
 

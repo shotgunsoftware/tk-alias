@@ -14,7 +14,6 @@ import tempfile
 import sgtk
 from sgtk.platform.qt import QtGui
 
-
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
