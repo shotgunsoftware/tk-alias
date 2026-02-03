@@ -1,0 +1,13 @@
+v4.4.0
+=====================
+
+Release highlights
+------------------
+
+* Alias 2027.0 support for Python 3.11 and 3.13
+
+Dependencies
+---------------
+
+* Alias framework: ``tk-framework-alias v2.6.0``
+    * Required for Alias 2027.0 support
