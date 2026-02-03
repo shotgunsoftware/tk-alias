@@ -18,7 +18,6 @@ import sgtk
 
 import alias_api
 
-
 HookBaseClass = sgtk.get_hook_baseclass()
 
 

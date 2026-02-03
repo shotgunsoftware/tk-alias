@@ -11,6 +11,7 @@
 """
 set of win32 functions used by Alias engine to manage toolkit UI under windows
 """
+
 import ctypes
 from ctypes import wintypes
 

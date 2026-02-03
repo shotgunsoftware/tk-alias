@@ -24,7 +24,6 @@ from .alias_py.al_typing import (
 import sgtk
 from tank.util import sgre as re
 
-
 # Convenience types
 AlDagNodeErrors = TypeVar(
     "AlDagNodeErrors", bool, Tuple[bool, int], List[str], List[dict], AlDagNodeList
