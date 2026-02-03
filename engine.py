@@ -657,15 +657,17 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Attempt to get the saved SG context for the current Alias stage
         context = None
-        if current_stage.path and current_stage.path in self._contexts_by_path:
+        current_stage_path = current_stage.path
+        current_stage_name = current_stage.name
+        if current_stage_path and current_stage_path in self._contexts_by_path:
             # Found the context form the stage path
             context = self._contexts_by_path[current_stage.path]
-        elif current_stage.name and current_stage.name in self._contexts_by_stage_name:
+        elif current_stage_name and current_stage_name in self._contexts_by_stage_name:
             # Found the context form the stage name
             context = self._contexts_by_stage_name[current_stage.name]
         else:
             # Context not found
-            if current_stage.path:
+            if current_stage_path:
                 # First try to find the context from the stage file path
                 context = self.sgtk.context_from_path(current_stage.path)
             if not context:
