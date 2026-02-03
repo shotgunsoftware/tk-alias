@@ -666,12 +666,29 @@ class AliasEngine(sgtk.platform.Engine):
             # Found the context form the stage name
             context = self._contexts_by_stage_name[current_stage.name]
         else:
-            # Context not found
+            # Context not found, first try to find the context from the stage file path
             if current_stage_path:
-                # First try to find the context from the stage file path
-                context = self.sgtk.context_from_path(current_stage.path)
+                publish_data = sgtk.util.find_publish(
+                    self.sgtk,
+                    [current_stage_path],
+                    fields=[
+                        "project",
+                        "entity",
+                        "task",
+                        "task.Task.step",
+                        "user",
+                        "additional_entities",
+                        "source_entity",
+                    ],
+                    only_current_project=False,
+                ).get(current_stage_path, {})
+                # Format the dict to convert to context
+                publish_data["step"] = publish_data["task.Task.step"]
+                del publish_data["task.Task.step"]
+                # Create the context from the dict
+                context = sgtk.Context.from_dict(self.sgtk, publish_data)
+            # If not found, fallback to the project context
             if not context:
-                # Fallback to the project context
                 context = self.sgtk.context_from_entity_dictionary(self.context.project)
 
         # Only change the context if we found one and it is not the current context
