@@ -690,6 +690,9 @@ class AliasEngine(sgtk.platform.Engine):
             # If not found, fallback to the project context
             if not context:
                 context = self.sgtk.context_from_entity_dictionary(self.context.project)
+            # If context found, save it in the context cache
+            if context:
+                self.save_context_for_stage(context)
 
         # Only change the context if we found one and it is not the current context
         if context and context != self.context:
