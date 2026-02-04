@@ -15,7 +15,6 @@ Hook that loads defines all the available actions, broken down by publish type.
 import sgtk
 from tank import TankError
 
-
 HookBaseClass = sgtk.get_hook_baseclass()
 
 
