@@ -17,10 +17,10 @@ import pprint
 import sgtk
 from sgtk.util import LocalFileStorageManager
 
-# VRED versions compatibility constants
+# Alias versions compatibility constants
 VERSION_OLDEST_COMPATIBLE = 2023
 VERSION_OLDEST_SUPPORTED = 2023
-VERSION_NEWEST_SUPPORTED = 2026
+VERSION_NEWEST_SUPPORTED = 2027
 # Caution: make sure compatibility_dialog_min_version default value in info.yml
 # is equal to VERSION_NEWEST_SUPPORTED
 
