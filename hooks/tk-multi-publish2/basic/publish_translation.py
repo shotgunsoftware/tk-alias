@@ -52,9 +52,7 @@ class AliasTranslationPublishPlugin(HookBaseClass):
 
         <br><br><b color='red'>NOTE:</b> it's not possible to publish a WREF file
         if you already have WREF files loaded in your current session.
-        """ % (
-            loader_url,
-        )
+        """ % (loader_url,)
 
     @property
     def settings(self):
