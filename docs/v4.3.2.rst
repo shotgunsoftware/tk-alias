@@ -1,0 +1,15 @@
+v4.3.2
+=====================
+
+Release highlights
+------------------
+
+* Fix setting context when using "Open Source File" operation in Alias
+* Remove old Qt functionality
+
+
+Bug Fixes
+-----------------
+
+* Fixed issue with setting context when using "Open Source File" operation in Alias:
+    * Previously when using the "Open Source File" operation in Alias, the Task information was not retrieved for the context. This caused issues when trying to save or publish the file after opening from "Open Source File" operation. This is now fixed, and the Task information will be retrieved for the context.
