@@ -7,7 +7,7 @@ Release highlights
 * Alias 2027.0 support
 * Python 3.11 support
 * Fix overriding Alias construction options when importing a file
-* Fix setting context when using "Open Source File" operation in Alias
+
 
 Dependencies
 ---------------
@@ -16,11 +16,76 @@ Dependencies
     * Required for Alias 2027.0 support
     * Required for Python 3.11 support
     * Required for fixing overriding Alias construction options when importing a file
+* tk-multi-bg-publish: ``tk-multi-bg-publish v0.2.3``
+    * Required for running background publish with Alias 2027.0
+
+
+Updates
+---------------
+
+Alias 2027.0 Support
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+* The Alias Engine now supports running Alias 2027.0.
+
+* Starting in Alias 2027.0, using the Alias API for OpenModel (e.g. headless) requires setting the license information before initializing the universe.
+
+    * See `Alias 2027.0 API for OpenModel Changes`_ for more details on how to update your code when using the Alias API in OpenModel.
+
+* Refer to the Alias Python API `documentation <https://developers.shotgridsoftware.com/tk-framework-alias/alias_python_api.html>`__ to see changes for Alias 2027.0.
+
+
+Alias 2027.0 API for OpenModel Changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using the Alias API in OpenModel now requires setting the license information before using the API.
+
+Here is an example of how to set the license information using environment variables:
+
+.. code-block:: python
+
+    import alias_api_om as alias_api
+    import os
+
+    # Set these your Alias license info in the environment variables before
+    # running this python script
+    product_key = os.environ.get("ALIAS_PRODUCT_KEY", "")
+    product_version = os.environ.get("ALIAS_PRODUCT_VERSION", "")
+    product_lic_type = os.environ.get("ALIAS_PRODUCT_LIC_TYPE", "")
+    product_lic_path = os.environ.get("ALIAS_PRODUCT_LIC_PATH", "")
+
+    # New api function to set the license information
+    license_status = alias_api.set_license_information(
+        product_key,
+        product_version,
+        product_lic_type,
+        product_lic_path
+    )
+
+    # Check the license was set successfully
+    if license_status == alias_api.AlStatusCode.Success.value:
+        print("Success")
+    else:
+        print("Failed")
+    
+    # Now we can initialize the Alias universe
+    init_status = alias_api.initialize_universe()
+
+    # There is a new function in 2027.0 api to check if the universe is
+    # initialized, otherwise you can check the status returned by the
+    # `initialize_universe` function
+    if alias_api.is_initialized():
+        print("Success, now you can use the API as you were")
+    else:
+        print("Failed, check the status returned by the `initialize_universe` function")
+        status_name = alias_api.AlStatusCode(init_status).name
+        print(f"Init status: {status_name} (code: {init_status})")
+
+
 
 Bug Fixes
 -----------------
 
-* Fixed issue with overriding Alias construction options when importing a file:
-    * Previously when importing an Alias file (e.g. using the Loader App or the API `import_file` function), the construction options from the imported file were overriding the current file construction options. This is now fixed, and the construction options from the imported file will not override the current file construction options.
-* Fixed issue with setting context when using "Open Source File" operation in Alias:
-    * Previously when using the "Open Source File" operation in Alias, the Task information was not retrieved for the context. This caused issues when trying to save or publish the file after opening from "Open Source File" operation. This is now fixed, and the Task information will be retrieved for the context.
+**Fix overriding Alias construction options when importing a file:**
+
+Previously when importing an Alias file (e.g. using the Loader App or the API `import_file` function), the construction options from the imported file were overriding the current file construction options. This is now fixed, and the construction options from the imported file will not override the current file construction options.
