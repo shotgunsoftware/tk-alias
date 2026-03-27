@@ -5,6 +5,7 @@ Release highlights
 ------------------
 
 * Python 3.13 support
+* Bug fix: Importing a file does not overwrite the current construction options
 
 
 Dependencies
@@ -13,3 +14,4 @@ Dependencies
 * Alias framework: ``tk-framework-alias v2.5.1``
 
     * Required for Python 3.13 support
+    * Bug fix: Importing a file does not overwrite the current construction options
