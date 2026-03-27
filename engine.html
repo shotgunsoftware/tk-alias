@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Engine &mdash; tk-alias v4.3.1 documentation</title>
+  <title>Engine &mdash; tk-alias v4.3.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -87,7 +87,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.3.1.<br>
+    <b>tk-alias</b> v4.3.3.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -647,13 +647,6 @@
         <span class="c1"># Initialie the SG Toolkit style to the application.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_dark_look_and_feel</span><span class="p">()</span>
 
-        <span class="c1"># unicode characters returned by the shotgun api need to be converted</span>
-        <span class="c1"># to display correctly in all of the app windows</span>
-        <span class="c1"># tell QT to interpret C strings as utf-8</span>
-        <span class="n">utf8</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QTextCodec</span><span class="o">.</span><span class="n">codecForName</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-        <span class="n">QtCore</span><span class="o">.</span><span class="n">QTextCodec</span><span class="o">.</span><span class="n">setCodecForCStrings</span><span class="p">(</span><span class="n">utf8</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;set utf-8 codec for widget text&quot;</span><span class="p">)</span>
-
         <span class="c1"># Create the parent dialog for Flow Production Tracking widgets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__get_or_create_proxy_window</span><span class="p">()</span>
 
@@ -798,20 +791,42 @@
 
         <span class="c1"># Attempt to get the saved SG context for the current Alias stage</span>
         <span class="n">context</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">path</span> <span class="ow">and</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_path</span><span class="p">:</span>
+        <span class="n">current_stage_path</span> <span class="o">=</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">path</span>
+        <span class="n">current_stage_name</span> <span class="o">=</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">current_stage_path</span> <span class="ow">and</span> <span class="n">current_stage_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_path</span><span class="p">:</span>
             <span class="c1"># Found the context form the stage path</span>
             <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_path</span><span class="p">[</span><span class="n">current_stage</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">current_stage_name</span> <span class="ow">and</span> <span class="n">current_stage_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span><span class="p">:</span>
             <span class="c1"># Found the context form the stage name</span>
             <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contexts_by_stage_name</span><span class="p">[</span><span class="n">current_stage</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Context not found</span>
-            <span class="k">if</span> <span class="n">current_stage</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
-                <span class="c1"># First try to find the context from the stage file path</span>
-                <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">context_from_path</span><span class="p">(</span><span class="n">current_stage</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="c1"># Context not found, first try to find the context from the stage file path</span>
+            <span class="k">if</span> <span class="n">current_stage_path</span><span class="p">:</span>
+                <span class="n">publish_data</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">find_publish</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span>
+                    <span class="p">[</span><span class="n">current_stage_path</span><span class="p">],</span>
+                    <span class="n">fields</span><span class="o">=</span><span class="p">[</span>
+                        <span class="s2">&quot;project&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;entity&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;task&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;task.Task.step&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;additional_entities&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;source_entity&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                    <span class="n">only_current_project</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">current_stage_path</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="c1"># Format the dict to convert to context</span>
+                <span class="n">publish_data</span><span class="p">[</span><span class="s2">&quot;step&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_data</span><span class="p">[</span><span class="s2">&quot;task.Task.step&quot;</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">publish_data</span><span class="p">[</span><span class="s2">&quot;task.Task.step&quot;</span><span class="p">]</span>
+                <span class="c1"># Create the context from the dict</span>
+                <span class="n">context</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">Context</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span><span class="p">,</span> <span class="n">publish_data</span><span class="p">)</span>
+            <span class="c1"># If not found, fallback to the project context</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
-                <span class="c1"># Fallback to the project context</span>
                 <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sgtk</span><span class="o">.</span><span class="n">context_from_entity_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+            <span class="c1"># If context found, save it in the context cache</span>
+            <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_context_for_stage</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
 
         <span class="c1"># Only change the context if we found one and it is not the current context</span>
         <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="n">context</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>

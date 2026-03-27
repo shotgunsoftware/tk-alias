@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hooks &mdash; tk-alias v4.3.1 documentation</title>
+  <title>Hooks &mdash; tk-alias v4.3.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -115,7 +115,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.3.1.<br>
+    <b>tk-alias</b> v4.3.3.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -488,7 +488,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">sgtk</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">alias_api</span>
-
 
 <span class="n">HookBaseClass</span> <span class="o">=</span> <span class="n">sgtk</span><span class="o">.</span><span class="n">get_hook_baseclass</span><span class="p">()</span>
 
@@ -1032,9 +1031,7 @@
 <span class="s2">        however only the most recent publish will be available to other users.</span>
 <span class="s2">        Warnings will be provided during validation if there are previous</span>
 <span class="s2">        publishes.</span>
-<span class="s2">        &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span>
-            <span class="n">loader_url</span><span class="p">,</span>
-        <span class="p">)</span>
+<span class="s2">        &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">loader_url</span><span class="p">,)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1233,13 +1230,13 @@
         <span class="c1"># check to see if the next version of the work file already exists on</span>
         <span class="c1"># disk. if so, warn the user and provide the ability to jump to save</span>
         <span class="c1"># to that version now</span>
-        <span class="p">(</span><span class="n">next_version_path</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_next_version_info</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="n">next_version_path</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_next_version_info</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">next_version_path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">next_version_path</span><span class="p">):</span>
 
             <span class="c1"># determine the next available version_number. just keep asking for</span>
             <span class="c1"># the next one until we get one that doesn&#39;t exist.</span>
             <span class="k">while</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">next_version_path</span><span class="p">):</span>
-                <span class="p">(</span><span class="n">next_version_path</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_next_version_info</span><span class="p">(</span>
+                <span class="n">next_version_path</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_next_version_info</span><span class="p">(</span>
                     <span class="n">next_version_path</span><span class="p">,</span> <span class="n">item</span>
                 <span class="p">)</span>
 
@@ -1626,9 +1623,7 @@
 
 <span class="s2">        &lt;br&gt;&lt;br&gt;&lt;b color=&#39;red&#39;&gt;NOTE:&lt;/b&gt; it&#39;s not possible to publish a WREF file</span>
 <span class="s2">        if you already have WREF files loaded in your current session.</span>
-<span class="s2">        &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span>
-            <span class="n">loader_url</span><span class="p">,</span>
-        <span class="p">)</span>
+<span class="s2">        &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">loader_url</span><span class="p">,)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2813,7 +2808,7 @@
             <span class="c1"># Be sure to strip the extension from the publish name</span>
             <span class="n">path_components</span> <span class="o">=</span> <span class="n">publisher</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">get_file_path_components</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">path_components</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
-            <span class="p">(</span><span class="n">publish_name</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">publish_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
             <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;publish_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_name</span>
 
             <span class="c1"># Create the Version in Flow Production Tracking</span>

@@ -1,0 +1,19 @@
+v4.3.3
+=====================
+
+Release highlights
+------------------
+
+* Python 3.13 support
+* Bug fix: Importing a file does not overwrite the current construction options
+* Dropped support for Alias 2023
+
+
+Dependencies
+---------------
+
+* Alias framework: ``tk-framework-alias v2.5.1``
+
+    * Required for Python 3.13 support
+    * Bug fix: Importing a file does not overwrite the current construction options
+    * Dropped support for Alias 2023
