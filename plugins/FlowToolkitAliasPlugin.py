@@ -22,28 +22,22 @@ _alias_bridge: AliasBridge | None = None
 
 
 @alpy.plugin(
-    name="Flow Toolkit",
-    description="Flow Production Tracking integration for Alias",
+    name="Flow PT for Alias",
+    description="Flow Production Tracking Toolkit integration for Alias",
     author="Autodesk",
     version="0.1",
 )
 class FlowToolkitAliasPlugin:
-    """Register the Flow Toolkit plugin with Alias."""
+    """Register the Flow Production Tracking Toolkit plugin with Alias."""
 
 
-@alpy.continuous_tool(menu=alpy.palette.PICK)
+@alpy.momentary_tool(keep_active_tool=True, attribute_string="fptalias")
 class FlowToolkitTool:
     """Placeholder tool required by Alias plugin parser."""
 
-    @alpy.tool_init(
-        manipulates_pick_list=False, coordinate_type=alpy.COORDINATE_ABSOLUTE
-    )
-    def on_tool_begin(self):
-        pass
-
-    @alpy.tool_cleanup
-    def on_tool_end(self):
-        pass
+    @alpy.on_activate
+    def on_activate(self) -> None:
+        alpy.log_to_prompt("Flow Production Tracking Toolkit for Alias activated")
 
 
 @alpy.plugin_init

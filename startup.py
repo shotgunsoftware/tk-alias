@@ -150,9 +150,7 @@ class AliasLauncher(SoftwareLauncher):
                 required_env["ALIAS_INTERNAL_PYTHON_SCRIPT_FOLDER"] = os.path.join(
                     self.disk_location, "plugins"
                 )
-                # FIXME default to 0
-                alias_debug = os.environ.get("TK_ALIAS_DEBUG_CONSOLE", "1")
-                required_env["ALIAS_DEBUG_CONSOLE"] = alias_debug
+                required_env["ALIAS_DEBUG_CONSOLE"] = os.environ.get("TK_DEBUG", "0")
 
             # Get the launch app path and args
             app_path, app_args = self.__prepare_launch_args(

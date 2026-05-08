@@ -14,6 +14,34 @@ import os
 from sgtk.util import is_windows, is_macos, is_linux
 
 
+class _AliasMenuCompat:
+    """Compatibility wrapper for Alias 2027+ menu API.
+
+    Provides the same interface as the old Menu class (add_menu, add_command,
+    clean, remove) but routes calls to the new standalone API functions.
+    The new API uses string-based parent references instead of object handles.
+    """
+
+    def __init__(self, alias_py, name):
+        self._alias_py = alias_py
+        self._name = name
+
+    def add_menu(self, text):
+        self._alias_py._alpy_make_submenu(self._name, text)
+        return text
+
+    def add_command(self, name, callback, parent=None, add_separator=False):
+        parent_name = parent if isinstance(parent, str) else self._name
+        on_submenu = parent is not None
+        self._alias_py._alpy_make_menu_item(name, parent_name, on_submenu, callback)
+
+    def clean(self):
+        return None
+
+    def remove(self):
+        return None
+
+
 class AliasMenuGenerator(object):
     """Menu handling for Alias."""
 
@@ -65,7 +93,13 @@ class AliasMenuGenerator(object):
 
         if self.alias_menu is None:
             # First, create the Flow Production Tracking menu in Alias.
-            self.__alias_menu = self.engine.alias_py.Menu(self.menu_name)
+            if hasattr(self.engine.alias_py, "Menu"):
+                self.__alias_menu = self.engine.alias_py.Menu(self.menu_name)
+            else:
+                self.engine.alias_py._alpy_make_main_menu(self.menu_name)
+                self.__alias_menu = _AliasMenuCompat(
+                    self.engine.alias_py, self.menu_name
+                )
         else:
             # Make sure we're starting with a fresh menu
             self.clean_menu()
