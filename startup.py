@@ -127,6 +127,10 @@ class AliasLauncher(SoftwareLauncher):
             required_env.update(plugin_env)
             required_env["PYTHONPATH"] = os.environ["PYTHONPATH"]
 
+            # Pass the framework path explicitly for the embedded Python plugin,
+            # which cannot safely use the full PYTHONPATH (stdlib version conflicts).
+            required_env["TK_FRAMEWORK_ALIAS_PYTHON_PATH"] = framework_python_path
+
             # Prepare the launch environment with variables required by the
             # classic bootstrap approach.
             required_env["SGTK_ENGINE"] = self.engine_name
@@ -140,6 +144,15 @@ class AliasLauncher(SoftwareLauncher):
             # Add the file name to open to the launch environment
             if file_to_open:
                 required_env["SGTK_FILE_TO_OPEN"] = file_to_open
+
+            if not plugin_file_path:
+                # No C++ plugin, use our Python plugin
+                required_env["ALIAS_INTERNAL_PYTHON_SCRIPT_FOLDER"] = os.path.join(
+                    self.disk_location, "plugins"
+                )
+                # FIXME default to 0
+                alias_debug = os.environ.get("TK_ALIAS_DEBUG_CONSOLE", "1")
+                required_env["ALIAS_DEBUG_CONSOLE"] = alias_debug
 
             # Get the launch app path and args
             app_path, app_args = self.__prepare_launch_args(
@@ -342,7 +355,7 @@ class AliasLauncher(SoftwareLauncher):
         :type args: str
         :parm code_name: The Alias code name.
         :type code_name: str
-        :parm plugin_file_path: The file path to the .lst file used to auto load plugins.
+        :parm plugin_file_path: The file path to the .lst file used to auto load C++ plugins.
         :type plugin_file_path: str
         :param alias_exe: The file path to the Alias executable.
         :type alias_exe: str
@@ -363,15 +376,17 @@ class AliasLauncher(SoftwareLauncher):
             app_args += " " + code_name_flags
 
         if python_exe is None:
-            # Launching Alias application directly - add the plugin file path to the Alias cmd
-            # line args to auto-load the plugin.
-            app_args += ' -P "{0}'.format(plugin_file_path)
-            app_args += '"'
+            # Launching Alias application directly
+            if plugin_file_path:
+                # Add the C++ plugin file path to the Alias cmd line args to auto-load the plugin.
+                app_args += ' -P "{0}'.format(plugin_file_path)
+                app_args += '"'
             app_path = alias_exe
         else:
             # Launching Alias indirectly to ensure the Alias Plugin uses a specific Python
             # version - wrap the command line to launch Alias with the given python executable
-            app_args += f' -P \\"{plugin_file_path}\\"'
+            if plugin_file_path:
+                app_args += f' -P \\"{plugin_file_path}\\"'
             python_args = f'import os;os.system(r\'start /B \\"App\\" \\"{alias_exe}\\" {app_args}\')'
             app_args = f'-c "{python_args}"'
             app_path = python_exe
