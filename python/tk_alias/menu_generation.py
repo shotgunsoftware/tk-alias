@@ -13,33 +13,58 @@ import os
 
 from sgtk.util import is_windows, is_macos, is_linux
 
+# Alias 2027.1+ (FPTR plugin / split process):
+#   - Menus use alias_api.gui (MainMenu, Menu, MenuItem) via socket client proxies, not
+#     legacy alias_api.Menu.
+#   - The engine runs outside Alias; menu objects live on the server and RPC carries
+#     instance calls (add_item, remove_menu, …) and client callback ids.
+#   - MainMenu(menu_name) is the single menubar root ("Flow Production Tracking"); submenus
+#     are gui.Menu children.
+# Legacy in-process Alias still uses alias_api.Menu when gui is unavailable.
 
-class _AliasMenuCompat:
-    """Compatibility wrapper for Alias 2027+ menu API.
 
-    Provides the same interface as the old Menu class (add_menu, add_command,
-    clean, remove) but routes calls to the new standalone API functions.
-    The new API uses string-based parent references instead of object handles.
+class _AliasObjectMenuAdapter:
+    """
+    Bridge from toolkit menu API (add_menu / add_command / clean) to ``alias_api.gui``.
+
+    Tracks created submenus and items so context rebuilds can call remove_menu /
+    remove_item on the server-side objects through the client proxies.
     """
 
-    def __init__(self, alias_py, name):
+    def __init__(self, alias_py, menu):
         self._alias_py = alias_py
-        self._name = name
+        self._menu = menu
+        self._items = []
+        self._submenus = []
 
     def add_menu(self, text):
-        self._alias_py._alpy_make_submenu(self._name, text)
-        return text
+        submenu = self._alias_py.gui.Menu(text)
+        self._menu.add_menu(submenu)
+        child = _AliasObjectMenuAdapter(self._alias_py, submenu)
+        self._submenus.append(child)
+        return child
 
     def add_command(self, name, callback, parent=None, add_separator=False):
-        parent_name = parent if isinstance(parent, str) else self._name
-        on_submenu = parent is not None
-        self._alias_py._alpy_make_menu_item(name, parent_name, on_submenu, callback)
+        adapter = parent if parent is not None else self
+        item = self._alias_py.gui.MenuItem(name, callback)
+        adapter._menu.add_item(item)
+        adapter._items.append(item)
 
     def clean(self):
-        return None
+        for child in reversed(self._submenus):
+            child.clean()
+            self._menu.remove_menu(child._menu)
+        self._submenus = []
+        for item in reversed(self._items):
+            self._menu.remove_item(item)
+        self._items = []
 
     def remove(self):
-        return None
+        try:
+            return self._menu.remove()
+        except AttributeError:
+            self.clean()
+            return None
 
 
 class AliasMenuGenerator(object):
@@ -92,13 +117,25 @@ class AliasMenuGenerator(object):
         """
 
         if self.alias_menu is None:
-            # First, create the Flow Production Tracking menu in Alias.
-            if hasattr(self.engine.alias_py, "Menu"):
-                self.__alias_menu = self.engine.alias_py.Menu(self.menu_name)
+            alias_py = self.engine.alias_py
+            try:
+                gui = alias_py.gui
+            except AttributeError:
+                gui = None
+            # 2027.1+: one MainMenu root in the menubar; apps/context attach as gui.Menu below it.
+            if gui is not None and hasattr(gui, "MainMenu"):
+                root = gui.MainMenu(self.menu_name)
+                self.__alias_menu = _AliasObjectMenuAdapter(alias_py, root)
+            elif gui is not None and hasattr(gui, "Menu"):
+                root = gui.Menu(self.menu_name)
+                self.__alias_menu = _AliasObjectMenuAdapter(alias_py, root)
+            elif hasattr(alias_py, "Menu"):
+                self.__alias_menu = alias_py.Menu(self.menu_name)
             else:
-                self.engine.alias_py._alpy_make_main_menu(self.menu_name)
-                self.__alias_menu = _AliasMenuCompat(
-                    self.engine.alias_py, self.menu_name
+                raise AttributeError(
+                    "No supported Alias menu API found "
+                    "(expected alias_api.gui.MainMenu, alias_api.gui.Menu, "
+                    "or alias_api.Menu)."
                 )
         else:
             # Make sure we're starting with a fresh menu
@@ -191,7 +228,7 @@ class AliasMenuGenerator(object):
         """
         Adds a context menu which displays the current context
 
-        :return:  An :class:`alias_api.MenuItem` instance representing the context menu.
+        :return:  Context submenu adapter or handle for parent= wiring.
         """
 
         ctx = self.engine.context

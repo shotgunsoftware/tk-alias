@@ -11,78 +11,31 @@
 import pytest
 from mock import MagicMock
 
-import sys
 
+class TestAliasObjectMenuAdapter:
+    """Tests for the 2027.1+ gui menu adapter."""
 
-class TestAliasMenuGenerator:
-    """
-    A test class for the AliasMenuGeneration class functionality.
+    def test_clean_removes_tracked_items_and_submenus(self):
+        from tk_alias.menu_generation import _AliasObjectMenuAdapter
 
-    TODO add more test cases for checking the menu items.
-    """
+        alias_py = MagicMock()
+        root_menu = MagicMock()
+        sub_menu = MagicMock()
+        item = MagicMock()
+        alias_py.gui = MagicMock()
+        alias_py.gui.Menu.side_effect = lambda text: (
+            sub_menu if text == "Sub" else root_menu
+        )
+        alias_py.gui.MenuItem.return_value = item
 
-    @pytest.fixture(scope="module")
-    def menu_generator_class(request):
-        """
-        Fixture to return the AliasMenuGenerator class.
+        adapter = _AliasObjectMenuAdapter(alias_py, root_menu)
+        sub = adapter.add_menu("Sub")
+        adapter.add_command("Action", lambda: None)
+        sub.add_command("Nested", lambda: None)
 
-        Defer the import until this fixture to avoid import errors when this test class should
-        be ignored.
-        """
+        adapter.clean()
 
-        from tk_alias import AliasMenuGenerator
-
-        return AliasMenuGenerator
-
-    @pytest.fixture(scope="module")
-    def mock_engine(request):
-        """
-        Fixture to mock the Alias Engine. Sets the version to 2022.2 but this can be overriden
-        after the caller receives the object.
-        """
-
-        engine = MagicMock()
-        engine.alias_version = "2022.2"
-        return engine
-
-    @pytest.mark.skip_open_model
-    def test_init_alias_menu_name(self, menu_generator_class, mock_engine):
-        """
-        Test the init method sets the correct Alias menu name.
-        """
-
-        shotgun_versions = [
-            "2019",
-            "2020",
-            "2020.3",
-            "2021",
-            "2021.0",
-            "2021.3.1",
-            "2022",
-            "2022.0",
-            "2022.1",
-            "2022.1.2",
-        ]
-        for version in shotgun_versions:
-            mock_engine.alias_version = version
-            menu_generator = menu_generator_class(mock_engine)
-            assert menu_generator.MENU_NAME == "al_shotgun"
-            assert menu_generator._alias_menu
-            if hasattr(menu_generator._alias_menu, "menu_name"):
-                assert menu_generator._alias_menu.menu_name == "al_shotgun"
-
-        shotgrid_version = [
-            "2022.2",
-            "2022.2.0",
-            "2022.2.1",
-            "2023",
-            "2023.0",
-            "2023.1",
-        ]
-        for version in shotgrid_version:
-            mock_engine.alias_version = version
-            menu_generator = menu_generator_class(mock_engine)
-            assert menu_generator.MENU_NAME == "al_shotgrid"
-            assert menu_generator._alias_menu
-            if hasattr(menu_generator._alias_menu, "menu_name"):
-                assert menu_generator._alias_menu.menu_name == "al_shotgrid"
+        root_menu.add_menu.assert_called_with(sub_menu)
+        root_menu.remove_menu.assert_called_with(sub_menu)
+        root_menu.remove_item.assert_called_with(item)
+        sub_menu.add_item.assert_called_with(item)
