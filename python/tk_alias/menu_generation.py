@@ -31,9 +31,10 @@ class _AliasObjectMenuAdapter:
     remove_item on the server-side objects through the client proxies.
     """
 
-    def __init__(self, alias_py, menu):
+    def __init__(self, alias_py, menu, is_main_menu_root=False):
         self._alias_py = alias_py
         self._menu = menu
+        self._is_main_menu_root = is_main_menu_root
         self._items = []
         self._submenus = []
 
@@ -60,11 +61,27 @@ class _AliasObjectMenuAdapter:
         self._items = []
 
     def remove(self):
+        """
+        Tear down this menu in Alias.
+
+        ``gui.MainMenu`` stays in the menubar and only supports clearing entries,
+        not ``remove``. Socket client proxies forward calls to the server, so
+        missing methods surface as request errors rather than ``AttributeError``.
+        """
+        if self._is_main_menu_root:
+            self.clean()
+            return None
+
         try:
             return self._menu.remove()
         except AttributeError:
             self.clean()
             return None
+        except Exception as exc:
+            if "has no attribute 'remove'" in str(exc):
+                self.clean()
+                return None
+            raise
 
 
 class AliasMenuGenerator(object):
@@ -125,7 +142,9 @@ class AliasMenuGenerator(object):
             # 2027.1+: one MainMenu root in the menubar; apps/context attach as gui.Menu below it.
             if gui is not None and hasattr(gui, "MainMenu"):
                 root = gui.MainMenu(self.menu_name)
-                self.__alias_menu = _AliasObjectMenuAdapter(alias_py, root)
+                self.__alias_menu = _AliasObjectMenuAdapter(
+                    alias_py, root, is_main_menu_root=True
+                )
             elif gui is not None and hasattr(gui, "Menu"):
                 root = gui.Menu(self.menu_name)
                 self.__alias_menu = _AliasObjectMenuAdapter(alias_py, root)

@@ -39,3 +39,22 @@ class TestAliasObjectMenuAdapter:
         root_menu.remove_menu.assert_called_with(sub_menu)
         root_menu.remove_item.assert_called_with(item)
         sub_menu.add_item.assert_called_with(item)
+
+    def test_remove_on_main_menu_root_only_cleans(self):
+        from tk_alias.menu_generation import _AliasObjectMenuAdapter
+
+        alias_py = MagicMock()
+        root_menu = MagicMock()
+        item = MagicMock()
+        alias_py.gui = MagicMock()
+        alias_py.gui.MenuItem.return_value = item
+
+        adapter = _AliasObjectMenuAdapter(
+            alias_py, root_menu, is_main_menu_root=True
+        )
+        adapter.add_command("Action", lambda: None)
+
+        adapter.remove()
+
+        root_menu.remove.assert_not_called()
+        root_menu.remove_item.assert_called_with(item)
