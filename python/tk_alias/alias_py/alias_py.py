@@ -8,11 +8,82 @@
 # agreement to the ShotGrid Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Autodesk, Inc.
 
-from typing import Optional
+import os
+from typing import Any, Callable, Optional
 from types import ModuleType
 
 from . import dag_node, layer, pick_list, utils
 from ..framework_alias import ClientRequestContextManager, AliasClientModuleProxyWrapper
+
+
+# Toolkit code uses legacy alias_api names. Alias 2027.1+ renamed several module
+# functions; map the old names to the new ones when the legacy name is absent.
+_API_RENAMES = {
+    "save_file": "save",
+    "save_file_as": "save_as",
+    "open_file": "open",
+    "is_empty_file": "is_empty",
+}
+
+
+def _supplement_product_information(info):
+    """
+    Normalize product information for Toolkit (translators, OpenModel, bg publish).
+
+    Alias 2027.1+ often returns null license fields from get_product_information(); OpenModel
+    still requires type and path via set_license_information().
+    """
+    if not info:
+        info = {}
+    else:
+        info = dict(info)
+
+    info["product_key"] = info.get("product_key") or ""
+    info["product_version"] = info.get("product_version") or ""
+    info["product_license_type"] = info.get("product_license_type") or ""
+    info["product_license_path"] = info.get("product_license_path") or ""
+
+    if not info["product_license_type"]:
+        info["product_license_type"] = (
+            os.environ.get("ALIAS_PRODUCT_LIC_TYPE")
+            or os.environ.get("ALIAS_PRODUCT_LICENSE_TYPE")
+            or "USER"
+        )
+
+    if not info["product_license_path"]:
+        info["product_license_path"] = (
+            os.environ.get("ALIAS_PRODUCT_LIC_PATH")
+            or os.environ.get("ALIAS_PRODUCT_LICENSE_PATH")
+            or ""
+        )
+
+    if not info["product_license_path"]:
+        bindir = None
+        try:
+            import sgtk
+
+            engine = sgtk.platform.current_engine()
+            if engine and engine.name == "tk-alias":
+                bindir = getattr(engine, "alias_bindir", None)
+        except Exception:
+            pass
+
+        exec_path = os.environ.get("TK_ALIAS_EXECPATH")
+        if bindir:
+            install_root = os.path.dirname(bindir)
+        elif exec_path:
+            install_root = os.path.dirname(os.path.dirname(exec_path))
+        else:
+            install_root = None
+
+        if install_root:
+            info["product_license_path"] = os.path.join(
+                install_root,
+                "AutoStudio",
+                "LICPATH.LIC",
+            )
+
+    return info
 
 
 class AliasPy:
@@ -79,7 +150,16 @@ class AliasPy:
         # api versions)
         self.__patch_attributes = {
             "adjust_window": self.__get_patch_adjust_window,
+            "get_current_path": self.__get_patch_get_current_path,
+            "get_current_stage": self.__get_patch_get_current_stage,
+            "get_stages": self.__get_patch_get_stages,
+            "create_stage": self.__get_patch_create_stage,
+            "get_product_information": self.__get_patch_get_product_information,
+            "first_pick_item": self.__get_patch_first_pick_item,
         }
+
+        # Pick-list iteration helpers were removed in Alias 2027.1+.
+        self.__api_has_first_pick_item = hasattr(api_module, "first_pick_item")
 
     def __getattr__(self, name):
         """
@@ -116,9 +196,21 @@ class AliasPy:
             # NOTE if attributes exist in multiple api versions, but require different
             # handling (e.g. function signature changed), then a patch function will need
             # to be run before returning the attribute immediately if it exists.
-            return getattr(self.__api, name)
+            attr = getattr(self.__api, name)
+            if name == "get_product_information":
+                return self.__get_wrapped_get_product_information(attr)
+            if name == "get_current_pick_item" and not self.__api_has_first_pick_item:
+                return self.__get_wrapped_get_current_pick_item(attr)
+            return attr
 
         except AttributeError:
+            mapped_name = _API_RENAMES.get(name)
+            if mapped_name is not None:
+                try:
+                    return getattr(self.__api, mapped_name)
+                except AttributeError:
+                    pass
+
             # Attribute not found in the api, try to patch it.
             patch_func = self.__patch_attributes.get(name)
             if patch_func:
@@ -185,3 +277,97 @@ class AliasPy:
             return
 
         return __patch_adjust_window
+
+    def __get_patch_get_current_path(self):
+        """Return the current stage file path (Alias 2027.1+ uses stage().path)."""
+
+        def _get_current_path():
+            if not self.__api.stages.stage():
+                return None
+            return self.__api.stages.stage().path
+
+        return _get_current_path
+
+    def __get_patch_get_current_stage(self):
+        """Return the current stage object (Alias 2027.1+ uses stage())."""
+
+        def _get_current_stage():
+            return self.__api.stages.stage()
+
+        return _get_current_stage
+
+    def __get_patch_get_stages(self):
+        """Return all stages (Alias 2027.1+ uses stages.all())."""
+
+        def _get_stages():
+            return self.__api.stages.all()
+
+        return _get_stages
+
+    def __get_patch_create_stage(self):
+        """Create a new stage (Alias 2027.1+ uses stages.create())."""
+
+        def _create_stage(stage_name):
+            return self.__api.stages.create(stage_name)
+
+        return _create_stage
+
+    def __get_wrapped_get_product_information(self, api_get_product_information):
+        """Wrap get_product_information() with Toolkit license field defaults."""
+
+        def _get_product_information():
+            return _supplement_product_information(api_get_product_information())
+
+        return _get_product_information
+
+    def __get_patch_get_product_information(self):
+        """
+        Return product information in the legacy dict format.
+
+        Used when the Alias API module does not provide get_product_information().
+        """
+
+        def _get_product_information():
+            product = self.__api.AlProduct
+            return _supplement_product_information(
+                {
+                    "product_key": product.key,
+                    "product_version": product.full_version,
+                }
+            )
+
+        return _get_product_information
+
+    def __get_patch_first_pick_item(self):
+        """
+        Initialize pick-list iteration.
+
+        Alias 2027.1+ removed first_pick_item(); validate that the pick list is not empty.
+        """
+
+        def _first_pick_item():
+            if self.__api.get_pick_items():
+                return self.__api.AlStatusCode.Success.value
+            return self.__api.AlStatusCode.Failure.value
+
+        return _first_pick_item
+
+    def __get_wrapped_get_current_pick_item(self, api_get_current_pick_item: Callable):
+        """
+        Wrap get_current_pick_item() for Alias versions without first_pick_item().
+
+        When the legacy iterator API is unavailable, fall back to the first pick-list
+        entry if the API does not expose a current item.
+        """
+
+        def _get_current_pick_item() -> Any:
+            current = api_get_current_pick_item()
+            if current is not None:
+                return current
+
+            pick_items = self.__api.get_pick_items()
+            if pick_items:
+                return pick_items[0]
+            return None
+
+        return _get_current_pick_item

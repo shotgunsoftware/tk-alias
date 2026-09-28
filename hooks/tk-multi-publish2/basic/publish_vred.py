@@ -13,7 +13,6 @@ import shutil
 import subprocess
 
 import sgtk
-from sgtk.platform.qt import QtGui, QtCore
 
 import alias_api
 
@@ -144,7 +143,7 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         # if we create a new one, there will be conflicts between them and Alias will crash a lot
         task_manager = __publish_app_task_manager(parent)
 
-        return CustomWidget(parent, bundle=self.parent, task_manager=task_manager)
+        return _create_custom_widget(parent, bundle=self.parent, task_manager=task_manager)
 
     def get_ui_settings(self, widget, items=None):
         """
@@ -660,106 +659,113 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         return None
 
 
-class CustomWidget(QtGui.QWidget):
-    """Settings widget that will be used by the Publish plugin"""
+def _create_custom_widget(parent, bundle, task_manager):
+    """
+    Build the plugin settings widget.
 
-    def __init__(self, parent, bundle, task_manager):
-        """
-        Class constructor.
+    Qt is imported here so this hook module can load in headless / bg publish
+    (no QWidget at import time).
+    """
+    from sgtk.platform.qt import QtCore, QtGui
 
-        :param parent: Parent widget
-        :param bundle: The bundle (app, engine or framework) instance for the app that the calling code is associated
-            with
-        :param task_manager: Background Task Manager used to perform tasks without blocking the main thread
-        """
+    class CustomWidget(QtGui.QWidget):
+        """Settings widget that will be used by the Publish plugin"""
 
-        QtGui.QWidget.__init__(self, parent)
+        def __init__(self, parent, bundle, task_manager):
+            """
+            :param parent: Parent widget
+            :param bundle: Publish app instance
+            :param task_manager: Publisher BackgroundTaskManager
+            """
+            super(CustomWidget, self).__init__(parent)
 
-        self._bundle = bundle
-        self._task_manager = task_manager
+            self._bundle = bundle
+            self._task_manager = task_manager
 
-        self.context = None
+            self.context = None
 
-        # store Toolkit framework modules in order to avoid importing them many times
-        self.__modules = {
-            "context_selector": self._bundle.frameworks[
-                "tk-framework-qtwidgets"
-            ].import_module("context_selector"),
-        }
+            # store Toolkit framework modules in order to avoid importing them many times
+            self.__modules = {
+                "context_selector": self._bundle.frameworks[
+                    "tk-framework-qtwidgets"
+                ].import_module("context_selector"),
+            }
 
-        # initialize the UI
-        self.setup_ui()
+            # initialize the UI
+            self.setup_ui()
 
-    def setup_ui(self):
-        """Configure the UI."""
+        def setup_ui(self):
+            """Configure the UI."""
 
-        # description widget
-        self.description_group_box = QtGui.QGroupBox(self)
-        self.description_group_box.setTitle("Description:")
+            # description widget
+            self.description_group_box = QtGui.QGroupBox(self)
+            self.description_group_box.setTitle("Description:")
 
-        self.description_label = QtGui.QLabel()
-        self.description_label.setWordWrap(True)
-        self.description_label.setOpenExternalLinks(True)
-        self.description_label.setTextFormat(QtCore.Qt.RichText)
+            self.description_label = QtGui.QLabel()
+            self.description_label.setWordWrap(True)
+            self.description_label.setOpenExternalLinks(True)
+            self.description_label.setTextFormat(QtCore.Qt.RichText)
 
-        self.description_layout = QtGui.QVBoxLayout()
-        self.description_layout.addWidget(self.description_label)
-        self.description_layout.addStretch()
-        self.description_group_box.setLayout(self.description_layout)
+            self.description_layout = QtGui.QVBoxLayout()
+            self.description_layout.addWidget(self.description_label)
+            self.description_layout.addStretch()
+            self.description_group_box.setLayout(self.description_layout)
 
-        # context selection widget
-        self.context_widget = self.__modules["context_selector"].ContextWidget(self)
-        self.context_widget.set_up(self._task_manager)
-        self.context_widget.restrict_entity_types_by_link("PublishedFile", "entity")
-        self.context_widget.set_task_tooltip(
-            "<p>The task that the selected item will be associated with "
-            "the SG entity being acted upon.</p>"
-        )
-        self.context_widget.set_link_tooltip(
-            "<p>The link that the selected item will be associated with "
-            "the SG entity being acted upon.</p>"
-        )
-        self.context_widget.context_changed.connect(self._on_context_changed)
-
-        # filename widget
-        self.filename_label = QtGui.QLabel("File Name:")
-        self.filename = QtGui.QLineEdit()
-        self.filename_layout = QtGui.QHBoxLayout()
-        self.filename_layout.addWidget(self.filename_label)
-        self.filename_layout.addWidget(self.filename)
-
-        # publish option
-        self.publish_to_shotgrid = QtGui.QCheckBox(
-            "Publish the VRED Scene to Flow Production Tracking"
-        )
-        self.publish_to_shotgrid.setChecked(True)
-
-        # layout the widgets
-        self.main_layout = QtGui.QVBoxLayout(self)
-        self.main_layout.addWidget(self.description_group_box)
-        self.main_layout.addItem(
-            QtGui.QSpacerItem(
-                20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed
+            # context selection widget
+            self.context_widget = self.__modules["context_selector"].ContextWidget(self)
+            self.context_widget.set_up(self._task_manager)
+            self.context_widget.restrict_entity_types_by_link("PublishedFile", "entity")
+            self.context_widget.set_task_tooltip(
+                "<p>The task that the selected item will be associated with "
+                "the SG entity being acted upon.</p>"
             )
-        )
-        self.main_layout.addWidget(self.context_widget)
-        self.main_layout.addItem(
-            QtGui.QSpacerItem(
-                20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed
+            self.context_widget.set_link_tooltip(
+                "<p>The link that the selected item will be associated with "
+                "the SG entity being acted upon.</p>"
             )
-        )
-        self.main_layout.addLayout(self.filename_layout)
-        self.main_layout.addItem(
-            QtGui.QSpacerItem(
-                20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed
+            self.context_widget.context_changed.connect(self._on_context_changed)
+
+            # filename widget
+            self.filename_label = QtGui.QLabel("File Name:")
+            self.filename = QtGui.QLineEdit()
+            self.filename_layout = QtGui.QHBoxLayout()
+            self.filename_layout.addWidget(self.filename_label)
+            self.filename_layout.addWidget(self.filename)
+
+            # publish option
+            self.publish_to_shotgrid = QtGui.QCheckBox(
+                "Publish the VRED Scene to Flow Production Tracking"
             )
-        )
-        self.main_layout.addWidget(self.publish_to_shotgrid)
+            self.publish_to_shotgrid.setChecked(True)
 
-    def _on_context_changed(self, context):
-        """
-        Slot called when the context is picked by the user in the UI.
+            # layout the widgets
+            self.main_layout = QtGui.QVBoxLayout(self)
+            self.main_layout.addWidget(self.description_group_box)
+            self.main_layout.addItem(
+                QtGui.QSpacerItem(
+                    20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed
+                )
+            )
+            self.main_layout.addWidget(self.context_widget)
+            self.main_layout.addItem(
+                QtGui.QSpacerItem(
+                    20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed
+                )
+            )
+            self.main_layout.addLayout(self.filename_layout)
+            self.main_layout.addItem(
+                QtGui.QSpacerItem(
+                    20, 30, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed
+                )
+            )
+            self.main_layout.addWidget(self.publish_to_shotgrid)
 
-        :param context: The selected context
-        """
-        self.context = context.to_dict()
+        def _on_context_changed(self, context):
+            """
+            Slot called when the context is picked by the user in the UI.
+
+            :param context: The selected context
+            """
+            self.context = context.to_dict()
+
+    return CustomWidget(parent, bundle, task_manager)
