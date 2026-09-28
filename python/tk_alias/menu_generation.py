@@ -87,9 +87,9 @@ class AliasMenuGenerator(object):
             menu_customization_path
         )
 
-        if self._version_check(engine.alias_version, "2024.0") >= 0:
+        if engine.compare_alias_versions(engine.alias_version, "2024.0") >= 0:
             self.__menu_name = "Flow Production Tracking"
-        elif self._version_check(engine.alias_version, "2022.2") >= 0:
+        elif engine.compare_alias_versions(engine.alias_version, "2022.2") >= 0:
             self.__menu_name = "al_shotgrid"
         else:
             self.__menu_name = "al_shotgun"
@@ -312,45 +312,6 @@ class AliasMenuGenerator(object):
             exit_code = os.system(cmd)
             if exit_code != 0:
                 self.engine.logger.error("Failed to launch '%s'!", cmd)
-
-    def _version_check(self, version1, version2):
-        """
-        Compare version strings and return 1 if version1 is greater than version2,
-            0 if they are equal and -1 if version1 is less than version2
-
-        :param version1: A version string to compare against version2 e.g. 2022.2
-        :param version2: A version string to compare against version1 e.g. 2021.3.1
-
-        :return: 1, 0, -1 as per above.
-        """
-        # This will split both the versions by the '.' character
-        arr1 = version1.split(".")
-        arr2 = version2.split(".")
-        n = len(arr1)
-        m = len(arr2)
-
-        # Converts to integer from string
-        arr1 = [int(i) for i in arr1]
-        arr2 = [int(i) for i in arr2]
-
-        # Compares which list is bigger and fills
-        # the smaller list with zero (for unequal delimeters)
-        if n > m:
-            for i in range(m, n):
-                arr2.append(0)
-        elif m > n:
-            for i in range(n, m):
-                arr1.append(0)
-
-        # Returns 1 if version1 is greater
-        # Returns -1 if version2 is greater
-        # Returns 0 if they are equal
-        for i in range(len(arr1)):
-            if arr1[i] > arr2[i]:
-                return 1
-            elif arr2[i] > arr1[i]:
-                return -1
-        return 0
 
 
 class AppCommand(object):

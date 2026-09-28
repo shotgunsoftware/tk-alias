@@ -26,6 +26,66 @@ _API_RENAMES = {
 }
 
 
+def _supplement_product_information(info):
+    """
+    Normalize product information for Toolkit (translators, OpenModel, bg publish).
+
+    Alias 2027.1+ often returns null license fields from get_product_information(); OpenModel
+    still requires type and path via set_license_information().
+    """
+    if not info:
+        info = {}
+    else:
+        info = dict(info)
+
+    info["product_key"] = info.get("product_key") or ""
+    info["product_version"] = info.get("product_version") or ""
+    info["product_license_type"] = info.get("product_license_type") or ""
+    info["product_license_path"] = info.get("product_license_path") or ""
+
+    if not info["product_license_type"]:
+        info["product_license_type"] = (
+            os.environ.get("ALIAS_PRODUCT_LIC_TYPE")
+            or os.environ.get("ALIAS_PRODUCT_LICENSE_TYPE")
+            or "USER"
+        )
+
+    if not info["product_license_path"]:
+        info["product_license_path"] = (
+            os.environ.get("ALIAS_PRODUCT_LIC_PATH")
+            or os.environ.get("ALIAS_PRODUCT_LICENSE_PATH")
+            or ""
+        )
+
+    if not info["product_license_path"]:
+        bindir = None
+        try:
+            import sgtk
+
+            engine = sgtk.platform.current_engine()
+            if engine and engine.name == "tk-alias":
+                bindir = getattr(engine, "alias_bindir", None)
+        except Exception:
+            pass
+
+        exec_path = os.environ.get("TK_ALIAS_EXECPATH")
+        if bindir:
+            install_root = os.path.dirname(bindir)
+        elif exec_path:
+            install_root = os.path.dirname(os.path.dirname(exec_path))
+        else:
+            install_root = None
+
+        if install_root:
+            info["product_license_path"] = os.path.join(
+                install_root,
+                "AutoStudio",
+                "LICPATH.LIC",
+            )
+
+    return info
+
+
 class AliasPy:
     """
     Wrapper class for the Alias Python API module.
@@ -137,6 +197,8 @@ class AliasPy:
             # handling (e.g. function signature changed), then a patch function will need
             # to be run before returning the attribute immediately if it exists.
             attr = getattr(self.__api, name)
+            if name == "get_product_information":
+                return self.__get_wrapped_get_product_information(attr)
             if name == "get_current_pick_item" and not self.__api_has_first_pick_item:
                 return self.__get_wrapped_get_current_pick_item(attr)
             return attr
@@ -220,7 +282,9 @@ class AliasPy:
         """Return the current stage file path (Alias 2027.1+ uses stage().path)."""
 
         def _get_current_path():
-            return self.__api.stage().path
+            if not self.__api.stages.stage():
+                return None
+            return self.__api.stages.stage().path
 
         return _get_current_path
 
@@ -228,7 +292,7 @@ class AliasPy:
         """Return the current stage object (Alias 2027.1+ uses stage())."""
 
         def _get_current_stage():
-            return self.__api.stage()
+            return self.__api.stages.stage()
 
         return _get_current_stage
 
@@ -248,17 +312,29 @@ class AliasPy:
 
         return _create_stage
 
+    def __get_wrapped_get_product_information(self, api_get_product_information):
+        """Wrap get_product_information() with Toolkit license field defaults."""
+
+        def _get_product_information():
+            return _supplement_product_information(api_get_product_information())
+
+        return _get_product_information
+
     def __get_patch_get_product_information(self):
-        """Return product information in the legacy dict format."""
+        """
+        Return product information in the legacy dict format.
+
+        Used when the Alias API module does not provide get_product_information().
+        """
 
         def _get_product_information():
             product = self.__api.AlProduct
-            return {
-                "product_key": product.key,
-                "product_version": product.full_version,
-                "product_license_type": os.environ.get("ALIAS_PRODUCT_LIC_TYPE"),
-                "product_license_path": os.environ.get("ALIAS_PRODUCT_LIC_PATH"),
-            }
+            return _supplement_product_information(
+                {
+                    "product_key": product.key,
+                    "product_version": product.full_version,
+                }
+            )
 
         return _get_product_information
 

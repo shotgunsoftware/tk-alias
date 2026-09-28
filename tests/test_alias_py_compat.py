@@ -137,6 +137,31 @@ class TestAliasPyApiCompatibility:
             "product_license_path": "/lic/path",
         }
 
+    def test_get_product_information_supplements_native_null_license_fields(
+        self, alias_py_class, monkeypatch
+    ):
+        api_module = self._new_api_module()
+        api_module.get_product_information = MagicMock(
+            return_value={
+                "product_key": "966S1",
+                "product_version": "2027.0.0.F",
+                "product_license_type": None,
+                "product_license_path": None,
+            }
+        )
+        alias_py = alias_py_class(api_module)
+        monkeypatch.setenv(
+            "TK_ALIAS_EXECPATH",
+            r"C:\Program Files\Autodesk\AliasAutoStudio2027.1\bin\Alias.exe",
+        )
+
+        product_info = alias_py.get_product_information()
+        assert product_info["product_key"] == "966S1"
+        assert product_info["product_license_type"] == "USER"
+        assert product_info["product_license_path"].endswith(
+            os.path.join("AutoStudio", "LICPATH.LIC")
+        )
+
     def test_pick_list_compat_without_first_pick_item(self, alias_py_class):
         api_module = self._new_api_module()
         alias_py = alias_py_class(api_module)
