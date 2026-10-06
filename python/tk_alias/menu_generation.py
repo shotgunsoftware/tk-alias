@@ -13,6 +13,76 @@ import os
 
 from sgtk.util import is_windows, is_macos, is_linux
 
+# Alias 2027.1+ (FPTR plugin / split process):
+#   - Menus use alias_api.gui (MainMenu, Menu, MenuItem) via socket client proxies, not
+#     legacy alias_api.Menu.
+#   - The engine runs outside Alias; menu objects live on the server and RPC carries
+#     instance calls (add_item, remove_menu, …) and client callback ids.
+#   - MainMenu(menu_name) is the single menubar root ("Flow Production Tracking"); submenus
+#     are gui.Menu children.
+# Legacy in-process Alias still uses alias_api.Menu when gui is unavailable.
+
+
+class _AliasObjectMenuAdapter:
+    """
+    Bridge from toolkit menu API (add_menu / add_command / clean) to ``alias_api.gui``.
+
+    Tracks created submenus and items so context rebuilds can call remove_menu /
+    remove_item on the server-side objects through the client proxies.
+    """
+
+    def __init__(self, alias_py, menu, is_main_menu_root=False):
+        self._alias_py = alias_py
+        self._menu = menu
+        self._is_main_menu_root = is_main_menu_root
+        self._items = []
+        self._submenus = []
+
+    def add_menu(self, text):
+        submenu = self._alias_py.gui.Menu(text)
+        self._menu.add_menu(submenu)
+        child = _AliasObjectMenuAdapter(self._alias_py, submenu)
+        self._submenus.append(child)
+        return child
+
+    def add_command(self, name, callback, parent=None, add_separator=False):
+        adapter = parent if parent is not None else self
+        item = self._alias_py.gui.MenuItem(name, callback)
+        adapter._menu.add_item(item)
+        adapter._items.append(item)
+
+    def clean(self):
+        for child in reversed(self._submenus):
+            child.clean()
+            self._menu.remove_menu(child._menu)
+        self._submenus = []
+        for item in reversed(self._items):
+            self._menu.remove_item(item)
+        self._items = []
+
+    def remove(self):
+        """
+        Tear down this menu in Alias.
+
+        ``gui.MainMenu`` stays in the menubar and only supports clearing entries,
+        not ``remove``. Socket client proxies forward calls to the server, so
+        missing methods surface as request errors rather than ``AttributeError``.
+        """
+        if self._is_main_menu_root:
+            self.clean()
+            return None
+
+        try:
+            return self._menu.remove()
+        except AttributeError:
+            self.clean()
+            return None
+        except Exception as exc:
+            if "has no attribute 'remove'" in str(exc):
+                self.clean()
+                return None
+            raise
+
 
 class AliasMenuGenerator(object):
     """Menu handling for Alias."""
@@ -34,9 +104,9 @@ class AliasMenuGenerator(object):
             menu_customization_path
         )
 
-        if self._version_check(engine.alias_version, "2024.0") >= 0:
+        if engine.compare_alias_versions(engine.alias_version, "2024.0") >= 0:
             self.__menu_name = "Flow Production Tracking"
-        elif self._version_check(engine.alias_version, "2022.2") >= 0:
+        elif engine.compare_alias_versions(engine.alias_version, "2022.2") >= 0:
             self.__menu_name = "al_shotgrid"
         else:
             self.__menu_name = "al_shotgun"
@@ -64,8 +134,28 @@ class AliasMenuGenerator(object):
         """
 
         if self.alias_menu is None:
-            # First, create the Flow Production Tracking menu in Alias.
-            self.__alias_menu = self.engine.alias_py.Menu(self.menu_name)
+            alias_py = self.engine.alias_py
+            try:
+                gui = alias_py.gui
+            except AttributeError:
+                gui = None
+            # 2027.1+: one MainMenu root in the menubar; apps/context attach as gui.Menu below it.
+            if gui is not None and hasattr(gui, "MainMenu"):
+                root = gui.MainMenu(self.menu_name)
+                self.__alias_menu = _AliasObjectMenuAdapter(
+                    alias_py, root, is_main_menu_root=True
+                )
+            elif gui is not None and hasattr(gui, "Menu"):
+                root = gui.Menu(self.menu_name)
+                self.__alias_menu = _AliasObjectMenuAdapter(alias_py, root)
+            elif hasattr(alias_py, "Menu"):
+                self.__alias_menu = alias_py.Menu(self.menu_name)
+            else:
+                raise AttributeError(
+                    "No supported Alias menu API found "
+                    "(expected alias_api.gui.MainMenu, alias_api.gui.Menu, "
+                    "or alias_api.Menu)."
+                )
         else:
             # Make sure we're starting with a fresh menu
             self.clean_menu()
@@ -157,7 +247,7 @@ class AliasMenuGenerator(object):
         """
         Adds a context menu which displays the current context
 
-        :return:  An :class:`alias_api.MenuItem` instance representing the context menu.
+        :return:  Context submenu adapter or handle for parent= wiring.
         """
 
         ctx = self.engine.context
@@ -241,45 +331,6 @@ class AliasMenuGenerator(object):
             exit_code = os.system(cmd)
             if exit_code != 0:
                 self.engine.logger.error("Failed to launch '%s'!", cmd)
-
-    def _version_check(self, version1, version2):
-        """
-        Compare version strings and return 1 if version1 is greater than version2,
-            0 if they are equal and -1 if version1 is less than version2
-
-        :param version1: A version string to compare against version2 e.g. 2022.2
-        :param version2: A version string to compare against version1 e.g. 2021.3.1
-
-        :return: 1, 0, -1 as per above.
-        """
-        # This will split both the versions by the '.' character
-        arr1 = version1.split(".")
-        arr2 = version2.split(".")
-        n = len(arr1)
-        m = len(arr2)
-
-        # Converts to integer from string
-        arr1 = [int(i) for i in arr1]
-        arr2 = [int(i) for i in arr2]
-
-        # Compares which list is bigger and fills
-        # the smaller list with zero (for unequal delimeters)
-        if n > m:
-            for i in range(m, n):
-                arr2.append(0)
-        elif m > n:
-            for i in range(n, m):
-                arr1.append(0)
-
-        # Returns 1 if version1 is greater
-        # Returns -1 if version2 is greater
-        # Returns 0 if they are equal
-        for i in range(len(arr1)):
-            if arr1[i] > arr2[i]:
-                return 1
-            elif arr2[i] > arr1[i]:
-                return -1
-        return 0
 
 
 class AppCommand(object):
