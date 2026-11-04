@@ -147,7 +147,9 @@ class AliasLauncher(SoftwareLauncher):
 
             if not plugin_file_path:
                 required_env["ALIAS_DEBUG_CONSOLE"] = os.environ.get("TK_DEBUG", "0")
-                plugin_file_path = os.path.join(self.disk_location, "plugins", "FlowToolkitAliasPlugin.py")
+                plugin_file_path = os.path.join(
+                    self.disk_location, "plugins", "FlowToolkitAliasPlugin.py"
+                )
 
             # Get the launch app path and args
             app_path, app_args = self.__prepare_launch_args(

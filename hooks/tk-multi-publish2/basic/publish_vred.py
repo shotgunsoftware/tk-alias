@@ -143,7 +143,9 @@ class AliasCreateVREDFilePlugin(HookBaseClass):
         # if we create a new one, there will be conflicts between them and Alias will crash a lot
         task_manager = __publish_app_task_manager(parent)
 
-        return _create_custom_widget(parent, bundle=self.parent, task_manager=task_manager)
+        return _create_custom_widget(
+            parent, bundle=self.parent, task_manager=task_manager
+        )
 
     def get_ui_settings(self, widget, items=None):
         """

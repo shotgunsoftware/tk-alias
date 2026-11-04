@@ -49,9 +49,7 @@ class TestAliasObjectMenuAdapter:
         alias_py.gui = MagicMock()
         alias_py.gui.MenuItem.return_value = item
 
-        adapter = _AliasObjectMenuAdapter(
-            alias_py, root_menu, is_main_menu_root=True
-        )
+        adapter = _AliasObjectMenuAdapter(alias_py, root_menu, is_main_menu_root=True)
         adapter.add_command("Action", lambda: None)
 
         adapter.remove()
