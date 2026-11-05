@@ -10,6 +10,7 @@
 
 
 import os
+import re
 import requests
 import sys
 import pprint
@@ -27,6 +28,9 @@ VERSION_NEWEST_SUPPORTED = 2027
 
 class AliasEngine(sgtk.platform.Engine):
     """Alias engine for Flow Production Tracking Toolkit."""
+
+    # Alias 2027.1+ ships bundled Python and uses simplified licensing CLIs.
+    ALIAS_BUNDLED_PYTHON_MIN_VERSION = "2027.1"
 
     # The name of the hidden window, used to parent SG widgets to the Alias main window.
     __PROXY_WINDOW_TITLE = "sgtk dialog owner proxy"
@@ -110,6 +114,46 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Call the base engine init method
         super().__init__(tk, context, engine_instance_name, env)
+
+    @staticmethod
+    def compare_alias_versions(version1, version2):
+        """
+        Compare dotted Alias version strings.
+
+        Non-numeric suffixes (e.g. ``F`` in ``2027.0.0.F``) are ignored per component.
+
+        :param version1: A version string to compare against ``version2``, e.g. ``2022.2``.
+        :param version2: A version string to compare against ``version1``, e.g. ``2021.3.1``.
+
+        :return: ``1`` if ``version1`` is greater, ``-1`` if less, ``0`` if equal.
+        :rtype: int
+        """
+
+        def _component(value):
+            match = re.match(r"(\d+)", str(value))
+            if match:
+                return int(match.group(1))
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return 0
+
+        def _normalize(version):
+            if not version:
+                return ""
+            return str(version).strip().split()[0]
+
+        arr1 = [_component(part) for part in _normalize(version1).split(".")]
+        arr2 = [_component(part) for part in _normalize(version2).split(".")]
+        length = max(len(arr1), len(arr2))
+        arr1.extend([0] * (length - len(arr1)))
+        arr2.extend([0] * (length - len(arr2)))
+        for left, right in zip(arr1, arr2):
+            if left > right:
+                return 1
+            if right > left:
+                return -1
+        return 0
 
     # -------------------------------------------------------------------------------------------------------
     # Plugin version < 4.0.0 methods
@@ -239,6 +283,9 @@ class AliasEngine(sgtk.platform.Engine):
 
     def post_app_init(self):
         """This method called after all apps have been loaded."""
+
+        if not self.has_ui:
+            return
 
         from sgtk.platform.qt import QtGui
 
@@ -912,8 +959,10 @@ class AliasEngine(sgtk.platform.Engine):
 
         # Ensure the python c extension packages are installed in order to
         # import the framework server module.
+        py_major = sys.version_info.major
+        py_minor = sys.version_info.minor
         if not startup_utils.ensure_python_packages_installed(
-            python_version=(sys.version_info.major, sys.version_info.minor),
+            python_version=(py_major, py_minor),
             logger=self.logger,
         ):
             self.logger.error(
@@ -921,7 +970,6 @@ class AliasEngine(sgtk.platform.Engine):
             )
             return False
 
-        # Successfully initialized framework for headless mode.
         return True
 
     def __setup_sio(self, hostname, port, namespace):
@@ -1027,7 +1075,7 @@ class AliasEngine(sgtk.platform.Engine):
                 import alias_api
             except Exception as api_import_error:
                 raise Exception(
-                    f"Failed to import Alias Python API in same process as Alias.\n{api_import_error}"
+                    f"Failed to import Alias Python API.\n{api_import_error}"
                 )
             api_module = alias_api
 
