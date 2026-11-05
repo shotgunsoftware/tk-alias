@@ -278,7 +278,7 @@ class AliasPy:
         return __patch_adjust_window
 
     def __get_patch_get_current_path(self):
-        """Return the current stage file path (Alias 2027.1+ uses stage().path)."""
+        """Return the current stage file path (Alias 2027.1+ uses stages.stage().path)."""
 
         def _get_current_path():
             if not self.__api.stages.stage():
@@ -288,7 +288,7 @@ class AliasPy:
         return _get_current_path
 
     def __get_patch_get_current_stage(self):
-        """Return the current stage object (Alias 2027.1+ uses stage())."""
+        """Return the current stage object (Alias 2027.1+ uses stages.stage())."""
 
         def _get_current_stage():
             return self.__api.stages.stage()

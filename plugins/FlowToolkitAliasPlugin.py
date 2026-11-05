@@ -63,7 +63,11 @@ def initialize():
 
     client_info = {
         "plugin_version": PLUGIN_VERSION,
-        "alias_version": getattr(alpy, "__version__", "unknown"),
+        "alias_version": (
+            os.environ.get("TK_ALIAS_VERSION")
+            or getattr(alpy, "__alias_version__", None)
+            or getattr(alpy, "__version__", "unknown")
+        ),
         "python_version": sys.version,
     }
 

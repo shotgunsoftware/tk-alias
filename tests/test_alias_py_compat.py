@@ -43,9 +43,8 @@ class TestAliasPyApiCompatibility:
         module.is_empty = MagicMock(return_value=False)
 
         stage = types.SimpleNamespace(path="/path/to/scene.wire", name="Stage")
-        module.stage = MagicMock(return_value=stage)
-
         module.stages = types.SimpleNamespace(
+            stage=MagicMock(return_value=stage),
             all=MagicMock(return_value=[stage]),
             create=MagicMock(return_value=0),
         )
@@ -118,7 +117,7 @@ class TestAliasPyApiCompatibility:
 
         assert alias_py.get_current_path() == "/path/to/scene.wire"
         assert alias_py.get_current_stage().name == "Stage"
-        assert alias_py.get_stages() == [api_module.stage.return_value]
+        assert alias_py.get_stages() == [api_module.stages.stage.return_value]
         assert alias_py.create_stage("new-stage") == 0
         api_module.stages.create.assert_called_once_with("new-stage")
 
