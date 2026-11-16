@@ -11,7 +11,6 @@
 
 import os
 import re
-import requests
 import sys
 import pprint
 
@@ -999,6 +998,8 @@ class AliasEngine(sgtk.platform.Engine):
             "yes",
         ]:
             # Set up a session object to disable proxy
+            import requests
+
             session = requests.Session()
             session.trust_env = False
             client_kwargs["http_session"] = session
