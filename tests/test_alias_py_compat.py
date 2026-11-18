@@ -116,6 +116,8 @@ class TestAliasPyApiCompatibility:
         alias_py = alias_py_class(api_module)
 
         assert alias_py.get_current_path() == "/path/to/scene.wire"
+        api_module.stages.stage.assert_called_once()
+        api_module.stages.stage.reset_mock()
         assert alias_py.get_current_stage().name == "Stage"
         assert alias_py.get_stages() == [api_module.stages.stage.return_value]
         assert alias_py.create_stage("new-stage") == 0

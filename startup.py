@@ -105,27 +105,37 @@ class AliasLauncher(SoftwareLauncher):
                 sgtk.util.append_path_to_env_var(
                     "PATH", os.path.dirname(sys.executable)
                 )
-                # We're going to append all of this Python process's sys.path to the
-                # PYTHONPATH environment variable. This will ensure that we have access
-                # to all libraries available in this process. We're appending instead of
-                # setting because we don't want to stomp on any PYTHONPATH that might already
-                # exist that we want to persist
-                sgtk.util.append_path_to_env_var(
-                    "PYTHONPATH", os.pathsep.join(sys.path)
-                )
+                # Legacy C++ plugin bootstrap still needs the Desktop interpreter paths.
+                # Alias 2027.1+ uses the embedded Python plugin only (no .lst); it must not
+                # inherit the launcher's full sys.path (stdlib / wheel conflicts).
+                if plugin_file_path:
+                    sgtk.util.append_path_to_env_var(
+                        "PYTHONPATH", os.pathsep.join(sys.path)
+                    )
 
             # Make the 'start_engine' function available to the Alias Plugin
             startup_path = os.path.join(self.disk_location, "startup")
-            sgtk.util.append_path_to_env_var("PYTHONPATH", startup_path)
-
-            # Make the framework python available to the Alias Plugin
             framework_python_path = os.path.join(framework_location, "python")
-            sgtk.util.append_path_to_env_var("PYTHONPATH", framework_python_path)
+            embedded_python_plugin = not server_python_exe and not plugin_file_path
+
+            if embedded_python_plugin:
+                sgtk.util.prepend_path_to_env_var(
+                    "PYTHONPATH",
+                    os.pathsep.join([startup_path, framework_python_path]),
+                )
+            else:
+                sgtk.util.append_path_to_env_var("PYTHONPATH", startup_path)
+                sgtk.util.append_path_to_env_var("PYTHONPATH", framework_python_path)
 
             # Set up required environment variables to pass to launch
             required_env = {}
             required_env.update(plugin_env)
-            required_env["PYTHONPATH"] = os.environ["PYTHONPATH"]
+            if embedded_python_plugin:
+                required_env["PYTHONPATH"] = os.pathsep.join(
+                    [startup_path, framework_python_path]
+                )
+            else:
+                required_env["PYTHONPATH"] = os.environ["PYTHONPATH"]
 
             # Pass the framework path explicitly for the embedded Python plugin,
             # which cannot safely use the full PYTHONPATH (stdlib version conflicts).
@@ -234,8 +244,18 @@ class AliasLauncher(SoftwareLauncher):
             for executable_path, key_dict in executable_matches:
                 # extract the matched keys form the key_dict (default to None if
                 # not included)
-                version = key_dict.get("version")
                 code_name = key_dict.get("code_name")
+                path_version = key_dict.get("version")
+                try:
+                    version = self._get_release_version(executable_path, code_name)
+                except (OSError, ValueError) as err:
+                    self.logger.debug(
+                        "Using install-path version %s for %s (%s)",
+                        path_version,
+                        executable_path,
+                        err,
+                    )
+                    version = path_version
                 alias_release_name = self._get_release_name(code_name)
 
                 sw_versions.append(

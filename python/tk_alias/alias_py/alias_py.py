@@ -281,9 +281,10 @@ class AliasPy:
         """Return the current stage file path (Alias 2027.1+ uses stages.stage().path)."""
 
         def _get_current_path():
-            if not self.__api.stages.stage():
+            stage = self.__api.stages.stage()
+            if not stage:
                 return None
-            return self.__api.stages.stage().path
+            return stage.path
 
         return _get_current_path
 
