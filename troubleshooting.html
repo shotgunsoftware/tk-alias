@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Troubleshooting &mdash; tk-alias v4.4.0 documentation</title>
+  <title>Troubleshooting &mdash; tk-alias v4.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -93,7 +93,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.4.0.<br>
+    <b>tk-alias</b> v4.5.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -154,7 +154,7 @@
 <span class="go">Python Version: 3.7.11 (default, Dec 18 2022, 00:12:45) [MSC v.1900 64 bit (AMD64)]</span>
 <span class="go">Python Path: C:\Users\qa\AppData\Roaming\Autodesk\Alias\ShotGrid\Python\Python37\install\python37.zip;C:\Users\qa\AppData\Roaming\Autodesk\Alias\ShotGrid\Python\Python37\install;&lt;path_to_tk-framework-alias&gt;\python</span>
 <span class="go">Running Alias Python API server</span>
-<span class="go">Starting client &#39;flow-production-tracking&#39;...</span>
+<span class="go">Starting client 'flow-production-tracking'...</span>
 <span class="go">Flow Production Tracking initialized</span>
 </pre></div>
 </div>
@@ -167,8 +167,8 @@
 * sio_client.log</p>
 <p>If the FPT Alias communication has started up successfully, you should see in the <code class="docutils literal notranslate"><span class="pre">wsgi.log</span></code>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp gp-VirtualEnv">(9328)</span> <span class="go">wsgi starting up on http://127.0.0.1:8000</span>
-<span class="gp gp-VirtualEnv">(9328)</span> <span class="go">accepted (&#39;127.0.0.1&#39;, 63313)</span>
-<span class="go">127.0.0.1 - - [11/Dec/2024 09:26:47] &quot;GET /socket.io/?transport=polling&amp;EIO=4&amp;t=1733927207.5092578 HTTP/1.1&quot; 200 279 0.000000</span>
+<span class="gp gp-VirtualEnv">(9328)</span> <span class="go">accepted ('127.0.0.1', 63313)</span>
+<span class="go">127.0.0.1 - - [11/Dec/2024 09:26:47] "GET /socket.io/?transport=polling&amp;EIO=4&amp;t=1733927207.5092578 HTTP/1.1" 200 279 0.000000</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -194,7 +194,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
 <span class="c1"># Manually send a request to check if the server is running and can receive a new connection</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://127.0.0.1:8000/socket.io/?transport=polling&amp;EIO=4&quot;</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"http://127.0.0.1:8000/socket.io/?transport=polling&amp;EIO=4"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 
 <span class="c1"># Should see output &lt;Response [200]&gt; if server is started successfully and receiving connections</span>
@@ -217,7 +217,7 @@
 <li><p>Before launching Flow Production Tracking Desktop, set the environment variable <a class="reference internal" href="environment_vars.html#env-var-sgtk-enforce-proxy-localhost"><span class="std std-ref">SGTK_ENFORCE_PROXY_LOCALHOST</span></a> to <code class="docutils literal notranslate"><span class="pre">1</span></code>. This will force Flow Production Tracking Desktop to use the proxy settings from the environment variables:</p></li>
 </ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">set SGTK_ENFORCE_PROXY_LOCALHOST=1</span>
-<span class="go">&quot;C:\Program Files\Shotgun\Shotgun.exe&quot;</span>
+<span class="go">"C:\Program Files\Shotgun\Shotgun.exe"</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">

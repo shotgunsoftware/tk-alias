@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v4.4.0 &mdash; tk-alias v4.4.0 documentation</title>
+  <title>v4.4.0 &mdash; tk-alias v4.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -85,7 +85,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.4.0.<br>
+    <b>tk-alias</b> v4.5.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -179,10 +179,10 @@
 
 <span class="c1"># Set these your Alias license info in the environment variables before</span>
 <span class="c1"># running this python script</span>
-<span class="n">product_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ALIAS_PRODUCT_KEY&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-<span class="n">product_version</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ALIAS_PRODUCT_VERSION&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-<span class="n">product_lic_type</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ALIAS_PRODUCT_LIC_TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-<span class="n">product_lic_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ALIAS_PRODUCT_LIC_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">product_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ALIAS_PRODUCT_KEY"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+<span class="n">product_version</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ALIAS_PRODUCT_VERSION"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+<span class="n">product_lic_type</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ALIAS_PRODUCT_LIC_TYPE"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+<span class="n">product_lic_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ALIAS_PRODUCT_LIC_PATH"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 
 <span class="c1"># New api function to set the license information</span>
 <span class="n">license_status</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">set_license_information</span><span class="p">(</span>
@@ -194,9 +194,9 @@
 
 <span class="c1"># Check the license was set successfully</span>
 <span class="k">if</span> <span class="n">license_status</span> <span class="o">==</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="o">.</span><span class="n">Success</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Success"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Failed"</span><span class="p">)</span>
 
 <span class="c1"># Now we can initialize the Alias universe</span>
 <span class="n">init_status</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">initialize_universe</span><span class="p">()</span>
@@ -205,11 +205,11 @@
 <span class="c1"># initialized, otherwise you can check the status returned by the</span>
 <span class="c1"># `initialize_universe` function</span>
 <span class="k">if</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success, now you can use the API as you were&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Success, now you can use the API as you were"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed, check the status returned by the `initialize_universe` function&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Failed, check the status returned by the `initialize_universe` function"</span><span class="p">)</span>
     <span class="n">status_name</span> <span class="o">=</span> <span class="n">alias_api</span><span class="o">.</span><span class="n">AlStatusCode</span><span class="p">(</span><span class="n">init_status</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Init status: </span><span class="si">{</span><span class="n">status_name</span><span class="si">}</span><span class="s2"> (code: </span><span class="si">{</span><span class="n">init_status</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Init status: </span><span class="si">{</span><span class="n">status_name</span><span class="si">}</span><span class="s2"> (code: </span><span class="si">{</span><span class="n">init_status</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

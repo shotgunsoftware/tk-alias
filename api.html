@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API &mdash; tk-alias v4.4.0 documentation</title>
+  <title>API &mdash; tk-alias v4.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -92,7 +92,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>tk-alias</b> v4.4.0.<br>
+    <b>tk-alias</b> v4.5.0.<br>
     
         This documentation is part of the Flow Production Tracking.
     
@@ -145,7 +145,7 @@
 <h2>AliasPy<a class="headerlink" href="#aliaspy" title="Permalink to this heading"></a></h2>
 <p>The Alias Python API can be accessed and used through the Alias Engine attribute <code class="docutils literal notranslate"><span class="pre">alias_py</span></code>. This attribute is an <code class="xref py py-class docutils literal notranslate"><span class="pre">AliasPy</span></code> intance, which is a wrapper around the Alias Python API module and provides addiional functionality to help interact with the Alias API. You can make Alias API calls using <code class="docutils literal notranslate"><span class="pre">alias_py</span></code>; for example to call the API function create a shader:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a shader using the Alias API</span>
-<span class="n">shader</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">create_shader</span><span class="p">(</span><span class="s2">&quot;MyShader&quot;</span><span class="p">)</span>
+<span class="n">shader</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">create_shader</span><span class="p">(</span><span class="s2">"MyShader"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">shader</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -207,7 +207,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Wrap the API calls to create layers using the request context manager</span>
  <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">request_context_manager</span><span class="p">()</span> <span class="k">as</span> <span class="n">manager</span><span class="p">:</span>
    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-      <span class="n">layer_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Layer</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="n">layer_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Layer</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
       <span class="n">engine</span><span class="o">.</span><span class="n">alias_py</span><span class="o">.</span><span class="n">create_layer</span><span class="p">(</span><span class="n">layer_name</span><span class="p">)</span>
 
 <span class="c1"># The context manager now on exiting the above code scope will send all</span>
