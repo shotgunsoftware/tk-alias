@@ -105,11 +105,13 @@ class AliasLauncher(SoftwareLauncher):
                 sgtk.util.append_path_to_env_var(
                     "PATH", os.path.dirname(sys.executable)
                 )
-                # We're going to append all of this Python process's sys.path to the
-                # PYTHONPATH environment variable. This will ensure that we have access
-                # to all libraries available in this process. We're appending instead of
-                # setting because we don't want to stomp on any PYTHONPATH that might already
-                # exist that we want to persist
+                # Append this Desktop process's sys.path so the client bootstrap subprocess
+                # (plugin_bootstrap.py, run with ALIAS_PLUGIN_CLIENT_PYTHON) can import
+                # sgtk, requests, and other deps from the Flow Desktop installation.
+                #
+                # We do not trim PYTHONPATH for Alias 2027.1's in-process embedded plugin:
+                # FlowToolkitAliasPlugin only extends sys.path via TK_FRAMEWORK_ALIAS_PYTHON_PATH.
+                # Narrowing launch PYTHONPATH breaks Toolkit bootstrap in practice
                 sgtk.util.append_path_to_env_var(
                     "PYTHONPATH", os.pathsep.join(sys.path)
                 )
@@ -127,6 +129,10 @@ class AliasLauncher(SoftwareLauncher):
             required_env.update(plugin_env)
             required_env["PYTHONPATH"] = os.environ["PYTHONPATH"]
 
+            # Pass the framework path explicitly for the embedded Python plugin,
+            # which cannot safely use the full PYTHONPATH (stdlib version conflicts).
+            required_env["TK_FRAMEWORK_ALIAS_PYTHON_PATH"] = framework_python_path
+
             # Prepare the launch environment with variables required by the
             # classic bootstrap approach.
             required_env["SGTK_ENGINE"] = self.engine_name
@@ -140,6 +146,12 @@ class AliasLauncher(SoftwareLauncher):
             # Add the file name to open to the launch environment
             if file_to_open:
                 required_env["SGTK_FILE_TO_OPEN"] = file_to_open
+
+            if not plugin_file_path:
+                required_env["ALIAS_DEBUG_CONSOLE"] = os.environ.get("TK_DEBUG", "0")
+                plugin_file_path = os.path.join(
+                    self.disk_location, "plugins", "FlowToolkitAliasPlugin.py"
+                )
 
             # Get the launch app path and args
             app_path, app_args = self.__prepare_launch_args(
@@ -224,8 +236,18 @@ class AliasLauncher(SoftwareLauncher):
             for executable_path, key_dict in executable_matches:
                 # extract the matched keys form the key_dict (default to None if
                 # not included)
-                version = key_dict.get("version")
                 code_name = key_dict.get("code_name")
+                path_version = key_dict.get("version")
+                try:
+                    version = self._get_release_version(executable_path, code_name)
+                except (OSError, ValueError) as err:
+                    self.logger.debug(
+                        "Using install-path version %s for %s (%s)",
+                        path_version,
+                        executable_path,
+                        err,
+                    )
+                    version = path_version
                 alias_release_name = self._get_release_name(code_name)
 
                 sw_versions.append(
@@ -342,7 +364,7 @@ class AliasLauncher(SoftwareLauncher):
         :type args: str
         :parm code_name: The Alias code name.
         :type code_name: str
-        :parm plugin_file_path: The file path to the .lst file used to auto load plugins.
+        :parm plugin_file_path: The file path to the .lst file used to auto load C++ plugins.
         :type plugin_file_path: str
         :param alias_exe: The file path to the Alias executable.
         :type alias_exe: str
@@ -363,15 +385,17 @@ class AliasLauncher(SoftwareLauncher):
             app_args += " " + code_name_flags
 
         if python_exe is None:
-            # Launching Alias application directly - add the plugin file path to the Alias cmd
-            # line args to auto-load the plugin.
-            app_args += ' -P "{0}'.format(plugin_file_path)
-            app_args += '"'
+            # Launching Alias application directly
+            if plugin_file_path:
+                # Add the C++ plugin file path to the Alias cmd line args to auto-load the plugin.
+                app_args += ' -P "{0}'.format(plugin_file_path)
+                app_args += '"'
             app_path = alias_exe
         else:
             # Launching Alias indirectly to ensure the Alias Plugin uses a specific Python
             # version - wrap the command line to launch Alias with the given python executable
-            app_args += f' -P \\"{plugin_file_path}\\"'
+            if plugin_file_path:
+                app_args += f' -P \\"{plugin_file_path}\\"'
             python_args = f'import os;os.system(r\'start /B \\"App\\" \\"{alias_exe}\\" {app_args}\')'
             app_args = f'-c "{python_args}"'
             app_path = python_exe
